@@ -98,3 +98,67 @@
 	cell.style.top = exitObjLoc * GRID_SIZE + "px";
 	container.appendChild(cell);
   }
+  function startDragging(e) {
+	selectedBlock = e.target;
+	const rect = selectedBlock.getBoundingClientRect();
+	offset.x = e.clientX - rect.left;
+	offset.y = e.clientY - rect.top;
+
+	document.addEventListener("mousemove", drag);
+	document.addEventListener("mouseup", stopDragging);
+	selectedBlock.style.cursor = "grabbing";
+  }
+
+  function drag(e) {
+	if (!selectedBlock) return;
+
+	const container = gameContainer.getBoundingClientRect();
+	const block = selectedBlock.getBoundingClientRect();
+	const isHorizontal = block.width > block.height;
+
+	let dX = e.clientX - container.left - offset.x;
+	let dY = e.clientY - container.top - offset.y;
+	let newX, newY;
+	// Constrain movement based on orientation
+	if (isHorizontal) {
+	  newY = parseInt(selectedBlock.style.top);
+	  newX = Math.max(0, Math.min(dX, container.width - block.width));
+	} else {
+	  newX = parseInt(selectedBlock.style.left);
+	  newY = Math.max(0, Math.min(dY, container.height - block.height));
+	}
+	let index = selectedBlock.dataset.index;
+	let state = blocksWithState[index];
+
+	let x = Math.round(newX / 60);
+	let y = Math.round(newY / 60);
+
+	dX = state.cur_loc.x - x;
+	dY = state.cur_loc.y - y;
+	if (dX === 0 && dY === 0) return;
+
+	if (!state.canMoveToloc(x, y)) return;
+	state.cur_loc = { x: x, y: y };
+	state.updateSpaces();
+	newX = x * 60;
+	newY = y * 60;
+	selectedBlock.dataset.info = JSON.stringify({ x: x, y: y });
+	selectedBlock.style.left = newX + "px";
+	selectedBlock.style.top = newY + "px";
+
+	// Check win condition
+	if (state.info.isMain) {
+	  if (state.hasReached(gridNr - 1, doorLoc)) {
+		winMessage.style.display = "block";
+	  }
+	}
+  }
+
+  function stopDragging() {
+	if (selectedBlock) {
+	  selectedBlock.style.cursor = "grab";
+	}
+	selectedBlock = null;
+	document.removeEventListener("mousemove", drag);
+	document.removeEventListener("mouseup", stopDragging);
+  }
