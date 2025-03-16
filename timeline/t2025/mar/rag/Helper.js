@@ -1,29 +1,35 @@
-class CITTools {
-    // Static method to add numbers
-    static add(a, b) {
-        return a + b;
-    }
-
-    // Static method to calculate circle area
-    static calculateCircleArea(radius) {
-        // Note: We can't access 'this.pi' here because static methods
-        // don't have access to instance properties
-        const PI = 3.14159;
-        return PI * radius * radius;
-    }
-
-    // Static method to compare two numbers
-    static max(num1, num2) {
-        return num1 > num2 ? num1 : num2;
-    }
-
-    // Regular instance method
-    getPi() {
-        return this.pi;
+export class CITTools {
+    static removeKeys = (obj, keys) => {
+        let newObj = { ...obj };
+        for (const key of keys) {
+            if (newObj.hasOwnProperty(key)) {
+                delete newObj[key];
+            }
+        }
+        return newObj;
+    };
+    static updateObject(obj1, obj2) {
+        for (let key in obj2) {
+            if (obj1.hasOwnProperty(key)) {
+                if (
+                    typeof obj1[key] === "object" &&
+                    typeof obj2[key] === "object" &&
+                    obj1[key] !== null &&
+                    obj2[key] !== null
+                ) {
+                    CITTools.updateObject(obj1[key], obj2[key]);
+                } else {
+                    obj1[key] = obj2[key];
+                }
+            } else {
+                obj1[key] = obj2[key];
+            }
+        }
+        return { ...obj1 };
     }
 }
 
-class CustomContainer {
+export class CustomContainer {
     #a;
     #b;
 

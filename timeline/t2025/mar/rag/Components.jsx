@@ -1,35 +1,11 @@
-import React, { useState, useImperativeHandle, forwardRef } from "react";
+import React, {
+    useState,
+    useImperativeHandle,
+    forwardRef,
+    useEffect,
+} from "react";
+import { CITTools, CustomContainer } from "./Helper";
 
-const removeKeys = (obj, keys) => {
-    // console.log(obj);
-    let newObj = { ...obj };
-    for (const key of keys) {
-        delete newObj[key];
-    }
-    // console.log(newObj);
-    return newObj;
-};
-function updateObject(obj1, obj2) {
-    for (let key in obj2) {
-        if (obj1.hasOwnProperty(key)) {
-            if (
-                typeof obj1[key] === "object" &&
-                typeof obj2[key] === "object" &&
-                obj1[key] !== null &&
-                obj2[key] !== null &&
-                !Array.isArray(obj1[key]) &&
-                !Array.isArray(obj2[key])
-            ) {
-                updateObject(obj1[key], obj2[key]);
-            } else {
-                obj1[key] = obj2[key];
-            }
-        } else {
-            obj1[key] = obj2[key];
-        }
-    }
-    return { ...obj1 };
-}
 const DefInput = (props) => <input {...props} />;
 
 export const GForm = forwardRef(
@@ -89,7 +65,7 @@ export const GForm = forwardRef(
                         {...(!inp.getter && {
                             value: data[inp.key] ? data[inp.key] : "",
                         })}
-                        {...removeKeys(inp, ["getter"])}
+                        {...CITTools.removeKeys(inp, ["getter"])}
                         key={inp.key}
                     />
                 ))}
@@ -160,7 +136,7 @@ export const ConfirmationModal = ({ onCancel, onConfirm }) => {
 
 export const Sidebar = forwardRef((props, ref) => {
     const [st, setSt] = useState(
-        updateObject(
+        CITTools.updateObject(
             {
                 title: "Collections",
                 formStruc: [
@@ -174,9 +150,11 @@ export const Sidebar = forwardRef((props, ref) => {
                 onDelete: (id) => {},
                 onEdit: (collection) => {},
             },
-            removeKeys(props, ["collections"])
+            CITTools.removeKeys(props, ["collections", "state"])
         )
     );
+    let nst = new CustomContainer(props.state, st);
+
     const [collections, setCollections] = useState(props.collections);
     const [showForm, setShowForm] = useState(false);
     const [editCollection, setEditCollection] = useState(null);
@@ -199,7 +177,7 @@ export const Sidebar = forwardRef((props, ref) => {
     const handleAddCollection = (collection) => {
         // API call: createCollection({ title })
         const newCollection = { ...collection, id: Date.now() };
-        st.onAdd(newCollection);
+        nst.onAdd(newCollection);
         setCollections([...collections, newCollection]);
         setShowForm(false);
     };
@@ -209,21 +187,21 @@ export const Sidebar = forwardRef((props, ref) => {
         setCollections(
             collections.map((c) => (c.id === collection.id ? collection : c))
         );
-        st.onEdit(collection);
+        nst.onEdit(collection);
         setEditCollection(null);
     };
 
     const handleDeleteCollection = (id) => {
         // API call: deleteCollection(id)
 
-        st.onDelete(id);
+        nst.onDelete(id);
         setCollections(collections.filter((c) => c.id !== id));
     };
 
     return (
         <div className="w-64 bg-white shadow-md p-4">
             <div className="mb-4 flex justify-between items-center ">
-                <h2 className="text-xl font-semibold ">{st.title}</h2>
+                <h2 className="text-xl font-semibold ">{nst.title}</h2>
                 <button
                     className="bg-blue-500 text-white px-4 py-2 rounded "
                     onClick={() => setShowForm(true)}
@@ -234,14 +212,14 @@ export const Sidebar = forwardRef((props, ref) => {
 
             {showForm && (
                 <GForm
-                    formStruc={st.formStruc}
+                    formStruc={nst.formStruc}
                     onSubmit={handleAddCollection}
                     onCancel={() => setShowForm(false)}
                 />
             )}
             {editCollection && (
                 <GForm
-                    formStruc={st.formStruc}
+                    formStruc={nst.formStruc}
                     initialData={editCollection}
                     onSubmit={handleEditCollection}
                     onCancel={() => setEditCollection(null)}
@@ -254,7 +232,9 @@ export const Sidebar = forwardRef((props, ref) => {
                         key={collection.id}
                         className="flex justify-between items-center p-2 hover:bg-gray-100 cursor-pointer"
                     >
-                        <div onClick={() => onSelectCollection(collection)}>
+                        <div
+                            onClick={() => props.onSelectCollection(collection)}
+                        >
                             {collection.title}
                         </div>
                         <div>
