@@ -69,13 +69,15 @@ export const GForm = forwardRef(
                         key={inp.key}
                     />
                 ))}
-                <div className={st.btns.className}>
-                    {st.btns.children.map((btn) => (
-                        <button {...btn} key={btn.label}>
-                            {btn.label}
-                        </button>
-                    ))}
-                </div>
+                {st.btns && (
+                    <div className={st.btns.className}>
+                        {st.btns.children.map((btn) => (
+                            <button {...btn} key={btn.label}>
+                                {btn.label}
+                            </button>
+                        ))}
+                    </div>
+                )}
             </form>
         );
     }

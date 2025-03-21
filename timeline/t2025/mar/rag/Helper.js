@@ -37,18 +37,16 @@ export class CustomContainer {
         this.#a = objA || {};
         this.#b = objB || {};
 
-        // Return a Proxy to handle property access
         return new Proxy(this, {
             get(target, prop) {
-                // Check if it's a method of the class
                 if (typeof target[prop] === "function") {
                     return target[prop].bind(target);
                 }
-                // Check #a first
+
                 if (Object.prototype.hasOwnProperty.call(target.#a, prop)) {
                     return target.#a[prop];
                 }
-                // Then check #b
+
                 if (Object.prototype.hasOwnProperty.call(target.#b, prop)) {
                     return target.#b[prop];
                 }
@@ -62,9 +60,9 @@ export class CustomContainer {
                 ) {
                     target.#b[prop] = value;
                 } else {
-                    target.#a[prop] = value; // Add to #a by default
+                    target.#a[prop] = value;
                 }
-                return true; // Indicate success
+                return true;
             },
         });
     }
