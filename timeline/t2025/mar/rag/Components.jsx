@@ -43,7 +43,13 @@ export const GForm = forwardRef(
             ...props,
         });
         const [data, setData] = useState(initialData);
-        useImperativeHandle(ref, () => ({ st, setSt, data, setData }));
+        useImperativeHandle(ref, () => ({
+            st,
+            setSt,
+            data,
+            setData,
+            formStruc,
+        }));
         const handleSubmit = (e) => {
             e.preventDefault();
             onSubmit(data);
