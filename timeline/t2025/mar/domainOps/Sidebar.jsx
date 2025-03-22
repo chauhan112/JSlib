@@ -6,7 +6,8 @@ import React, {
 } from "react";
 
 import { CITTools } from "../rag/Helper";
-import { GComponent, Accordion } from "./Components";
+import { GComponent } from "./Components";
+import { Accordion } from "./Repeater";
 import { GForm } from "../rag/Components";
 
 export const Header = forwardRef((props, ref) => {
@@ -45,7 +46,6 @@ export const Sidebar = forwardRef((props, ref) => {
             <h1 className={st.title.className}>{st.title.children}</h1>
             <GForm
                 {...{
-                    btns: null,
                     formStruc: [
                         {
                             key: "search",

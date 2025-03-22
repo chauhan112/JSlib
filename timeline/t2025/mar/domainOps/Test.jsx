@@ -1,6 +1,8 @@
 import { Repeater, GForm, Accordion } from "./Repeater";
 import { DownArrow } from "./Icons";
 import React from "react";
+import { ListWithContextMenu, ListWithContextMenu2 } from "./ContextMenu";
+import { DropdownShowCase } from "./Dropdown";
 export const TestRepeater = () => {
     return (
         <div>
@@ -39,7 +41,6 @@ export const TestGForm = () => {
                             className: "w-full border rounded mb-2 p-2",
                         },
                     ],
-                    btns: null,
                 }}
             />
         </div>
@@ -94,4 +95,20 @@ export const TestArrow = () => {
             </button>
         </>
     );
+};
+
+export const TestContextMenu = () => {
+    const sampleItems = ["Item 1", "Item 2", "Item 3", "Item 4"];
+    return <ListWithContextMenu items={sampleItems} />;
+};
+
+export const TestDropdown = () => {
+    const options = [
+        "Option 1",
+        "Option 2",
+        "Option 3",
+        "Option 4",
+        "Option 5",
+    ];
+    return <DropdownShowCase />;
 };

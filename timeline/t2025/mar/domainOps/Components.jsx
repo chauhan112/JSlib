@@ -6,7 +6,6 @@ import React, {
 } from "react";
 
 import { CITTools } from "../rag/Helper";
-import { DownArrow } from "./Icons";
 
 export const GComponent = forwardRef(({ typ, ...props }, ref) => {
     let Type = typ;

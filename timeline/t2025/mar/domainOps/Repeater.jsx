@@ -94,14 +94,14 @@ export const GForm = forwardRef(
                                 type: "submit",
                                 className:
                                     "bg-green-500 text-white px-4 py-2 rounded",
-                                label: "Save",
+                                children: "Save",
                             },
                             {
                                 key: "cancel",
                                 type: "button",
                                 className:
                                     "bg-gray-500 text-white px-4 py-2 rounded",
-                                label: "Cancel",
+                                children: "Cancel",
                                 onClick: onCancel || (() => {}),
                             },
                         ],
@@ -139,13 +139,14 @@ export const GForm = forwardRef(
                     }}
                 />
                 {st.btns && (
-                    <div className={st.btns.className}>
-                        <Repeater
-                            data={st.btns.children}
-                            Component="button"
-                            ref={btnsRef}
-                        />
-                    </div>
+                    <Repeater
+                        data={st.btns.children}
+                        Component="button"
+                        ref={btnsRef}
+                        {...{
+                            container: { className: st.btns.className },
+                        }}
+                    />
                 )}
             </form>
         );
