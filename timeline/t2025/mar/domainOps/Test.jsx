@@ -1,8 +1,16 @@
-import { Repeater, GForm, Accordion } from "./Repeater";
+import {
+    Repeater,
+    GForm,
+    Accordion,
+    AccordionComponent,
+    ContextMenuComponent,
+    ContextMenu,
+} from "./Repeater";
 import { DownArrow } from "./Icons";
 import React from "react";
 import { ListWithContextMenu, ListWithContextMenu2 } from "./ContextMenu";
 import { DropdownShowCase } from "./Dropdown";
+import { MoreVertical, Trash } from "lucide-react";
 export const TestRepeater = () => {
     return (
         <div>
@@ -50,28 +58,27 @@ export const TestGForm = () => {
 export const TestAccordion = () => {
     return (
         <div>
-            <Accordion
-                {...{
-                    items: [
-                        {
-                            key: "1",
-                            title: "Home",
-                            open: true,
-                            content: {
-                                className: "",
-                                children: <TestGForm />,
-                            },
+            <Repeater
+                data={[
+                    {
+                        key: "1",
+                        title: "Home",
+                        open: true,
+                        content: {
+                            className: "",
+                            children: <TestGForm />,
                         },
-                        {
-                            key: "2",
-                            title: "password",
-                            open: false,
-                            content: {
-                                children: "password",
-                            },
+                    },
+                    {
+                        key: "2",
+                        title: "password",
+                        open: false,
+                        content: {
+                            children: "password",
                         },
-                    ],
-                }}
+                    },
+                ]}
+                Component={AccordionComponent}
             />
         </div>
     );
@@ -97,11 +104,55 @@ export const TestArrow = () => {
     );
 };
 
-export const TestContextMenu = () => {
-    const sampleItems = ["Item 1", "Item 2", "Item 3", "Item 4"];
-    return <ListWithContextMenu items={sampleItems} />;
+export const TestContextMenuComponent = () => {
+    const sampleItems = [
+        {
+            key: "item1",
+            title: { children: "Item 1" },
+        },
+        {
+            key: "item2",
+            title: { children: "Item 2" },
+        },
+        {
+            key: "item3",
+            title: { children: "Item 3" },
+        },
+        {
+            key: "item4",
+            title: { children: "Item 4" },
+        },
+    ];
+    return <Repeater data={sampleItems} Component={ContextMenuComponent} />;
 };
 
+export const TestContextMenu = () => {
+    return (
+        <ContextMenu
+            items={[
+                {
+                    key: "item1",
+                    title: { children: "Item 1" },
+                },
+            ]}
+            commonOps={{
+                btns: [
+                    {
+                        key: "moreInfo",
+                        className: "p-1 text-black hover:text-gray-700",
+                        children: <MoreVertical className="h-5 w-5" />,
+                    },
+                    {
+                        key: "delete",
+                        className: "p-1 text-black hover:text-gray-700",
+                        children: <Trash className="h-5 w-5" />,
+                    },
+                ],
+            }}
+            moreOptions={[]}
+        />
+    );
+};
 export const TestDropdown = () => {
     const options = [
         "Option 1",

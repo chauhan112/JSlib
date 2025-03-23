@@ -6,6 +6,8 @@ import React, {
 } from "react";
 import { CITTools } from "../rag/Helper";
 import { DownArrow } from "./Icons";
+import { MoreVertical } from "lucide-react";
+
 export const Repeater = forwardRef(
     ({ data = [], Component = "div", ...props }, ref) => {
         const [st, setSt] = useState(
@@ -34,10 +36,10 @@ export const Repeater = forwardRef(
             <div {...st.container}>
                 {ldata.map((item) => (
                     <Component
-                        key={item.key}
                         {...st.items}
-                        {...CITTools.removeKeys(item, ["key"])}
+                        {...item}
                         ref={refs[item.key]}
+                        key={item.key}
                     />
                 ))}
             </div>
@@ -179,7 +181,7 @@ export const AccordionComponent = forwardRef(({ ...props }, ref) => {
         setSt({ ...st });
         arrowRef.current.flip(st.open);
     };
-    useImperativeHandle(ref, () => ({ st, setSt, toggle, openCloseCSS }));
+    useImperativeHandle(ref, () => ({ st, setSt, toggle }));
     return (
         <div {...st.container}>
             <button onClick={toggle} {...st.button}>
@@ -192,14 +194,63 @@ export const AccordionComponent = forwardRef(({ ...props }, ref) => {
 });
 
 export const Accordion = forwardRef(({ items }, ref) => {
-    const [st, setSt] = useState(items);
-    useImperativeHandle(ref, () => ({ st, setSt }));
+    return <Repeater data={items} Component={AccordionComponent} />;
+});
 
+export const ContextMenuComponent = forwardRef((props, ref) => {
+    const [st, setSt] = useState(
+        CITTools.updateObject(
+            {
+                container: {
+                    className:
+                        "flex items-center justify-between border-b-2 border-black hover:bg-yellow-100",
+                },
+                title: {
+                    className: "text-black block flex-1 font-mono p-4",
+                },
+                btns: [
+                    {
+                        key: "moreInfo",
+                        className: "p-1 text-black hover:text-gray-700",
+                        children: <MoreVertical className="h-5 w-5" />,
+                    },
+                ],
+                opsContainer: {
+                    container: {
+                        className: "w-fit",
+                    },
+                },
+            },
+            props
+        )
+    );
+
+    useImperativeHandle(ref, () => ({ st, setSt }));
+    const btnsRef = React.createRef();
     return (
-        <>
-            {st.map((item) => (
-                <AccordionComponent {...item} key={item.key} />
-            ))}
-        </>
+        <div {...st.container}>
+            <div {...st.title} />
+            {st.btns && (
+                <Repeater
+                    data={st.btns}
+                    Component="button"
+                    ref={btnsRef}
+                    {...st.opsContainer}
+                />
+            )}
+        </div>
     );
 });
+
+export const ContextMenu = forwardRef(
+    ({ items, commonOps, moreOptions }, ref) => {
+        const mainStruc = items.map((item) => {
+            return {
+                ...commonOps,
+                ...item,
+            };
+        });
+
+        return <Repeater data={mainStruc} Component={ContextMenuComponent} />;
+    }
+);

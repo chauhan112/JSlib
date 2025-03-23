@@ -124,6 +124,33 @@ export const ListWithContextMenu = () => {
     );
 };
 
+const ContextMenu = ({ item, handleAction }) => {
+    return (
+        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+            <div className="py-1">
+                <button
+                    onClick={(e) => handleAction(e, "open", item)}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                    Open
+                </button>
+                <button
+                    onClick={(e) => handleAction(e, "edit", item)}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                    Edit
+                </button>
+                <button
+                    onClick={(e) => handleAction(e, "delete", item)}
+                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                >
+                    Delete
+                </button>
+            </div>
+        </div>
+    );
+};
+
 export const ListWithContextMenu2 = ({ items }) => {
     const [activeMenu, setActiveMenu] = useState(null);
     const menuRef = useRef(null);
@@ -184,34 +211,10 @@ export const ListWithContextMenu2 = ({ items }) => {
 
                             {/* Context Menu */}
                             {activeMenu === index && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
-                                    <div className="py-1">
-                                        <button
-                                            onClick={(e) =>
-                                                handleAction(e, "open", item)
-                                            }
-                                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                        >
-                                            Open
-                                        </button>
-                                        <button
-                                            onClick={(e) =>
-                                                handleAction(e, "edit", item)
-                                            }
-                                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={(e) =>
-                                                handleAction(e, "delete", item)
-                                            }
-                                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
-                                </div>
+                                <ContextMenu
+                                    item={item}
+                                    handleAction={handleAction}
+                                />
                             )}
                         </div>
                     </li>

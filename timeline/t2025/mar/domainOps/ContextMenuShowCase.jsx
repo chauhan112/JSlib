@@ -186,9 +186,11 @@ const ListWithContextMenu3 = ({ items }) => {
             {items.map((item, index) => (
                 <li
                     key={index}
-                    className="flex items-center justify-between p-4 border-b-2 border-black last:border-b-0 hover:bg-yellow-100"
+                    className="flex items-center justify-between border-b-2 border-black last:border-b-0 hover:bg-yellow-100"
                 >
-                    <span className="text-black font-mono">{item}</span>
+                    <span className="text-black font-mono block flex-1 p-4">
+                        {item}
+                    </span>
                     <div className="relative" ref={menuRef}>
                         <button
                             onClick={(e) => toggleMenu(e, index)}
