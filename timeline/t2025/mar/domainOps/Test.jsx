@@ -8,7 +8,7 @@ import {
 } from "./Repeater";
 import { DownArrow } from "./Icons";
 import React from "react";
-import { ListWithContextMenu, ListWithContextMenu2 } from "./ContextMenu";
+import { ListWithContextMenu } from "./ContextMenu";
 import { DropdownShowCase } from "./Dropdown";
 import { MoreVertical, Trash } from "lucide-react";
 export const TestRepeater = () => {
@@ -120,10 +120,37 @@ export const TestContextMenuComponent = () => {
         },
         {
             key: "item4",
-            title: { children: "Item 4" },
+            title: { children: "Item 4", className: "text-red-500 p-4" },
+            btns: [
+                {
+                    key: "delete",
+                    className: "p-1 text-black hover:text-gray-700",
+                    children: <Trash className="h-5 w-5" />,
+                },
+                {
+                    key: "moreInfo",
+                    className: "p-1 text-black hover:text-gray-700",
+                    children: <MoreVertical className="h-5 w-5" />,
+                    onClick: (e) => console.log("item4"),
+                },
+            ],
         },
     ];
-    return <Repeater data={sampleItems} Component={ContextMenuComponent} />;
+    return (
+        <Repeater
+            data={sampleItems}
+            Component={ContextMenuComponent}
+            items={{
+                opsContainer: {
+                    items: {
+                        onClick: (e) => {
+                            console.log("all elements");
+                        },
+                    },
+                },
+            }}
+        />
+    );
 };
 
 export const TestContextMenu = () => {
@@ -162,4 +189,35 @@ export const TestDropdown = () => {
         "Option 5",
     ];
     return <DropdownShowCase />;
+};
+
+export const TestListWithContextMenu = () => {
+    let ref = React.createRef();
+    const moreOps = [
+        {
+            key: "moreInfo",
+            className: "p-1 text-black hover:text-gray-700",
+            children: <Trash className="h-5 w-5" />,
+            onClick: (e, val) => {
+                ref.current.st.menuOptions
+                    .filter((ele) => ele.key === "delete")[0]
+                    .onClick(e, val);
+            },
+        },
+    ];
+    let items = [
+        { children: "Item 1", key: "item 1" },
+        { children: "Item 2", key: "item 2" },
+        { children: "Item 3", key: "item 3" },
+    ];
+    return (
+        <div>
+            <ListWithContextMenu
+                moreOptions={moreOps}
+                ref={ref}
+                items={items}
+                CtxMenuComponent="div"
+            />
+        </div>
+    );
 };

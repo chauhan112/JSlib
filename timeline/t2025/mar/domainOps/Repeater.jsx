@@ -8,8 +8,25 @@ import { CITTools } from "../rag/Helper";
 import { DownArrow } from "./Icons";
 import { MoreVertical } from "lucide-react";
 
+const RepeaterWrapperComponent = forwardRef(
+    ({ Component, callParams, ...props }, ref) => {
+        let newProps = {};
+
+        for (const [key, value] of Object.entries(props)) {
+            if (typeof value === "function") {
+                newProps[key] = (e) => {
+                    return value(e, callParams);
+                };
+            } else {
+                newProps[key] = value;
+            }
+        }
+
+        return <Component {...newProps} />;
+    }
+);
 export const Repeater = forwardRef(
-    ({ data = [], Component = "div", ...props }, ref) => {
+    ({ data = [], Component = "div", callParams, ...props }, ref) => {
         const [st, setSt] = useState(
             CITTools.updateObject(
                 {
@@ -35,11 +52,13 @@ export const Repeater = forwardRef(
         return (
             <div {...st.container}>
                 {ldata.map((item) => (
-                    <Component
+                    <RepeaterWrapperComponent
+                        Component={Component}
                         {...st.items}
                         {...item}
                         ref={refs[item.key]}
                         key={item.key}
+                        callParams={callParams}
                     />
                 ))}
             </div>
@@ -242,6 +261,10 @@ export const ContextMenuComponent = forwardRef((props, ref) => {
     );
 });
 
+// still needs implementing. it is taking alot of time so i am going to take it slowly
+// problem: how to resolve repeater inside another repeater
+// how to know which element is clicked
+// pass params as state or normal way
 export const ContextMenu = forwardRef(
     ({ items, commonOps, moreOptions }, ref) => {
         const mainStruc = items.map((item) => {
