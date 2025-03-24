@@ -6,22 +6,24 @@ import React, {
 } from "react";
 import { CITTools } from "../rag/Helper";
 import { DownArrow } from "./Icons";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, Plus } from "lucide-react";
 
 const RepeaterWrapperComponent = forwardRef(
     ({ Component, callParams, ...props }, ref) => {
-        let newProps = {};
-
-        for (const [key, value] of Object.entries(props)) {
-            if (typeof value === "function") {
-                newProps[key] = (e) => {
-                    return value(e, callParams);
-                };
-            } else {
-                newProps[key] = value;
+        const makeNewProps = (props) => {
+            let newProps = {};
+            for (const [key, value] of Object.entries(props)) {
+                if (typeof value === "function") {
+                    newProps[key] = (e) => value(e, callParams);
+                } else if (typeof value === "object" && key !== "children") {
+                    newProps[key] = makeNewProps(value);
+                } else {
+                    newProps[key] = value;
+                }
             }
-        }
-
+            return newProps;
+        };
+        let newProps = makeNewProps(props);
         return <Component {...newProps} />;
     }
 );
@@ -58,7 +60,7 @@ export const Repeater = forwardRef(
                         {...item}
                         ref={refs[item.key]}
                         key={item.key}
-                        callParams={callParams}
+                        callParams={callParams || item}
                     />
                 ))}
             </div>
@@ -189,6 +191,9 @@ export const AccordionComponent = forwardRef(({ ...props }, ref) => {
                     className:
                         "p-4 bg-green-50 text-green-800 border-t border-green-200",
                 },
+                plus: {
+                    className: "h-5 w-5",
+                },
             },
             props
         )
@@ -204,8 +209,11 @@ export const AccordionComponent = forwardRef(({ ...props }, ref) => {
     return (
         <div {...st.container}>
             <button onClick={toggle} {...st.button}>
-                <span>{st.title}</span>
-                <DownArrow {...{ down: st.open }} ref={arrowRef} />
+                <div className="flex items-center gap-2">
+                    <DownArrow {...{ down: st.open }} ref={arrowRef} />
+                    <span>{st.title}</span>
+                </div>
+                <Plus {...st.plus} />
             </button>
             {st.open && <div {...st.content} />}
         </div>

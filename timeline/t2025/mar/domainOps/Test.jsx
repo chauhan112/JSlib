@@ -9,7 +9,7 @@ import {
 import { DownArrow } from "./Icons";
 import React from "react";
 import { ListWithContextMenu } from "./ContextMenu";
-import { DropdownShowCase } from "./Dropdown";
+import { DropdownShowCase, Dropdown } from "./Dropdown";
 import { MoreVertical, Trash } from "lucide-react";
 export const TestRepeater = () => {
     return (
@@ -188,7 +188,10 @@ export const TestDropdown = () => {
         "Option 4",
         "Option 5",
     ];
-    return <DropdownShowCase />;
+    // return <DropdownShowCase />;
+    return (
+        <Dropdown options={options} title={{ children: "select a label" }} />
+    );
 };
 
 export const TestListWithContextMenu = () => {

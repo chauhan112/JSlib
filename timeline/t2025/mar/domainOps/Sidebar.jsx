@@ -7,7 +7,7 @@ import React, {
 
 import { CITTools } from "../rag/Helper";
 import { GComponent } from "./Components";
-import { Accordion } from "./Repeater";
+import { Repeater, AccordionComponent } from "./Repeater";
 import { GForm } from "../rag/Components";
 
 export const Header = forwardRef((props, ref) => {
@@ -56,33 +56,55 @@ export const Sidebar = forwardRef((props, ref) => {
                     ],
                     onSubmit,
                 }}
+                btns={null}
                 ref={searchFormRef}
             />
-            <Accordion
-                {...{
-                    items: [
-                        {
-                            title: "Domains",
-                            content: (
-                                <h1 className="text-lg font-bold">Domains</h1>
-                            ),
-                            key: "domains",
-                            open: false,
+            <Repeater
+                data={[
+                    {
+                        title: "Domains",
+                        key: "domains",
+                        open: false,
+                        content: {
+                            children: <input type="file" />,
                         },
-                        // {
-                        //     title: "Operations",
-                        //     content: "Operations",
-                        //     key: "operations",
-                        //     open: false,
-                        // },
-                        // {
-                        //     title: "Activities",
-                        //     content: "activities",
-                        //     key: "activities",
-                        //     open: true,
-                        // },
-                    ],
-                }}
+                        plus: {
+                            onClick: (e, val) => {
+                                console.log(val);
+                            },
+                            className: "h-5 w-5 hover:text-gray-700",
+                        },
+                    },
+                    {
+                        title: "Operations",
+                        key: "operations",
+                        open: false,
+                        content: {
+                            children: <input type="file" />,
+                        },
+                        plus: {
+                            onClick: (e, val) => {
+                                console.log(val);
+                            },
+                            className: "h-5 w-5 hover:text-gray-700",
+                        },
+                    },
+                    {
+                        title: "Activities",
+                        key: "activities",
+                        open: true,
+                        content: {
+                            children: <input type="file" />,
+                        },
+                        plus: {
+                            onClick: (e, val) => {
+                                console.log(val);
+                            },
+                            className: "h-5 w-5 hover:text-gray-700",
+                        },
+                    },
+                ]}
+                Component={AccordionComponent}
                 ref={accordionRef}
             />
         </aside>

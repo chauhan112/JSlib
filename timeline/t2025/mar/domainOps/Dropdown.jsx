@@ -1,33 +1,46 @@
-import { useState } from "react";
-
-export const Dropdown = ({ label, options, id }) => {
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
+import { CITTools } from "../rag/Helper";
+export const Dropdown = forwardRef(({ options, label, ...props }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState("");
-
+    const [st, setSt] = useState(
+        CITTools.updateObject(
+            {
+                title: {
+                    className: "block text-sm font-medium text-gray-700 mb-1",
+                },
+            },
+            props
+        )
+    );
     const toggleDropdown = () => setIsOpen(!isOpen);
     const handleOptionClick = (option) => {
         setSelectedOption(option);
         setIsOpen(false);
     };
-
+    useImperativeHandle(ref, () => ({
+        st,
+        setSt,
+        isOpen,
+        setIsOpen,
+        handleOptionClick,
+    }));
     return (
         <div className="relative w-64 mb-4">
-            <label
-                htmlFor={id}
-                className="block text-sm font-medium text-gray-700 mb-1"
-            >
-                {label}
-            </label>
+            <label {...st.title} />
             <div className="relative">
                 <button
                     type="button"
                     onClick={toggleDropdown}
                     className="w-full px-4 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                    {selectedOption || "Select an option"}
+                    {selectedOption || label || "Select an option"}
                     <span className="absolute right-2 top-1/2 -translate-y-1/2">
                         <svg
-                            className="w-5 h-5 text-gray-400"
+                            className={
+                                "w-5 h-5 text-gray-400 transform transition-transform duration-200 ease-in-out " +
+                                (isOpen ? "rotate-180" : "")
+                            }
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -58,7 +71,7 @@ export const Dropdown = ({ label, options, id }) => {
             </div>
         </div>
     );
-};
+});
 
 const customStyles = `
   .neon-glow {
@@ -93,14 +106,30 @@ const customStyles = `
   }
 `;
 // Style 1: Neon Glow Dropdown
+let onClickEvents = [];
+const handleClickOutside = () => {
+    onClickEvents.forEach((callback) => callback());
+    onClickEvents = [];
+};
 const NeonDropdown = ({ options }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState("");
-
+    useEffect(() => {
+        const handleClickOutside = () => {
+            setIsOpen(false);
+        };
+        document.addEventListener("click", handleClickOutside);
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, []);
     return (
         <div className="relative w-64 mb-8">
             <button
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsOpen(!isOpen);
+                }}
                 className="w-full px-4 py-2 text-white bg-gray-900 rounded-lg border-2 border-pink-500 neon-glow"
             >
                 {selected || "Neon Glow"}
@@ -129,11 +158,22 @@ const NeonDropdown = ({ options }) => {
 const WatercolorDropdown = ({ options }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState("");
-
+    useEffect(() => {
+        const handleClickOutside = () => {
+            setIsOpen(false);
+        };
+        document.addEventListener("click", handleClickOutside);
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, []);
     return (
         <div className="relative w-64 mb-8">
             <button
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsOpen(!isOpen);
+                }}
                 className="w-full px-4 py-2 bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 rounded-full text-gray-800 watercolor-edge"
             >
                 {selected || "Watercolor"}
@@ -162,11 +202,22 @@ const WatercolorDropdown = ({ options }) => {
 const MetallicDropdown = ({ options }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState("");
-
+    useEffect(() => {
+        const handleClickOutside = () => {
+            setIsOpen(false);
+        };
+        document.addEventListener("click", handleClickOutside);
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, []);
     return (
         <div className="relative w-64 mb-8">
             <button
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsOpen(!isOpen);
+                }}
                 className="w-full px-4 py-2 bg-gradient-to-b from-gray-600 to-gray-800 text-white rounded-md metallic-shine"
             >
                 {selected || "Metallic"}
@@ -195,11 +246,22 @@ const MetallicDropdown = ({ options }) => {
 const SketchbookDropdown = ({ options }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState("");
-
+    useEffect(() => {
+        const handleClickOutside = () => {
+            setIsOpen(false);
+        };
+        document.addEventListener("click", handleClickOutside);
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, []);
     return (
         <div className="relative w-64 mb-8">
             <button
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsOpen(!isOpen);
+                }}
                 className="w-full px-4 py-2 bg-white border-2 border-gray-800 border-dashed rounded-lg sketch-text"
             >
                 {selected || "Sketchbook"}
@@ -228,11 +290,22 @@ const SketchbookDropdown = ({ options }) => {
 const CrystalDropdown = ({ options }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState("");
-
+    useEffect(() => {
+        const handleClickOutside = () => {
+            setIsOpen(false);
+        };
+        document.addEventListener("click", handleClickOutside);
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, []);
     return (
         <div className="relative w-64 mb-8">
             <button
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsOpen(!isOpen);
+                }}
                 className="w-full px-4 py-2 bg-white/80 backdrop-blur-md border border-white/50 rounded-xl crystal-effect"
             >
                 {selected || "Crystal"}

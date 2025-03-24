@@ -59,19 +59,20 @@ export const GForm = forwardRef(
             <form onSubmit={handleSubmit} className={st.form.className}>
                 {formStruc.map((inp) => (
                     <InputCom
-                        onChange={(e) =>
+                        onChange={(e) => {
                             setData({
                                 ...data,
                                 [inp.key]: inp.getter
                                     ? inp.getter(e)
                                     : e.target.value,
-                            })
-                        }
+                            });
+                            inp.runOnChange?.(st, data, e);
+                        }}
                         className={st.inp.className}
                         {...(!inp.getter && {
                             value: data[inp.key] ? data[inp.key] : "",
                         })}
-                        {...CITTools.removeKeys(inp, ["getter"])}
+                        {...CITTools.removeKeys(inp, ["getter", "runOnChange"])}
                         key={inp.key}
                     />
                 ))}

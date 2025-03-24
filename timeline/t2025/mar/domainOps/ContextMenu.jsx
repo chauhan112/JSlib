@@ -72,6 +72,7 @@ export const ListWithContextMenu = forwardRef(
             CtxMenuComponent = ContextMenuComponent,
             menuOptions,
             items,
+            funcs = {},
             ...props
         },
         ref
@@ -106,16 +107,33 @@ export const ListWithContextMenu = forwardRef(
         const toggleMenu = (id) => {
             setOpenMenuId(openMenuId === id ? null : id);
         };
+        const onEdit = (e, val) => {
+            e.stopPropagation();
+            setOpenMenuId(null);
+        };
+        const onDelete = (e, val) => {
+            e.stopPropagation();
+
+            setOpenMenuId(null);
+            setArr((eles) => eles.filter((ele) => ele.key !== val.key));
+        };
+        const onView = (e, val) => {
+            e.stopPropagation();
+            setOpenMenuId(null);
+        };
+        const defaultFuncs = {
+            onEdit,
+            onDelete,
+            onView,
+        };
+
+        const lfuncs = CITTools.updateObject(defaultFuncs, funcs);
 
         const [st, setSt] = useState({
             menuOptions: menuOptions || [
                 {
                     key: "view",
-                    onClick: (e, val) => {
-                        e.stopPropagation();
-
-                        setOpenMenuId(null);
-                    },
+                    onClick: (e, val) => lfuncs.onView(e, val),
                     children: (
                         <div className="flex items-center gap-2">
                             <Eye className="h-5 w-5" /> View
@@ -126,11 +144,7 @@ export const ListWithContextMenu = forwardRef(
                 },
                 {
                     key: "edit",
-                    onClick: (e, val) => {
-                        e.stopPropagation();
-
-                        setOpenMenuId(null);
-                    },
+                    onClick: (e, val) => lfuncs.onEdit(e, val),
                     children: (
                         <div className="flex items-center gap-2">
                             <Edit className="h-5 w-5" /> Edit
@@ -141,14 +155,7 @@ export const ListWithContextMenu = forwardRef(
                 },
                 {
                     key: "delete",
-                    onClick: (e, val) => {
-                        e.stopPropagation();
-
-                        setOpenMenuId(null);
-                        setArr((eles) =>
-                            eles.filter((ele) => ele.key !== val.key)
-                        );
-                    },
+                    onClick: (e, val) => lfuncs.onDelete(e, val),
                     children: (
                         <div className="flex items-center gap-2">
                             <Trash className="h-5 w-5" /> Delete
@@ -178,6 +185,10 @@ export const ListWithContextMenu = forwardRef(
             openMenuId,
             setOpenMenuId,
             toggleMenu,
+            onEdit,
+            onDelete,
+            onView,
+            lfuncs,
         }));
 
         return (
