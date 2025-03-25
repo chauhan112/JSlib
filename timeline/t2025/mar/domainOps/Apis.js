@@ -12,3 +12,11 @@ export const getDomains = async (loc) => {
 export const deleteDomain = async (name, loc) => {
     return axios.post(`${BASE_URL}/domains/delete/`, { name, loc });
 };
+
+export const updateDomainName = async (name, loc, newName) => {
+    return axios.post(`${BASE_URL}/domains/update_name/`, {
+        name,
+        loc,
+        value: newName,
+    });
+};

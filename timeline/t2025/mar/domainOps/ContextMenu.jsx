@@ -66,42 +66,77 @@ export const OpsComponent = forwardRef(
     }
 );
 
+export const defaultvalues = (lfuncs) => {
+    return {
+        defItems: [
+            {
+                key: 1,
+                name: "Item 1",
+                description: "Description for item 1",
+            },
+            {
+                key: 2,
+                name: "Item 2",
+                description: "Description for item 2",
+            },
+            {
+                key: 3,
+                name: "Item 3",
+                description: "Description for item 3",
+            },
+            {
+                key: 4,
+                name: "Item 4",
+                description: "Description for item 4",
+            },
+        ],
+        defMenus: [
+            {
+                key: "view",
+                onClick: (e, val) => lfuncs.onView(e, val),
+                children: (
+                    <div className="flex items-center gap-2">
+                        <Eye className="h-5 w-5" /> View
+                    </div>
+                ),
+                className:
+                    "flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left",
+            },
+            {
+                key: "edit",
+                onClick: (e, val) => lfuncs.onEdit(e, val),
+                children: (
+                    <div className="flex items-center gap-2">
+                        <Edit className="h-5 w-5" /> Edit
+                    </div>
+                ),
+                className:
+                    "flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left",
+            },
+            {
+                key: "delete",
+                onClick: (e, val) => lfuncs.onDelete(e, val),
+                children: (
+                    <div className="flex items-center gap-2">
+                        <Trash className="h-5 w-5" /> Delete
+                    </div>
+                ),
+                className:
+                    "flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left",
+            },
+        ],
+    };
+};
 export const ListWithContextMenu = forwardRef(
     (
         {
             CtxMenuComponent = ContextMenuComponent,
-            menuOptions,
             items,
             funcs = {},
             ...props
         },
         ref
     ) => {
-        const [arr, setArr] = useState(
-            items || [
-                {
-                    key: 1,
-                    name: "Item 1",
-                    description: "Description for item 1",
-                },
-                {
-                    key: 2,
-                    name: "Item 2",
-                    description: "Description for item 2",
-                },
-                {
-                    key: 3,
-                    name: "Item 3",
-                    description: "Description for item 3",
-                },
-                {
-                    key: 4,
-                    name: "Item 4",
-                    description: "Description for item 4",
-                },
-            ]
-        );
-
         const [openMenuId, setOpenMenuId] = useState(null);
 
         const toggleMenu = (id) => {
@@ -128,44 +163,17 @@ export const ListWithContextMenu = forwardRef(
         };
 
         const lfuncs = CITTools.updateObject(defaultFuncs, funcs);
-
-        const [st, setSt] = useState({
-            menuOptions: menuOptions || [
+        const { defItems, defMenus } = defaultvalues(lfuncs);
+        const [arr, setArr] = useState(items || defItems);
+        const [st, setSt] = useState(
+            CITTools.updateObject(
                 {
-                    key: "view",
-                    onClick: (e, val) => lfuncs.onView(e, val),
-                    children: (
-                        <div className="flex items-center gap-2">
-                            <Eye className="h-5 w-5" /> View
-                        </div>
-                    ),
-                    className:
-                        "flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left",
+                    menuOptions: defMenus,
+                    li: { className: "p-4 hover:bg-gray-50" },
                 },
-                {
-                    key: "edit",
-                    onClick: (e, val) => lfuncs.onEdit(e, val),
-                    children: (
-                        <div className="flex items-center gap-2">
-                            <Edit className="h-5 w-5" /> Edit
-                        </div>
-                    ),
-                    className:
-                        "flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left",
-                },
-                {
-                    key: "delete",
-                    onClick: (e, val) => lfuncs.onDelete(e, val),
-                    children: (
-                        <div className="flex items-center gap-2">
-                            <Trash className="h-5 w-5" /> Delete
-                        </div>
-                    ),
-                    className:
-                        "flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left",
-                },
-            ],
-        });
+                props
+            )
+        );
 
         React.useEffect(() => {
             const handleClickOutside = () => {
@@ -194,7 +202,7 @@ export const ListWithContextMenu = forwardRef(
         return (
             <ul className="divide-y divide-gray-200">
                 {arr.map((item) => (
-                    <li key={item.key} className="p-4 hover:bg-gray-50">
+                    <li key={item.key} {...st.li}>
                         <div className="flex items-center justify-between">
                             <CtxMenuComponent
                                 {...CITTools.removeKeys(item, ["key"])}
