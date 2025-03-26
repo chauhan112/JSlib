@@ -170,6 +170,7 @@ export const ListWithContextMenu = forwardRef(
                 {
                     menuOptions: defMenus,
                     li: { className: "p-4 hover:bg-gray-50" },
+                    compProps: {},
                 },
                 props
             )
@@ -206,6 +207,7 @@ export const ListWithContextMenu = forwardRef(
                         <div className="flex items-center justify-between">
                             <CtxMenuComponent
                                 {...CITTools.removeKeys(item, ["key"])}
+                                {...st.compProps}
                             />
                             <OpsComponent
                                 item={item}

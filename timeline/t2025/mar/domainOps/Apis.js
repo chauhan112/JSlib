@@ -20,3 +20,9 @@ export const updateDomainName = async (name, loc, newName) => {
         value: newName,
     });
 };
+export const readProps = async (name, loc) => {
+    return axios.post(`${BASE_URL}/domains/readAll/`, {
+        name,
+        loc,
+    });
+};

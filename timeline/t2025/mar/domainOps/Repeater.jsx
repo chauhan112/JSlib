@@ -43,6 +43,7 @@ export const Repeater = forwardRef(
                 props
             )
         );
+        console.log(props);
         const refs = data.reduce((acc, item) => {
             acc[item.key] = React.createRef();
             return acc;
