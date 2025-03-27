@@ -1,4 +1,12 @@
-import { Button, GenericForm, GComponent, Repeater } from "./Components";
+import {
+    Button,
+    GenericForm,
+    GComponent,
+    Repeater,
+    ConditionalComponent,
+    Grouper,
+    Dropdown,
+} from "./Components";
 import { CITTools } from "./tools";
 
 export const repeaterTest = () => {
@@ -91,4 +99,28 @@ export const formTest = () => {
     );
 
     return form;
+};
+
+export const conditionalTest = () => {
+    let conditional = new ConditionalComponent();
+    conditional.setConditions([[(value: any) => value > 10, new GComponent()]]);
+    return conditional;
+};
+
+export const grouperTest = () => {
+    let grouper = new Grouper();
+    grouper.setChildren([new GComponent(), new GComponent()]);
+    return grouper;
+};
+
+export const dropdownTest = () => {
+    let dropdown = new Dropdown();
+    dropdown.setOptions([
+        "Neon Glow",
+        "Watercolor",
+        "Metallic",
+        "Sketchbook",
+        "Crystal",
+    ]);
+    return dropdown;
 };
