@@ -1,5 +1,3 @@
-import { CITTools } from "./tools";
-
 interface IComponent {
     handlers: { [key: string]: (...args: any[]) => void };
 
@@ -265,6 +263,291 @@ export class Dropdown implements IComponent {
     states: { [key: string]: any } = {};
     props: { [key: string]: string } = {};
     dropdownComp: GComponent = new GComponent();
+    constructor() {
+        this.dropdownComp.typ = "div";
+    }
+    render(): HTMLElement {
+        this.dropdownComp.props = {
+            class: "relative w-64 mb-8",
+        };
+        this.states.btn = new GComponent();
+        this.states.btn.typ = "button";
+        this.states.btn.props = {
+            class: "w-full px-4 py-2 text-white bg-gray-900 rounded-lg border-2 border-pink-500 neon-glow",
+            textContent: "Neon Glow",
+        };
+
+        this.states.options = new Repeater();
+        this.states.options.update({
+            class: "absolute w-full mt-2 bg-gray-900 rounded-lg shadow-lg shadow-pink-500/50",
+        });
+
+        this.states.conditional = new ConditionalComponent();
+        this.states.conditional.setConditions([
+            [(value: boolean) => value, this.states.repeater],
+        ]);
+
+        this.dropdownComp
+            .getElement()
+            ?.appendChild(this.states.conditional.render());
+
+        return this.dropdownComp.render();
+    }
+    setOptions(options: any[]) {
+        this.states.optionsData = options;
+        this.states.options.setData(options);
+    }
+    update(
+        props?: { [key: string]: string },
+        state?: { [key: string]: any },
+        handlers?: { [key: string]: (...args: any[]) => void }
+    ): void {
+        this.dropdownComp.update(props, state, handlers);
+    }
+    getElement(): HTMLElement | null {
+        return this.dropdownComp.getElement();
+    }
+}
+
+export class ConditionalComponent implements IComponent {
+    handlers: { [key: string]: (...args: any[]) => void } = {};
+    states: { [key: string]: any } = {};
+    props: { [key: string]: string } = {};
+    conditionalComp: GComponent = new GComponent();
+    constructor() {
+        this.conditionalComp.typ = "div";
+    }
+    render(): HTMLElement {
+        this.setValue(this.states.defaultValue);
+        return this.conditionalComp.render();
+    }
+    setValue(value: any) {
+        this.conditionalComp.update({
+            innerHTML: "",
+        });
+        for (const condition of this.states.conditions) {
+            if (condition[0](value)) {
+                if (condition[1])
+                    this.conditionalComp
+                        .getElement()
+                        ?.appendChild(condition[1].render());
+                break;
+            }
+        }
+    }
+    setConditions(conditions: [(value: any) => boolean, IComponent][]) {
+        this.states.conditions = conditions;
+    }
+    update(
+        props?: { [key: string]: string },
+        state?: { [key: string]: any },
+        handlers?: { [key: string]: (...args: any[]) => void }
+    ): void {
+        this.conditionalComp.update(props, state, handlers);
+    }
+    getElement(): HTMLElement | null {
+        return this.conditionalComp.getElement();
+    }
+}
+
+export class Grouper implements IComponent {
+    handlers: { [key: string]: (...args: any[]) => void } = {};
+    states: { [key: string]: any } = {};
+    props: { [key: string]: string } = {};
+    grouperComp: GComponent = new GComponent();
+    constructor() {
+        this.grouperComp.typ = "div";
+    }
+    render(): HTMLElement {
+        for (const child of this.states.children) {
+            this.grouperComp.getElement()?.appendChild(child.getElement());
+        }
+        return this.grouperComp.render();
+    }
+    update(
+        props?: { [key: string]: string },
+        state?: { [key: string]: any },
+        handlers?: { [key: string]: (...args: any[]) => void }
+    ): void {
+        this.grouperComp.update(props, state, handlers);
+    }
+    setChildren(children: IComponent[]) {
+        this.states.children = children;
+    }
+    getElement(): HTMLElement | null {
+        return this.grouperComp.getElement();
+    }
+}
+
+export class Breadcrumb implements IComponent {
+    handlers: { [key: string]: (...args: any[]) => void } = {};
+    states: { [key: string]: any } = {};
+    props: { [key: string]: string } = {};
+    breadcrumbComp: GComponent = new GComponent();
+    constructor() {
+        this.breadcrumbComp.typ = "div";
+    }
+    render(): HTMLElement {
+        throw new Error("Method not implemented.");
+    }
+    update(
+        props?: { [key: string]: string },
+        state?: { [key: string]: any },
+        handlers?: { [key: string]: (...args: any[]) => void }
+    ): void {
+        throw new Error("Method not implemented.");
+    }
+    getElement(): HTMLElement | null {
+        throw new Error("Method not implemented.");
+    }
+}
+
+export class Header implements IComponent {
+    handlers: { [key: string]: (...args: any[]) => void } = {};
+    states: { [key: string]: any } = {};
+    props: { [key: string]: string } = {};
+    headerComp: GComponent = new GComponent();
+    constructor() {
+        this.headerComp.typ = "div";
+    }
+    render(): HTMLElement {
+        throw new Error("Method not implemented.");
+    }
+    update(
+        props?: { [key: string]: string },
+        state?: { [key: string]: any },
+        handlers?: { [key: string]: (...args: any[]) => void }
+    ): void {
+        throw new Error("Method not implemented.");
+    }
+    getElement(): HTMLElement | null {
+        throw new Error("Method not implemented.");
+    }
+}
+
+export class Sidebar implements IComponent {
+    handlers: { [key: string]: (...args: any[]) => void } = {};
+    states: { [key: string]: any } = {};
+    props: { [key: string]: string } = {};
+    sidebarComp: GComponent = new GComponent();
+    constructor() {
+        this.sidebarComp.typ = "div";
+    }
+    render(): HTMLElement {
+        throw new Error("Method not implemented.");
+    }
+    update(
+        props?: { [key: string]: string },
+        state?: { [key: string]: any },
+        handlers?: { [key: string]: (...args: any[]) => void }
+    ): void {
+        throw new Error("Method not implemented.");
+    }
+    getElement(): HTMLElement | null {
+        throw new Error("Method not implemented.");
+    }
+}
+
+export class Footer implements IComponent {
+    handlers: { [key: string]: (...args: any[]) => void } = {};
+    states: { [key: string]: any } = {};
+    props: { [key: string]: string } = {};
+    footerComp: GComponent = new GComponent();
+    constructor() {
+        this.footerComp.typ = "div";
+    }
+    render(): HTMLElement {
+        throw new Error("Method not implemented.");
+    }
+    update(
+        props?: { [key: string]: string },
+        state?: { [key: string]: any },
+        handlers?: { [key: string]: (...args: any[]) => void }
+    ): void {
+        throw new Error("Method not implemented.");
+    }
+    getElement(): HTMLElement | null {
+        throw new Error("Method not implemented.");
+    }
+}
+
+export class Modal implements IComponent {
+    handlers: { [key: string]: (...args: any[]) => void } = {};
+    states: { [key: string]: any } = {};
+    props: { [key: string]: string } = {};
+    modalComp: GComponent = new GComponent();
+    constructor() {
+        this.modalComp.typ = "div";
+    }
+    render(): HTMLElement {
+        throw new Error("Method not implemented.");
+    }
+    update(
+        props?: { [key: string]: string },
+        state?: { [key: string]: any },
+        handlers?: { [key: string]: (...args: any[]) => void }
+    ): void {
+        throw new Error("Method not implemented.");
+    }
+    getElement(): HTMLElement | null {
+        throw new Error("Method not implemented.");
+    }
+}
+
+export class Tab implements IComponent {
+    handlers: { [key: string]: (...args: any[]) => void } = {};
+    states: { [key: string]: any } = {};
+    props: { [key: string]: string } = {};
+    tabComp: GComponent = new GComponent();
+    constructor() {
+        this.tabComp.typ = "div";
+    }
+    render(): HTMLElement {
+        throw new Error("Method not implemented.");
+    }
+    update(
+        props?: { [key: string]: string },
+        state?: { [key: string]: any },
+        handlers?: { [key: string]: (...args: any[]) => void }
+    ): void {
+        throw new Error("Method not implemented.");
+    }
+    getElement(): HTMLElement | null {
+        throw new Error("Method not implemented.");
+    }
+}
+
+export class Card implements IComponent {
+    handlers: { [key: string]: (...args: any[]) => void } = {};
+    states: { [key: string]: any } = {};
+    props: { [key: string]: string } = {};
+    cardComp: GComponent = new GComponent();
+    constructor() {
+        this.cardComp.typ = "div";
+    }
+    render(): HTMLElement {
+        throw new Error("Method not implemented.");
+    }
+    update(
+        props?: { [key: string]: string },
+        state?: { [key: string]: any },
+        handlers?: { [key: string]: (...args: any[]) => void }
+    ): void {
+        throw new Error("Method not implemented.");
+    }
+    getElement(): HTMLElement | null {
+        throw new Error("Method not implemented.");
+    }
+}
+
+export class HomeTitleSidebar implements IComponent {
+    handlers: { [key: string]: (...args: any[]) => void } = {};
+    states: { [key: string]: any } = {};
+    props: { [key: string]: string } = {};
+    homeTitleSidebarComp: GComponent = new GComponent();
+    constructor() {
+        this.homeTitleSidebarComp.typ = "div";
+    }
     render(): HTMLElement {
         throw new Error("Method not implemented.");
     }
