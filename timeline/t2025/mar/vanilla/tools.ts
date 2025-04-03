@@ -1,3 +1,8 @@
+import { IconNode } from "lucide";
+import { ConditionalComponent, GComponent, Grouper } from "./Components";
+import { Icon } from "../../april/icons";
+import { IComponent } from "./interfaces";
+
 export class CITTools {
     static readonly removeKeys = (obj: Record<string, any>, keys: string[]) => {
         let newObj = { ...obj };
@@ -35,5 +40,44 @@ export class CITTools {
             }
         }
         return { ...obj1 };
+    }
+    static groupComponents(...components: IComponent[]) {
+        let group = new Grouper();
+        group.setChildren(components);
+        return group;
+    }
+
+    static conditionalComponent(
+        defValue: any,
+        ...conditions: [(value: any) => boolean, IComponent][]
+    ) {
+        let cond = new ConditionalComponent();
+        cond.setConditions(conditions);
+        cond.states.defaultValue = defValue;
+
+        return cond;
+    }
+    static comp(
+        typ: string,
+        props: Record<string, any>,
+        states: Record<string, any> = {},
+        handlers: Record<string, any> = {}
+    ) {
+        let comp = new GComponent();
+        comp.typ = typ;
+        comp.props = props;
+        comp.states = states;
+        comp.handlers = handlers;
+        return comp;
+    }
+    static icon(
+        icon: IconNode,
+        props: Record<string, any> = {},
+        states: Record<string, any> = {},
+        handlers: Record<string, any> = {}
+    ) {
+        let comp = new Icon(icon);
+        comp.update(props, states, handlers);
+        return comp;
     }
 }
