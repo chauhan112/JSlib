@@ -1,9 +1,10 @@
 import { createElement, Github, ArrowDown, IconNode } from "lucide";
+import { IComponent } from "./GComponent";
 
-export class Icon {
+export class Icon implements IComponent {
     handlers: { [key: string]: (...args: any[]) => void } = {};
 
-    states: { [key: string]: any } = {};
+    s: { [key: string]: any } = {};
 
     props: { [key: string]: string } = {};
     icon: IconNode;
@@ -26,33 +27,38 @@ export class Icon {
     update(
         props?: { [key: string]: string },
         state?: { [key: string]: any },
-        handlers?: { [key: string]: (...args: any[]) => void },
-        stateUpdate: boolean = true
+        handlers?: { [key: string]: (...args: any[]) => void }
     ) {
-        if (stateUpdate) {
+        if (this.component) {
             this.getElement();
         }
         for (let key in props) {
             this.props[key] = props[key];
-            if (stateUpdate) {
+            if (this.component) {
                 this.updateProp(key, props[key]);
             }
         }
         for (let key in state) {
-            this.states[key] = state[key];
+            this.s[key] = state[key];
         }
         for (let key in handlers) {
-            if (stateUpdate) {
+            if (this.component) {
                 if (this.handlers.hasOwnProperty(key)) {
                     this.component?.removeEventListener(
                         key,
                         this.handlers[key]
                     );
                 }
-                this.component?.addEventListener(key, handlers[key]);
+                this.addHandler(key, handlers[key]);
+            } else {
+                this.handlers[key] = handlers[key];
             }
-            this.handlers[key] = handlers[key];
         }
+    }
+    private addHandler(key: string, handler: (...args: any[]) => void) {
+        const newFunc = (e: any) => handler(e, this);
+        this.component?.addEventListener(key, newFunc);
+        this.handlers[key] = newFunc;
     }
     protected updateState(
         props?: { [key: string]: string },
@@ -62,7 +68,7 @@ export class Icon {
             this.updateProp(key, props[key]);
         }
         for (let key in handlers) {
-            this.component!.addEventListener(key, handlers[key]);
+            this.addHandler(key, handlers[key]);
         }
     }
     getElement(): SVGElement {
@@ -71,6 +77,9 @@ export class Icon {
             this.updateState(this.props, this.handlers);
         }
         return this.component;
+    }
+    getProps() {
+        return this.props;
     }
 }
 
