@@ -1,15 +1,86 @@
 import { Tools, IComponent, Repeater, GComponent } from "./GComponent";
 import { ChevronDown, Plus } from "lucide";
+import { Undoers } from "./Array";
 
 export class Accordion implements IComponent {
     s: { [key: string]: any } = {};
     comp: Repeater | null = null;
+    undoer = new Undoers();
     constructor() {
         this.s.data = {};
         this.s.funcs = {
-            onPlus: (e: any, s: any) => {},
-            onShow: (e: any, s: any) => {},
+            onPlus: this.onPlusFunc.bind(this),
+            onShow: this.onBtn.bind(this),
+            ifCreator: this.ifCreator.bind(this),
+            creator: this.creator.bind(this),
+            contentCreator: this.contentCreator.bind(this),
+            formCreator: this.formCreator.bind(this),
         };
+    }
+    private onBtn(e: any, ls: any) {
+        e.stopPropagation();
+        let s = ls.s;
+
+        this.undoer.undo();
+        if (this.undoer.state.current === s) {
+            this.undoer.state.current = null;
+            return;
+        }
+        if (s.s.sarrow) {
+            s.s.sarrow = s.s.sarrow === "open" ? "close" : "open";
+        } else {
+            s.s.sarrow = "open";
+        }
+        this.rotateArrow(s.s.td.s.down, s.s.sarrow);
+        this.onArrow(s, s.s.sarrow);
+        this.undoer.state.current = s;
+        this.undoer.add(() => {
+            s.s.sarrow = s.s.sarrow === "open" ? "close" : "open";
+            this.rotateArrow(s.s.td.s.down, s.s.sarrow);
+            this.onArrow(s, s.s.sarrow);
+        });
+    }
+    onArrow(comp: IComponent, value: "open" | "close") {
+        let iffComp = comp.s.parent.s.iff;
+        if (value === "open") {
+            iffComp.display(this.s.funcs.contentCreator(comp.s.data));
+        } else {
+            iffComp.comp.update({
+                innerHTML: "",
+            });
+        }
+    }
+    onPlus(comp: IComponent, value: "open" | "close") {
+        let iffComp = comp.s.parent.s.parent.s.iff;
+        if (value === "open") {
+            iffComp.display(this.s.funcs.formCreator(comp.s.data));
+        } else {
+            iffComp.comp.update({
+                innerHTML: "",
+            });
+        }
+    }
+    private onPlusFunc(e: any, ls: any) {
+        e.stopPropagation();
+        let s = ls.s;
+        this.undoer.undo();
+        if (this.undoer.state.current === s) {
+            this.undoer.state.current = null;
+            return;
+        }
+        if (s.s.splus) {
+            s.s.splus = s.s.splus === "open" ? "close" : "open";
+        } else {
+            s.s.splus = "open";
+        }
+        this.rotatePlus(s, s.s.splus);
+        this.onPlus(s, s.s.splus);
+        this.undoer.state.current = s;
+        this.undoer.add(() => {
+            s.s.splus = s.s.splus === "open" ? "close" : "open";
+            this.rotatePlus(s, s.s.splus);
+            this.onPlus(s, s.s.splus);
+        });
     }
     getElement(): HTMLElement | SVGElement {
         if (this.comp) {
@@ -30,7 +101,7 @@ export class Accordion implements IComponent {
     private getData(rawData: { [key: string]: any }) {
         let data: { [key: string]: IComponent } = {};
         for (const key in rawData) {
-            data[key] = this.creator(rawData[key]);
+            data[key] = this.s.funcs.creator(rawData[key]);
         }
         return data;
     }
@@ -56,9 +127,8 @@ export class Accordion implements IComponent {
     hideContent(key: string) {
         this.comp!.itemComp[key].s.iff.setValue(false);
     }
-
-    private creator(item: { title: string; content: string; more?: any }) {
-        const ifComp = Tools.ifComp(
+    private ifCreator(item: { title: string; content: string; more?: any }) {
+        return Tools.ifComp(
             [
                 {
                     func: (value: any) => value,
@@ -72,6 +142,9 @@ export class Accordion implements IComponent {
                 key: "iff",
             }
         );
+    }
+    private creator(item: { title: string; content: string; more?: any }) {
+        const ifComp = this.s.funcs.ifCreator(item);
         const children = [
             Tools.comp(
                 "button",
@@ -104,7 +177,6 @@ export class Accordion implements IComponent {
                             },
                             {
                                 click: (e: any, s: any) => {
-                                    e.stopPropagation();
                                     this.s.funcs.onPlus(e, {
                                         s,
                                         accordion: this,
@@ -132,6 +204,9 @@ export class Accordion implements IComponent {
                     click: (e: any, s: any) => {
                         this.s.funcs.onShow(e, { s, accordion: this, item });
                     },
+                },
+                {
+                    data: item,
                 }
             ),
             ifComp,
@@ -141,35 +216,57 @@ export class Accordion implements IComponent {
             children,
         });
     }
+    private formCreator(item: { title: string; content: string; more?: any }) {
+        return Tools.comp("form", {
+            class: "w-full flex flex-col gap-2",
+            children: [
+                Tools.comp("input", {
+                    class: "w-full p-2 rounded-md bg-gray-100 text-black",
+                    placeholder: "Enter domain",
+                    key: "domain",
+                }),
+                Tools.comp("input", {
+                    class: "w-full p-2 rounded-md bg-gray-100 text-black",
+                    placeholder: "Enter operations",
+                    key: "operations",
+                }),
+                Tools.comp("input", {
+                    class: "w-full p-2 rounded-md bg-blue-500 text-white",
+                    textContent: "Submit",
+                    type: "submit",
+                }),
+            ],
+        });
+    }
+    private contentCreator(item: {
+        title: string;
+        content: string;
+        more?: any;
+    }) {
+        return Tools.div({
+            class: "w-full",
+            textContent: item.content,
+        });
+    }
 }
 
 export const accordionTest = () => {
     const accordion = new Accordion();
     accordion.setData({
         "1": {
-            title: "title 1",
+            title: "domain",
             content: "content 1",
             more: "1",
         },
         "2": {
-            title: "title 2",
+            title: "operations",
             content: "content 2",
             more: "2",
         },
         "3": {
-            title: "title 3",
+            title: "logger",
             content: "content 3",
             more: "3",
-        },
-        "4": {
-            title: "title 4",
-            content: "content 4",
-            more: "4",
-        },
-        "5": {
-            title: "title 5",
-            content: "content 5",
-            more: "5",
         },
     });
     return accordion;
