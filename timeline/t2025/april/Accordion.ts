@@ -1,8 +1,14 @@
-import { Tools, IComponent, Repeater, GComponent } from "./GComponent";
+import {
+    Tools,
+    IComponent,
+    Repeater,
+    GComponent,
+    Container,
+} from "./GComponent";
 import { ChevronDown, Plus } from "lucide";
 import { Undoers } from "./Array";
 
-export class Accordion implements IComponent {
+export class AccordionShowOne implements IComponent {
     s: { [key: string]: any } = {};
     comp: Repeater | null = null;
     undoer = new Undoers();
@@ -250,8 +256,184 @@ export class Accordion implements IComponent {
     }
 }
 
+export class AccordionShowMany implements IComponent {
+    s: { [key: string]: any } = {};
+    comp: GComponent | null = null;
+    constructor() {
+        this.s.data = [
+            {
+                title: "domain",
+                open: true,
+                content: Tools.comp("input", {
+                    class: "w-full p-2 border-2 border-gray-300 rounded-md mt-2",
+                    placeholder: "Enter domain",
+                }),
+                form: Tools.comp("form", {
+                    class: "w-full flex flex-col gap-2",
+                    children: [
+                        Tools.comp("input", {
+                            class: "w-full p-2 border-2 border-gray-300 rounded-md mt-2",
+                            placeholder: "Enter domain",
+                        }),
+                        Tools.comp("input", {
+                            class: "w-full p-2 border-2 border-gray-300 rounded-md mt-2",
+                            placeholder: "Enter domain",
+                        }),
+                    ],
+                }),
+            },
+            {
+                title: "operations",
+                open: false,
+            },
+        ];
+        this.s.funcs = {
+            opsCreator: this.opsCreator.bind(this),
+            contentCreator: null,
+            sectionCreator: this.creator.bind(this),
+            onPlus: this.onPlus.bind(this),
+            onTitleClick: this.onTitleClick.bind(this),
+            onTitleClickHandlerOnShow: (e: any, s: any) => {
+                this.getContent(s.content, s.item.content);
+            },
+            onTitleClickHandlerOnHide: (e: any, s: any) => {
+                s.content.clear();
+            },
+            onPlusHandlerOnShow: (e: any, s: any) => {
+                this.getContent(s.content, s.item.form);
+            },
+            onPlusHandlerOnHide: (e: any, s: any) => {
+                s.content.clear();
+            },
+        };
+    }
+    getElement(): HTMLElement | SVGElement {
+        if (this.comp) {
+            return this.comp.getElement();
+        }
+        this.comp = Tools.comp("div", {
+            children: this.s.data.map((item: any) =>
+                this.s.funcs.sectionCreator(item)
+            ),
+        });
+        return this.comp.getElement();
+    }
+    getProps(): { [key: string]: any } {
+        return this.comp!.getProps();
+    }
+    setData(data: { [key: string]: any }) {
+        this.s.data = data;
+        this.comp!.update({
+            innerHTML: "",
+            children: this.s.data.map((item: any) =>
+                this.s.funcs.sectionCreator(item)
+            ),
+        });
+    }
+    private getContent(container: Container, comp: any) {
+        if (comp) {
+            container.display(comp);
+        } else {
+            container.comp.update({
+                textContent: "content",
+            });
+        }
+    }
+    private creator(item: any) {
+        const content = Tools.container({
+            key: "content",
+        });
+        if (item.open) {
+            this.getContent(content, item.content);
+        }
+        this.s.comps = {
+            contentArea: content,
+        };
+        return Tools.div({
+            class: "w-full",
+            children: [
+                Tools.comp(
+                    "button",
+                    {
+                        class: "w-full text-left p-2 bg-green-500 text-white hover:bg-green-600 rounded-t-lg flex justify-between items-center mt-2",
+                        children: [
+                            Tools.div({
+                                textContent: item.title,
+                            }),
+                            this.s.funcs.opsCreator(item, content),
+                        ],
+                        key: "title",
+                    },
+                    {
+                        click: (e: any, s: any) => {
+                            this.s.funcs.onTitleClick(e, {
+                                s,
+                                accordion: this,
+                                item,
+                                content,
+                            });
+                        },
+                    },
+                    {
+                        data: item,
+                        cs: !!item.open,
+                    }
+                ),
+                content,
+            ],
+        });
+    }
+    private opsCreator(item: any, content: Container) {
+        return Tools.icon(
+            Plus,
+            {
+                key: "plus",
+            },
+            {
+                click: (e: any, s: any) => {
+                    this.s.funcs.onPlus(e, {
+                        s,
+                        accordion: this,
+                        item,
+                        content,
+                    });
+                },
+            },
+            {
+                data: item,
+                cs: false,
+            }
+        );
+    }
+    onPlus(e: any, s: any) {
+        e.stopPropagation();
+        s.s.s.cs = !s.s.s.cs;
+        let contentArea = s.content;
+        if (s.s.s.cs) {
+            s.s.update({
+                class: "transition-transform duration-300 rotate-315",
+            });
+            this.s.funcs.onPlusHandlerOnShow(e, s);
+        } else {
+            s.s.update({
+                class: "transition-transform duration-300 rotate-0",
+            });
+            this.s.funcs.onPlusHandlerOnHide(e, s);
+        }
+    }
+    onTitleClick(e: any, s: any) {
+        let btnTitle = s.s;
+        btnTitle.s.cs = !btnTitle.s.cs;
+        if (!s.s.s.cs) {
+            this.s.funcs.onTitleClickHandlerOnHide(e, s);
+        } else {
+            this.s.funcs.onTitleClickHandlerOnShow(e, s);
+        }
+    }
+}
+
 export const accordionTest = () => {
-    const accordion = new Accordion();
+    const accordion = new AccordionShowOne();
     accordion.setData({
         "1": {
             title: "domain",
@@ -269,5 +451,11 @@ export const accordionTest = () => {
             more: "3",
         },
     });
+    return accordion;
+};
+
+export const accordionTest2 = () => {
+    const accordion = new AccordionShowMany();
+    accordion.getElement();
     return accordion;
 };
