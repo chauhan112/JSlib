@@ -36,6 +36,11 @@ export class GForm implements IComponent {
         }
         return values;
     }
+    clearValues() {
+        for (const item of this.s.components) {
+            item.getElement().value = "";
+        }
+    }
     onSubmit(e: any, s: any) {
         e.preventDefault();
         console.log(this.getValues());
@@ -94,5 +99,6 @@ export const gformTest = () => {
             },
         },
     ];
+    gform.getElement();
     return gform;
 };
