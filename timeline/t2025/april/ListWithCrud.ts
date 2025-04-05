@@ -193,6 +193,7 @@ export class Test {
         ];
         let list = new ListWithCrud();
         list.s.data = items;
+        list.getElement();
         return list;
     }
 }
