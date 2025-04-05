@@ -17,3 +17,20 @@ export class Atool {
         return newArray;
     }
 }
+
+export class Undoers {
+    array: any[] = [];
+    state: any = {};
+    undo() {
+        for (const func of this.array) {
+            func();
+        }
+        this.clear();
+    }
+    clear() {
+        this.array = [];
+    }
+    add(value: any) {
+        this.array.push(value);
+    }
+}

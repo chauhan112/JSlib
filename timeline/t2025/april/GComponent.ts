@@ -216,6 +216,11 @@ export class ConditionalComponent implements IComponent {
             child: comp,
         });
     }
+    clear() {
+        this.comp!.update({
+            innerHTML: "",
+        });
+    }
     getProps() {
         return this.comp!.getProps();
     }

@@ -1,4 +1,4 @@
-import { Tools, IComponent, Repeater } from "./GComponent";
+import { Tools, IComponent, Repeater, GComponent } from "./GComponent";
 import { ChevronDown, Plus } from "lucide";
 
 export class Accordion implements IComponent {
@@ -34,6 +34,29 @@ export class Accordion implements IComponent {
         }
         return data;
     }
+    rotateArrow(down: GComponent, value: "open" | "close" = "open") {
+        if (value === "open") {
+            down.update({
+                class: down.props.class.replace("rotate-0", "rotate-180"),
+            });
+        } else {
+            down.update({
+                class: down.props.class.replace("rotate-180", "rotate-0"),
+            });
+        }
+    }
+    rotatePlus(comp: GComponent, value: "open" | "close" = "close") {
+        comp.update({
+            class: comp.s.def.class + " " + comp.s[value].class,
+        });
+    }
+    showContent(key: string, value: IComponent) {
+        this.comp!.itemComp[key].s.iff.display(value);
+    }
+    hideContent(key: string) {
+        this.comp!.itemComp[key].s.iff.setValue(false);
+    }
+
     private creator(item: { title: string; content: string; more?: any }) {
         const ifComp = Tools.ifComp(
             [
@@ -58,10 +81,15 @@ export class Accordion implements IComponent {
                         Tools.div({
                             class: "flex items-center gap-2",
                             children: [
-                                Tools.icon(ChevronDown, {
-                                    key: "down",
-                                    class: "transition-transform duration-300 rotate-0",
-                                }),
+                                Tools.icon(
+                                    ChevronDown,
+                                    {
+                                        key: "down",
+                                        class: "transition-transform duration-300 rotate-0",
+                                    },
+                                    {},
+                                    { cs: "open" }
+                                ),
                                 Tools.div({
                                     textContent: item.title,
                                     key: "title",
@@ -77,22 +105,19 @@ export class Accordion implements IComponent {
                             {
                                 click: (e: any, s: any) => {
                                     e.stopPropagation();
-                                    s.update({
-                                        class:
-                                            s.s.def.class +
-                                            " " +
-                                            s.s[s.s.cs].class,
+                                    this.s.funcs.onPlus(e, {
+                                        s,
+                                        accordion: this,
+                                        item,
                                     });
-                                    s.s.cs = !s.s.cs;
-                                    this.s.funcs.onPlus(e, [s, this]);
                                 },
                             },
                             {
-                                cs: false,
-                                true: {
+                                cs: "close",
+                                close: {
                                     class: "rotate-0",
                                 },
-                                false: {
+                                open: {
                                     class: "rotate-315",
                                 },
                                 def: {
@@ -105,39 +130,7 @@ export class Accordion implements IComponent {
                 },
                 {
                     click: (e: any, s: any) => {
-                        for (const key in this.comp!.itemComp) {
-                            if (key === item.more) {
-                                this.comp!.itemComp[key].s.iff.setValue(
-                                    !this.comp!.itemComp[key].s.iff.s.value
-                                );
-                            } else {
-                                this.comp!.itemComp[key].s.iff.setValue(false);
-                            }
-                            if (this.comp!.itemComp[key].s.iff.s.value) {
-                                this.comp!.itemComp[
-                                    key
-                                ].s.btn.s.td.s.down.update({
-                                    class: this.comp!.itemComp[
-                                        key
-                                    ].s.btn.s.td.s.down.props.class.replace(
-                                        "rotate-0",
-                                        "rotate-180"
-                                    ),
-                                });
-                            } else {
-                                this.comp!.itemComp[
-                                    key
-                                ].s.btn.s.td.s.down.update({
-                                    class: this.comp!.itemComp[
-                                        key
-                                    ].s.btn.s.td.s.down.props.class.replace(
-                                        "rotate-180",
-                                        "rotate-0"
-                                    ),
-                                });
-                            }
-                        }
-                        this.s.funcs.onShow(e, [s, this]);
+                        this.s.funcs.onShow(e, { s, accordion: this, item });
                     },
                 }
             ),

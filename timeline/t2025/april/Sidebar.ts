@@ -1,79 +1,107 @@
-import { Tools } from "./GComponent";
-import { accordionTest } from "./Accordion";
-
-const accordion = accordionTest();
-console.log(accordion.getElement());
-let showText = Tools.div({
-    textContent: "show",
-});
-const clearFuncs = {
-    showFunc: () => {},
-    plusFunc: () => {},
-    s: null,
-};
-accordion.s.funcs.onShow = (e: any, ls: any) => {
-    let [s, _] = ls;
-
-    clearFuncs.plusFunc();
-    if (clearFuncs.s !== s) {
-        clearFuncs.showFunc();
+import { IComponent, Tools } from "./GComponent";
+import { Accordion } from "./Accordion";
+import { Undoers } from "./Array";
+import { lcrud } from "./ListWithCrud";
+let undoer = new Undoers();
+export class Funcs {
+    undoer = new Undoers();
+    accordion: Accordion;
+    constructor(accordion: Accordion) {
+        this.accordion = accordion;
     }
-
-    clearFuncs.showFunc = () => {};
-    clearFuncs.plusFunc = () => {};
-    let iffComp = s.s.parent.s.iff;
-    if (iffComp.s.compDisplay !== "text") {
-        iffComp.display(showText);
-        iffComp.s.compDisplay = "text";
-        clearFuncs.showFunc = () => {
+    onArrow(comp: IComponent, value: "open" | "close") {
+        let iffComp = comp.s.parent.s.iff;
+        if (value === "open") {
+            iffComp.display(lcrud);
+        } else {
             iffComp.comp.update({
                 innerHTML: "",
             });
-            iffComp.s.compDisplay = "none";
-            s.s.td.s.down.update({
-                class: s.s.td.s.down.props.class.replace(
-                    "rotate-180",
-                    "rotate-0"
-                ),
+        }
+    }
+    onPlus(comp: IComponent, value: "open" | "close") {
+        let iffComp = comp.s.parent.s.parent.s.iff;
+        if (value === "open") {
+            iffComp.display(gform);
+        } else {
+            iffComp.comp.update({
+                innerHTML: "",
             });
-        };
-    } else {
-        iffComp.comp.update({
-            innerHTML: "",
-        });
-        iffComp.s.compDisplay = "none";
+        }
     }
-    clearFuncs.s = s;
-};
-accordion.s.funcs.onPlus = (e: any, ls: any) => {
-    let [s, _] = ls;
-    clearFuncs.showFunc();
-    if (clearFuncs.s !== s) {
-        clearFuncs.plusFunc();
-    }
-    clearFuncs.plusFunc = () => {};
-    clearFuncs.showFunc = () => {};
+    onBtn(e: any, ls: any) {
+        let s = ls.s;
 
-    let iffComp = s.s.parent.s.parent.s.iff;
-
-    if (iffComp.s.compDisplay !== "form") {
-        iffComp.display(gform);
-        iffComp.s.compDisplay = "form";
-        clearFuncs.plusFunc = () => {
-            s.update({
-                class: s.s.def.class + " " + s.s[s.s.cs].class,
-            });
-            s.s.cs = !s.s.cs;
-            iffComp.s.compDisplay = "none";
-        };
-    } else {
-        iffComp.comp.update({
-            innerHTML: "",
+        undoer.undo();
+        if (undoer.state.current === s) {
+            undoer.state.current = null;
+            return;
+        }
+        if (s.s.sarrow) {
+            s.s.sarrow = s.s.sarrow === "open" ? "close" : "open";
+        } else {
+            s.s.sarrow = "open";
+        }
+        this.accordion.rotateArrow(s.s.td.s.down, s.s.sarrow);
+        this.onArrow(s, s.s.sarrow);
+        undoer.state.current = s;
+        undoer.add(() => {
+            s.s.sarrow = s.s.sarrow === "open" ? "close" : "open";
+            this.accordion.rotateArrow(s.s.td.s.down, s.s.sarrow);
+            this.onArrow(s, s.s.sarrow);
         });
-        iffComp.s.compDisplay = "none";
     }
-    clearFuncs.s = s;
-};
+    onPlusFunc(e: any, ls: any) {
+        let s = ls.s;
+        undoer.undo();
+        if (undoer.state.current === s) {
+            undoer.state.current = null;
+            return;
+        }
+        if (s.s.splus) {
+            s.s.splus = s.s.splus === "open" ? "close" : "open";
+        } else {
+            s.s.splus = "open";
+        }
+        this.accordion.rotatePlus(s, s.s.splus);
+        this.onPlus(s, s.s.splus);
+        undoer.state.current = s;
+        undoer.add(() => {
+            s.s.splus = s.s.splus === "open" ? "close" : "open";
+            this.accordion.rotatePlus(s, s.s.splus);
+            this.onPlus(s, s.s.splus);
+        });
+    }
+}
+const accordion = new Accordion();
+accordion.setData({
+    domains: {
+        title: "domains",
+        content: "domains",
+        more: {
+            key: "domains",
+        },
+    },
+    operations: {
+        title: "operations",
+        content: "operations",
+        more: {
+            key: "operations",
+        },
+    },
+    activities: {
+        title: "activities",
+        content: "activities",
+        more: {
+            key: "activities",
+        },
+    },
+});
+accordion.getElement();
+
+let funcs = new Funcs(accordion);
+accordion.s.funcs.onShow = funcs.onBtn.bind(funcs);
+accordion.s.funcs.onPlus = funcs.onPlusFunc.bind(funcs);
 export const gform = Tools.comp(
     "form",
     {
@@ -85,20 +113,9 @@ export const gform = Tools.comp(
                 key: "domain",
             }),
             Tools.comp("input", {
-                class: "w-full p-2 rounded-md bg-gray-100 text-black",
-                placeholder: "Operation",
-                key: "operation",
-            }),
-            Tools.comp("input", {
-                class: "text-white border-2 border-white rounded-md p-2",
-                placeholder: "password",
-                key: "password",
-                type: "password",
-            }),
-
-            Tools.comp("button", {
                 class: "w-full p-2 rounded-md bg-blue-500 text-white",
                 textContent: "Submit",
+                type: "submit",
             }),
         ],
     },
@@ -111,7 +128,7 @@ export const gform = Tools.comp(
 );
 
 export const sidebar = Tools.div({
-    class: "w-64 bg-gray-700 text-white p-4 h-[100vh] flex flex-col gap-5 overflow-y-auto",
+    class: "w-64 bg-gray-700 text-white p-4 h-[100vh] flex flex-col gap-5 ",
     children: [
         Tools.comp("h1", {
             class: "text-lg font-bold",
