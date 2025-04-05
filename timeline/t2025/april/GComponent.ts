@@ -104,11 +104,12 @@ export class Tools {
     static comp(
         typ: string,
         props?: { [key: string]: any },
-        handlers?: { [key: string]: (...args: any[]) => void }
+        handlers?: { [key: string]: (...args: any[]) => void },
+        state?: { [key: string]: any }
     ) {
         const c = new GComponent();
         c.typ = typ;
-        c.update(props, handlers);
+        c.update(props, handlers, state);
         return c;
     }
     static rep(data: { [key: string]: IComponent }) {
@@ -118,9 +119,10 @@ export class Tools {
     }
     static div(
         props?: { [key: string]: any },
-        handlers?: { [key: string]: (...args: any[]) => void }
+        handlers?: { [key: string]: (...args: any[]) => void },
+        state?: { [key: string]: any }
     ) {
-        return Tools.comp("div", props, handlers);
+        return Tools.comp("div", props, handlers, state);
     }
     static icon(
         icon: IconNode,
@@ -143,6 +145,36 @@ export class Tools {
         comp.getElement();
         comp.comp!.update(props);
         return comp;
+    }
+    static container(
+        props?: { [key: string]: any },
+        handlers?: { [key: string]: (...args: any[]) => void }
+    ) {
+        let comp = new Container();
+        comp.comp.update(props, handlers);
+        return comp;
+    }
+}
+
+export class Container implements IComponent {
+    s: { [key: string]: any } = {};
+    comp: GComponent = new GComponent();
+
+    getProps(): { [key: string]: any } {
+        return this.comp.getProps();
+    }
+    getElement(): HTMLElement {
+        return this.comp.getElement();
+    }
+    display(comp: IComponent) {
+        this.comp.update({
+            child: comp,
+        });
+    }
+    clear() {
+        this.comp.update({
+            innerHTML: "",
+        });
     }
 }
 
