@@ -108,7 +108,7 @@ export const gformTest = () => {
             props: {
                 type: "submit",
                 textContent: "Submit",
-                class: "w-full p-2 rounded-md bg-blue-500 text-white",
+                class: "w-full p-1 rounded-md bg-blue-500 text-white",
             },
         },
     ];
