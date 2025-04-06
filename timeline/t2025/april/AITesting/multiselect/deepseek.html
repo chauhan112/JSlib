@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Multi-Select Component</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <div id="multiSelect" class="relative">
+                <!-- Selected items display -->
+                <div
+                    class="selected-items flex flex-wrap gap-2 p-2 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer"
+                >
+                    <span class="placeholder text-gray-400"
+                        >Select options...</span
+                    >
+                </div>
+
+                <!-- Dropdown menu -->
+                <div
+                    class="dropdown-menu absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg hidden max-h-60 overflow-y-auto"
+                >
+                    <div class="search-box p-2 border-b border-gray-200">
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                    <div class="options-list">
+                        <!-- Options will be inserted here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Sample data - replace with your own options
+                const options = [
+                    { id: 1, text: "Option 1" },
+                    { id: 2, text: "Option 2" },
+                    { id: 3, text: "Option 3" },
+                    { id: 4, text: "Option 4" },
+                    { id: 5, text: "Option 5" },
+                    { id: 6, text: "Option 6" },
+                    { id: 7, text: "Option 7" },
+                    { id: 8, text: "Option 8" },
+                ];
+
+                // DOM elements
+                const multiSelect = document.getElementById("multiSelect");
+                const selectedItemsContainer =
+                    multiSelect.querySelector(".selected-items");
+                const placeholder =
+                    selectedItemsContainer.querySelector(".placeholder");
+                const dropdownMenu =
+                    multiSelect.querySelector(".dropdown-menu");
+                const searchInput = dropdownMenu.querySelector("input");
+                const optionsList = dropdownMenu.querySelector(".options-list");
+
+                // State
+                let selectedItems = [];
+                let isDropdownOpen = false;
+
+                // Initialize the component
+                function init() {
+                    renderOptions(options);
+                    setupEventListeners();
+                }
+
+                // Render options in the dropdown
+                function renderOptions(optionsToRender) {
+                    optionsList.innerHTML = "";
+
+                    if (optionsToRender.length === 0) {
+                        optionsList.innerHTML =
+                            '<div class="p-3 text-gray-500">No options found</div>';
+                        return;
+                    }
+
+                    optionsToRender.forEach((option) => {
+                        const isSelected = selectedItems.some(
+                            (item) => item.id === option.id
+                        );
+
+                        const optionElement = document.createElement("div");
+                        optionElement.className = `option-item p-3 hover:bg-gray-100 cursor-pointer flex items-center ${
+                            isSelected ? "bg-blue-50" : ""
+                        }`;
+                        optionElement.dataset.id = option.id;
+
+                        optionElement.innerHTML = `
+                <input type="checkbox" class="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" ${
+                    isSelected ? "checked" : ""
+                }>
+                <span>${option.text}</span>
+            `;
+
+                        optionsList.appendChild(optionElement);
+                    });
+                }
+
+                // Update the selected items display
+                function updateSelectedItemsDisplay() {
+                    selectedItemsContainer.innerHTML = "";
+
+                    if (selectedItems.length === 0) {
+                        placeholder.classList.remove("hidden");
+                        return;
+                    }
+
+                    placeholder.classList.add("hidden");
+
+                    selectedItems.forEach((item) => {
+                        const selectedItemElement =
+                            document.createElement("div");
+                        selectedItemElement.className =
+                            "selected-item bg-blue-100 text-blue-800 px-3 py-1 rounded-full flex items-center";
+
+                        selectedItemElement.innerHTML = `
+                <span>${item.text}</span>
+                <button class="ml-2 text-blue-600 hover:text-blue-800" data-id="${item.id}">
+                    &times;
+                </button>
+            `;
+
+                        selectedItemsContainer.appendChild(selectedItemElement);
+                    });
+                }
+
+                // Toggle dropdown visibility
+                function toggleDropdown() {
+                    isDropdownOpen = !isDropdownOpen;
+                    dropdownMenu.classList.toggle("hidden", !isDropdownOpen);
+
+                    if (isDropdownOpen) {
+                        searchInput.focus();
+                    }
+                }
+
+                // Handle option selection
+                function handleOptionSelection(optionId) {
+                    const option = options.find((opt) => opt.id == optionId);
+
+                    if (!option) return;
+
+                    const isSelected = selectedItems.some(
+                        (item) => item.id == optionId
+                    );
+
+                    if (isSelected) {
+                        selectedItems = selectedItems.filter(
+                            (item) => item.id != optionId
+                        );
+                    } else {
+                        selectedItems.push(option);
+                    }
+
+                    updateSelectedItemsDisplay();
+                    renderOptions(options); // Re-render to update checkboxes
+                }
+
+                // Filter options based on search input
+                function filterOptions(searchTerm) {
+                    const filtered = options.filter((option) =>
+                        option.text
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase())
+                    );
+                    renderOptions(filtered);
+                }
+
+                // Set up event listeners
+                function setupEventListeners() {
+                    // Toggle dropdown when clicking on the selected items container
+                    selectedItemsContainer.addEventListener(
+                        "click",
+                        toggleDropdown
+                    );
+
+                    // Close dropdown when clicking outside
+                    document.addEventListener("click", (e) => {
+                        if (!multiSelect.contains(e.target)) {
+                            dropdownMenu.classList.add("hidden");
+                            isDropdownOpen = false;
+                        }
+                    });
+
+                    // Handle search input
+                    searchInput.addEventListener("input", (e) => {
+                        filterOptions(e.target.value);
+                    });
+
+                    // Handle option selection
+                    optionsList.addEventListener("click", (e) => {
+                        const optionItem = e.target.closest(".option-item");
+                        if (optionItem) {
+                            handleOptionSelection(optionItem.dataset.id);
+                        }
+
+                        // Also handle clicks directly on the checkbox
+                        const checkbox = e.target.closest(
+                            'input[type="checkbox"]'
+                        );
+                        if (checkbox) {
+                            const optionItem = checkbox.closest(".option-item");
+                            handleOptionSelection(optionItem.dataset.id);
+                        }
+                    });
+
+                    // Handle removal of selected items
+                    selectedItemsContainer.addEventListener("click", (e) => {
+                        const removeButton = e.target.closest("button");
+                        if (removeButton) {
+                            const idToRemove = removeButton.dataset.id;
+                            selectedItems = selectedItems.filter(
+                                (item) => item.id != idToRemove
+                            );
+                            updateSelectedItemsDisplay();
+                            renderOptions(options); // Re-render to update checkboxes
+                            e.stopPropagation(); // Prevent dropdown toggle
+                        }
+                    });
+                }
+
+                // Initialize the component
+                init();
+            });
+        </script>
+    </body>
+</html>

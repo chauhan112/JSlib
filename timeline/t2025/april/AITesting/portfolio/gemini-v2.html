@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Whimsical Portfolio - [Generated Name]</title>
+        <!-- Tailwind CSS via CDN -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Quicksand:wght@400;600&display=swap"
+            rel="stylesheet"
+        />
+
+        <style>
+            /* --- Ghibli-esque Styling --- */
+
+            /* Texture Background - Replace 'your-texture.png' */
+            body {
+                font-family: "Quicksand", sans-serif;
+                /* Option 1: Actual Texture Image */
+                /* background-image: url('https://www.transparenttextures.com/patterns/painted-plaster.png'); */
+                /* background-image: url('your-actual-oil-paint-texture.jpg'); */
+                /* background-repeat: repeat; */
+                /* background-attachment: fixed; /* Makes texture stay in place */
+
+                /* Option 2: Fallback subtle gradient/noise if no texture image */
+                background-color: #f4f1de; /* Creamy base */
+                background-image: linear-gradient(
+                        rgba(216, 208, 190, 0.1),
+                        rgba(216, 208, 190, 0.1)
+                    ),
+                    radial-gradient(
+                        ellipse at center,
+                        rgba(255, 255, 255, 0.1) 0%,
+                        rgba(0, 0, 0, 0.05) 100%
+                    );
+
+                color: #4a4a4a; /* Softer dark color */
+            }
+
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6,
+            #nav-brand {
+                font-family: "Merriweather", serif;
+                color: #5e8b7e; /* Muted Teal/Green */
+            }
+
+            /* Custom Colors (Examples - use in Tailwind classes like bg-ghibli-cream) */
+            .bg-ghibli-cream {
+                background-color: #f4f1de;
+            }
+            .text-ghibli-deep-green {
+                color: #3a6b35;
+            }
+            .text-ghibli-muted-teal {
+                color: #5e8b7e;
+            }
+            .bg-ghibli-light-blue {
+                background-color: #a2cdde;
+            }
+            .bg-ghibli-soft-green {
+                background-color: #a8d8b0;
+            }
+            .border-ghibli-brown {
+                border-color: #bfa89e;
+            }
+            .text-ghibli-brown {
+                color: #856a5d;
+            }
+
+            /* --- Animation Setup --- */
+            .animate-on-scroll {
+                opacity: 0;
+                transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            }
+
+            .animate-fade-in {
+                opacity: 0;
+            }
+            .animate-fade-in.animated {
+                opacity: 1;
+            }
+
+            .animate-slide-up {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            .animate-slide-up.animated {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .animate-slide-left {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            .animate-slide-left.animated {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            .animate-slide-right {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            .animate-slide-right.animated {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            /* --- Component Styling --- */
+            header {
+                background-color: rgba(
+                    244,
+                    241,
+                    222,
+                    0.85
+                ); /* Semi-transparent cream */
+                backdrop-filter: blur(5px); /* Frosted glass effect */
+                border-bottom: 1px solid rgba(191, 168, 158, 0.3); /* Subtle brown border */
+            }
+
+            nav a {
+                color: #5e8b7e; /* Muted Teal */
+                font-weight: 600;
+            }
+            nav a:hover {
+                color: #3a6b35; /* Deeper Green */
+            }
+
+            #hero {
+                background: linear-gradient(135deg, #a2cddeaa, #a8d8b0bb),
+                    /* Semi-transparent blue/green gradient */
+                        url("https://www.transparenttextures.com/patterns/light-paper-fibers.png"); /* Subtle paper texture */
+                background-color: #a8d8b0; /* Fallback color */
+                color: #3a6b35; /* Deep Green text */
+            }
+            #hero h1 {
+                color: #335d2d; /* Darker shade for main heading */
+            }
+
+            #hero-img {
+                border-color: #f4f1de; /* Cream border */
+                box-shadow: 0 4px 15px rgba(94, 139, 126, 0.3); /* Soft teal shadow */
+            }
+
+            #hero .nav-link {
+                /* Button Style */
+                background-color: #f4f1de;
+                color: #5e8b7e;
+                font-weight: 600;
+                box-shadow: 0 2px 5px rgba(94, 139, 126, 0.2);
+                transition: all 0.3s ease;
+            }
+            #hero .nav-link:hover {
+                background-color: #ffffff;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 10px rgba(94, 139, 126, 0.3);
+            }
+
+            section {
+                padding-top: 6rem;
+                padding-bottom: 6rem;
+            }
+
+            #about {
+                background-color: rgba(
+                    255,
+                    255,
+                    255,
+                    0.6
+                ); /* Slightly transparent white */
+                border-radius: 15px;
+                margin: 2rem auto; /* Give spacing around the about section */
+                max-width: 1100px; /* Constrain width */
+                box-shadow: 0 5px 20px rgba(191, 168, 158, 0.15); /* Soft brown shadow */
+            }
+            #about img {
+                border-radius: 10px;
+                border: 5px solid #f4f1de;
+                box-shadow: 0 4px 15px rgba(191, 168, 158, 0.2);
+            }
+
+            #about-skills span {
+                background-color: #e0f2e9; /* Light green */
+                color: #3a6b35; /* Deep Green */
+                border-radius: 15px;
+                padding: 5px 12px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+            #about-skills span:hover {
+                transform: scale(1.05);
+                background-color: #c8e6d3;
+            }
+
+            #projects {
+                /* Background inherited from body */
+            }
+
+            #projects .project-card {
+                background-color: rgba(255, 255, 255, 0.8);
+                border-radius: 12px;
+                box-shadow: 0 6px 20px rgba(191, 168, 158, 0.2);
+                overflow: hidden;
+                transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
+                border: 1px solid rgba(191, 168, 158, 0.3);
+            }
+            #projects .project-card:hover {
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 10px 30px rgba(94, 139, 126, 0.25);
+            }
+            #projects .project-card img {
+                transition: transform 0.5s ease;
+            }
+            #projects .project-card:hover img {
+                transform: scale(1.05);
+            }
+
+            #projects .project-card h3 {
+                color: #3a6b35;
+            }
+            #projects .project-card p {
+                color: #5a5a5a;
+            }
+            #projects .project-card span {
+                /* Skill tags */
+                background-color: #e0eafc; /* Light blue */
+                color: #4a69bd; /* Muted blue */
+                font-size: 0.7rem;
+                padding: 3px 8px;
+                border-radius: 10px;
+                font-weight: 600;
+            }
+            #projects .project-card a {
+                color: #5e8b7e;
+                font-weight: 600;
+                text-decoration: underline;
+                text-decoration-color: rgba(94, 139, 126, 0.5);
+                transition: color 0.3s ease;
+            }
+            #projects .project-card a:hover {
+                color: #3a6b35;
+            }
+
+            #contact {
+                background: linear-gradient(-135deg, #a2cdde99, #a8d8b0aa),
+                    url("https://www.transparenttextures.com/patterns/light-paper-fibers.png");
+                background-color: #a2cdde;
+                color: #3a6b35;
+            }
+            #contact h2 {
+                color: #335d2d;
+            }
+            #contact p {
+                color: #4a7c43;
+            }
+
+            #contact a#contact-email-link {
+                background-color: #f4f1de;
+                color: #5e8b7e;
+                font-weight: 600;
+                box-shadow: 0 2px 5px rgba(94, 139, 126, 0.2);
+                transition: all 0.3s ease;
+            }
+            #contact a#contact-email-link:hover {
+                background-color: #ffffff;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 10px rgba(94, 139, 126, 0.3);
+            }
+            #contact a svg {
+                fill: #5e8b7e; /* Color the email icon */
+            }
+            #contact a[title="GitHub"],
+            #contact a[title="LinkedIn"] {
+                color: #f4f1de; /* Cream icon */
+                transition: color 0.3s ease, transform 0.3s ease;
+            }
+            #contact a[title="GitHub"]:hover,
+            #contact a[title="LinkedIn"]:hover {
+                color: #ffffff;
+                transform: scale(1.1);
+            }
+
+            footer {
+                background-color: #5e8b7e; /* Muted Teal */
+                color: #e0f2e9; /* Light green text */
+                padding-top: 3rem;
+                padding-bottom: 3rem;
+            }
+            footer a {
+                color: #ffffff;
+                font-weight: 600;
+                text-decoration: underline;
+                text-decoration-color: rgba(255, 255, 255, 0.5);
+            }
+            footer a:hover {
+                color: #c8e6d3;
+            }
+        </style>
+    </head>
+    <body class="antialiased">
+        <!-- antialiased for smoother fonts -->
+
+        <!-- ========== Header / Navbar ========== -->
+        <header class="sticky top-0 z-50 shadow-sm">
+            <nav
+                class="container mx-auto px-6 py-4 flex justify-between items-center"
+            >
+                <div id="nav-brand" class="text-2xl font-bold cursor-pointer">
+                    <!-- Generated Name (JS will fill this) -->
+                </div>
+                <ul class="flex space-x-4 md:space-x-6">
+                    <li>
+                        <a
+                            href="#hero"
+                            class="hover:text-ghibli-deep-green transition duration-300 nav-link"
+                            >Home</a
+                        >
+                    </li>
+                    <li>
+                        <a
+                            href="#about"
+                            class="hover:text-ghibli-deep-green transition duration-300 nav-link"
+                            >About</a
+                        >
+                    </li>
+                    <li>
+                        <a
+                            href="#projects"
+                            class="hover:text-ghibli-deep-green transition duration-300 nav-link"
+                            >Projects</a
+                        >
+                    </li>
+                    <li>
+                        <a
+                            href="#contact"
+                            class="hover:text-ghibli-deep-green transition duration-300 nav-link"
+                            >Contact</a
+                        >
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <!-- ========== Hero Section ========== -->
+            <section id="hero" class="py-24 md:py-36">
+                <div class="container mx-auto px-6 text-center">
+                    <!-- Added animation wrapper -->
+                    <div
+                        class="animate-on-scroll animate-fade-in"
+                        data-animation="animate-fade-in"
+                    >
+                        <img
+                            id="hero-img"
+                            src=""
+                            alt="Profile Picture - Illustrated Style"
+                            class="w-36 h-36 md:w-44 md:h-44 rounded-full mx-auto mb-6 border-4 shadow-lg"
+                        />
+                    </div>
+                    <div
+                        class="animate-on-scroll animate-slide-up"
+                        data-animation="animate-slide-up"
+                        style="transition-delay: 0.2s"
+                    >
+                        <h1
+                            id="hero-name"
+                            class="text-4xl md:text-5xl font-bold mb-3"
+                        >
+                            <!-- Generated Name (JS) -->
+                        </h1>
+                        <p
+                            id="hero-title"
+                            class="text-xl md:text-2xl mb-8 opacity-90 font-semibold"
+                        >
+                            <!-- Generated Title (JS) -->
+                        </p>
+                    </div>
+                    <div
+                        class="animate-on-scroll animate-fade-in"
+                        data-animation="animate-fade-in"
+                        style="transition-delay: 0.4s"
+                    >
+                        <a
+                            href="#projects"
+                            class="inline-block text-lg font-semibold px-8 py-3 rounded-full transition duration-300 shadow-md nav-link"
+                        >
+                            Discover My Creations
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== About Section ========== -->
+            <!-- Wrapped section content for animation -->
+            <section id="about" class="relative">
+                <div
+                    class="container mx-auto px-6 animate-on-scroll animate-fade-in"
+                    data-animation="animate-fade-in"
+                >
+                    <h2
+                        class="text-3xl md:text-4xl font-bold text-center mb-16 text-ghibli-muted-teal"
+                    >
+                        A Little About Me
+                    </h2>
+                    <div
+                        class="flex flex-col md:flex-row items-center md:space-x-12"
+                    >
+                        <div
+                            class="md:w-1/3 mb-10 md:mb-0 animate-on-scroll animate-slide-right"
+                            data-animation="animate-slide-right"
+                            style="transition-delay: 0.2s"
+                        >
+                            <!-- Alt text suggests a more artistic image -->
+                            <img
+                                id="about-img"
+                                src=""
+                                alt="A cozy scene or nature illustration representing me"
+                                class="rounded-lg shadow-xl w-full max-w-sm mx-auto"
+                            />
+                        </div>
+                        <div
+                            class="md:w-2/3 animate-on-scroll animate-slide-left"
+                            data-animation="animate-slide-left"
+                            style="transition-delay: 0.3s"
+                        >
+                            <p
+                                id="about-bio"
+                                class="text-lg text-ghibli-brown leading-relaxed mb-8"
+                            >
+                                <!-- Generated Bio (JS) -->
+                            </p>
+                            <h3
+                                class="text-2xl font-semibold mb-5 text-ghibli-muted-teal"
+                            >
+                                My Toolkit
+                            </h3>
+                            <div id="about-skills" class="flex flex-wrap gap-3">
+                                <!-- Generated Skills (JS) -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== Projects Section ========== -->
+            <section id="projects" class="py-20">
+                <div class="container mx-auto px-6">
+                    <div
+                        class="text-center animate-on-scroll animate-fade-in"
+                        data-animation="animate-fade-in"
+                    >
+                        <h2
+                            class="text-3xl md:text-4xl font-bold mb-16 text-ghibli-muted-teal"
+                        >
+                            Creations & Experiments
+                        </h2>
+                    </div>
+                    <div
+                        id="projects-grid"
+                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
+                    >
+                        <!-- Project Cards (Generated by JS) - will add animation classes in JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== Contact Section ========== -->
+            <section id="contact" class="py-20">
+                <div class="container mx-auto px-6 text-center">
+                    <div
+                        class="animate-on-scroll animate-fade-in"
+                        data-animation="animate-fade-in"
+                    >
+                        <h2 class="text-3xl md:text-4xl font-bold mb-6">
+                            Let's Create Something Magical!
+                        </h2>
+                        <p class="text-lg mb-10 opacity-90 max-w-2xl mx-auto">
+                            Whether you have a question, a project idea, or just
+                            want to say hello, feel free to reach out.
+                        </p>
+                    </div>
+                    <div
+                        class="flex justify-center items-center space-x-6 animate-on-scroll animate-fade-in"
+                        data-animation="animate-fade-in"
+                        style="transition-delay: 0.3s"
+                    >
+                        <a
+                            id="contact-email-link"
+                            href="#"
+                            class="inline-flex items-center space-x-2 font-semibold px-6 py-3 rounded-full transition duration-300 shadow-md"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
+                                />
+                                <path
+                                    d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
+                                />
+                            </svg>
+                            <span id="contact-email"></span>
+                            <!-- Generated Email (JS) -->
+                        </a>
+                        <a
+                            id="contact-github"
+                            href="#"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="hover:text-white transition duration-300"
+                            title="GitHub"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-9 w-9"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                                />
+                            </svg>
+                        </a>
+                        <a
+                            id="contact-linkedin"
+                            href="#"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="hover:text-white transition duration-300"
+                            title="LinkedIn"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-9 w-9"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
+                                />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- ========== Footer ========== -->
+        <footer class="text-center">
+            <div class="container mx-auto px-6">
+                <p>
+                    © <span id="footer-year"></span>
+                    <span id="footer-name"></span>. Crafted with care.
+                </p>
+                <p class="text-sm mt-2 opacity-80">
+                    Inspired by nature and imagination.
+                </p>
+                <p class="text-xs mt-4 opacity-60">
+                    Built using Tailwind CSS & Vanilla JS
+                </p>
+            </div>
+        </footer>
+
+        <!-- ========== Vanilla JS ========== -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // --- Random Data Generation (Keep this section as is) ---
+                const firstNames = [
+                    "Chihiro",
+                    "Kiki",
+                    "Sophie",
+                    "Nausicaa",
+                    "San",
+                    "Howl",
+                    "Haku",
+                    "Ashitaka",
+                    "Pazu",
+                    "Sosuke",
+                ];
+                const lastNames = [
+                    "Ogino",
+                    "Awaya",
+                    "Hatter",
+                    "Valleywind",
+                    "Mononoke",
+                    "Pendragon",
+                    "Nigihayami",
+                    "Emishi",
+                    "Laputa",
+                    "Ponyo",
+                ]; // Added Ghibli-esque last names
+                const titles = [
+                    "Sky Wanderer",
+                    "Forest Guardian",
+                    "Potion Brewer",
+                    "Dream Weaver",
+                    "Cloud Architect",
+                    "Spirit Whisperer",
+                    "Maker of Things",
+                    "Story Collector",
+                    "Code Alchemist",
+                    "Pixel Painter",
+                ]; // More whimsical titles
+                const skills = [
+                    "Herbalism",
+                    "Flight",
+                    "Ancient Runes",
+                    "Water Bending",
+                    "Terraforming",
+                    "Starlight Weaving",
+                    "JavaScript",
+                    "React",
+                    "Node.js",
+                    "Python",
+                    "Cloud Magic (AWS)",
+                    "Pixel Dust (CSS)",
+                    "Enchanted Scrolls (HTML)",
+                    "Figma",
+                    "Mystic SQL",
+                    "NoSQL Whispers",
+                    "Git",
+                    "Forest Trails (CI/CD)",
+                    "Agile Spirits",
+                    "Scrum Ceremonies",
+                ]; // Whimsical + real skills
+                const projectNouns = [
+                    "Garden",
+                    "Chronicle",
+                    "Apparatus",
+                    "Menagerie",
+                    "Sanctuary",
+                    "Compendium",
+                    "Device",
+                    "Atlas",
+                    "Labyrinth",
+                    "Observatory",
+                ];
+                const projectAdj = [
+                    "Floating",
+                    "Whispering",
+                    "Clockwork",
+                    "Sunken",
+                    "Luminous",
+                    "Automated",
+                    "Living",
+                    "Crystal",
+                    "Mossy",
+                    "Starlit",
+                ];
+                const projectDomains = [
+                    "Sky Navigation",
+                    "Creature Cataloging",
+                    "Dream Recording",
+                    "Resource Management",
+                    "Plant Communication",
+                    "Weather Prediction",
+                    "Story Weaving",
+                    "Task Automation",
+                    "Community Forum",
+                    "Art Generation",
+                ];
+                const bios = [
+                    "A curious soul exploring the intersection of ancient magic and modern technology. Always seeking harmony between nature and innovation.",
+                    "Dedicated to crafting delightful digital experiences, much like tending a vibrant garden. Believes in the magic of clean code and intuitive design.",
+                    "An adventurer in the realms of data and cloud, always looking for the hidden patterns and stories within. Enjoys building bridges between worlds.",
+                    "Loves bringing ideas to life, whether through lines of code or strokes of a digital brush. Passionate about creating tools that spark joy and wonder.",
+                    "A pragmatic dreamer, building robust systems with a touch of whimsy. Fascinated by how small details can create enchanting user journeys.",
+                ];
+                const emailDomains = [
+                    "spiritmail.net",
+                    "cloudpost.org",
+                    "forestnet.io",
+                    "dreamweave.co",
+                    "skywhisper.com",
+                ];
+
+                function getRandomElement(arr) {
+                    /* ... (same as before) ... */ return arr[
+                        Math.floor(Math.random() * arr.length)
+                    ];
+                }
+                function getRandomElements(arr, count) {
+                    /* ... (same as before) ... */ const shuffled = arr.sort(
+                        () => 0.5 - Math.random()
+                    );
+                    return shuffled.slice(0, count);
+                }
+
+                // Generate Person
+                const firstName = getRandomElement(firstNames);
+                const lastName = getRandomElement(lastNames);
+                const fullName = `${firstName} ${lastName}`;
+                const jobTitle = getRandomElement(titles);
+                const bio = getRandomElement(bios);
+                const personSkills = getRandomElements(
+                    skills,
+                    Math.floor(Math.random() * 5) + 9
+                ); // 9-13 skills
+                const email = `${firstName.toLowerCase()}${Math.floor(
+                    Math.random() * 100
+                )}@${getRandomElement(emailDomains)}`;
+                const githubUser = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Math.floor(
+                    Math.random() * 50
+                )}`;
+                const linkedinUser = `${firstName.toLowerCase()}-${lastName.toLowerCase()}-${Math.random()
+                    .toString(36)
+                    .substring(2, 7)}`;
+
+                // Generate Projects (3)
+                const projects = [];
+                for (let i = 0; i < 3; i++) {
+                    const projAdj = getRandomElement(projectAdj);
+                    const projDomain = getRandomElement(projectDomains);
+                    const projNoun = getRandomElement(projectNouns);
+                    const projTitle = `${projAdj} ${projDomain} ${projNoun}`;
+                    const projDesc = `Crafted a ${projAdj.toLowerCase()} ${projDomain.toLowerCase()} ${projNoun.toLowerCase()} using ${getRandomElements(
+                        skills.filter(
+                            (s) =>
+                                ![
+                                    "Herbalism",
+                                    "Flight",
+                                    "Ancient Runes",
+                                    "Water Bending",
+                                    "Terraforming",
+                                    "Starlight Weaving",
+                                ].includes(s)
+                        ),
+                        3
+                    ).join(
+                        ", "
+                    )}. Focused on enchanting user experiences and ${getRandomElement(
+                        [
+                            "robustness",
+                            "scalability",
+                            "collaboration",
+                            "data harmony",
+                        ]
+                    )}.`; // Filter out purely magical skills for tech description
+                    const projImgId =
+                        Math.floor(Math.random() * 100) + 100 * i + 50; // Different image seed
+                    const projImg = `https://picsum.photos/seed/${projImgId}/600/400?grayscale&blur=1`; // Use grayscale/blur placeholder for mood
+                    const projSkills = getRandomElements(
+                        skills,
+                        Math.floor(Math.random() * 3) + 4
+                    ); // 4-6 skills
+                    projects.push({
+                        title: projTitle,
+                        description: projDesc,
+                        image: projImg,
+                        skills: projSkills,
+                    });
+                }
+
+                // --- Populate HTML (Same logic, just targets might have changed slightly) ---
+
+                // Shared
+                document.title = `Portfolio - ${fullName}`;
+                document.getElementById("nav-brand").textContent = firstName;
+                document.getElementById("footer-name").textContent = fullName;
+                document.getElementById("footer-year").textContent =
+                    new Date().getFullYear();
+
+                // Hero
+                document.getElementById(
+                    "hero-img"
+                ).src = `https://i.pravatar.cc/180?u=${email}&img=${Math.floor(
+                    Math.random() * 70
+                )}`; // Pravatar with random image number
+                document.getElementById("hero-name").textContent = fullName;
+                document.getElementById("hero-title").textContent = jobTitle;
+
+                // About
+                document.getElementById(
+                    "about-img"
+                ).src = `https://picsum.photos/seed/${fullName.replace(
+                    " ",
+                    ""
+                )}/600/600?grayscale&blur=2`; // Grayscale/blur placeholder
+                document.getElementById("about-bio").textContent = bio;
+                const skillsContainer = document.getElementById("about-skills");
+                skillsContainer.innerHTML = ""; // Clear first
+                personSkills.forEach((skill) => {
+                    const span = document.createElement("span");
+                    span.className = "inline-block mr-2 mb-2 px-3 py-1 text-sm"; // Base classes from style tag will apply
+                    span.textContent = skill;
+                    skillsContainer.appendChild(span);
+                });
+
+                // Projects
+                const projectsGrid = document.getElementById("projects-grid");
+                projectsGrid.innerHTML = ""; // Clear first
+                projects.forEach((project, index) => {
+                    const card = document.createElement("div");
+                    // Add animation classes here
+                    card.className =
+                        "project-card animate-on-scroll animate-slide-up";
+                    card.setAttribute("data-animation", "animate-slide-up");
+                    // Stagger animation delay
+                    card.style.transitionDelay = `${index * 0.15}s`;
+
+                    card.innerHTML = `
+                    <div class="overflow-hidden"> <!-- Inner div for image zoom -->
+                        <img src="${project.image}" alt="Illustration for ${
+                        project.title
+                    }" class="w-full h-52 object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">${project.title}</h3>
+                        <p class="text-sm mb-4 leading-relaxed">${
+                            project.description
+                        }</p>
+                        <div class="mb-4 flex flex-wrap gap-2">
+                            ${project.skills
+                                .map(
+                                    (skill) =>
+                                        `<span class="inline-block text-xs font-semibold mr-2 mb-2">${skill}</span>`
+                                )
+                                .join("")}
+                        </div>
+                        <div class="flex space-x-4 pt-2 border-t border-gray-200 border-opacity-50">
+                            <a href="#" class="text-sm hover:text-ghibli-deep-green">View Live</a>
+                            <a href="#" class="text-sm hover:text-ghibli-deep-green">Source Code</a>
+                        </div>
+                    </div>
+                `;
+                    projectsGrid.appendChild(card);
+                });
+
+                // Contact
+                document.getElementById("contact-email").textContent = email;
+                document.getElementById(
+                    "contact-email-link"
+                ).href = `mailto:${email}`;
+                document.getElementById(
+                    "contact-github"
+                ).href = `https://github.com/${githubUser}`;
+                document.getElementById(
+                    "contact-linkedin"
+                ).href = `https://linkedin.com/in/${linkedinUser}`;
+
+                // --- Smooth Scrolling (Keep as is) ---
+                const navLinks = document.querySelectorAll(".nav-link");
+                navLinks.forEach((link) => {
+                    link.addEventListener("click", function (e) {
+                        const href = this.getAttribute("href");
+                        if (href && href.startsWith("#")) {
+                            e.preventDefault();
+                            const targetId = href.substring(1);
+                            const targetElement =
+                                document.getElementById(targetId);
+                            if (targetElement) {
+                                const headerOffset =
+                                    document.querySelector(
+                                        "header"
+                                    ).offsetHeight;
+                                const elementPosition =
+                                    targetElement.getBoundingClientRect().top;
+                                const offsetPosition =
+                                    elementPosition +
+                                    window.pageYOffset -
+                                    headerOffset;
+
+                                window.scrollTo({
+                                    top: offsetPosition,
+                                    behavior: "smooth",
+                                });
+                            }
+                        }
+                    });
+                });
+                const navBrand = document.getElementById("nav-brand");
+                navBrand.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                });
+
+                // --- Intersection Observer for Animations ---
+                const animatedElements =
+                    document.querySelectorAll(".animate-on-scroll");
+
+                if ("IntersectionObserver" in window) {
+                    const observer = new IntersectionObserver(
+                        (entries, observer) => {
+                            entries.forEach((entry) => {
+                                if (entry.isIntersecting) {
+                                    const animationType =
+                                        entry.target.getAttribute(
+                                            "data-animation"
+                                        );
+                                    if (animationType) {
+                                        entry.target.classList.add("animated"); // General class to mark as viewed
+                                        entry.target.classList.add(
+                                            animationType
+                                        ); // Add specific animation type (though already in CSS)
+                                    } else {
+                                        // Default fallback if no data-animation is set
+                                        entry.target.classList.add(
+                                            "animated",
+                                            "animate-fade-in"
+                                        );
+                                    }
+
+                                    observer.unobserve(entry.target); // Stop observing once animated
+                                }
+                            });
+                        },
+                        {
+                            threshold: 0.1, // Trigger when 10% of the element is visible
+                        }
+                    );
+
+                    animatedElements.forEach((el) => {
+                        observer.observe(el);
+                    });
+                } else {
+                    // Fallback for very old browsers: just show elements immediately
+                    animatedElements.forEach((el) => {
+                        const animationType =
+                            el.getAttribute("data-animation") ||
+                            "animate-fade-in";
+                        el.classList.add("animated", animationType);
+                        el.style.opacity = 1; // Ensure visible
+                        el.style.transform = "none"; // Reset transform
+                    });
+                }
+            }); // End DOMContentLoaded
+        </script>
+    </body>
+</html>

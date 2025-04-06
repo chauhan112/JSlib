@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slow Transition Select</title>
+    <!-- Include Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Optional: Add a base transition for the arrow */
+        .select-arrow {
+            transition: transform 0.3s ease-in-out;
+        }
+        .select-arrow.open {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="w-64">
+        <label id="custom-select-label" class="block text-sm font-medium text-gray-700 mb-1">
+          Choose an Option:
+        </label>
+        <!-- Custom Select Component Structure -->
+        <div id="custom-select-container" class="relative">
+            <!-- Trigger Button -->
+            <button
+                type="button"
+                id="custom-select-trigger"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-labelledby="custom-select-label custom-select-trigger"
+                class="relative w-full cursor-pointer rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+            >
+                <span id="custom-select-value" class="block truncate">Select...</span>
+                <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                    <!-- Heroicon: chevron-down -->
+                    <svg class="h-5 w-5 text-gray-400 select-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    </svg>
+                </span>
+            </button>
+
+            <!-- Options Listbox -->
+            <ul
+                id="custom-select-options"
+                role="listbox"
+                aria-labelledby="custom-select-label"
+                tabindex="-1"
+                class="absolute z-10 mt-1 max-h-0 w-full overflow-hidden rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm
+                       transition-all duration-500 ease-in-out opacity-0 invisible"
+                <!--
+                    Transition Classes Breakdown:
+                    - transition-all: Apply transition to all animatable properties
+                    - duration-500: Set transition duration to 500ms (adjust for slower/faster)
+                    - ease-in-out:  Timing function for the transition
+                    - max-h-0:       Initial state (closed), height is zero
+                    - opacity-0:     Initial state (closed), fully transparent
+                    - invisible:     Initial state (closed), hide from accessibility tree and prevent interaction
+                -->
+            >
+                <!-- Options will be populated by JavaScript -->
+            </ul>
+        </div>
+         <input type="hidden" id="selected-option-value" name="selected_option"> <!-- Optional: hidden input to store value for forms -->
+    </div>
+
+    <script src="dropdown.js"></script>
+</body>
+</html>

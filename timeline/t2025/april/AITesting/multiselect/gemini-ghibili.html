@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Ghibli Multiselect</title>
+
+        <!-- 1. Tailwind Configuration (MUST COME BEFORE the main CDN script) -->
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            "ghibli-cream": "#F0EAD6",
+                            "ghibli-brown": {
+                                light: "#B88B71",
+                                DEFAULT: "#8B5E3C",
+                                dark: "#5A3D2B",
+                            },
+                            "ghibli-green": {
+                                light: "#A3BFA8",
+                                DEFAULT: "#6A8E7F",
+                                dark: "#4A6B5D",
+                            },
+                            "ghibli-blue": {
+                                light: "#A4C8D4",
+                                DEFAULT: "#77A0B6",
+                            },
+                        },
+                        borderRadius: { soft: "10px" },
+                        boxShadow: {
+                            soft: "0 4px 10px -2px rgba(0, 0, 0, 0.08)",
+                        },
+                    },
+                },
+            };
+        </script>
+
+        <!-- 2. Tailwind Play CDN Script -->
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <!-- 3. Your Custom Styles (Optional small additions) -->
+        <style>
+            /* Small additions if needed */
+            .ghibli-option[aria-selected="true"] .check-icon {
+                display: inline-block;
+            }
+            /* Hide scrollbar for aesthetic, but allow scrolling */
+            .ghibli-dropdown::-webkit-scrollbar {
+                display: none;
+            }
+            .ghibli-dropdown {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        </style>
+    </head>
+    <body
+        class="bg-ghibli-cream min-h-screen flex items-center justify-center p-6"
+    >
+        <div class="w-full max-w-sm mx-auto">
+            <label
+                for="ghibli-select"
+                class="block text-sm font-medium text-ghibli-brown-dark mb-1"
+                >Choose your companions:</label
+            >
+            <div id="ghibli-multiselect" class="relative font-sans">
+                <!-- 1. Display Area (Button) -->
+                <button
+                    type="button"
+                    id="ghibli-select-button"
+                    aria-haspopup="listbox"
+                    aria-expanded="false"
+                    class="relative w-full cursor-pointer rounded-soft border border-ghibli-brown-light bg-white py-2 pl-3 pr-10 text-left shadow-soft focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-ghibli-cream focus:ring-ghibli-green sm:text-sm min-h-[42px] flex items-center flex-wrap gap-1"
+                >
+                    <!-- Placeholder/Selected items area -->
+                    <span
+                        id="ghibli-selected-display"
+                        class="flex flex-wrap gap-1"
+                    >
+                        <span class="placeholder text-ghibli-brown opacity-80"
+                            >Select options...</span
+                        >
+                        <!-- Selected tags will be added here by JS -->
+                    </span>
+
+                    <!-- Dropdown Arrow -->
+                    <span
+                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
+                    >
+                        <svg
+                            class="h-5 w-5 text-ghibli-brown-light"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            aria-hidden="true"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M10 3a.75.75 0 01.75.75v10.5a.75.75 0 01-1.5 0V3.75A.75.75 0 0110 3zM5.707 11.707a.75.75 0 010-1.06l4.25-4.25a.75.75 0 111.06 1.06L6.768 11.25H14.5a.75.75 0 010 1.5H6.768l4.29 4.29a.75.75 0 11-1.06 1.06l-4.25-4.25z"
+                                clip-rule="evenodd"
+                                transform="rotate(90 10 10) scale(0.9)"
+                            />
+                        </svg>
+                    </span>
+                </button>
+
+                <!-- 2. Dropdown List -->
+                <ul
+                    id="ghibli-dropdown"
+                    role="listbox"
+                    aria-multiselectable="true"
+                    tabindex="-1"
+                    class="ghibli-dropdown absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-soft bg-white py-1 text-base shadow-soft ring-1 ring-ghibli-brown ring-opacity-5 focus:outline-none sm:text-sm hidden"
+                >
+                    <!-- Options will be added here by JS, or you can hardcode some -->
+                    <li
+                        class="ghibli-option relative cursor-pointer select-none py-2 pl-3 pr-9 text-ghibli-brown-dark hover:bg-ghibli-green-light hover:text-ghibli-brown-dark"
+                        id="option-0"
+                        role="option"
+                        aria-selected="false"
+                        data-value="totoro"
+                    >
+                        <span class="block truncate">Totoro</span>
+                        <span
+                            class="check-icon hidden absolute inset-y-0 right-0 flex items-center pr-4 text-ghibli-green-dark"
+                        >
+                            <svg
+                                class="h-5 w-5"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M16.704 5.296a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 011.06-1.06L9 12.94l6.97-6.97a.75.75 0 011.064 0z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </span>
+                    </li>
+                    <li
+                        class="ghibli-option relative cursor-pointer select-none py-2 pl-3 pr-9 text-ghibli-brown-dark hover:bg-ghibli-green-light hover:text-ghibli-brown-dark"
+                        id="option-1"
+                        role="option"
+                        aria-selected="false"
+                        data-value="catbus"
+                    >
+                        <span class="block truncate">Catbus</span>
+                        <span
+                            class="check-icon hidden absolute inset-y-0 right-0 flex items-center pr-4 text-ghibli-green-dark"
+                        >
+                            <svg
+                                class="h-5 w-5"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M16.704 5.296a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 011.06-1.06L9 12.94l6.97-6.97a.75.75 0 011.064 0z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </span>
+                    </li>
+                    <li
+                        class="ghibli-option relative cursor-pointer select-none py-2 pl-3 pr-9 text-ghibli-brown-dark hover:bg-ghibli-green-light hover:text-ghibli-brown-dark"
+                        id="option-2"
+                        role="option"
+                        aria-selected="false"
+                        data-value="jiji"
+                    >
+                        <span class="block truncate">Jiji</span>
+                        <span
+                            class="check-icon hidden absolute inset-y-0 right-0 flex items-center pr-4 text-ghibli-green-dark"
+                        >
+                            <svg
+                                class="h-5 w-5"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M16.704 5.296a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 011.06-1.06L9 12.94l6.97-6.97a.75.75 0 011.064 0z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </span>
+                    </li>
+                    <li
+                        class="ghibli-option relative cursor-pointer select-none py-2 pl-3 pr-9 text-ghibli-brown-dark hover:bg-ghibli-green-light hover:text-ghibli-brown-dark"
+                        id="option-3"
+                        role="option"
+                        aria-selected="false"
+                        data-value="calcifer"
+                    >
+                        <span class="block truncate">Calcifer</span>
+                        <span
+                            class="check-icon hidden absolute inset-y-0 right-0 flex items-center pr-4 text-ghibli-green-dark"
+                        >
+                            <svg
+                                class="h-5 w-5"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M16.704 5.296a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 011.06-1.06L9 12.94l6.97-6.97a.75.75 0 011.064 0z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </span>
+                    </li>
+                    <li
+                        class="ghibli-option relative cursor-pointer select-none py-2 pl-3 pr-9 text-ghibli-brown-dark hover:bg-ghibli-green-light hover:text-ghibli-brown-dark"
+                        id="option-4"
+                        role="option"
+                        aria-selected="false"
+                        data-value="sootsprite"
+                    >
+                        <span class="block truncate">Soot Sprite</span>
+                        <span
+                            class="check-icon hidden absolute inset-y-0 right-0 flex items-center pr-4 text-ghibli-green-dark"
+                        >
+                            <svg
+                                class="h-5 w-5"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M16.704 5.296a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 011.06-1.06L9 12.94l6.97-6.97a.75.75 0 011.064 0z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </span>
+                    </li>
+                    <!-- Add more options as needed -->
+                </ul>
+            </div>
+            <!-- Hidden input to store actual values for form submission (optional) -->
+            <input
+                type="hidden"
+                name="selected_companions"
+                id="ghibli-select-value"
+            />
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const multiselect =
+                    document.getElementById("ghibli-multiselect");
+                if (!multiselect) return; // Exit if component not found
+
+                const selectButton = document.getElementById(
+                    "ghibli-select-button"
+                );
+                const dropdown = document.getElementById("ghibli-dropdown");
+                const options = Array.from(
+                    dropdown.querySelectorAll(".ghibli-option")
+                );
+                const selectedDisplay = document.getElementById(
+                    "ghibli-selected-display"
+                );
+                const placeholder =
+                    selectedDisplay.querySelector(".placeholder");
+                const hiddenInput = document.getElementById(
+                    "ghibli-select-value"
+                ); // Optional: for form data
+
+                let selectedValues = []; // Array to store the values of selected options
+                let isOpen = false;
+
+                // --- Helper Functions ---
+
+                function toggleDropdown(forceClose = false) {
+                    if (forceClose || isOpen) {
+                        dropdown.classList.add("hidden");
+                        selectButton.setAttribute("aria-expanded", "false");
+                        isOpen = false;
+                    } else {
+                        dropdown.classList.remove("hidden");
+                        selectButton.setAttribute("aria-expanded", "true");
+                        isOpen = true;
+                    }
+                }
+
+                function createTagElement(text, value) {
+                    const tag = document.createElement("span");
+                    tag.className =
+                        "selected-tag inline-flex items-center gap-1 bg-ghibli-green-light text-ghibli-brown-dark text-xs font-medium px-2 py-0.5 rounded-full";
+                    tag.dataset.value = value;
+
+                    const tagText = document.createElement("span");
+                    tagText.textContent = text;
+                    tag.appendChild(tagText);
+
+                    const removeButton = document.createElement("button");
+                    removeButton.type = "button";
+                    removeButton.className =
+                        "text-ghibli-brown hover:text-ghibli-brown-dark focus:outline-none";
+                    removeButton.innerHTML = "×"; // Simple 'x'
+                    removeButton.ariaLabel = `Remove ${text}`;
+                    removeButton.addEventListener("click", (e) => {
+                        e.stopPropagation(); // Prevent dropdown from opening/closing
+                        deselectOption(value);
+                    });
+                    tag.appendChild(removeButton);
+
+                    return tag;
+                }
+
+                function updateSelectedDisplay() {
+                    // Clear current tags (keep placeholder reference if needed)
+                    selectedDisplay.innerHTML = ""; // Clear everything
+
+                    if (selectedValues.length === 0) {
+                        if (placeholder)
+                            selectedDisplay.appendChild(placeholder); // Add placeholder back
+                    } else {
+                        selectedValues.forEach((value) => {
+                            const option = options.find(
+                                (opt) => opt.dataset.value === value
+                            );
+                            if (option) {
+                                const label =
+                                    option.querySelector(
+                                        "span:first-child"
+                                    ).textContent;
+                                const tag = createTagElement(label, value);
+                                selectedDisplay.appendChild(tag);
+                            }
+                        });
+                    }
+
+                    // Update hidden input value (optional)
+                    if (hiddenInput) {
+                        hiddenInput.value = selectedValues.join(",");
+                    }
+                }
+
+                function selectOption(optionElement) {
+                    const value = optionElement.dataset.value;
+                    if (!selectedValues.includes(value)) {
+                        selectedValues.push(value);
+                        optionElement.setAttribute("aria-selected", "true");
+                        optionElement.classList.add(
+                            "bg-ghibli-green",
+                            "text-white"
+                        ); // Style selected item in dropdown
+                        optionElement.classList.remove(
+                            "hover:bg-ghibli-green-light",
+                            "hover:text-ghibli-brown-dark"
+                        );
+                    }
+                    updateSelectedDisplay();
+                }
+
+                function deselectOption(value) {
+                    const index = selectedValues.indexOf(value);
+                    if (index > -1) {
+                        selectedValues.splice(index, 1);
+                        const optionElement = options.find(
+                            (opt) => opt.dataset.value === value
+                        );
+                        if (optionElement) {
+                            optionElement.setAttribute(
+                                "aria-selected",
+                                "false"
+                            );
+                            optionElement.classList.remove(
+                                "bg-ghibli-green",
+                                "text-white"
+                            ); // Remove selected styles
+                            optionElement.classList.add(
+                                "hover:bg-ghibli-green-light",
+                                "hover:text-ghibli-brown-dark"
+                            ); // Add back hover styles
+                        }
+                    }
+                    updateSelectedDisplay();
+                }
+
+                // --- Event Listeners ---
+
+                // Toggle dropdown on button click
+                selectButton.addEventListener("click", (e) => {
+                    // Don't toggle if click was on a remove button inside a tag
+                    if (e.target.closest(".selected-tag button")) {
+                        return;
+                    }
+                    toggleDropdown();
+                });
+
+                // Handle option clicks
+                options.forEach((option) => {
+                    option.addEventListener("click", () => {
+                        const value = option.dataset.value;
+                        const isSelected =
+                            option.getAttribute("aria-selected") === "true";
+
+                        if (isSelected) {
+                            deselectOption(value);
+                        } else {
+                            selectOption(option);
+                        }
+                        // Keep dropdown open after selection
+                        // toggleDropdown(true); // Close dropdown after selection
+                    });
+                });
+
+                // Close dropdown if clicked outside
+                document.addEventListener("click", (event) => {
+                    if (!multiselect.contains(event.target) && isOpen) {
+                        toggleDropdown(true); // Force close
+                    }
+                });
+
+                // Keyboard navigation (basic)
+                selectButton.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        toggleDropdown();
+                    } else if (e.key === "Escape" && isOpen) {
+                        toggleDropdown(true);
+                    }
+                });
+
+                dropdown.addEventListener("keydown", (e) => {
+                    if (e.key === "Escape") {
+                        toggleDropdown(true);
+                        selectButton.focus(); // Return focus to button
+                    }
+                    // Add more complex arrow key navigation here if needed
+                });
+
+                // --- Initial State ---
+                updateSelectedDisplay(); // Ensure placeholder is shown initially if nothing selected
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Artistic Multi-Selects</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Optional: Include an icon library like Heroicons (used in some examples) -->
+        <script
+            type="module"
+            src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+        ></script>
+        <script
+            nomodule
+            src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+        ></script>
+        <style>
+            /* Simple scrollbar styling for dropdowns */
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 6px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 10px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 10px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+            /* Base styling for body */
+            body {
+                background-color: #f0f4f8;
+                padding: 2rem;
+                font-family: sans-serif;
+            }
+            .component-container {
+                margin-bottom: 3rem;
+                max-width: 400px; /* Limit width for better display */
+            }
+            h2 {
+                font-size: 1.5rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+                color: #333;
+                border-bottom: 2px solid #e2e8f0;
+                padding-bottom: 0.5rem;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Component 1: Minimalist Checkmarks -->
+        <div class="component-container">
+            <h2>1. Minimalist Checkmarks</h2>
+            <div class="relative multi-select-container" data-id="minimalist">
+                <!-- Trigger Button -->
+                <button
+                    type="button"
+                    class="multi-select-trigger bg-white border border-gray-300 rounded-md shadow-sm px-4 py-2 text-left w-full flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                    <span class="multi-select-placeholder text-gray-500"
+                        >Select Options...</span
+                    >
+                    <span
+                        class="multi-select-count hidden text-sm font-medium text-indigo-600"
+                    ></span>
+                    <svg
+                        class="multi-select-arrow ml-2 h-5 w-5 text-gray-400 transform transition-transform duration-200"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd"
+                        />
+                    </svg>
+                </button>
+
+                <!-- Options List -->
+                <div
+                    class="multi-select-options absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm custom-scrollbar hidden transition-all duration-200 ease-in-out origin-top scale-95 opacity-0"
+                >
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 pl-3 pr-9 text-gray-900 hover:bg-indigo-50"
+                        data-value="option1"
+                    >
+                        <span class="block truncate">Option Alpha</span>
+                        <span
+                            class="multi-select-indicator absolute inset-y-0 right-0 flex items-center pr-4 text-indigo-600 hidden"
+                        >
+                            <svg
+                                class="h-5 w-5"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </span>
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 pl-3 pr-9 text-gray-900 hover:bg-indigo-50"
+                        data-value="option2"
+                    >
+                        <span class="block truncate">Option Beta</span>
+                        <span
+                            class="multi-select-indicator absolute inset-y-0 right-0 flex items-center pr-4 text-indigo-600 hidden"
+                        >
+                            <svg
+                                class="h-5 w-5"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </span>
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 pl-3 pr-9 text-gray-900 hover:bg-indigo-50"
+                        data-value="option3"
+                    >
+                        <span class="block truncate">Option Gamma</span>
+                        <span
+                            class="multi-select-indicator absolute inset-y-0 right-0 flex items-center pr-4 text-indigo-600 hidden"
+                        >
+                            <svg
+                                class="h-5 w-5"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </span>
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 pl-3 pr-9 text-gray-900 hover:bg-indigo-50"
+                        data-value="option4"
+                    >
+                        <span class="block truncate">Option Delta</span>
+                        <span
+                            class="multi-select-indicator absolute inset-y-0 right-0 flex items-center pr-4 text-indigo-600 hidden"
+                        >
+                            <svg
+                                class="h-5 w-5"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Component 2: Colorful Pills -->
+        <div class="component-container">
+            <h2>2. Colorful Pills</h2>
+            <div class="relative multi-select-container" data-id="pills">
+                <!-- Trigger Button -->
+                <div
+                    class="multi-select-trigger min-h-[42px] bg-white border border-gray-300 rounded-md shadow-sm px-3 py-2 text-left w-full flex items-center flex-wrap gap-1 cursor-pointer focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-teal-500"
+                >
+                    <span
+                        class="multi-select-placeholder text-gray-500 inline-block py-0.5"
+                        >Choose Flavors...</span
+                    >
+                    <!-- Selected pills will be inserted here by JS -->
+                    <div
+                        class="multi-select-pills-container flex-grow flex flex-wrap gap-1"
+                    ></div>
+                    <svg
+                        class="multi-select-arrow ml-auto h-5 w-5 text-gray-400 transform transition-transform duration-200"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd"
+                        />
+                    </svg>
+                </div>
+
+                <!-- Options List -->
+                <div
+                    class="multi-select-options absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm custom-scrollbar hidden transition-all duration-200 ease-in-out origin-top scale-95 opacity-0"
+                >
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 px-3 text-gray-900 hover:bg-teal-50 data-[selected=true]:bg-teal-100 data-[selected=true]:font-semibold"
+                        data-value="strawberry"
+                        data-color="bg-red-200 text-red-800"
+                    >
+                        <span class="block truncate">Strawberry</span>
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 px-3 text-gray-900 hover:bg-teal-50 data-[selected=true]:bg-teal-100 data-[selected=true]:font-semibold"
+                        data-value="blueberry"
+                        data-color="bg-blue-200 text-blue-800"
+                    >
+                        <span class="block truncate">Blueberry</span>
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 px-3 text-gray-900 hover:bg-teal-50 data-[selected=true]:bg-teal-100 data-[selected=true]:font-semibold"
+                        data-value="vanilla"
+                        data-color="bg-yellow-100 text-yellow-800"
+                    >
+                        <span class="block truncate">Vanilla</span>
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 px-3 text-gray-900 hover:bg-teal-50 data-[selected=true]:bg-teal-100 data-[selected=true]:font-semibold"
+                        data-value="chocolate"
+                        data-color="bg-amber-700 text-amber-100"
+                    >
+                        <span class="block truncate">Chocolate</span>
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 px-3 text-gray-900 hover:bg-teal-50 data-[selected=true]:bg-teal-100 data-[selected=true]:font-semibold"
+                        data-value="mint"
+                        data-color="bg-green-200 text-green-800"
+                    >
+                        <span class="block truncate">Mint Chip</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Component 3: Sketchy Boxes -->
+        <div class="component-container">
+            <h2>3. Sketchy Boxes</h2>
+            <div class="relative multi-select-container" data-id="sketchy">
+                <!-- Trigger Button -->
+                <button
+                    type="button"
+                    class="multi-select-trigger bg-white border-2 border-dashed border-gray-500 rounded-sm px-4 py-2 text-left w-full flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-orange-400"
+                >
+                    <span
+                        class="multi-select-placeholder text-gray-600 font-serif italic"
+                        >Scribble Selections...</span
+                    >
+                    <span
+                        class="multi-select-count hidden text-sm font-medium text-orange-700"
+                    ></span>
+                    <svg
+                        class="multi-select-arrow ml-2 h-5 w-5 text-gray-500 transform transition-transform duration-200"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                        />
+                    </svg>
+                </button>
+
+                <!-- Options List -->
+                <div
+                    class="multi-select-options absolute z-10 mt-1 w-full bg-stone-50 shadow-md max-h-60 rounded-sm py-1 text-base ring-1 ring-gray-400 ring-opacity-50 overflow-auto focus:outline-none sm:text-sm custom-scrollbar hidden transition-all duration-200 ease-in-out origin-top scale-95 opacity-0"
+                >
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 pl-8 pr-4 text-gray-800 hover:bg-orange-100"
+                        data-value="idea1"
+                    >
+                        <span
+                            class="multi-select-indicator absolute left-2 top-1/2 transform -translate-y-1/2 text-orange-600 hidden"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="2"
+                                stroke="currentColor"
+                                class="w-4 h-4"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M4.5 12.75l6 6 9-13.5"
+                                />
+                            </svg>
+                        </span>
+                        <span class="block truncate font-serif"
+                            >Bright Idea</span
+                        >
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 pl-8 pr-4 text-gray-800 hover:bg-orange-100"
+                        data-value="idea2"
+                    >
+                        <span
+                            class="multi-select-indicator absolute left-2 top-1/2 transform -translate-y-1/2 text-orange-600 hidden"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="2"
+                                stroke="currentColor"
+                                class="w-4 h-4"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M4.5 12.75l6 6 9-13.5"
+                                />
+                            </svg>
+                        </span>
+                        <span class="block truncate font-serif"
+                            >Rough Draft</span
+                        >
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 pl-8 pr-4 text-gray-800 hover:bg-orange-100"
+                        data-value="idea3"
+                    >
+                        <span
+                            class="multi-select-indicator absolute left-2 top-1/2 transform -translate-y-1/2 text-orange-600 hidden"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="2"
+                                stroke="currentColor"
+                                class="w-4 h-4"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M4.5 12.75l6 6 9-13.5"
+                                />
+                            </svg>
+                        </span>
+                        <span class="block truncate font-serif"
+                            >Concept Sketch</span
+                        >
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 pl-8 pr-4 text-gray-800 hover:bg-orange-100"
+                        data-value="idea4"
+                    >
+                        <span
+                            class="multi-select-indicator absolute left-2 top-1/2 transform -translate-y-1/2 text-orange-600 hidden"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="2"
+                                stroke="currentColor"
+                                class="w-4 h-4"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M4.5 12.75l6 6 9-13.5"
+                                />
+                            </svg>
+                        </span>
+                        <span class="block truncate font-serif"
+                            >Final Polish</span
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Component 4: Geometric Glow -->
+        <div class="component-container">
+            <h2>4. Geometric Glow</h2>
+            <div class="relative multi-select-container" data-id="geometric">
+                <!-- Trigger Button -->
+                <button
+                    type="button"
+                    class="multi-select-trigger bg-gray-800 border border-cyan-500 rounded-none px-4 py-2 text-left w-full flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-cyan-400 group"
+                >
+                    <span class="multi-select-placeholder text-cyan-300"
+                        >Select Modules...</span
+                    >
+                    <span
+                        class="multi-select-count hidden text-sm font-medium text-cyan-400"
+                    ></span>
+                    <ion-icon
+                        name="chevron-down-outline"
+                        class="multi-select-arrow ml-2 h-5 w-5 text-cyan-400 transform transition-transform duration-200 group-focus:text-cyan-200"
+                    ></ion-icon>
+                </button>
+
+                <!-- Options List -->
+                <div
+                    class="multi-select-options absolute z-10 mt-1 w-full bg-gray-800 shadow-lg max-h-60 rounded-none py-1 text-base ring-1 ring-cyan-600 ring-opacity-50 overflow-auto focus:outline-none sm:text-sm custom-scrollbar hidden transition-all duration-200 ease-in-out origin-top scale-95 opacity-0"
+                >
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 pl-4 pr-8 text-gray-100 hover:bg-gray-700 data-[selected=true]:bg-gray-700 data-[selected=true]:text-cyan-300"
+                        data-value="core"
+                    >
+                        <span class="block truncate">Core Engine</span>
+                        <span
+                            class="multi-select-indicator absolute inset-y-0 right-0 flex items-center pr-3 text-cyan-400 hidden"
+                            style="text-shadow: 0 0 8px rgba(56, 189, 248, 0.7)"
+                        >
+                            <ion-icon
+                                name="flash-outline"
+                                class="h-5 w-5"
+                            ></ion-icon>
+                        </span>
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 pl-4 pr-8 text-gray-100 hover:bg-gray-700 data-[selected=true]:bg-gray-700 data-[selected=true]:text-cyan-300"
+                        data-value="ui"
+                    >
+                        <span class="block truncate">UI Components</span>
+                        <span
+                            class="multi-select-indicator absolute inset-y-0 right-0 flex items-center pr-3 text-cyan-400 hidden"
+                            style="text-shadow: 0 0 8px rgba(56, 189, 248, 0.7)"
+                        >
+                            <ion-icon
+                                name="flash-outline"
+                                class="h-5 w-5"
+                            ></ion-icon>
+                        </span>
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 pl-4 pr-8 text-gray-100 hover:bg-gray-700 data-[selected=true]:bg-gray-700 data-[selected=true]:text-cyan-300"
+                        data-value="network"
+                    >
+                        <span class="block truncate">Networking Layer</span>
+                        <span
+                            class="multi-select-indicator absolute inset-y-0 right-0 flex items-center pr-3 text-cyan-400 hidden"
+                            style="text-shadow: 0 0 8px rgba(56, 189, 248, 0.7)"
+                        >
+                            <ion-icon
+                                name="flash-outline"
+                                class="h-5 w-5"
+                            ></ion-icon>
+                        </span>
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 pl-4 pr-8 text-gray-100 hover:bg-gray-700 data-[selected=true]:bg-gray-700 data-[selected=true]:text-cyan-300"
+                        data-value="security"
+                    >
+                        <span class="block truncate">Security Module</span>
+                        <span
+                            class="multi-select-indicator absolute inset-y-0 right-0 flex items-center pr-3 text-cyan-400 hidden"
+                            style="text-shadow: 0 0 8px rgba(56, 189, 248, 0.7)"
+                        >
+                            <ion-icon
+                                name="flash-outline"
+                                class="h-5 w-5"
+                            ></ion-icon>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Component 5: Organic Tags -->
+        <div class="component-container">
+            <h2>5. Organic Tags</h2>
+            <div class="relative multi-select-container" data-id="organic">
+                <!-- Trigger Button -->
+                <div
+                    class="multi-select-trigger min-h-[42px] bg-emerald-50 border border-emerald-600 rounded-full shadow-sm px-4 py-2 text-left w-full flex items-center flex-wrap gap-1 cursor-pointer focus-within:ring-2 focus-within:ring-offset-1 focus-within:ring-emerald-500"
+                >
+                    <span
+                        class="multi-select-placeholder text-emerald-800 inline-block py-0.5"
+                        >Select Ingredients...</span
+                    >
+                    <!-- Selected tags will be inserted here by JS -->
+                    <div
+                        class="multi-select-pills-container flex-grow flex flex-wrap gap-1"
+                    ></div>
+                    <ion-icon
+                        name="leaf-outline"
+                        class="multi-select-arrow ml-auto h-5 w-5 text-emerald-700 transform transition-transform duration-200"
+                    ></ion-icon>
+                </div>
+
+                <!-- Options List -->
+                <div
+                    class="multi-select-options absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-lg py-1 text-base ring-1 ring-emerald-500 ring-opacity-30 overflow-auto focus:outline-none sm:text-sm custom-scrollbar hidden transition-all duration-200 ease-in-out origin-top scale-95 opacity-0"
+                >
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 px-4 text-gray-900 hover:bg-emerald-50 data-[selected=true]:bg-emerald-100 data-[selected=true]:font-medium"
+                        data-value="basil"
+                        data-color="bg-green-600 text-white"
+                    >
+                        <span class="block truncate">Fresh Basil</span>
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 px-4 text-gray-900 hover:bg-emerald-50 data-[selected=true]:bg-emerald-100 data-[selected=true]:font-medium"
+                        data-value="rosemary"
+                        data-color="bg-lime-700 text-white"
+                    >
+                        <span class="block truncate">Rosemary Sprig</span>
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 px-4 text-gray-900 hover:bg-emerald-50 data-[selected=true]:bg-emerald-100 data-[selected=true]:font-medium"
+                        data-value="thyme"
+                        data-color="bg-green-700 text-white"
+                    >
+                        <span class="block truncate">Thyme Leaves</span>
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 px-4 text-gray-900 hover:bg-emerald-50 data-[selected=true]:bg-emerald-100 data-[selected=true]:font-medium"
+                        data-value="oregano"
+                        data-color="bg-yellow-700 text-white"
+                    >
+                        <span class="block truncate">Dried Oregano</span>
+                    </div>
+                    <div
+                        class="multi-select-option cursor-pointer select-none relative py-2 px-4 text-gray-900 hover:bg-emerald-50 data-[selected=true]:bg-emerald-100 data-[selected=true]:font-medium"
+                        data-value="sage"
+                        data-color="bg-teal-700 text-white"
+                    >
+                        <span class="block truncate">Sage</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const multiSelectContainers = document.querySelectorAll(
+                    ".multi-select-container"
+                );
+
+                // Store state for each select
+                const selectStates = {}; // { id: { selectedValues: Set() } }
+
+                multiSelectContainers.forEach((container) => {
+                    const id = container.dataset.id;
+                    if (!id) {
+                        console.error(
+                            "MultiSelect container needs a data-id attribute",
+                            container
+                        );
+                        return;
+                    }
+
+                    selectStates[id] = {
+                        selectedValues: new Set(),
+                    };
+
+                    const trigger = container.querySelector(
+                        ".multi-select-trigger"
+                    );
+                    const optionsList = container.querySelector(
+                        ".multi-select-options"
+                    );
+                    const options = container.querySelectorAll(
+                        ".multi-select-option"
+                    );
+                    const placeholder = container.querySelector(
+                        ".multi-select-placeholder"
+                    );
+                    const countDisplay = container.querySelector(
+                        ".multi-select-count"
+                    ); // Used by Minimalist, Sketchy
+                    const pillsContainer = container.querySelector(
+                        ".multi-select-pills-container"
+                    ); // Used by Pills, Organic
+                    const arrow = container.querySelector(
+                        ".multi-select-arrow"
+                    );
+
+                    // --- Toggle Dropdown ---
+                    trigger.addEventListener("click", (e) => {
+                        // Don't toggle if clicking on a pill's close button inside the trigger
+                        if (e.target.closest(".remove-pill-button")) {
+                            return;
+                        }
+                        const isHidden =
+                            optionsList.classList.contains("hidden");
+                        if (isHidden) {
+                            closeAllSelects(); // Close others before opening this one
+                            optionsList.classList.remove(
+                                "hidden",
+                                "opacity-0",
+                                "scale-95"
+                            );
+                            optionsList.classList.add(
+                                "opacity-100",
+                                "scale-100"
+                            );
+                            arrow?.classList.add("rotate-180");
+                            container.dataset.open = "true";
+                        } else {
+                            closeSelect(container);
+                        }
+                    });
+
+                    // --- Handle Option Clicks ---
+                    options.forEach((option) => {
+                        option.addEventListener("click", () => {
+                            const value = option.dataset.value;
+                            const indicator = option.querySelector(
+                                ".multi-select-indicator"
+                            );
+                            const currentState = selectStates[id];
+
+                            if (currentState.selectedValues.has(value)) {
+                                currentState.selectedValues.delete(value);
+                                option.classList.remove("font-semibold"); // General removal
+                                option.dataset.selected = "false"; // For attribute selectors
+                                indicator?.classList.add("hidden"); // Hide checkmark/indicator
+                            } else {
+                                currentState.selectedValues.add(value);
+                                option.classList.add("font-semibold"); // General indication
+                                option.dataset.selected = "true"; // For attribute selectors
+                                indicator?.classList.remove("hidden"); // Show checkmark/indicator
+                            }
+
+                            updateDisplay(container);
+                        });
+                    });
+
+                    // --- Handle Pill Removal (for Pills/Organic types) ---
+                    if (pillsContainer) {
+                        pillsContainer.addEventListener("click", (e) => {
+                            const removeButton = e.target.closest(
+                                ".remove-pill-button"
+                            );
+                            if (removeButton) {
+                                e.stopPropagation(); // Prevent trigger click
+                                const pill =
+                                    removeButton.closest(".selected-pill");
+                                const value = pill.dataset.value;
+                                const currentState = selectStates[id];
+
+                                if (
+                                    value &&
+                                    currentState.selectedValues.has(value)
+                                ) {
+                                    currentState.selectedValues.delete(value);
+                                    // Find corresponding option and update its style
+                                    const optionEl = optionsList.querySelector(
+                                        `.multi-select-option[data-value="${value}"]`
+                                    );
+                                    if (optionEl) {
+                                        optionEl.classList.remove(
+                                            "font-semibold"
+                                        );
+                                        optionEl.dataset.selected = "false";
+                                        const indicator =
+                                            optionEl.querySelector(
+                                                ".multi-select-indicator"
+                                            );
+                                        indicator?.classList.add("hidden");
+                                    }
+                                    updateDisplay(container); // Re-render pills & placeholder
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // --- Update Display Logic ---
+                function updateDisplay(container) {
+                    const id = container.dataset.id;
+                    const currentState = selectStates[id];
+                    const placeholder = container.querySelector(
+                        ".multi-select-placeholder"
+                    );
+                    const countDisplay = container.querySelector(
+                        ".multi-select-count"
+                    );
+                    const pillsContainer = container.querySelector(
+                        ".multi-select-pills-container"
+                    );
+                    const optionsList = container.querySelector(
+                        ".multi-select-options"
+                    ); // Needed for pill data
+
+                    const selectedCount = currentState.selectedValues.size;
+
+                    // --- Update Placeholder / Count ---
+                    if (placeholder) {
+                        placeholder.style.display =
+                            selectedCount > 0 ? "none" : "inline-block";
+                    }
+
+                    if (countDisplay) {
+                        // For Minimalist, Sketchy
+                        if (selectedCount > 0) {
+                            countDisplay.textContent = `${selectedCount} selected`;
+                            countDisplay.classList.remove("hidden");
+                        } else {
+                            countDisplay.classList.add("hidden");
+                        }
+                    }
+
+                    // --- Update Pills (for Pills/Organic types) ---
+                    if (pillsContainer) {
+                        pillsContainer.innerHTML = ""; // Clear existing pills
+                        currentState.selectedValues.forEach((value) => {
+                            const optionEl = optionsList.querySelector(
+                                `.multi-select-option[data-value="${value}"]`
+                            );
+                            if (!optionEl) return;
+
+                            const text =
+                                optionEl.querySelector("span").textContent;
+                            const colorClasses =
+                                optionEl.dataset.color ||
+                                "bg-gray-200 text-gray-800"; // Default pill color
+
+                            // Define pill structure based on component type
+                            let pillHTML = "";
+                            if (id === "pills") {
+                                pillHTML = `
+                        <span class="selected-pill inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${colorClasses}" data-value="${value}">
+                            ${text}
+                            <button type="button" class="remove-pill-button flex-shrink-0 ml-1 h-4 w-4 rounded-full inline-flex items-center justify-center text-current opacity-70 hover:opacity-100 focus:outline-none focus:text-white focus:bg-current">
+                                <span class="sr-only">Remove ${text}</span>
+                                <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8"> <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" /> </svg>
+                            </button>
+                        </span>`;
+                            } else if (id === "organic") {
+                                pillHTML = `
+                         <span class="selected-pill inline-flex items-center pl-2.5 pr-1 py-0.5 rounded-full text-xs font-medium ${colorClasses}" data-value="${value}">
+                            ${text}
+                            <button type="button" class="remove-pill-button flex-shrink-0 ml-1 h-4 w-4 rounded-full inline-flex items-center justify-center text-current opacity-70 hover:opacity-100 focus:outline-none focus:text-white focus:bg-current">
+                                <span class="sr-only">Remove ${text}</span>
+                                 <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8"> <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" /> </svg>
+                             </button>
+                        </span>`;
+                            }
+                            pillsContainer.insertAdjacentHTML(
+                                "beforeend",
+                                pillHTML
+                            );
+                        });
+                    }
+                }
+
+                // --- Close Dropdown Logic ---
+                function closeSelect(container) {
+                    const optionsList = container.querySelector(
+                        ".multi-select-options"
+                    );
+                    const arrow = container.querySelector(
+                        ".multi-select-arrow"
+                    );
+                    optionsList.classList.add("opacity-0", "scale-95");
+                    // Hide after transition finishes
+                    setTimeout(() => {
+                        // Only hide if it hasn't been re-opened in the meantime
+                        if (!container.dataset.open === "true") {
+                            optionsList.classList.add("hidden");
+                        }
+                    }, 200); // Match transition duration
+                    arrow?.classList.remove("rotate-180");
+                    container.dataset.open = "false";
+                }
+
+                function closeAllSelects(exceptContainer = null) {
+                    multiSelectContainers.forEach((container) => {
+                        if (container !== exceptContainer) {
+                            closeSelect(container);
+                        }
+                    });
+                }
+
+                // --- Global Click Listener to Close ---
+                document.addEventListener("click", (e) => {
+                    // If the click is outside any multi-select container, close all
+                    if (!e.target.closest(".multi-select-container")) {
+                        closeAllSelects();
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

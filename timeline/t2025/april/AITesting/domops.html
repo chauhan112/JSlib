@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Ghibli-Style UI</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+        <style>
+            @keyframes float {
+                0% {
+                    transform: translateY(0px);
+                }
+                50% {
+                    transform: translateY(-4px);
+                }
+                100% {
+                    transform: translateY(0px);
+                }
+            }
+
+            .float-soft {
+                animation: float 3s ease-in-out infinite;
+            }
+
+            .fade-in {
+                animation: fadeIn 1s ease-out forwards;
+                opacity: 0;
+            }
+
+            @keyframes fadeIn {
+                to {
+                    opacity: 1;
+                }
+            }
+
+            .bg-ghibli {
+                background-image: url("https://www.transparenttextures.com/patterns/oil.png");
+                background-size: cover;
+                background-position: center;
+            }
+        </style>
+    </head>
+    <body class="relative font-sans text-gray-800">
+        <!-- Background -->
+        <div class="absolute inset-0 z-0 bg-ghibli opacity-40 blur-sm"></div>
+
+        <!-- Main UI Container -->
+        <div
+            class="relative z-10 flex flex-col md:flex-row h-screen fade-in overflow-auto"
+        >
+            <!-- Sidebar -->
+            <div
+                class="bg-green-700 text-white w-full md:w-64 flex flex-col p-4 float-soft"
+            >
+                <div class="text-center text-2xl font-bold mb-6">
+                    <div class="text-4xl mb-2 animate-bounce">🐾</div>
+                    DOMAIN LOGGER
+                </div>
+                <nav>
+                    <ul class="space-y-4 text-center md:text-left">
+                        <li class="text-yellow-300">● Domain</li>
+                        <li
+                            class="flex items-center justify-center md:justify-start"
+                        >
+                            <span class="mr-2">≡</span> Operation
+                        </li>
+                        <li
+                            class="flex items-center justify-center md:justify-start"
+                        >
+                            <span class="mr-2">≡</span> Activity
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-1 flex flex-col">
+                <!-- Header -->
+                <div
+                    class="bg-yellow-400 p-4 text-xl font-semibold text-center md:text-left"
+                >
+                    Root/logger
+                </div>
+
+                <!-- Search and Actions -->
+                <div
+                    class="flex flex-col md:flex-row items-center justify-between p-4 space-y-4 md:space-y-0"
+                >
+                    <input
+                        type="text"
+                        placeholder="Search"
+                        class="p-2 rounded-md border w-full md:w-1/3 bg-yellow-50 hover:shadow-md transition-all"
+                    />
+                    <div class="space-x-4">
+                        <button
+                            class="text-lg transform hover:scale-110 transition-transform"
+                        >
+                            🔁
+                        </button>
+                        <button
+                            class="text-lg transform hover:rotate-12 transition-transform"
+                        >
+                            ⚙️
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto px-4">
+                    <table
+                        class="min-w-full bg-white shadow-md rounded-lg overflow-hidden text-sm"
+                    >
+                        <thead class="bg-gray-700 text-white">
+                            <tr>
+                                <th class="px-3 py-2 text-left">Column_name</th>
+                                <th class="px-3 py-2 text-left">
+                                    Activity_name
+                                </th>
+                                <th class="px-3 py-2 text-left">Status</th>
+                                <th class="px-3 py-2 text-left">Date</th>
+                                <th class="px-3 py-2 text-left">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activityTable">
+                            <!-- JS will populate this -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Add Button -->
+                <div class="p-4 flex justify-center md:justify-end">
+                    <button
+                        class="bg-yellow-400 text-white text-2xl w-12 h-12 rounded-full shadow-lg hover:bg-yellow-500 transform hover:scale-110 transition-all float-soft"
+                    >
+                        +
+                    </button>
+                </div>
+            </div>
+
+            <!-- Attributes Sidebar -->
+            <div class="w-full md:w-64 bg-gray-800 text-white p-4 float-soft">
+                <div class="flex flex-col space-y-2 mb-4">
+                    <span class="font-semibold">Attributes</span>
+                    <input
+                        type="text"
+                        class="p-1 rounded-md bg-gray-700 text-white w-full"
+                        placeholder="Search"
+                    />
+                </div>
+            </div>
+        </div>
+
+        <!-- JavaScript -->
+        <script>
+            console.log("Script loaded: Populating table");
+
+            const table = document.getElementById("activityTable");
+            for (let i = 1; i <= 8; i++) {
+                console.log(`Creating row ${i}`);
+                const row = document.createElement("tr");
+                row.className = `${
+                    i % 2 === 0 ? "bg-green-100" : "bg-yellow-50"
+                } transition duration-300 hover:bg-yellow-200 float-soft`;
+                row.innerHTML = `
+        <td class="px-3 py-2">${i}.</td>
+        <td class="px-3 py-2">Activity_name</td>
+        <td class="px-3 py-2">Created_on</td>
+        <td class="px-3 py-2">Created_on</td>
+        <td class="px-3 py-2 space-x-2">
+          <button title="View" class="transform hover:scale-110 transition">👁️</button>
+          <button title="Edit" class="transform hover:scale-110 transition">✏️</button>
+          <button title="Delete" class="transform hover:scale-110 transition">🗑️</button>
+        </td>
+      `;
+                table.appendChild(row);
+            }
+
+            console.log("Table population complete.");
+        </script>
+    </body>
+</html>

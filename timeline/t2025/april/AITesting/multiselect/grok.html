@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Multiple Select Component</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+        <div class="relative w-64">
+            <!-- Select Button -->
+            <button
+                id="selectButton"
+                class="w-full px-4 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+                Select options
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div
+                id="dropdownMenu"
+                class="hidden absolute w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto z-10"
+            >
+                <!-- Options -->
+                <label
+                    class="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                    <input
+                        type="checkbox"
+                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        value="option1"
+                    />
+                    <span class="ml-2 text-gray-700">Option 1</span>
+                </label>
+                <label
+                    class="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                    <input
+                        type="checkbox"
+                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        value="option2"
+                    />
+                    <span class="ml-2 text-gray-700">Option 2</span>
+                </label>
+                <label
+                    class="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                    <input
+                        type="checkbox"
+                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        value="option3"
+                    />
+                    <span class="ml-2 text-gray-700">Option 3</span>
+                </label>
+                <label
+                    class="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                    <input
+                        type="checkbox"
+                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        value="option4"
+                    />
+                    <span class="ml-2 text-gray-700">Option 4</span>
+                </label>
+            </div>
+        </div>
+
+        <script>
+            // Get DOM elements
+            const selectButton = document.getElementById("selectButton");
+            const dropdownMenu = document.getElementById("dropdownMenu");
+            const checkboxes = dropdownMenu.querySelectorAll(
+                'input[type="checkbox"]'
+            );
+
+            // Toggle dropdown visibility
+            selectButton.addEventListener("click", () => {
+                dropdownMenu.classList.toggle("hidden");
+            });
+
+            // Update button text based on selected options
+            function updateButtonText() {
+                const selectedOptions = Array.from(checkboxes)
+                    .filter((checkbox) => checkbox.checked)
+                    .map((checkbox) =>
+                        checkbox.nextElementSibling.textContent.trim()
+                    );
+
+                if (selectedOptions.length === 0) {
+                    selectButton.textContent = "Select options";
+                } else if (selectedOptions.length <= 2) {
+                    selectButton.textContent = selectedOptions.join(", ");
+                } else {
+                    selectButton.textContent = `${selectedOptions.length} options selected`;
+                }
+            }
+
+            // Add event listeners to checkboxes
+            checkboxes.forEach((checkbox) => {
+                checkbox.addEventListener("change", updateButtonText);
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", (event) => {
+                if (
+                    !selectButton.contains(event.target) &&
+                    !dropdownMenu.contains(event.target)
+                ) {
+                    dropdownMenu.classList.add("hidden");
+                }
+            });
+        </script>
+    </body>
+</html>
