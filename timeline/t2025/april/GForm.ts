@@ -36,14 +36,23 @@ export class GForm implements IComponent {
         }
         return values;
     }
+    setValues(values: { [key: string]: string }) {
+        for (const item of this.s.components) {
+            if (item.props.key) {
+                item.getElement().value = values[item.props.key];
+            }
+        }
+    }
     clearValues() {
         for (const item of this.s.components) {
-            item.getElement().value = "";
+            if (item.props.key) {
+                item.getElement().value = "";
+            }
         }
     }
     onSubmit(e: any, s: any) {
         e.preventDefault();
-        console.log(this.getValues());
+        console.log(s.values);
     }
     getProps(): { [key: string]: any } {
         return this.comp!.getProps();
@@ -60,7 +69,11 @@ export class GForm implements IComponent {
                 children: this.s.components,
             },
             {
-                submit: this.s.funcs.onSubmit,
+                submit: (e: any) =>
+                    this.s.funcs.onSubmit(e, {
+                        values: this.getValues(),
+                        form: this,
+                    }),
             }
         );
         return this.comp.getElement();
