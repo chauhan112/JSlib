@@ -1,27 +1,27 @@
 import axios from "axios";
 
 export const BASE_URL = "http://localhost:8000";
-export const createDomain = async (name, loc) => {
-    return axios.post(`${BASE_URL}/domains/create/`, { name, loc });
+export const create = async (name, loc, typ = "domains") => {
+    return axios.post(`${BASE_URL}/${typ}/create/`, { name, loc });
 };
 
-export const getDomains = async (loc) => {
-    return axios.post(`${BASE_URL}/domains/readAll/`, { loc });
+export const readAll = async (loc, typ = "domains") => {
+    return axios.post(`${BASE_URL}/${typ}/readAll/`, { loc });
 };
 
-export const deleteDomain = async (name, loc) => {
-    return axios.post(`${BASE_URL}/domains/delete/`, { name, loc });
+export const deleteItem = async (name, loc, typ = "domains") => {
+    return axios.post(`${BASE_URL}/${typ}/delete/`, { name, loc });
 };
 
-export const updateDomainName = async (name, loc, newName) => {
-    return axios.post(`${BASE_URL}/domains/update_name/`, {
+export const updateName = async (name, loc, newName, typ = "domains") => {
+    return axios.post(`${BASE_URL}/${typ}/update_name/`, {
         name,
         loc,
         value: newName,
     });
 };
-export const readProps = async (name, loc) => {
-    return axios.post(`${BASE_URL}/domains/readAll/`, {
+export const readProps = async (name, loc, typ = "domains") => {
+    return axios.post(`${BASE_URL}/${typ}/readAll/`, {
         name,
         loc,
     });
