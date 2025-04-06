@@ -9,7 +9,7 @@ import {
 import { GComponent } from "../GComponent";
 import { GForm } from "../GForm";
 import { ListWithCrud } from "../ListWithCrud";
-import { AccordionShowMany } from "../Accordion";
+
 export class Section {
     form: any = null;
     list: any = null;
@@ -66,7 +66,6 @@ export class Section {
         e.preventDefault();
         create(this.funcs.createInfo(s.values), [], this.typ).then(
             (res: any) => {
-                console.log(this.plusIcon);
                 this.plusIcon!.component.dispatchEvent(new Event("click"));
                 s.form.clearValues();
                 this.fillList();
@@ -76,7 +75,7 @@ export class Section {
 
     onContextMenuClick(e: any, s: any) {
         if (s.item.name === "Delete") {
-            if (confirm("Are you sure you want to delete this domain?")) {
+            if (confirm(`Are you sure you want to delete this ${this.typ}?`)) {
                 deleteItem(s.data.key, [], this.typ).then((res: any) => {
                     this.fillList();
                 });
