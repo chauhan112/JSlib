@@ -6,7 +6,6 @@ import { GForm, gformTest } from "../GForm";
 const accordion = new AccordionShowMany();
 
 accordion.s.funcs.onPlusHandlerOnShow = (e: any, s: any) => {
-    console.log(s);
     if (s.item.title === "Domains") {
         domainSection.content!.s.formArea.display(domainSection.form);
         domainSection.form.s.funcs.onSubmit =
@@ -36,19 +35,36 @@ accordion.getElement();
 
 const makeDomainForm = () => {
     const form = new GForm();
-    form.s.data[0].props.placeholder = "domain name";
-    form.s.data[0].props.class = "w-full p-1 rounded-sm bg-gray-100 text-black";
-    form.s.data[1].props.class = "w-full p-1 rounded-md bg-blue-500 text-white";
+    form.s.data = [
+        {
+            key: "domain",
+            placeholder: "domain name",
+            class: "w-full p-1 rounded-sm bg-gray-100 text-black",
+        },
+        {
+            type: "submit",
+            textContent: "Submit",
+            class: "w-full p-1 rounded-md bg-blue-500 text-white",
+        },
+    ];
     form.getElement();
     return form;
 };
 
 const makeOperationsForm = () => {
     const form = new GForm();
-    form.s.data[0].props.placeholder = "operation name";
-    form.s.data[0].props.key = "operation";
-    form.s.data[0].props.class = "w-full p-1 rounded-sm bg-gray-100 text-black";
-    form.s.data[1].props.class = "w-full p-1 rounded-md bg-blue-500 text-white";
+    form.s.data = [
+        {
+            key: "operation",
+            placeholder: "operation name",
+            class: "w-full p-1 rounded-sm bg-gray-100 text-black",
+        },
+        {
+            type: "submit",
+            textContent: "Submit",
+            class: "w-full p-1 rounded-md bg-blue-500 text-white",
+        },
+    ];
     form.getElement();
     return form;
 };
@@ -57,27 +73,18 @@ const makeActivitiesForm = () => {
     const form = new GForm();
     form.s.data = [
         {
-            type: "select",
-            props: {
-                key: "domain",
-                class: "w-full p-1 rounded-sm bg-gray-100 text-black",
-            },
+            key: "domain",
+            class: "w-full p-1 rounded-sm bg-gray-100 text-black",
         },
         {
-            type: "select",
-            props: {
-                key: "operations",
-                placeholder: "Enter operations",
-                class: "w-full p-1 rounded-sm bg-gray-100 text-black",
-            },
+            key: "operations",
+            placeholder: "Enter operations",
+            class: "w-full p-1 rounded-sm bg-gray-100 text-black",
         },
         {
-            type: "input",
-            props: {
-                type: "submit",
-                textContent: "Submit",
-                class: "w-full p-1 rounded-md bg-blue-500 text-white",
-            },
+            type: "submit",
+            textContent: "Submit",
+            class: "w-full p-1 rounded-md bg-blue-500 text-white",
         },
     ];
     form.getElement();
