@@ -408,7 +408,6 @@ export class AccordionShowMany implements IComponent {
     onPlus(e: any, s: any) {
         e.stopPropagation();
         s.s.s.cs = !s.s.s.cs;
-        let contentArea = s.content;
         if (s.s.s.cs) {
             s.s.update({
                 class: "transition-transform duration-300 rotate-315",
