@@ -11,9 +11,12 @@ export class ListWithCrud implements IComponent {
         this.s.funcs = {
             createItem: this.createItem.bind(this),
             operationsMaker: this.operationsMaker.bind(this),
+            contextMenuClick: this.contextMenuClick.bind(this),
         };
     }
-
+    contextMenuClick(e: any, ls: any) {
+        console.log("contextMenuClick", ls);
+    }
     getProps(): { [key: string]: any } {
         return this.comp!.getProps();
     }
@@ -27,9 +30,18 @@ export class ListWithCrud implements IComponent {
         });
         return this.comp.getElement();
     }
+    setData(data: any[]) {
+        this.s.data = data;
+        this.comp!.update({
+            innerHTML: "",
+            children: this.s.data.map(this.s.funcs.createItem),
+        });
+    }
 
     operationsMaker(item: any) {
         let contextMenu = new ContextMenu();
+        contextMenu.s.item = item;
+        contextMenu.s.funcs.onItemClick = this.s.funcs.contextMenuClick;
         contextMenu.getElement();
         return [
             Tools.icon(
@@ -37,7 +49,10 @@ export class ListWithCrud implements IComponent {
                 { class: "hover:text-yellow-200" },
                 {
                     click: (e: any, ls: any) => {
-                        console.log("delete", ls.s.data);
+                        this.s.funcs.contextMenuClick(e, {
+                            item: { name: "Delete", type: "Operation" },
+                            data: item,
+                        });
                     },
                 },
                 {
@@ -65,7 +80,7 @@ export class ListWithCrud implements IComponent {
         return Tools.div({
             class: "w-full flex items-center justify-between ",
             children: [
-                Tools.div({ textContent: item.name }),
+                Tools.div({ textContent: item.name }, {}, { data: item }),
                 Tools.div({
                     class: "w-fit flex items-center justify-between",
                     children: this.s.funcs.operationsMaker(item),
@@ -95,10 +110,14 @@ export class ContextMenu implements IComponent {
         document.addEventListener("click", this.onDocClick.bind(this));
         this.s.funcs = {
             createItem: this.createItem.bind(this),
+            onItemClick: this.onItemClick.bind(this),
         };
         this.undoer.add(() => {
             this.hide();
         });
+    }
+    onItemClick(e: any, ls: any) {
+        console.log(ls);
     }
     onDocClick(e: any) {
         this.undoer.undo();
@@ -133,10 +152,11 @@ export class ContextMenu implements IComponent {
             },
             {
                 click: (e: any, ls: any) => {
-                    console.log(item);
+                    this.s.funcs.onItemClick(e, { item, data: ls.s.data });
                     this.placeHolder!.clear();
                 },
-            }
+            },
+            { data: this.s.item }
         );
     }
 
