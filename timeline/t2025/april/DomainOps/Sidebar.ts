@@ -2,8 +2,10 @@ import { Tools } from "../GComponent";
 import { AccordionShowMany } from "../Accordion";
 import { Section } from "./Section";
 import { GForm, gformTest } from "../GForm";
+import { DocumentHandler } from "../Array";
 
 const accordion = new AccordionShowMany();
+const docHandler = new DocumentHandler();
 
 accordion.s.funcs.onPlusHandlerOnShow = (e: any, s: any) => {
     if (s.item.title === "Domains") {
@@ -93,9 +95,9 @@ const makeActivitiesForm = () => {
 const operationsForm = makeOperationsForm();
 const activitiesForm = makeActivitiesForm();
 
-const domainSection = new Section("domains", makeDomainForm());
-const operationsSection = new Section("operations", operationsForm);
-const activitiesSection = new Section("logger", activitiesForm);
+const domainSection = new Section("domains", makeDomainForm(), docHandler);
+const operationsSection = new Section("operations", operationsForm, docHandler);
+const activitiesSection = new Section("logger", activitiesForm, docHandler);
 
 domainSection.fillList();
 operationsSection.fillList();
