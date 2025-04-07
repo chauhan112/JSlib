@@ -34,3 +34,14 @@ export class Undoers {
         this.array.push(value);
     }
 }
+
+export class DocumentHandler {
+    undoer: Undoers = new Undoers();
+    constructor() {
+        console.log("DocumentHandler constructor");
+        document.addEventListener("click", (e: any) => this.onClick(e));
+    }
+    onClick(e: any) {
+        this.undoer.undo();
+    }
+}
