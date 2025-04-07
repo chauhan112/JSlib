@@ -1,10 +1,11 @@
 import { GComponent, IComponent, Tools, Container } from "./GComponent";
 import { Trash, EllipsisVertical } from "lucide";
-import { Undoers } from "./Array";
+import { DocumentHandler } from "./Array";
 
 export class ListWithCrud implements IComponent {
     s: { [key: string]: any } = {};
     comp: GComponent | null = null;
+    docHandler: DocumentHandler | null = null;
 
     constructor() {
         this.s.data = [];
@@ -42,6 +43,7 @@ export class ListWithCrud implements IComponent {
         let contextMenu = new ContextMenu();
         contextMenu.s.item = item;
         contextMenu.s.funcs.onItemClick = this.s.funcs.contextMenuClick;
+        contextMenu.docHandler = this.docHandler;
         contextMenu.getElement();
         return [
             Tools.icon(
@@ -64,11 +66,12 @@ export class ListWithCrud implements IComponent {
                 { class: "hover:text-yellow-200" },
                 {
                     click: (e: any, ls: any) => {
-                        e.stopPropagation();
+                        contextMenu.docHandler!.undoer.undo();
                         contextMenu.show();
-                        contextMenu.undoer.add(() => {
+                        contextMenu.docHandler!.undoer.add(() => {
                             contextMenu.hide();
                         });
+                        e.stopPropagation();
                     },
                 },
                 { data: item }
@@ -94,7 +97,7 @@ export class ContextMenu implements IComponent {
     s: { [key: string]: any } = {};
     placeHolder: Container | null = null;
     comp: GComponent | null = null;
-    undoer = new Undoers();
+    docHandler: DocumentHandler | null = null;
     constructor() {
         this.s.data = [
             {
@@ -107,20 +110,14 @@ export class ContextMenu implements IComponent {
                 name: "Delete",
             },
         ];
-        document.addEventListener("click", this.onDocClick.bind(this));
         this.s.funcs = {
             createItem: this.createItem.bind(this),
             onItemClick: this.onItemClick.bind(this),
         };
-        this.undoer.add(() => {
-            this.hide();
-        });
     }
+
     onItemClick(e: any, ls: any) {
         console.log(ls);
-    }
-    onDocClick(e: any) {
-        this.undoer.undo();
     }
     getElement(): HTMLElement | SVGElement {
         if (this.placeHolder) {
@@ -212,6 +209,7 @@ export class Test {
             },
         ];
         let list = new ListWithCrud();
+        list.docHandler = new DocumentHandler();
         list.s.data = items;
         list.getElement();
         return list;
