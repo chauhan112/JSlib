@@ -9,6 +9,7 @@ import {
 import { GComponent } from "../GComponent";
 import { GForm } from "../GForm";
 import { ListWithCrud } from "../ListWithCrud";
+import { DocumentHandler } from "../Array";
 
 export class Section {
     form: any = null;
@@ -17,10 +18,15 @@ export class Section {
     content: GComponent | null = null;
     plusIcon: GComponent | null = null;
     funcs: any = null;
-    constructor(typ: string, form: GForm) {
+    constructor(typ: string, form: GForm, docHandler?: DocumentHandler) {
         this.typ = typ;
         this.form = form;
         this.list = new ListWithCrud();
+        if (docHandler) {
+            this.list.docHandler = docHandler;
+        } else {
+            this.list.docHandler = new DocumentHandler();
+        }
         this.list.getElement();
         this.list.s.funcs.contextMenuClick = this.onContextMenuClick.bind(this);
         this.content = this.makeContent();
@@ -32,13 +38,13 @@ export class Section {
             },
         };
     }
+
     makeContent() {
         return Tools.div({
             class: "w-full h-full",
             children: [Tools.container({ key: "formArea" }), this.list],
         });
     }
-
     fillList() {
         readAll([], this.typ).then((res: any) => {
             let domains = res.data.map((item: any) => {
@@ -60,6 +66,9 @@ export class Section {
                 s.form.clearValues();
                 this.content!.s.formArea.clear();
             });
+        } else {
+            s.form.clearValues();
+            this.content!.s.formArea.clear();
         }
     }
     onSubmitForCreate(e: any, s: any) {
@@ -72,7 +81,6 @@ export class Section {
             }
         );
     }
-
     onContextMenuClick(e: any, s: any) {
         if (s.item.name === "Delete") {
             if (confirm(`Are you sure you want to delete this ${this.typ}?`)) {
