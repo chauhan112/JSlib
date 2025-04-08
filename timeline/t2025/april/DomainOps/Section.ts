@@ -5,19 +5,28 @@ import { GComponent } from "../GComponent";
 import { GForm } from "../GForm";
 import { ListWithCrud } from "../ListWithCrud";
 import { DocumentHandler } from "../Array";
-
+import { ListWithCrudWrapper } from "./ListWithCrudWrapper";
 export class Section {
     form: any = null;
-    list: any = null;
+    list: ListWithCrud;
     typ: string = "";
     content: GComponent | null = null;
     plusIcon: GComponent | null = null;
     funcs: any = null;
     endpoint: string = "update_name";
-    constructor(typ: string, form: GForm, docHandler?: DocumentHandler) {
+    listWrapper: ListWithCrudWrapper;
+    s: { [key: string]: any } = {};
+    constructor(
+        root: any,
+        typ: string,
+        form: GForm,
+        docHandler?: DocumentHandler
+    ) {
         this.typ = typ;
         this.form = form;
-        this.list = new ListWithCrud();
+        this.listWrapper = new ListWithCrudWrapper(typ, root);
+
+        this.list = this.listWrapper.list;
         if (docHandler) {
             this.list.docHandler = docHandler;
         } else {

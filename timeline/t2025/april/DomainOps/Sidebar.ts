@@ -13,17 +13,28 @@ export class Sidebar implements IComponent {
     opsContent: OperationsContent;
     activitiesSection: ActivitiesContent;
     comp: GComponent | null = null;
-    constructor() {
+    constructor(root?: any) {
+        let rootComponent = root || this;
         this.accordion = new AccordionShowMany();
         this.docHandler = new DocumentHandler();
-        this.domContent = new DomainsContent(this.docHandler);
-        this.opsContent = new OperationsContent(this.docHandler);
-        this.activitiesSection = new ActivitiesContent(this.docHandler);
+        this.domContent = new DomainsContent(rootComponent, this.docHandler);
+        this.opsContent = new OperationsContent(rootComponent, this.docHandler);
+        this.activitiesSection = new ActivitiesContent(
+            rootComponent,
+            this.docHandler
+        );
         this.accordion.s.funcs.onPlusHandlerOnShow =
             this.onPlusClickShowForm.bind(this);
         this.accordion.s.funcs.onPlusHandlerOnHide =
             this.onPlusClickHideForm.bind(this);
         this.setupAccordion();
+        this.domContent.s.parent = this;
+        this.opsContent.s.parent = this;
+        this.activitiesSection.s.parent = this;
+    }
+
+    itemClick(e: any, ls: any) {
+        console.log(ls.s.data);
     }
 
     getElement(): HTMLElement | SVGElement {
@@ -54,12 +65,12 @@ export class Sidebar implements IComponent {
             {
                 title: "Domains",
                 content: this.domContent.section.content,
-                open: false,
+                open: true,
             },
             {
                 title: "Operations",
                 content: this.opsContent.section.content,
-                open: false,
+                open: true,
             },
             {
                 title: "Activities",
