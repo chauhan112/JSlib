@@ -1,9 +1,10 @@
-import { read, createLogger, readAll, deleteItem } from "./apis";
+import { read, createLogger, readAll, deleteItem, updateLogger } from "./apis";
 import { DocumentHandler } from "../Array";
 import { GComponent } from "../GComponent";
 import { GForm } from "../GForm";
 import { ListWithCrud } from "../ListWithCrud";
 import { Tools } from "../tools";
+import { ListWithCrudWrapper } from "./ListWithCrudWrapper";
 
 export class ActivitiesContent {
     form: GForm;
@@ -13,15 +14,20 @@ export class ActivitiesContent {
     docHandler: DocumentHandler;
     typ: string = "logger";
     more: any = {};
-    constructor(docHandler?: DocumentHandler) {
+    listWrapper: ListWithCrudWrapper;
+    s: { [key: string]: any } = {};
+    constructor(root?: any, docHandler?: DocumentHandler) {
+        let rootComponent = root || this;
         this.docHandler = docHandler || new DocumentHandler();
         this.form = this.makeForm();
-        this.list = new ListWithCrud();
+        this.listWrapper = new ListWithCrudWrapper(this.typ, rootComponent);
+        this.list = this.listWrapper.list;
         this.list.docHandler = this.docHandler;
         this.list.s.funcs.contextMenuClick = this.onContextMenuClick.bind(this);
         this.list.getElement();
         this.content = this.makeContent();
         this.more.plusIcon = null;
+        this.s.root = rootComponent;
     }
     makeForm() {
         const form = new GForm();
@@ -80,7 +86,20 @@ export class ActivitiesContent {
             );
         });
     }
-    onEditSubmit() {}
+    onEditSubmit(e: any, ls: any) {
+        e.preventDefault();
+
+        updateLogger(ls.form.s.currentItem.key, [], {
+            new_name: ls.values.activityName,
+            operation: ls.values.operation,
+            domains: ls.values.domains.map((ele: any) => ele.value),
+        }).then((res: any) => {
+            console.log("updated", res.data);
+            this.init();
+            this.form.clearValues();
+            this.comps.formArea.clear();
+        });
+    }
     onCreateSubmit(e: any, ls: any) {
         e.preventDefault();
         console.log(ls.values);
@@ -105,6 +124,7 @@ export class ActivitiesContent {
     onPlusClickShowForm() {
         this.fillFormWithOptions(null).then((res: any) => {
             this.comps.formArea.display(this.form);
+            this.form.clearValues();
             this.form.s.funcs.onSubmit = this.onCreateSubmit.bind(this);
         });
     }
@@ -145,7 +165,6 @@ export class ActivitiesContent {
         console.log("fetched", this.more);
         return this.more;
     }
-
     onEditContent(e: any, ls: any) {
         this.fillFormWithOptions(ls).then((res: any) => {
             read(ls.data.key, [], this.typ).then((res: any) => {
@@ -157,6 +176,9 @@ export class ActivitiesContent {
                     })),
                 });
             });
+            this.comps.formArea.display(this.form);
+            this.form.s.funcs.onSubmit = this.onEditSubmit.bind(this);
+            this.form.s.currentItem = ls.data;
         });
     }
 
