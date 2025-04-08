@@ -65,8 +65,8 @@ export class Tools {
         comp.comp.update(props, handlers);
         return comp;
     }
-    static input(props: { [key: string]: any }) {
-        let comp = new Input(props);
+    static input(props: { [key: string]: any }, typ: string = "input") {
+        let comp = new Input(props, typ);
         return comp;
     }
     static dropdown(options: any[]) {
