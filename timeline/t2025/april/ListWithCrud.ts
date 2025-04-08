@@ -1,5 +1,10 @@
 import { GComponent, IComponent, Container } from "./GComponent";
-import { Trash, EllipsisVertical } from "lucide";
+import {
+    Trash,
+    EllipsisVertical,
+    CornerDownRight,
+    CornerRightDown,
+} from "lucide";
 import { DocumentHandler } from "./Array";
 import { Tools } from "./tools";
 
@@ -48,12 +53,12 @@ export class ListWithCrud implements IComponent {
         contextMenu.getElement();
         return [
             Tools.icon(
-                Trash,
+                CornerRightDown,
                 { class: "hover:text-yellow-200" },
                 {
                     click: (e: any, ls: any) => {
                         this.s.funcs.contextMenuClick(e, {
-                            item: { name: "Delete", type: "Operation" },
+                            item: { name: "Cd", type: "Operation" },
                             data: item,
                         });
                     },
