@@ -1,17 +1,32 @@
-import { GComponent, IComponent, Tools } from "./GComponent";
+import { GComponent, IComponent } from "./GComponent";
 import { IFormComponent } from "./GForm";
+import { Tools } from "./tools";
 
 export class DropdownMenu implements IComponent, IFormComponent {
     s: { [key: string]: any } = {};
     comp: GComponent | null = null;
     options: { [key: string]: any } = {};
-    constructor(options: any[] = []) {
+    constructor(options: any[] = [], defValue?: any) {
         this.s.options = options;
         this.s.funcs = {
             makeOption: this.makeOption.bind(this),
         };
+        if (defValue) {
+            this.set(defValue);
+        }
     }
-
+    setOptions(options: any[]) {
+        this.s.options = options;
+        this.options = {};
+        this.comp!.update({
+            innerHTML: "",
+            children: this.s.options.map((option: any) => {
+                const comp = this.s.funcs.makeOption(option);
+                this.options[option.value] = comp;
+                return comp;
+            }),
+        });
+    }
     getElement(): HTMLElement | SVGElement {
         if (this.comp) {
             return this.comp.getElement();
@@ -43,22 +58,22 @@ export class DropdownMenu implements IComponent, IFormComponent {
         comp.value = "";
     }
     makeOption(option: any) {
-        return Tools.comp("option", {
-            value: option.value,
-            textContent: option.textContent,
-        });
+        return Tools.comp("option", option);
     }
 }
 
 export class MultiSelectWithSearch implements IComponent, IFormComponent {
     s: { [key: string]: any } = {};
     comp: GComponent | null = null;
-    constructor(options: any[] = []) {
+    constructor(options: any[] = [], defValue?: any) {
         this.s.selectedItems = [];
 
         this.s.isDropdownOpen = false;
         this.setupEventListeners();
         this.setOptions(options);
+        if (defValue) {
+            this.set(defValue);
+        }
     }
     clear(): void {
         this.s.selectedItems = [];
@@ -146,7 +161,16 @@ export class MultiSelectWithSearch implements IComponent, IFormComponent {
         return this.s.selectedItems;
     }
     set(value: any): void {
-        this.s.selectedItems = value;
+        this.s.selectedItems = [];
+        let keysOptions: { [key: string]: any } = {};
+        this.s.options.forEach((option: any) => {
+            keysOptions[option.value] = option;
+        });
+        for (const item of value) {
+            if (keysOptions[item.value]) {
+                this.s.selectedItems.push(keysOptions[item.value]);
+            }
+        }
         this.updateSelectedItemsDisplay();
         this.renderOptions(this.s.options);
     }
@@ -161,7 +185,7 @@ export class MultiSelectWithSearch implements IComponent, IFormComponent {
         this.s.comps.optionsList.update({
             children: optionsToRender.map((option) => {
                 const isSelected = this.s.selectedItems.some(
-                    (item: any) => item.id === option.id
+                    (item: any) => item.value === option.value
                 );
 
                 const optionElement = Tools.div(
@@ -173,17 +197,19 @@ export class MultiSelectWithSearch implements IComponent, IFormComponent {
                                 class: "mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500",
                                 ...(isSelected ? { checked: true } : {}),
                             }),
-                            Tools.comp("span", { textContent: option.text }),
+                            Tools.comp("span", {
+                                textContent: option.textContent,
+                            }),
                         ],
                     },
                     {
                         click: (e: any, ls: any) => {
                             e.stopPropagation();
-                            this.handleOptionSelection(ls.s.id);
+                            this.handleOptionSelection(ls.s.value);
                         },
                     },
                     {
-                        id: option.id,
+                        value: option.value,
                     }
                 );
                 return optionElement;
@@ -205,7 +231,7 @@ export class MultiSelectWithSearch implements IComponent, IFormComponent {
                 const selectedItemElement = Tools.div({
                     class: "selected-item bg-blue-100 text-blue-800 px-3 py-1 rounded-full flex items-center",
                     children: [
-                        Tools.comp("span", { textContent: item.text }),
+                        Tools.comp("span", { textContent: item.textContent }),
                         Tools.comp(
                             "button",
                             {
@@ -215,10 +241,11 @@ export class MultiSelectWithSearch implements IComponent, IFormComponent {
                             {
                                 click: (e: any, ls: any) => {
                                     e.stopPropagation();
-                                    const idToRemove = ls.s.data.id;
+                                    const idToRemove = ls.s.data.value;
                                     this.s.selectedItems =
                                         this.s.selectedItems.filter(
-                                            (item: any) => item.id != idToRemove
+                                            (item: any) =>
+                                                item.value != idToRemove
                                         );
                                     this.updateSelectedItemsDisplay();
                                     this.renderOptions(this.s.options);
@@ -261,22 +288,22 @@ export class MultiSelectWithSearch implements IComponent, IFormComponent {
     }
     filterOptions(searchTerm: string) {
         const filtered = this.s.options.filter((option: any) =>
-            option.text.toLowerCase().includes(searchTerm.toLowerCase())
+            option.textContent.toLowerCase().includes(searchTerm.toLowerCase())
         );
         this.renderOptions(filtered);
     }
     handleOptionSelection(optionId: any) {
-        const option = this.s.options.find((opt: any) => opt.id == optionId);
+        const option = this.s.options.find((opt: any) => opt.value == optionId);
 
         if (!option) return;
 
         const isSelected = this.s.selectedItems.some(
-            (item: any) => item.id == optionId
+            (item: any) => item.value == optionId
         );
 
         if (isSelected) {
             this.s.selectedItems = this.s.selectedItems.filter(
-                (item: any) => item.id != optionId
+                (item: any) => item.value != optionId
             );
         } else {
             this.s.selectedItems.push(option);
@@ -292,12 +319,16 @@ export class MultiSelect implements IComponent, IFormComponent {
     comp: GComponent | null = null;
     options: { [key: string]: any } = {};
 
-    constructor(options: any[] = []) {
+    constructor(options: any[] = [], defValue?: any[], placeholder?: string) {
         this.s.options = options;
+        this.s.placeholder = placeholder || "Select options...";
         this.s.selectedItems = [];
         this.s.funcs = {
             makeOption: this.makeOption.bind(this),
         };
+        if (defValue) {
+            this.set(defValue);
+        }
     }
     getElement(): HTMLElement | SVGElement {
         if (this.comp) {
@@ -310,11 +341,12 @@ export class MultiSelect implements IComponent, IFormComponent {
                     "button",
                     {
                         key: "selectButton",
-                        textContent: "Select options",
+                        textContent: this.s.placeholder,
                         class: "w-full px-4 py-2 text-left bg-white text-gray-800 border-b-2 border-gray-400 rounded-none focus:outline-none focus:border-black transition-colors",
                     },
                     {
                         click: (e: any, ls: any) => {
+                            e.preventDefault();
                             this.s.comps.dropdownMenu
                                 .getElement()
                                 .classList.toggle("hidden");
@@ -323,10 +355,10 @@ export class MultiSelect implements IComponent, IFormComponent {
                 ),
                 Tools.div({
                     key: "dropdownMenu",
-                    class: "absolute w-full bg-white border-b-2 border-gray-400 rounded-none shadow-md max-h-60 overflow-y-auto z-10",
+                    class: "absolute w-full bg-white border-b-2 border-gray-400 rounded-none shadow-md max-h-60 overflow-y-auto z-10 hidden",
                     children: this.s.options.map((option: any) => {
                         let comp = this.s.funcs.makeOption(option);
-                        this.options[option.id] = comp;
+                        this.options[option.value] = comp;
                         return comp;
                     }),
                 }),
@@ -351,7 +383,7 @@ export class MultiSelect implements IComponent, IFormComponent {
                         key: "checkbox",
                         type: "checkbox",
                         class: "w-4 h-4 text-black border-gray-400 rounded-none focus:ring-0",
-                        value: option.id,
+                        value: option.value,
                     },
                     {
                         change: (e: any, ls: any) => {
@@ -364,7 +396,7 @@ export class MultiSelect implements IComponent, IFormComponent {
                 ),
                 Tools.comp("span", {
                     class: "ml-2",
-                    textContent: option.text,
+                    textContent: option.textContent,
                 }),
             ],
         });
@@ -377,7 +409,9 @@ export class MultiSelect implements IComponent, IFormComponent {
             }
         }
         let btnText = "";
-        const selected = this.s.selectedItems.map((item: any) => item.text);
+        const selected = this.s.selectedItems.map(
+            (item: any) => item.textContent
+        );
         if (selected.length === 0) {
             btnText = "Select options";
         } else if (selected.length <= 2) {
@@ -391,11 +425,12 @@ export class MultiSelect implements IComponent, IFormComponent {
     }
     setOptions(options: any[]) {
         this.s.options = options;
+        this.options = {};
         this.s.comps.dropdownMenu.update({
             innerHTML: "",
             children: this.s.options.map((option: any) => {
                 let comp = this.s.funcs.makeOption(option);
-                this.options[option.id] = comp;
+                this.options[option.value] = comp;
                 return comp;
             }),
         });
@@ -413,7 +448,7 @@ export class MultiSelect implements IComponent, IFormComponent {
             this.options[key].s.checkbox.component.checked = false;
         }
         for (const option of value) {
-            this.options[option.id].s.checkbox.component.checked = true;
+            this.options[option.value].s.checkbox.component.checked = true;
         }
         this.updateBtnText();
     }
@@ -423,13 +458,7 @@ export class MultiSelect implements IComponent, IFormComponent {
 }
 
 export class Test {
-    static wrapWithIFormCompOps(
-        comp: IComponent,
-        setValue: any = [
-            { id: 1, text: "Option 1" },
-            { id: 2, text: "Option 2" },
-        ]
-    ) {
+    static wrapWithIFormCompOps(comp: IComponent, setValue: any) {
         return Tools.div({
             children: [
                 comp,
@@ -474,17 +503,21 @@ export class Test {
     }
     static multiSelectWithSearch() {
         const options = [
-            { id: 1, text: "Option 1" },
-            { id: 2, text: "Option 2" },
-            { id: 3, text: "Option 3" },
-            { id: 4, text: "Option 4" },
-            { id: 5, text: "Option 5" },
-            { id: 6, text: "Option 6" },
-            { id: 7, text: "Option 7" },
-            { id: 8, text: "Option 8" },
+            { value: 1, textContent: "Option 1" },
+            { value: 2, textContent: "Option 2" },
+            { value: 3, textContent: "Option 3" },
+            { value: 4, textContent: "Option 4" },
+            { value: 5, textContent: "Option 5" },
+            { value: 6, textContent: "Option 6" },
+            { value: 7, textContent: "Option 7" },
+            { value: 8, textContent: "Option 8" },
         ];
         let comp = new MultiSelectWithSearch(options);
-        return this.wrapWithIFormCompOps(comp);
+        return this.wrapWithIFormCompOps(comp, [
+            { value: 1, textContent: "Option 1" },
+            { value: 2, textContent: "Option 2" },
+            { value: 211, textContent: "Option 2" },
+        ]);
     }
     static dropdownMenu() {
         let options = [
@@ -511,13 +544,13 @@ export class Test {
     }
     static multiSelect() {
         const options = [
-            { id: 1, text: "Option 1" },
-            { id: 2, text: "Option 2" },
-            { id: 3, text: "Option 3" },
+            { value: 1, textContent: "Option 1" },
+            { value: 2, textContent: "Option 2" },
+            { value: 3, textContent: "Option 3" },
         ];
         let comp = new MultiSelect(options);
         comp.getElement();
         comp.s.comps.dropdownMenu.getElement().classList.toggle("absolute");
-        return this.wrapWithIFormCompOps(comp);
+        return this.wrapWithIFormCompOps(comp, [{ value: 1 }]);
     }
 }
