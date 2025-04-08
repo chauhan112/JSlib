@@ -1,12 +1,7 @@
-import {
-    Tools,
-    IComponent,
-    Repeater,
-    GComponent,
-    Container,
-} from "./GComponent";
+import { IComponent, Repeater, GComponent, Container } from "./GComponent";
 import { ChevronDown, Plus } from "lucide";
 import { Undoers } from "./Array";
+import { Tools } from "./tools";
 
 export class AccordionShowOne implements IComponent {
     s: { [key: string]: any } = {};

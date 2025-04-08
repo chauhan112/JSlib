@@ -1,4 +1,5 @@
-import { IComponent, Tools, GComponent } from "./GComponent";
+import { IComponent, GComponent } from "./GComponent";
+import { Tools } from "./tools";
 
 export interface IFormComponent {
     get(): any;
@@ -39,22 +40,7 @@ export class GForm implements IComponent {
     comp: GComponent | null = null;
     formElements: { [key: string]: IFormComponent } = {};
     constructor() {
-        this.s.data = [
-            {
-                type: "input",
-                props: {
-                    key: "domain",
-                    placeholder: "Enter domain",
-                },
-            },
-            {
-                type: "input",
-                props: {
-                    type: "submit",
-                    textContent: "Submit",
-                },
-            },
-        ];
+        this.s.data = [];
         this.s.values = {};
         this.s.funcs = {
             createItem: this.createItem.bind(this),

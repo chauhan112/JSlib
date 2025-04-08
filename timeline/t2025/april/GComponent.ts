@@ -1,6 +1,3 @@
-import { IconNode } from "lucide";
-import { Icon } from "./icons";
-
 export interface IComponent {
     s: { [key: string]: any };
     getElement(): HTMLElement | SVGElement;
@@ -97,62 +94,6 @@ export class GComponent implements IComponent {
     }
     getProps() {
         return this.props;
-    }
-}
-
-export class Tools {
-    static comp(
-        typ: string,
-        props?: { [key: string]: any },
-        handlers?: { [key: string]: (...args: any[]) => void },
-        state?: { [key: string]: any }
-    ) {
-        const c = new GComponent();
-        c.typ = typ;
-        c.update(props, handlers, state);
-        return c;
-    }
-    static rep(data: { [key: string]: IComponent }) {
-        let repeater = new Repeater();
-        repeater.setData(data);
-        return repeater;
-    }
-    static div(
-        props?: { [key: string]: any },
-        handlers?: { [key: string]: (...args: any[]) => void },
-        state?: { [key: string]: any }
-    ) {
-        return Tools.comp("div", props, handlers, state);
-    }
-    static icon(
-        icon: IconNode,
-        props: Record<string, any> = {},
-        handlers: Record<string, any> = {},
-        states: Record<string, any> = {}
-    ) {
-        let comp = new Icon(icon);
-        comp.update(props, states, handlers);
-        return comp;
-    }
-    static ifComp(
-        conditions: { func: (value: any) => boolean; comp: IComponent }[],
-        defaultValue: any = null,
-        props?: { [key: string]: any }
-    ) {
-        let comp = new ConditionalComponent();
-        comp.s.defaultValue = defaultValue;
-        comp.setConditions(conditions);
-        comp.getElement();
-        comp.comp!.update(props);
-        return comp;
-    }
-    static container(
-        props?: { [key: string]: any },
-        handlers?: { [key: string]: (...args: any[]) => void }
-    ) {
-        let comp = new Container();
-        comp.comp.update(props, handlers);
-        return comp;
     }
 }
 

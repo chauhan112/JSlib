@@ -1,6 +1,7 @@
-import { GComponent, IComponent, Tools, Container } from "./GComponent";
+import { GComponent, IComponent, Container } from "./GComponent";
 import { Trash, EllipsisVertical } from "lucide";
 import { DocumentHandler } from "./Array";
+import { Tools } from "./tools";
 
 export class ListWithCrud implements IComponent {
     s: { [key: string]: any } = {};

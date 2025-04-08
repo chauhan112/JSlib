@@ -38,7 +38,6 @@ export class Undoers {
 export class DocumentHandler {
     undoer: Undoers = new Undoers();
     constructor() {
-        console.log("DocumentHandler constructor");
         document.addEventListener("click", (e: any) => this.onClick(e));
     }
     onClick(e: any) {
