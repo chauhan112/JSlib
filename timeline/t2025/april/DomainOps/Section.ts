@@ -1,11 +1,6 @@
-import { Tools } from "../GComponent";
+import { Tools } from "../tools";
 
-import {
-    create,
-    readAll,
-    deleteItem,
-    updateName,
-} from "../../mar/domainOps/Apis";
+import { create, readAll, deleteItem, updateName } from "./apis";
 import { GComponent } from "../GComponent";
 import { GForm } from "../GForm";
 import { ListWithCrud } from "../ListWithCrud";
@@ -18,6 +13,7 @@ export class Section {
     content: GComponent | null = null;
     plusIcon: GComponent | null = null;
     funcs: any = null;
+    endpoint: string = "update_name";
     constructor(typ: string, form: GForm, docHandler?: DocumentHandler) {
         this.typ = typ;
         this.form = form;
@@ -31,11 +27,12 @@ export class Section {
         this.list.s.funcs.contextMenuClick = this.onContextMenuClick.bind(this);
         this.content = this.makeContent();
         this.funcs = {
-            updateName: (val: any) => val.domain,
-            createInfo: (val: any) => val.domain,
-            valuesForForm: (val: any) => {
+            updateNameData: (val: any) => val.domain,
+            createInfoData: (val: any) => val.domain,
+            valuesForFormData: (val: any) => {
                 return { domain: val.name };
             },
+            onEditSubmit: this.onEditSubmit.bind(this),
         };
     }
 
@@ -59,7 +56,7 @@ export class Section {
             updateName(
                 this.form.s.currentData.key,
                 [],
-                this.funcs.updateName(s.values),
+                this.funcs.updateNameData(s.values),
                 this.typ
             ).then((res: any) => {
                 this.fillList();
@@ -73,9 +70,9 @@ export class Section {
     }
     onSubmitForCreate(e: any, s: any) {
         e.preventDefault();
-        create(this.funcs.createInfo(s.values), [], this.typ).then(
+        create(this.funcs.createInfoData(s.values), [], this.typ).then(
             (res: any) => {
-                this.plusIcon!.component.dispatchEvent(new Event("click"));
+                this.plusIcon!.getElement().dispatchEvent(new Event("click"));
                 s.form.clearValues();
                 this.fillList();
             }
@@ -90,9 +87,9 @@ export class Section {
             }
         } else if (s.item.name === "Edit") {
             this.content!.s.formArea.display(this.form);
-            this.form.s.funcs.onSubmit = this.onEditSubmit.bind(this);
+            this.form.s.funcs.onSubmit = this.funcs.onEditSubmit;
             this.form.s.currentData = s.data;
-            this.form.setValues(this.funcs.valuesForForm(s.data));
+            this.form.setValues(this.funcs.valuesForFormData(s.data));
         }
     }
 }
