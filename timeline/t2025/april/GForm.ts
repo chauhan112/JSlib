@@ -10,8 +10,10 @@ export interface IFormComponent {
 export class Input implements IFormComponent, IComponent {
     comp: GComponent;
     s: { [key: string]: any } = {};
-    constructor(props: any) {
-        this.comp = Tools.comp("input", {
+    typ: string;
+    constructor(props: any, typ: string = "input") {
+        this.typ = typ;
+        this.comp = Tools.comp(this.typ, {
             ...props,
         });
     }
