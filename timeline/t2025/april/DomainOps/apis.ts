@@ -55,8 +55,12 @@ export const updateName = async (
     });
 };
 
-export const updateLogger = async (name: string, loc: string[], vals: any) => {
-    return axios.post(`${BASE_URL}/loggers/update/`, {
+export const updateLogger = async (
+    name: string,
+    loc: string[],
+    vals: any = {}
+) => {
+    return axios.post(`${BASE_URL}/logger/update/`, {
         name,
         loc,
         ...vals,
@@ -68,8 +72,52 @@ export const readProps = async (
     loc: string[],
     typ: string = "domains"
 ) => {
-    return axios.post(`${BASE_URL}/${typ}/readAll/`, {
+    return axios.post(`${BASE_URL}/${typ}/properties/readAll/`, {
         name,
         loc,
+    });
+};
+
+export const createProperty = async (
+    name: string,
+    loc: string[],
+    key: string,
+    value: string,
+    typ: string = "domains"
+) => {
+    console.log(name, loc, key, value, typ);
+    return axios.post(`${BASE_URL}/${typ}/properties/create/`, {
+        name,
+        loc,
+        key,
+        value,
+    });
+};
+
+export const deleteProperty = async (
+    name: string,
+    loc: string[],
+    key: string,
+    typ: string = "domains"
+) => {
+    return axios.post(`${BASE_URL}/${typ}/properties/delete/`, {
+        name,
+        loc,
+        key,
+    });
+};
+
+export const updateProperty = async (
+    name: string,
+    loc: string[],
+    key: string,
+    value: string,
+    typ: string = "domains"
+) => {
+    return axios.post(`${BASE_URL}/${typ}/properties/update/`, {
+        name,
+        loc,
+        key,
+        value,
     });
 };
