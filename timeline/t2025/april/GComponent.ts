@@ -1,3 +1,5 @@
+import { Tools } from "./tools";
+
 export interface IComponent {
     s: { [key: string]: any };
     getElement(): HTMLElement | SVGElement;
@@ -10,27 +12,28 @@ export class GComponent implements IComponent {
     typ: string = "div";
     private component: HTMLElement | null = null;
     protected updateProp(key: string, value: any) {
-        if (this.component) {
-            if (key === "textContent") {
-                this.component.textContent = value;
-            } else if (key === "innerHTML") {
-                this.component.innerHTML = value;
-            } else if (key === "children") {
-                for (let child of value) {
-                    this.updateChild(child);
-                }
-            } else if (key === "key") {
-                return;
-            } else if (key === "child") {
-                this.updateChild(value);
-                return;
-            } else if (key === "style") {
-                for (let style in value) {
-                    this.component.style.setProperty(style, value[style]);
-                }
-            } else {
-                this.component.setAttribute(key, value);
+        if (!this.component) {
+            this.getElement();
+        }
+        if (key === "textContent") {
+            this.component!.textContent = value;
+        } else if (key === "innerHTML") {
+            this.component!.innerHTML = value;
+        } else if (key === "children") {
+            for (let child of value) {
+                this.updateChild(child);
             }
+        } else if (key === "key") {
+            return;
+        } else if (key === "child") {
+            this.updateChild(value);
+            return;
+        } else if (key === "style") {
+            for (let style in value) {
+                this.component!.style.setProperty(style, value[style]);
+            }
+        } else {
+            this.component!.setAttribute(key, value);
         }
     }
 
@@ -48,25 +51,16 @@ export class GComponent implements IComponent {
     ) {
         for (let key in props) {
             this.props[key] = props[key];
-            if (this.component) {
-                this.updateProp(key, props[key]);
-            }
+            this.updateProp(key, props[key]);
         }
         for (let key in state) {
             this.s[key] = state[key];
         }
         for (let key in handlers) {
-            if (this.component) {
-                if (this.handlers.hasOwnProperty(key)) {
-                    this.component?.removeEventListener(
-                        key,
-                        this.handlers[key]
-                    );
-                }
-                this.addHandler(key, handlers[key]);
-            } else {
-                this.handlers[key] = handlers[key];
+            if (this.handlers.hasOwnProperty(key)) {
+                this.component?.removeEventListener(key, this.handlers[key]);
             }
+            this.addHandler(key, handlers[key]);
         }
     }
     private addHandler(key: string, handler: (...args: any[]) => void) {
