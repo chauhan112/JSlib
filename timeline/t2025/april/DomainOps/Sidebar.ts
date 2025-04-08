@@ -1,140 +1,101 @@
-import { Tools } from "../GComponent";
+import { Tools } from "../tools";
 import { AccordionShowMany } from "../Accordion";
-import { Section } from "./Section";
-import { GForm, gformTest } from "../GForm";
 import { DocumentHandler } from "../Array";
+import { ActivitiesContent } from "./ActivitiesCrud";
+import { DomainsContent, OperationsContent } from "./DomainOps";
+import { GComponent, IComponent } from "../GComponent";
 
-const accordion = new AccordionShowMany();
-const docHandler = new DocumentHandler();
-
-accordion.s.funcs.onPlusHandlerOnShow = (e: any, s: any) => {
-    if (s.item.title === "Domains") {
-        domainSection.content!.s.formArea.display(domainSection.form);
-        domainSection.form.s.funcs.onSubmit =
-            domainSection.onSubmitForCreate.bind(domainSection);
-        domainSection.form.clearValues();
-        domainSection.plusIcon = s.s;
-    } else if (s.item.title === "Operations") {
-        operationsSection.content!.s.formArea.display(operationsForm);
-        operationsSection.form.s.funcs.onSubmit =
-            operationsSection.onSubmitForCreate.bind(operationsSection);
-        operationsSection.form.clearValues();
-        operationsSection.plusIcon = s.s;
-    } else if (s.item.title === "Activities") {
-        activitiesSection.content!.s.formArea.display(activitiesForm);
+export class Sidebar implements IComponent {
+    accordion: AccordionShowMany;
+    s: { [key: string]: any } = {};
+    docHandler: DocumentHandler;
+    domContent: DomainsContent;
+    opsContent: OperationsContent;
+    activitiesSection: ActivitiesContent;
+    comp: GComponent | null = null;
+    constructor() {
+        this.accordion = new AccordionShowMany();
+        this.docHandler = new DocumentHandler();
+        this.domContent = new DomainsContent(this.docHandler);
+        this.opsContent = new OperationsContent(this.docHandler);
+        this.activitiesSection = new ActivitiesContent(this.docHandler);
+        this.accordion.s.funcs.onPlusHandlerOnShow =
+            this.onPlusClickShowForm.bind(this);
+        this.accordion.s.funcs.onPlusHandlerOnHide =
+            this.onPlusClickHideForm.bind(this);
+        this.setupAccordion();
     }
-};
-accordion.s.funcs.onPlusHandlerOnHide = (e: any, s: any) => {
-    if (s.item.title === "Domains") {
-        domainSection.content!.s.formArea.clear();
-    } else if (s.item.title === "Operations") {
-        operationsSection.content!.s.formArea.clear();
-    } else if (s.item.title === "Activities") {
-        activitiesSection.content!.s.formArea.clear();
+
+    getElement(): HTMLElement | SVGElement {
+        if (this.comp) {
+            return this.comp.getElement();
+        }
+        this.comp = Tools.div({
+            class: "w-64 bg-gray-700 text-white p-4 min-h-[100vh] flex flex-col gap-5 overflow-y-auto",
+            children: [
+                Tools.comp("h1", {
+                    class: "text-lg font-bold",
+                    textContent: "DOMAIN LOGGER",
+                }),
+                this.accordion,
+            ],
+        });
+        return this.comp.getElement();
     }
-};
-accordion.getElement();
-
-const makeDomainForm = () => {
-    const form = new GForm();
-    form.s.data = [
-        {
-            key: "domain",
-            placeholder: "domain name",
-            class: "w-full p-1 rounded-sm bg-gray-100 text-black",
-        },
-        {
-            type: "submit",
-            textContent: "Submit",
-            class: "w-full p-1 rounded-md bg-blue-500 text-white",
-        },
-    ];
-    form.getElement();
-    return form;
-};
-
-const makeOperationsForm = () => {
-    const form = new GForm();
-    form.s.data = [
-        {
-            key: "operation",
-            placeholder: "operation name",
-            class: "w-full p-1 rounded-sm bg-gray-100 text-black",
-        },
-        {
-            type: "submit",
-            textContent: "Submit",
-            class: "w-full p-1 rounded-md bg-blue-500 text-white",
-        },
-    ];
-    form.getElement();
-    return form;
-};
-
-const makeActivitiesForm = () => {
-    const form = new GForm();
-    form.s.data = [
-        {
-            key: "domain",
-            class: "w-full p-1 rounded-sm bg-gray-100 text-black",
-        },
-        {
-            key: "operations",
-            placeholder: "Enter operations",
-            class: "w-full p-1 rounded-sm bg-gray-100 text-black",
-        },
-        {
-            type: "submit",
-            textContent: "Submit",
-            class: "w-full p-1 rounded-md bg-blue-500 text-white",
-        },
-    ];
-    form.getElement();
-    return form;
-};
-const operationsForm = makeOperationsForm();
-const activitiesForm = makeActivitiesForm();
-
-const domainSection = new Section("domains", makeDomainForm(), docHandler);
-const operationsSection = new Section("operations", operationsForm, docHandler);
-const activitiesSection = new Section("logger", activitiesForm, docHandler);
-
-domainSection.fillList();
-operationsSection.fillList();
-operationsSection.funcs = {
-    updateName: (val: any) => val.operation,
-    createInfo: (val: any) => val.operation,
-    valuesForForm: (val: any) => {
-        return { operation: val.name };
-    },
-};
-activitiesSection.fillList();
-
-accordion.setData([
-    {
-        title: "Domains",
-        content: domainSection.content,
-        open: true,
-    },
-    {
-        title: "Operations",
-        content: operationsSection.content,
-        open: true,
-    },
-    {
-        title: "Activities",
-        content: activitiesSection.content,
-        open: false,
-    },
-]);
-
-export const sidebar = Tools.div({
-    class: "w-64 bg-gray-700 text-white p-4 min-h-[100vh] flex flex-col gap-5 overflow-y-auto",
-    children: [
-        Tools.comp("h1", {
-            class: "text-lg font-bold",
-            textContent: "DOMAIN LOGGER",
-        }),
-        accordion,
-    ],
-});
+    getProps(): { [key: string]: any } {
+        return this.comp!.getProps();
+    }
+    setupAccordion() {
+        this.accordion.getElement();
+        this.domContent.init();
+        this.opsContent.init();
+        this.activitiesSection.init();
+        this.accordion.setData([
+            {
+                title: "Domains",
+                content: this.domContent.section.content,
+                open: false,
+            },
+            {
+                title: "Operations",
+                content: this.opsContent.section.content,
+                open: false,
+            },
+            {
+                title: "Activities",
+                content: this.activitiesSection.content,
+                open: true,
+            },
+        ]);
+    }
+    onPlusClickShowForm(e: any, s: any) {
+        let section = null;
+        if (s.item.title === "Domains") {
+            section = this.domContent.section;
+            section.form.s.funcs.onSubmit =
+                section.onSubmitForCreate.bind(section);
+            section.content!.s.formArea.display(section.form);
+            section.form.clearValues();
+            section.plusIcon = s.s;
+        } else if (s.item.title === "Operations") {
+            section = this.opsContent.section;
+            section.form.s.funcs.onSubmit =
+                section.onSubmitForCreate.bind(section);
+            section.content!.s.formArea.display(section.form);
+            section.form.clearValues();
+            section.plusIcon = s.s;
+        } else if (s.item.title === "Activities") {
+            this.activitiesSection.onPlusClickShowForm();
+            this.activitiesSection.more.plusIcon = s.s;
+        }
+    }
+    onPlusClickHideForm(e: any, s: any) {
+        if (s.item.title === "Domains") {
+            this.domContent.section.content!.s.formArea.clear();
+        } else if (s.item.title === "Operations") {
+            this.opsContent.section.content!.s.formArea.clear();
+        } else if (s.item.title === "Activities") {
+            this.activitiesSection.onPlusClickHideForm();
+        }
+    }
+}
