@@ -1,4 +1,10 @@
-import { read, createLogger, readAll, deleteItem, updateLogger } from "./apis";
+import {
+    read,
+    createActivity,
+    readAll,
+    deleteItem,
+    updateActivity,
+} from "./api/pythonAnywhere";
 import { DocumentHandler } from "../Array";
 import { GComponent } from "../GComponent";
 import { GForm } from "../GForm";
@@ -12,7 +18,7 @@ export class ActivitiesContent {
     comps: { [key: string]: any } = {};
     list: ListWithCrud;
     docHandler: DocumentHandler;
-    typ: string = "logger";
+    typ: string = "activities";
     more: any = {};
     listWrapper: ListWithCrudWrapper;
     s: { [key: string]: any } = {};
@@ -79,22 +85,21 @@ export class ActivitiesContent {
     }
     init() {
         readAll([], this.typ).then((res: any) => {
-            this.list.setData(
-                res.data.map((item: any) => {
-                    return { name: item[1], key: item[0] };
-                })
-            );
+            let data = [];
+            for (const key in res.data) {
+                data.push({ name: res.data[key].name, key });
+            }
+            this.list.setData(data);
         });
     }
     onEditSubmit(e: any, ls: any) {
         e.preventDefault();
 
-        updateLogger(ls.form.s.currentItem.key, [], {
-            new_name: ls.values.activityName,
+        updateActivity(ls.form.s.currentItem.key, [], {
+            name: ls.values.activityName,
             operation: ls.values.operation,
             domains: ls.values.domains.map((ele: any) => ele.value),
         }).then((res: any) => {
-            console.log("updated", res.data);
             this.init();
             this.form.clearValues();
             this.comps.formArea.clear();
@@ -104,7 +109,7 @@ export class ActivitiesContent {
         e.preventDefault();
         console.log(ls.values);
         if (ls.values.domains.length > 0 && ls.values.operation) {
-            createLogger(
+            createActivity(
                 ls.values.activityName,
                 [],
                 ls.values.domains.map((ele: any) => ele.value),
@@ -144,25 +149,26 @@ export class ActivitiesContent {
         }
         const domains = await readAll([], "domains");
         const operations = await readAll([], "operations");
-        this.comps.domains.setOptions(
-            domains.data.map((item: any) => ({
-                value: item[0],
-                textContent: item[1],
-            }))
-        );
-        this.comps.operation.setOptions(
-            operations.data.map((item: any) => ({
-                value: item[0],
-                textContent: item[1],
-            }))
-        );
+        const domData = [];
+        for (const key in domains.data) {
+            domData.push({ value: key, textContent: domains.data[key].name });
+        }
+
+        const opsData = [];
+        for (const key in operations.data) {
+            opsData.push({
+                value: key,
+                textContent: operations.data[key].name,
+            });
+        }
+        this.comps.domains.setOptions(domData);
+        this.comps.operation.setOptions(opsData);
 
         this.more = {
             ...this.more,
             domains: domains.data,
             operations: operations.data,
         };
-        console.log("fetched", this.more);
         return this.more;
     }
     onEditContent(e: any, ls: any) {
