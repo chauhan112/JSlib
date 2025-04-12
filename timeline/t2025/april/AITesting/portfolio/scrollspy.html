@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Scrollspy Navigation</title>
+        <!-- Include Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            /* Optional: Add smooth scrolling when clicking nav links */
+            #content-area {
+                scroll-behavior: smooth;
+            }
+            /* Basic body styling */
+            body {
+                font-family: sans-serif;
+            }
+        </style>
+    </head>
+    <body class="bg-red-200 overflow-hidden">
+        <div class="flex h-screen w-[80%] mx-auto">
+            <!-- Navigation Sidebar -->
+            <nav
+                id="main-nav"
+                class="w-64 bg-gray-800 text-gray-300 p-5 flex-shrink-0"
+            >
+                <h2 class="text-xl font-bold mb-6 text-white">Sections</h2>
+                <ul class="space-y-2">
+                    <li>
+                        <a
+                            href="#section1"
+                            class="block py-2 px-4 rounded transition duration-200 ease-in-out hover:bg-gray-700 hover:text-white"
+                        >
+                            Section 1
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="#section2"
+                            class="block py-2 px-4 rounded transition duration-200 ease-in-out hover:bg-gray-700 hover:text-white"
+                        >
+                            Section 2
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="#section3"
+                            class="block py-2 px-4 rounded transition duration-200 ease-in-out hover:bg-gray-700 hover:text-white"
+                        >
+                            Section 3
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="#section4"
+                            class="block py-2 px-4 rounded transition duration-200 ease-in-out hover:bg-gray-700 hover:text-white"
+                        >
+                            Section 4
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="#section5"
+                            class="block py-2 px-4 rounded transition duration-200 ease-in-out hover:bg-gray-700 hover:text-white"
+                        >
+                            Section 5
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Scrollable Content Area -->
+            <main
+                id="content-area"
+                class="flex flex-col flex-grow overflow-y-auto h-screen bg-transparent gap-10"
+            >
+                <section
+                    id="section1"
+                    class="min-h-screenp-8 pt-12 scroll-mt-4 h-fit bg-transparent"
+                >
+                    <h2 class="text-3xl font-semibold mb-4 text-red-800">
+                        Section 1 Title
+                    </h2>
+                    <p class="text-red-700 mb-4">
+                        This is the content for section 1.
+                    </p>
+                    <!-- Add more content to make it scrollable -->
+                    <div class="space-y-4">
+                        <p>Lorem ipsum dolor sit amet...</p>
+                        <p>Pellentesque habitant morbi tristique senectus...</p>
+                        <div
+                            class="h-48 bg-red-200 rounded flex items-center justify-center"
+                        >
+                            Placeholder Element
+                        </div>
+                        <p>More text to ensure scrolling...</p>
+                        <div
+                            class="h-96 bg-red-200 rounded flex items-center justify-center"
+                        >
+                            Tall Placeholder
+                        </div>
+                        <p>Final bit of text for section 1.</p>
+                    </div>
+                </section>
+
+                <section
+                    id="section2"
+                    class="min-h-screen bg-green-100 p-8 pt-12 scroll-mt-4"
+                >
+                    <h2 class="text-3xl font-semibold mb-4 text-green-800">
+                        Section 2 Heading
+                    </h2>
+                    <p class="text-green-700 mb-4">
+                        Content for the second section goes here.
+                    </p>
+                    <div class="space-y-4">
+                        <p>Lorem ipsum dolor sit amet...</p>
+                        <p>Pellentesque habitant morbi tristique senectus...</p>
+                        <div
+                            class="h-64 bg-green-200 rounded flex items-center justify-center"
+                        >
+                            Placeholder Element
+                        </div>
+                        <p>More text to ensure scrolling...</p>
+                        <div
+                            class="h-80 bg-green-200 rounded flex items-center justify-center"
+                        >
+                            Tall Placeholder
+                        </div>
+                        <p>Final bit of text for section 2.</p>
+                    </div>
+                </section>
+
+                <section
+                    id="section3"
+                    class="min-h-screen bg-blue-100 p-8 pt-12 scroll-mt-4"
+                >
+                    <h2 class="text-3xl font-semibold mb-4 text-blue-800">
+                        Section 3 Content
+                    </h2>
+                    <p class="text-blue-700 mb-4">
+                        This area holds content for section number three.
+                    </p>
+                    <div class="space-y-4">
+                        <p>Lorem ipsum dolor sit amet...</p>
+                        <p>Pellentesque habitant morbi tristique senectus...</p>
+                        <div
+                            class="h-56 bg-blue-200 rounded flex items-center justify-center"
+                        >
+                            Placeholder Element
+                        </div>
+                        <p>More text to ensure scrolling...</p>
+                        <div
+                            class="h-96 bg-blue-200 rounded flex items-center justify-center"
+                        >
+                            Tall Placeholder
+                        </div>
+                        <p>Final bit of text for section 3.</p>
+                    </div>
+                </section>
+
+                <section
+                    id="section4"
+                    class="min-h-screen bg-yellow-100 p-8 pt-12 scroll-mt-4"
+                >
+                    <h2 class="text-3xl font-semibold mb-4 text-yellow-800">
+                        Section 4 Details
+                    </h2>
+                    <p class="text-yellow-700 mb-4">
+                        You've reached the fourth section.
+                    </p>
+                    <div class="space-y-4">
+                        <p>Lorem ipsum dolor sit amet...</p>
+                        <p>Pellentesque habitant morbi tristique senectus...</p>
+                        <div
+                            class="h-72 bg-yellow-200 rounded flex items-center justify-center"
+                        >
+                            Placeholder Element
+                        </div>
+                        <p>More text to ensure scrolling...</p>
+                        <div
+                            class="h-80 bg-yellow-200 rounded flex items-center justify-center"
+                        >
+                            Tall Placeholder
+                        </div>
+                        <p>Final bit of text for section 4.</p>
+                    </div>
+                </section>
+
+                <section
+                    id="section5"
+                    class="min-h-screen bg-purple-100 p-8 pt-12 scroll-mt-4"
+                >
+                    <h2 class="text-3xl font-semibold mb-4 text-purple-800">
+                        Section 5 The End
+                    </h2>
+                    <p class="text-purple-700 mb-4">
+                        This is the final section.
+                    </p>
+                    <div class="space-y-4">
+                        <p>Lorem ipsum dolor sit amet...</p>
+                        <p>Pellentesque habitant morbi tristique senectus...</p>
+                        <div
+                            class="h-60 bg-purple-200 rounded flex items-center justify-center"
+                        >
+                            Placeholder Element
+                        </div>
+                        <p>More text to ensure scrolling...</p>
+                        <div
+                            class="h-72 bg-purple-200 rounded flex items-center justify-center"
+                        >
+                            Tall Placeholder
+                        </div>
+                        <p>
+                            Final bit of text for section 5. The end of the
+                            scrollable content.
+                        </p>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const contentArea = document.getElementById("content-area");
+                const navLinks = document.querySelectorAll("#main-nav a");
+                const sections = document.querySelectorAll(
+                    "#content-area section"
+                );
+
+                // Define Tailwind classes for active/inactive states
+                const activeNavClasses = ["bg-blue-600", "text-white"];
+                const inactiveNavClasses = [
+                    "text-gray-300",
+                    "hover:bg-gray-700",
+                    "hover:text-white",
+                ];
+
+                // Adjust this offset as needed. It determines how far from the top
+                // of the content area a section needs to be before it's considered active.
+                // Positive value means the section top needs to pass this many pixels down
+                // from the content area's top edge.
+                const activationOffset = 100; // pixels
+
+                function updateActiveLink() {
+                    let currentActiveSectionId = null;
+                    const scrollPosition =
+                        contentArea.scrollTop + activationOffset;
+
+                    // Find the last section whose top is above the scroll threshold
+                    sections.forEach((section) => {
+                        if (section.offsetTop <= scrollPosition) {
+                            currentActiveSectionId = section.id;
+                            // Continue checking, as later sections might also be above the threshold
+                        }
+                    });
+
+                    // --- Edge case handling for the bottom ---
+                    // Check if scrolled to the very bottom
+                    const isAtBottom =
+                        contentArea.scrollHeight - contentArea.scrollTop <=
+                        contentArea.clientHeight + 1; // +1 for tolerance
+
+                    if (isAtBottom && sections.length > 0) {
+                        // Force the last section to be active if at the bottom
+                        currentActiveSectionId =
+                            sections[sections.length - 1].id;
+                    }
+                    // --- End edge case handling ---
+
+                    // Update navigation link styles
+                    navLinks.forEach((link) => {
+                        // Remove active classes and add inactive classes first
+                        link.classList.remove(...activeNavClasses);
+                        link.classList.add(...inactiveNavClasses);
+
+                        const correspondingSectionId = link
+                            .getAttribute("href")
+                            .substring(1); // Get 'section1' from '#section1'
+
+                        // If this link corresponds to the current active section...
+                        if (correspondingSectionId === currentActiveSectionId) {
+                            link.classList.remove(...inactiveNavClasses); // Remove inactive styles
+                            link.classList.add(...activeNavClasses); // Add active styles
+                        }
+                    });
+                }
+
+                // Listen for scroll events on the content area
+                contentArea.addEventListener("scroll", updateActiveLink);
+
+                // Initial call to set the active link on page load
+                updateActiveLink();
+            });
+        </script>
+    </body>
+</html>
