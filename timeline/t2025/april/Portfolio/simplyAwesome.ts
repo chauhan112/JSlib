@@ -1,37 +1,14 @@
 import { Tools } from "../tools";
 import { GComponent, IComponent } from "../GComponent";
 import clsx from "clsx";
+import "./style1.css";
 
 export class RippleLines implements IComponent {
     s: { [key: string]: any } = {};
     comp: GComponent | null = null;
-    constructor(lineWidth: number = 2, nrOfLines: number = 4) {
+    constructor(lineWidth: number = 1, nrOfLines: number = 4) {
         this.s.nrOfLines = nrOfLines;
         this.s.lineWidth = lineWidth;
-        this.s.styles = `
-         @keyframes ripple {
-            from { top: -10%; }
-            to { top: 100%; }
-        }
-        
-        .ripple-line:before {
-            content: '';
-            position: absolute;
-            right: -1px;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
-            width: ${this.s.lineWidth}px;
-            top: -80px;
-            height: 80px;
-            -webkit-animation: ripple 8s linear infinite;
-            animation: ripple 8s linear infinite;
-            animation-delay: var(--delay, 0s);
-        }
-        `;
-        this.s.styleComp = Tools.comp("style", {
-            type: "text/css",
-            textContent: this.s.styles,
-        });
-        document.head.appendChild(this.s.styleComp.getElement());
     }
     getElement(): HTMLElement | SVGElement {
         if (this.comp) {
@@ -48,6 +25,7 @@ export class RippleLines implements IComponent {
                     style: {
                         width: `${(i + 1) * k}%`,
                         "--delay": `${i * 2}s`,
+                        "--width-of-ripple": `${this.s.lineWidth}px`,
                     },
                 });
             }),
@@ -76,20 +54,6 @@ export class Typing implements IComponent {
             isTyping: true,
         };
         this.s.comp = {};
-        this.s.styles = `    
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-        .animate-blink {
-            animation: blink 0.7s step-end infinite;
-        }
-        `;
-        this.s.comp.styleComp = Tools.comp("style", {
-            type: "text/css",
-            textContent: this.s.styles,
-        });
-        document.head.appendChild(this.s.comp.styleComp.getElement());
     }
     getElement(): HTMLElement | SVGElement {
         if (this.comp) {
@@ -97,7 +61,7 @@ export class Typing implements IComponent {
         }
         this.s.comp.textComp = Tools.comp("span", {});
         const c = Tools.div({
-            class: "text-2xl font-mono ",
+            class: "text-2xl font-mono",
             children: [
                 this.s.comp.textComp,
                 Tools.comp("span", {
@@ -181,13 +145,6 @@ export class FancyTitle implements IComponent {
     comp: GComponent | null = null;
     constructor(content: string = "Hello World") {
         this.s.content = content;
-        this.s.styleComp = new StyleComp(`
-            .titleBack232342526 {
-                -webkit-text-fill-color: transparent;
-                -webkit-text-stroke-width: 1px;
-                -webkit-text-stroke-color: black;
-            }
-        `);
     }
     getProps(): { [key: string]: any } {
         return this.comp!.getProps();
@@ -219,27 +176,214 @@ export class Page implements IComponent {
     comp: GComponent | null = null;
     constructor() {
         this.s.comps = {};
+        this.s.infos = {
+            sections: ["About Me", "Resume", "Portfolio", "Blog", "Contact"],
+            skills: [
+                "Frontend (40%)",
+                "Backend (20%)",
+                "Artificial Intelligence (40%)",
+            ],
+            stats: [
+                { nr: 7, text: "years of experience" },
+                { nr: 40, text: "hours of coding" },
+                { nr: 50, text: "Projects done" },
+            ],
+        };
     }
     getElement(): HTMLElement | SVGElement {
         if (this.comp) {
             return this.comp.getElement();
         }
-        this.s.comps.ripple = new RippleLines(2, 5);
+        this.s.comps.ripple = new RippleLines();
         this.s.comps.typing = new Typing();
+
         this.s.comps.ripple.getElement();
         this.s.comps.typing.getElement();
+
         const c = Tools.div({
             class: "w-full h-full flex flex-col items-center justify-center",
-            children: [this.s.comps.ripple],
+            children: [this.s.comps.ripple, this.getMainPage()],
         });
 
         this.comp = c;
         return c.getElement();
     }
     getProps(): { [key: string]: any } {
-        throw new Error("Method not implemented.");
+        return this.comp!.getProps();
     }
-    getMainPage() {}
-    getNavbar() {}
-    getContent() {}
+    getMainPage() {
+        return Tools.div({
+            class: "w-full h-full flex gap-4 items-start justify-center",
+            children: [this.getNavbar(), this.getContent()],
+        });
+    }
+    getNavbar() {
+        return Tools.comp("ul", {
+            class: "flex wrap list-none items-start text-2xl font-mono flex-col",
+            children: this.s.infos.sections.map((val: string) => {
+                return Tools.comp("li", { textContent: val });
+            }),
+        });
+    }
+    getContent() {
+        return Tools.div({
+            class: "w-full h-full flex flex-col gap-4 ",
+            children: [
+                this.intro(),
+                this.educationAndExperience(),
+                this.works(),
+                this.contact(),
+            ],
+        });
+    }
+
+    intro() {
+        let FancyTitleComp = new FancyTitle("About Me");
+        FancyTitleComp.getElement();
+        this.s.comps.typing.comp.update({
+            class: "text-xl font-mono absolute bottom-2 left-4 bg-gray-100/50 ",
+        });
+        return Tools.div({
+            // class: "w-fit",
+            children: [
+                Tools.div({
+                    class: "flex gap-8 mt-4 p-2 rounded-md shadow-[0_8px_26px_0_rgba(22,24,26,0.07)] hover:shadow-[0_8px_32px_0_rgba(22,24,26,0.11)] bg-white/80",
+                    children: [
+                        Tools.div({
+                            class: "relative h-fit",
+                            children: [
+                                this.s.comps.typing,
+                                Tools.comp("img", {
+                                    class: "min-w-[256px] h-[256px] rounded-full border-2 border-dashed border-black/20",
+                                    src: "https://dtoyoda10.vercel.app/data/images/avatar.jpg",
+                                }),
+                            ],
+                        }),
+                        Tools.div({
+                            class: "flex flex-col h-full",
+                            children: [
+                                FancyTitleComp,
+                                Tools.div({
+                                    class: "text-4xl font-mono mt-4 font-bold ",
+                                    textContent: "AI & Software Engineer",
+                                }),
+                                Tools.comp("p", {
+                                    textContent:
+                                        "Crafting the future of web & AI · Software Visionary · AI Innovator · Turning ideas into reality.",
+                                }),
+                                Tools.div({
+                                    class: "flex gap-4 mt-4 wrap ",
+                                    children: this.s.infos.skills.map(
+                                        (x: string) => {
+                                            return Tools.comp("span", {
+                                                class: "py-2 border-1 border-dashed rounded-full px-4 inline-block border-black/20 w-max flex-shrink-0",
+                                                textContent: x,
+                                            });
+                                        }
+                                    ),
+                                }),
+                                Tools.div({
+                                    class: "flex flex-col gap-4 mt-4 wrap sm:flex-row",
+                                    children: this.s.infos.stats.map(
+                                        (x: any) => {
+                                            return Tools.div({
+                                                class: "flex gap-2 w-max flex-shrink-0 ",
+                                                children: [
+                                                    Tools.comp("span", {
+                                                        class: "text-4xl font-bold",
+                                                        textContent: x.nr,
+                                                    }),
+                                                    Tools.comp("div", {
+                                                        class: "font-mono",
+                                                        children: [
+                                                            Tools.comp("span", {
+                                                                textContent:
+                                                                    " + ",
+                                                            }),
+                                                            Tools.comp("div", {
+                                                                textContent:
+                                                                    x.text,
+                                                            }),
+                                                        ],
+                                                    }),
+                                                ],
+                                            });
+                                        }
+                                    ),
+                                }),
+                            ],
+                        }),
+                    ],
+                }),
+                Tools.div(),
+            ],
+        });
+    }
+
+    educationAndExperience() {
+        let FancyTitleComp = new FancyTitle("Resume");
+        FancyTitleComp.getElement();
+        return Tools.div({
+            children: [
+                FancyTitleComp,
+                Tools.comp("ul", {
+                    class: "list-disc",
+                    children: [
+                        Tools.comp("li", {
+                            textContent:
+                                "Bachelor of Science in Computer Science",
+                        }),
+                        Tools.comp("li", {
+                            textContent:
+                                "Software Engineer at XYZ Company (2020 - Present)",
+                        }),
+                    ],
+                }),
+            ],
+        });
+    }
+    works() {
+        let FancyTitleComp = new FancyTitle("Portfolio");
+        FancyTitleComp.getElement();
+        return Tools.div({
+            children: [
+                FancyTitleComp,
+                Tools.comp("ul", {
+                    class: "list-disc",
+                    children: [
+                        Tools.comp("li", {
+                            textContent:
+                                "Bachelor of Science in Computer Science",
+                        }),
+                        Tools.comp("li", {
+                            textContent:
+                                "Software Engineer at XYZ Company (2020 - Present)",
+                        }),
+                    ],
+                }),
+            ],
+        });
+    }
+    contact() {
+        let FancyTitleComp = new FancyTitle("Contact Me");
+        FancyTitleComp.getElement();
+        return Tools.div({
+            children: [
+                FancyTitleComp,
+                Tools.comp("ul", {
+                    class: "list-disc",
+                    children: [
+                        Tools.comp("li", {
+                            textContent:
+                                "Bachelor of Science in Computer Science",
+                        }),
+                        Tools.comp("li", {
+                            textContent:
+                                "Software Engineer at XYZ Company (2020 - Present)",
+                        }),
+                    ],
+                }),
+            ],
+        });
+    }
 }

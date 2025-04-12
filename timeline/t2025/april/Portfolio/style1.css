@@ -1,0 +1,40 @@
+@keyframes ripple {
+    from {
+        top: -10%;
+    }
+    to {
+        top: 100%;
+    }
+}
+.ripple-line {
+    --width-of-ripple: 1px;
+}
+.ripple-line:before {
+    content: "";
+    position: absolute;
+    right: -1px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
+    width: var(--width-of-ripple);
+    top: -80px;
+    height: 80px;
+    -webkit-animation: ripple 8s linear infinite;
+    animation: ripple 8s linear infinite;
+    animation-delay: var(--delay, 0s);
+}
+@keyframes blink {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+.animate-blink {
+    animation: blink 0.7s step-end infinite;
+}
+.titleBack232342526 {
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+}
