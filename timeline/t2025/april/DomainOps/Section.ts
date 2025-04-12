@@ -1,6 +1,6 @@
 import { Tools } from "../tools";
 
-import { create, readAll, deleteItem, updateName } from "./apis";
+import { create, readAll, deleteItem, updateName } from "./api/pythonAnywhere";
 import { GComponent } from "../GComponent";
 import { GForm } from "../GForm";
 import { ListWithCrud } from "../ListWithCrud";
@@ -53,10 +53,11 @@ export class Section {
     }
     fillList() {
         readAll([], this.typ).then((res: any) => {
-            let domains = res.data.map((item: any) => {
-                return { name: item[1], key: item[0] };
-            });
-            this.list.setData(domains);
+            let data = [];
+            for (const key in res.data) {
+                data.push({ name: res.data[key].name, key });
+            }
+            this.list.setData(data);
         });
     }
     onEditSubmit(e: any, s: any) {

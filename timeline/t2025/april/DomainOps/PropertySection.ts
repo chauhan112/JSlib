@@ -7,7 +7,7 @@ import {
     readProps,
     deleteProperty,
     updateProperty,
-} from "./apis";
+} from "./api/pythonAnywhere";
 
 export class Table implements IComponent {
     s: { [key: string]: any } = {};

@@ -27,7 +27,6 @@ export class ListWithCrudWrapper {
         };
         this.s.root.propertySection.fetchProperties();
         this.s.root.propertySection.show();
-        console.log(ls.s.data, this.typ);
     }
     createItem(item: any) {
         return Tools.div({
