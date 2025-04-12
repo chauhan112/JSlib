@@ -8,6 +8,7 @@ export const create = async (
 ) => {
     return axios.post(`${BASE_URL}/${typ}/create/`, { name, loc });
 };
+
 export const createLogger = async (
     name: string,
     loc: string[],
@@ -23,7 +24,7 @@ export const createLogger = async (
 };
 
 export const readAll = async (loc: string[], typ: string = "domains") => {
-    return axios.post(`${BASE_URL}/${typ}/readAll/`, { loc });
+    return axios.post(`${BASE_URL}/read`, { loc: [...loc, typ] });
 };
 
 export const read = async (
