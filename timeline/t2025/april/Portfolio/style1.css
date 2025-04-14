@@ -38,3 +38,26 @@
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: black;
 }
+
+.pillEdExp2312433 {
+    position: relative;
+}
+.pillEdExp2312433:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -28px;
+    width: 5px;
+    height: 5px;
+    border-radius: inherit;
+    background: black;
+}
+.pillEdExp2312433:before {
+    content: "";
+    position: absolute;
+    top: 55%;
+    left: -28px;
+    width: 28px;
+    height: 1px;
+    border-top: 2px dotted rgba(0, 0, 0, 0.193);
+}

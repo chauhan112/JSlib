@@ -1,6 +1,14 @@
 import { Tools } from "../tools";
 import { GComponent, IComponent } from "../GComponent";
 import clsx from "clsx";
+import {
+    GraduationCap,
+    IconNode,
+    BriefcaseBusiness,
+    FileText,
+    Github,
+    Linkedin,
+} from "lucide";
 import "./style1.css";
 
 export class RippleLines implements IComponent {
@@ -177,7 +185,7 @@ export class Page implements IComponent {
     constructor() {
         this.s.comps = {};
         this.s.infos = {
-            sections: ["About Me", "Resume", "Portfolio", "Blog", "Contact"],
+            sections: ["About Me", "Resume", "Portfolio", "Contact"],
             skills: [
                 "Frontend (40%)",
                 "Backend (20%)",
@@ -187,6 +195,75 @@ export class Page implements IComponent {
                 { nr: 7, text: "years of experience" },
                 { nr: 40, text: "hours of coding" },
                 { nr: 50, text: "Projects done" },
+            ],
+            educations: [
+                {
+                    title: "Bachelor of Computer Science",
+                    company: "Okayama University",
+                    date: "2018 - 2022",
+                },
+            ],
+            experiences: [
+                {
+                    date: "Feb 2023 - Dec 2023",
+                    title: "AI & Software Engineer",
+                    company: "Pilot",
+                },
+                {
+                    date: "Apr 2021 - Dec 2022",
+                    title: "Lead Software Engineer",
+                    company: "BigHeroDesign",
+                },
+                {
+                    date: "Jul 2019 - Dec 2020",
+                    title: "AI & Backend Engineer",
+                    company: "Netwise",
+                },
+                {
+                    date: "Aug - Dec 2018",
+                    title: "Software Engineer",
+                    company: "PixoLabo",
+                },
+            ],
+            projects: [
+                {
+                    title: "Imagine Art",
+                    tech: "Stable Diffusion, Next.js, Tailwind css",
+                    link: "#",
+                },
+                {
+                    title: "Soul Gen",
+                    tech: "Stable Diffusion, Vite, SCSS",
+                    link: "#",
+                },
+                {
+                    title: "HeyGen",
+                    tech: "GANS, TTS, NLP, MERN",
+                    link: "#",
+                },
+                {
+                    title: "DESCRIPT",
+                    tech: "GENAI, TTS, Computer Vision",
+                    link: "#",
+                },
+                {
+                    title: "Plasbit",
+                    tech: "Mern, Meteorjs, web3",
+                    link: "#",
+                },
+                {
+                    title: "Stelareum",
+                    tech: "twig, laminas, coinbaseapi",
+                    link: "#",
+                },
+            ],
+            links: [
+                { icon: Github, link: "https://github.com/chauhan112" },
+                {
+                    icon: Linkedin,
+                    link: "https://www.linkedin.com/in/raja-babu-chauhan-7506b3222/",
+                },
+                { icon: FileText, link: "https://twitter.com/iamjamesm" },
             ],
         };
     }
@@ -202,7 +279,7 @@ export class Page implements IComponent {
 
         const c = Tools.div({
             class: "w-full h-full flex flex-col items-center justify-center",
-            children: [this.s.comps.ripple, this.getMainPage()],
+            children: [this.s.comps.ripple, this.header(), this.getMainPage()],
         });
 
         this.comp = c;
@@ -213,15 +290,36 @@ export class Page implements IComponent {
     }
     getMainPage() {
         return Tools.div({
-            class: "w-full h-full flex gap-4 items-start justify-center",
+            class: "w-10/12 h-full flex gap-4 items-start justify-center",
             children: [this.getNavbar(), this.getContent()],
+        });
+    }
+    header() {
+        return Tools.div({
+            class: "w-[80%] text-4xl font-bold flex justify-between p-4 ",
+            children: [
+                Tools.comp("h1", {
+                    textContent: "Raja Babu",
+                    child: Tools.comp("span", {
+                        class: "titleBack232342526",
+                        textContent: " Chauhan",
+                    }),
+                }),
+                Tools.div({ textContent: "Portfolio" }),
+            ],
         });
     }
     getNavbar() {
         return Tools.comp("ul", {
-            class: "flex wrap list-none items-start text-2xl font-mono flex-col",
+            class: "flex list-none items-start text-2xl font-mono flex-col sticky top-0 w-4/12 w-min",
             children: this.s.infos.sections.map((val: string) => {
-                return Tools.comp("li", { textContent: val });
+                return Tools.comp("li", {
+                    class: "hover:bg-gray-100/50 p-1 rounded-md bg-white/80 w-full",
+                    child: Tools.comp("button", {
+                        class: "cursor-pointer w-full text-left",
+                        textContent: val,
+                    }),
+                });
             }),
         });
     }
@@ -236,7 +334,6 @@ export class Page implements IComponent {
             ],
         });
     }
-
     intro() {
         let FancyTitleComp = new FancyTitle("About Me");
         FancyTitleComp.getElement();
@@ -244,10 +341,10 @@ export class Page implements IComponent {
             class: "text-xl font-mono absolute bottom-2 left-4 bg-gray-100/50 ",
         });
         return Tools.div({
-            // class: "w-fit",
+            class: "flex flex-col gap-8 p-8 rounded-md shadow-[0_8px_26px_0_rgba(22,24,26,0.07)] hover:shadow-[0_8px_32px_0_rgba(22,24,26,0.11)] bg-white/80",
             children: [
                 Tools.div({
-                    class: "flex gap-8 mt-4 p-2 rounded-md shadow-[0_8px_26px_0_rgba(22,24,26,0.07)] hover:shadow-[0_8px_32px_0_rgba(22,24,26,0.11)] bg-white/80",
+                    class: "flex flex-col flex-1 gap-8 mt-4 md:flex-row",
                     children: [
                         Tools.div({
                             class: "relative h-fit",
@@ -272,71 +369,57 @@ export class Page implements IComponent {
                                         "Crafting the future of web & AI · Software Visionary · AI Innovator · Turning ideas into reality.",
                                 }),
                                 Tools.div({
-                                    class: "flex gap-4 mt-4 wrap ",
-                                    children: this.s.infos.skills.map(
-                                        (x: string) => {
-                                            return Tools.comp("span", {
-                                                class: "py-2 border-1 border-dashed rounded-full px-4 inline-block border-black/20 w-max flex-shrink-0",
-                                                textContent: x,
-                                            });
-                                        }
-                                    ),
-                                }),
-                                Tools.div({
-                                    class: "flex flex-col gap-4 mt-4 wrap sm:flex-row",
-                                    children: this.s.infos.stats.map(
-                                        (x: any) => {
-                                            return Tools.div({
-                                                class: "flex gap-2 w-max flex-shrink-0 ",
-                                                children: [
-                                                    Tools.comp("span", {
-                                                        class: "text-4xl font-bold",
-                                                        textContent: x.nr,
-                                                    }),
-                                                    Tools.comp("div", {
-                                                        class: "font-mono",
-                                                        children: [
-                                                            Tools.comp("span", {
-                                                                textContent:
-                                                                    " + ",
-                                                            }),
-                                                            Tools.comp("div", {
-                                                                textContent:
-                                                                    x.text,
-                                                            }),
-                                                        ],
-                                                    }),
-                                                ],
-                                            });
-                                        }
-                                    ),
+                                    class: "flex gap-4 mt-4 flex-wrap",
+                                    children: this.s.infos.skills.map(PillComp),
                                 }),
                             ],
                         }),
                     ],
                 }),
-                Tools.div(),
+                Tools.div({
+                    class: "flex gap-4 mt-4 flex-wrap",
+                    children: this.s.infos.stats.map((x: any) => {
+                        return Tools.div({
+                            class: "flex gap-2 w-max flex-shrink-0 ",
+                            children: [
+                                Tools.comp("span", {
+                                    class: "text-4xl font-bold",
+                                    textContent: x.nr,
+                                }),
+                                Tools.comp("div", {
+                                    class: "font-mono",
+                                    children: [
+                                        Tools.comp("span", {
+                                            textContent: " + ",
+                                        }),
+                                        Tools.comp("div", {
+                                            textContent: x.text,
+                                        }),
+                                    ],
+                                }),
+                            ],
+                        });
+                    }),
+                }),
             ],
         });
     }
-
     educationAndExperience() {
         let FancyTitleComp = new FancyTitle("Resume");
         FancyTitleComp.getElement();
         return Tools.div({
+            class: "flex flex-col gap-4 p-4 rounded-md shadow-[0_8px_26px_0_rgba(22,24,26,0.07)] hover:shadow-[0_8px_32px_0_rgba(22,24,26,0.11)] bg-white/80",
             children: [
                 FancyTitleComp,
-                Tools.comp("ul", {
-                    class: "list-disc",
+                Tools.div({
+                    class: "text-4xl font-mono font-bold ",
+                    textContent: "Education & Experience",
+                }),
+                Tools.div({
+                    class: "flex flex-col gap-4 mt-4 wrap sm:flex-row",
                     children: [
-                        Tools.comp("li", {
-                            textContent:
-                                "Bachelor of Science in Computer Science",
-                        }),
-                        Tools.comp("li", {
-                            textContent:
-                                "Software Engineer at XYZ Company (2020 - Present)",
-                        }),
+                        timeline(this.s.infos.educations, GraduationCap),
+                        timeline(this.s.infos.experiences, BriefcaseBusiness),
                     ],
                 }),
             ],
@@ -346,20 +429,15 @@ export class Page implements IComponent {
         let FancyTitleComp = new FancyTitle("Portfolio");
         FancyTitleComp.getElement();
         return Tools.div({
+            class: "flex flex-col gap-4 rounded-md shadow-[0_8px_26px_0_rgba(22,24,26,0.07)] hover:shadow-[0_8px_32px_0_rgba(22,24,26,0.11)] bg-white/80",
             children: [
                 FancyTitleComp,
-                Tools.comp("ul", {
-                    class: "list-disc",
-                    children: [
-                        Tools.comp("li", {
-                            textContent:
-                                "Bachelor of Science in Computer Science",
-                        }),
-                        Tools.comp("li", {
-                            textContent:
-                                "Software Engineer at XYZ Company (2020 - Present)",
-                        }),
-                    ],
+                Tools.div({
+                    class: "text-4xl font-mono font-bold ",
+                    textContent: "My Latest Works",
+                }),
+                Tools.div({
+                    children: [],
                 }),
             ],
         });
@@ -387,3 +465,42 @@ export class Page implements IComponent {
         });
     }
 }
+
+export const PillComp = (x: string) => {
+    return Tools.comp("span", {
+        class: "py-2 border-1 border-dashed rounded-full px-4 inline-block border-black/20 w-max flex-shrink-0",
+        textContent: x,
+    });
+};
+
+export const PillCompExp = (x: string) => {
+    return Tools.comp("span", {
+        class: "py-2 border-1 border-dashed rounded-full px-4 inline-block border-black/20 w-max flex-shrink-0 pillEdExp2312433",
+        textContent: x,
+    });
+};
+
+export const timeline = (items: any[], icon: IconNode) => {
+    return Tools.div({
+        class: "flex-1 pl-6 border-l-2 border-dashed border-black/20",
+        children: [
+            Tools.icon(icon, { class: "mb-2" }),
+
+            ...items.map((x: any) => {
+                return Tools.div({
+                    class: "my-4",
+                    children: [
+                        PillCompExp(x.date),
+                        Tools.comp("p", {
+                            textContent: x.title,
+                        }),
+                        Tools.comp("span", {
+                            class: "text-sm text-gray-800 ",
+                            textContent: " @ " + x.company,
+                        }),
+                    ],
+                });
+            }),
+        ],
+    });
+};
