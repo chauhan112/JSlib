@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Rotating Odometer Random Number Generator</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            /* Custom CSS for the spinning effect */
+            .digit-container {
+                height: 6rem; /* h-24 */
+                overflow: hidden; /* Crucial: Hides the numbers outside the viewport */
+            }
+
+            .digit-spinner {
+                /* Smooth transition when stopping */
+                transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); /* Ease-out-like effect */
+                /* No transition during rapid spin (will be toggled via JS) */
+            }
+
+            .digit-spinner.no-transition {
+                transition: none;
+            }
+
+            .digit {
+                height: 6rem; /* h-24: Each number must match the container height */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        </style>
+    </head>
+    <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+        <div class="bg-white p-8 rounded-lg shadow-xl text-center">
+            <h1 class="text-2xl font-bold mb-6 text-gray-700">
+                3-Digit Random Number
+            </h1>
+
+            <!-- Odometer Display -->
+            <div id="odometer" class="flex justify-center space-x-2 mb-6">
+                <!-- Digit 1 (Hundreds) -->
+                <div
+                    class="digit-box bg-gray-800 text-white text-6xl font-mono rounded-md w-16 digit-container"
+                >
+                    <div id="digit-1-spinner" class="digit-spinner">
+                        <!-- Numbers 0-9 will be added here by JS -->
+                    </div>
+                </div>
+                <!-- Digit 2 (Tens) -->
+                <div
+                    class="digit-box bg-gray-800 text-white text-6xl font-mono rounded-md w-16 digit-container"
+                >
+                    <div id="digit-2-spinner" class="digit-spinner">
+                        <!-- Numbers 0-9 will be added here by JS -->
+                    </div>
+                </div>
+                <!-- Digit 3 (Ones) -->
+                <div
+                    class="digit-box bg-gray-800 text-white text-6xl font-mono rounded-md w-16 digit-container"
+                >
+                    <div id="digit-3-spinner" class="digit-spinner">
+                        <!-- Numbers 0-9 will be added here by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generate Button -->
+            <button
+                id="generateBtn"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                Generate
+            </button>
+
+            <!-- Optional: Display Final Number Clearly -->
+            <div
+                id="finalResult"
+                class="mt-6 text-xl font-semibold text-gray-600 h-7"
+            >
+                <!-- Result will appear here after animation -->
+            </div>
+        </div>
+
+        <script>
+            const generateBtn = document.getElementById("generateBtn");
+            const spinner1 = document.getElementById("digit-1-spinner");
+            const spinner2 = document.getElementById("digit-2-spinner");
+            const spinner3 = document.getElementById("digit-3-spinner");
+            const finalResultDisplay = document.getElementById("finalResult");
+
+            const spinners = [spinner1, spinner2, spinner3];
+            let intervalIds = [null, null, null]; // To store interval IDs for each digit
+            let digitHeight = 0; // To store the height of a single digit element
+
+            // --- Configuration ---
+            const SPIN_DURATION_BASE = 800; // Base time for spinning in ms
+            const SPIN_DURATION_INCREMENT = 400; // Additional time per digit for staggered stop
+            const SPIN_INTERVAL = 50; // How fast the digits visually change during spin (ms)
+            const NUM_DIGITS_IN_SPINNER = 10; // We have 0-9
+            // --- ---
+
+            // Function to create the number elements (0-9) inside a spinner
+            function setupSpinner(spinnerElement) {
+                spinnerElement.innerHTML = ""; // Clear previous content
+                for (let i = 0; i < NUM_DIGITS_IN_SPINNER; i++) {
+                    const digitDiv = document.createElement("div");
+                    digitDiv.className = "digit"; // Apply height and centering from CSS
+                    digitDiv.textContent = i;
+                    spinnerElement.appendChild(digitDiv);
+                }
+                // Add the first digit again at the end for smoother looping visual if needed
+                // (especially relevant if you spin multiple cycles)
+                const firstDigitClone =
+                    spinnerElement.firstChild.cloneNode(true);
+                spinnerElement.appendChild(firstDigitClone);
+            }
+
+            // Function to calculate the actual height of a digit (needs DOM element)
+            function calculateDigitHeight() {
+                const firstDigit = spinners[0].querySelector(".digit");
+                if (firstDigit) {
+                    digitHeight = firstDigit.offsetHeight;
+                    // console.log("Digit Height:", digitHeight); // For debugging
+                } else {
+                    console.error(
+                        "Could not find a .digit element to measure height."
+                    );
+                    digitHeight = 96; // Fallback based on h-24 (6rem = 96px default)
+                }
+            }
+
+            function getRandomDigit() {
+                return Math.floor(Math.random() * 10); // 0-9
+            }
+
+            function generateRandom3DigitNumber() {
+                return Math.floor(Math.random() * 900) + 100; // 100-999
+            }
+
+            // Function to set the vertical position of a spinner
+            // 'digit' is the number to show (0-9)
+            function setSpinnerPosition(
+                spinnerElement,
+                digit,
+                instantaneous = false
+            ) {
+                if (digitHeight === 0) {
+                    console.error("Digit height not calculated yet!");
+                    return;
+                }
+                const targetY = -(digit * digitHeight); // Negative because we move it UP
+
+                if (instantaneous) {
+                    spinnerElement.classList.add("no-transition"); // Disable transition for immediate jump
+                } else {
+                    spinnerElement.classList.remove("no-transition"); // Enable transition for smooth scroll
+                }
+
+                spinnerElement.style.transform = `translateY(${targetY}px)`;
+
+                // Important: If instantaneous, remove the no-transition class slightly later
+                // using requestAnimationFrame to ensure the transform is applied *before*
+                // transitions are potentially re-enabled for the final stop.
+                // However, for simplicity here, we re-enable it just before the final set.
+            }
+
+            function startOdometer() {
+                // 0. Ensure digit height is calculated (might run multiple times but ok)
+                if (digitHeight === 0) calculateDigitHeight();
+                if (digitHeight === 0) {
+                    alert("Error calculating layout. Cannot start animation.");
+                    return;
+                }
+
+                // 1. Disable button & clear previous result
+                generateBtn.disabled = true;
+                finalResultDisplay.textContent = "";
+                intervalIds.forEach((id) => clearInterval(id)); // Clear previous intervals
+
+                // 2. Generate the target number
+                const targetNumber = generateRandom3DigitNumber();
+                const targetDigits = String(targetNumber).split("").map(Number); // [1, 2, 3]
+
+                // 3. Start spinning animation for each digit
+                spinners.forEach((spinnerElement, index) => {
+                    // Instantly move to a random digit *without* animation to start
+                    setSpinnerPosition(spinnerElement, getRandomDigit(), true);
+
+                    intervalIds[index] = setInterval(() => {
+                        const randomDigit = getRandomDigit();
+                        setSpinnerPosition(spinnerElement, randomDigit, true); // Spin rapidly (instant jumps)
+                    }, SPIN_INTERVAL);
+                });
+
+                // 4. Stop each digit sequentially
+                spinners.forEach((spinnerElement, index) => {
+                    const stopDelay =
+                        SPIN_DURATION_BASE + index * SPIN_DURATION_INCREMENT;
+                    const finalDigit = targetDigits[index];
+
+                    setTimeout(() => {
+                        clearInterval(intervalIds[index]); // Stop the rapid spinning interval
+
+                        // Set the final position *with* transition enabled
+                        setSpinnerPosition(spinnerElement, finalDigit, false);
+
+                        // If this is the last digit to stop
+                        if (index === spinners.length - 1) {
+                            // Re-enable button slightly after the last animation should finish
+                            const finalAnimationDuration = 800; // Match the CSS transition duration
+                            setTimeout(() => {
+                                generateBtn.disabled = false;
+                                finalResultDisplay.textContent = `Result: ${targetNumber}`;
+                            }, finalAnimationDuration);
+                        }
+                    }, stopDelay);
+                });
+            }
+
+            // --- Initialization ---
+            // Setup spinners with numbers 0-9 when the script loads
+            spinners.forEach(setupSpinner);
+            // Calculate digit height after elements are in the DOM and styled
+            // Use window.onload or DOMContentLoaded for better reliability
+            window.addEventListener("load", calculateDigitHeight);
+            // Fallback if load event doesn't fire quickly enough in some setups
+            if (document.readyState === "complete") {
+                calculateDigitHeight();
+            } else {
+                document.addEventListener(
+                    "DOMContentLoaded",
+                    calculateDigitHeight
+                );
+            }
+
+            // --- Event Listener ---
+            generateBtn.addEventListener("click", startOdometer);
+        </script>
+    </body>
+</html>

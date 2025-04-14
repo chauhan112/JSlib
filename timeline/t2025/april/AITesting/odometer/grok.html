@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Random 3-Digit Number Generator</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            .digit-container {
+                display: inline-block;
+                width: 2.5rem;
+                height: 3rem;
+                overflow: hidden;
+                position: relative;
+            }
+            .digit-strip {
+                position: absolute;
+                top: 0;
+                transition: transform 0.1s ease-in-out;
+            }
+            .digit {
+                width: 2.5rem;
+                height: 3rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+            }
+        </style>
+    </head>
+    <body class="bg-gray-100 flex items-center justify-center h-screen">
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+            <h1 class="text-2xl font-bold mb-4">Random 3-Digit Number</h1>
+            <div class="flex justify-center space-x-2 mb-4" id="odometer">
+                <div class="digit-container bg-gray-200 rounded">
+                    <div class="digit-strip" id="digit1">
+                        <div class="digit">0</div>
+                        <div class="digit">1</div>
+                        <div class="digit">2</div>
+                        <div class="digit">3</div>
+                        <div class="digit">4</div>
+                        <div class="digit">5</div>
+                        <div class="digit">6</div>
+                        <div class="digit">7</div>
+                        <div class="digit">8</div>
+                        <div class="digit">9</div>
+                    </div>
+                </div>
+                <div class="digit-container bg-gray-200 rounded">
+                    <div class="digit-strip" id="digit2">
+                        <div class="digit">0</div>
+                        <div class="digit">1</div>
+                        <div class="digit">2</div>
+                        <div class="digit">3</div>
+                        <div class="digit">4</div>
+                        <div class="digit">5</div>
+                        <div class="digit">6</div>
+                        <div class="digit">7</div>
+                        <div class="digit">8</div>
+                        <div class="digit">9</div>
+                    </div>
+                </div>
+                <div class="digit-container bg-gray-200 rounded">
+                    <div class="digit-strip" id="digit3">
+                        <div class="digit">0</div>
+                        <div class="digit">1</div>
+                        <div class="digit">2</div>
+                        <div class="digit">3</div>
+                        <div class="digit">4</div>
+                        <div class="digit">5</div>
+                        <div class="digit">6</div>
+                        <div class="digit">7</div>
+                        <div class="digit">8</div>
+                        <div class="digit">9</div>
+                    </div>
+                </div>
+            </div>
+            <button
+                id="generateBtn"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+                Generate
+            </button>
+        </div>
+
+        <script>
+            const generateBtn = document.getElementById("generateBtn");
+            const digitStrips = [
+                document.getElementById("digit1"),
+                document.getElementById("digit2"),
+                document.getElementById("digit3"),
+            ];
+
+            function animateDigit(strip, targetDigit, duration, steps) {
+                let currentPos = 0;
+                const stepSize = targetDigit / steps;
+                const intervalTime = duration / steps;
+
+                const interval = setInterval(() => {
+                    currentPos += stepSize;
+                    if (currentPos >= targetDigit) {
+                        currentPos = targetDigit;
+                        clearInterval(interval);
+                    }
+                    strip.style.transform = `translateY(-${currentPos * 3}rem)`;
+                }, intervalTime);
+            }
+
+            function generateRandomNumber() {
+                // Disable button during animation
+                generateBtn.disabled = true;
+                generateBtn.classList.add("opacity-50", "cursor-not-allowed");
+
+                // Generate a random 3-digit number
+                const randomNum = Math.floor(100 + Math.random() * 900);
+                const digits = String(randomNum).split("").map(Number);
+
+                // Animate each digit
+                digits.forEach((digit, index) => {
+                    animateDigit(digitStrips[index], digit, 1000, 20);
+                });
+
+                // Re-enable button after animation
+                setTimeout(() => {
+                    generateBtn.disabled = false;
+                    generateBtn.classList.remove(
+                        "opacity-50",
+                        "cursor-not-allowed"
+                    );
+                }, 1000);
+            }
+
+            generateBtn.addEventListener("click", generateRandomNumber);
+        </script>
+    </body>
+</html>

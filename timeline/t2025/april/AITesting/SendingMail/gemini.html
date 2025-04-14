@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Contact Us</title>
+        <!-- Link Tailwind CSS (Use the CDN for simplicity) -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            /* Optional: Add custom base styles or component styles here if needed */
+            .form-label {
+                @apply block text-gray-700 text-sm font-bold mb-2;
+            }
+            .form-input,
+            .form-textarea {
+                @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline;
+            }
+            .form-button {
+                @apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline;
+            }
+            .status-message {
+                @apply mt-4 p-3 rounded text-sm;
+            }
+            .status-success {
+                @apply bg-green-100 border border-green-400 text-green-700;
+            }
+            .status-error {
+                @apply bg-red-100 border border-red-400 text-red-700;
+            }
+            .aa {
+                @apply bg-blue-100 border-blue-400 text-blue-700;
+            }
+        </style>
+    </head>
+    <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+        <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+            <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">
+                Contact Us
+            </h1>
+
+            <form
+                id="contact-form"
+                action="https://formspree.io/f/xwplzpyv"
+                method="POST"
+            >
+                <div class="mb-4">
+                    <label class="form-label" for="name"> Name </label>
+                    <input
+                        class="form-input"
+                        id="name"
+                        name="name"
+                        type="text"
+                        placeholder="Your Name"
+                        required
+                    />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label" for="email"> Email </label>
+                    <input
+                        class="form-input"
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="your.email@example.com"
+                        required
+                    />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label" for="subject"> Subject </label>
+                    <input
+                        class="form-input"
+                        id="subject"
+                        name="subject"
+                        type="text"
+                        placeholder="Subject of your message"
+                        required
+                    />
+                </div>
+
+                <div class="mb-6">
+                    <label class="form-label" for="message"> Message </label>
+                    <textarea
+                        class="form-textarea h-32 resize-none"
+                        id="message"
+                        name="message"
+                        placeholder="Your message here..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <button class="form-button" type="submit">
+                        Send Message
+                    </button>
+                </div>
+
+                <!-- Status message area -->
+                <div
+                    id="status-message"
+                    class="status-message"
+                    role="alert"
+                    aria-live="polite"
+                ></div>
+            </form>
+        </div>
+
+        <!-- Link Vanilla JavaScript file -->
+        <script>
+            // Get the form element
+            const form = document.getElementById("contact-form");
+            // Get the status message element
+            const statusMessage = document.getElementById("status-message");
+
+            // Add an event listener for form submission
+            form.addEventListener("submit", function (event) {
+                // Prevent the default form submission behavior (which causes a page reload)
+                event.preventDefault();
+
+                // Clear previous status messages and styles
+                statusMessage.textContent = "";
+                statusMessage.className = "status-message"; // Reset classes
+
+                // Show a temporary "Sending..." message
+                statusMessage.textContent = "Sending...";
+                statusMessage.classList.add(
+                    "bg-blue-100",
+                    "border",
+                    "border-blue-400",
+                    "text-blue-700"
+                ); // Optional: Style for sending state
+
+                // Create a FormData object from the form
+                const formData = new FormData(form);
+                console.log(formData);
+                // Use the Fetch API to send the data
+                fetch(form.action, {
+                    method: form.method,
+                    body: formData,
+                    headers: {
+                        Accept: "application/json", // Request JSON response from Formspree
+                    },
+                })
+                    .then((response) => {
+                        // Check if the request was successful (status code 2xx)
+                        if (response.ok) {
+                            return response.json(); // Parse the JSON response body
+                        } else {
+                            // If not successful, parse the error response (if possible) or throw an error
+                            return response
+                                .json()
+                                .then((data) => {
+                                    // Construct an error message using Formspree's error format if available
+                                    throw new Error(
+                                        data.errors
+                                            ? data.errors
+                                                  .map((err) => err.message)
+                                                  .join(", ")
+                                            : "Something went wrong."
+                                    );
+                                })
+                                .catch(() => {
+                                    // Fallback error if response is not JSON or parsing fails
+                                    throw new Error(
+                                        "Network response was not ok."
+                                    );
+                                });
+                        }
+                    })
+                    .then((data) => {
+                        // Handle the successful JSON response
+                        statusMessage.textContent =
+                            "Thanks for your message! We will get back to you soon.";
+                        statusMessage.className =
+                            "status-message status-success"; // Apply success styles
+                        form.reset(); // Clear the form fields
+                    })
+                    .catch((error) => {
+                        // Handle errors during the fetch operation or from the server response
+                        console.error("Form submission error:", error);
+                        statusMessage.textContent = `Oops! There was a problem submitting your form: ${error.message}`;
+                        statusMessage.className = "status-message status-error"; // Apply error styles
+                    });
+            });
+        </script>
+    </body>
+</html>

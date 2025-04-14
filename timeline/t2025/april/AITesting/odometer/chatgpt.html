@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Odometer Random Number Generator</title>
+
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            .digit-wrapper {
+                height: 3rem;
+                overflow: hidden;
+                position: relative;
+            }
+            .digit {
+                transition: transform 0.5s ease-in-out;
+            }
+        </style>
+    </head>
+    <body
+        class="flex items-center justify-center min-h-screen bg-gray-900 text-white"
+    >
+        <div class="text-center space-y-6">
+            <div
+                id="odometer"
+                class="flex space-x-2 justify-center text-5xl font-mono"
+            >
+                <div class="digit-wrapper w-12 bg-black rounded shadow">
+                    <div class="digit" id="digit-0"></div>
+                </div>
+                <div class="digit-wrapper w-12 bg-black rounded shadow">
+                    <div class="digit" id="digit-1"></div>
+                </div>
+                <div class="digit-wrapper w-12 bg-black rounded shadow">
+                    <div class="digit" id="digit-2"></div>
+                </div>
+            </div>
+            <button
+                onclick="generateNumber()"
+                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-semibold transition"
+            >
+                Generate
+            </button>
+        </div>
+
+        <script>
+            // script.js
+
+            function generateNumber() {
+                const digits = [0, 1, 2].map(() =>
+                    Math.floor(Math.random() * 10)
+                );
+
+                digits.forEach((digit, i) => {
+                    const container = document.getElementById(`digit-${i}`);
+                    container.innerHTML = ""; // Clear existing
+
+                    const fragment = document.createDocumentFragment();
+
+                    // Generate scrolling digits 0-9 + target digit
+                    for (let j = 0; j <= 9; j++) {
+                        const el = document.createElement("div");
+                        el.className = "h-12 flex items-center justify-center";
+                        el.textContent = j;
+                        fragment.appendChild(el);
+                    }
+
+                    // Append the target digit again at the end
+                    const targetEl = document.createElement("div");
+                    targetEl.className =
+                        "h-12 flex items-center justify-center text-green-400";
+                    targetEl.textContent = digit;
+                    fragment.appendChild(targetEl);
+
+                    container.appendChild(fragment);
+
+                    // Animate
+                    container.style.transform = `translateY(-${10 * 3}rem)`; // 10 digits * height
+                    setTimeout(() => {
+                        container.style.transition =
+                            "transform 0.5s ease-in-out";
+                        container.style.transform = `translateY(-${
+                            digit * 3
+                        }rem)`;
+                    }, 50);
+                });
+            }
+
+            // Initialize with 000
+            document.addEventListener("DOMContentLoaded", () => {
+                for (let i = 0; i < 3; i++) {
+                    const container = document.getElementById(`digit-${i}`);
+                    const el = document.createElement("div");
+                    el.className = "h-12 flex items-center justify-center";
+                    el.textContent = "0";
+                    container.appendChild(el);
+                }
+            });
+        </script>
+    </body>
+</html>
