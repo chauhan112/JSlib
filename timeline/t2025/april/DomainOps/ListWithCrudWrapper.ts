@@ -15,12 +15,6 @@ export class ListWithCrudWrapper {
         this.s.root = root;
     }
     itemClick(e: any, ls: any) {
-        this.s.root.s.comps.content.clear();
-        this.s.root.s.comps.content.display(
-            Tools.comp("H1", {
-                textContent: ls.s.data.name + " " + this.typ,
-            })
-        );
         this.s.root.propertySection.s.currentInfo = {
             data: ls.s.data,
             typ: this.typ,
