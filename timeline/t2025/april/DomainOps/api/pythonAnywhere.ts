@@ -1,9 +1,9 @@
 import axios from "axios";
 
-export const BASE_URL =
-    "https://lordrajababu.pythonanywhere.com/domains-operations-activities-logger";
 // export const BASE_URL =
-//     "http://localhost:5000/domains-operations-activities-logger";
+//     "https://lordrajababu.pythonanywhere.com/domains-operations-activities-logger";
+export const BASE_URL =
+    "http://localhost:5000/domains-operations-activities-logger";
 export const create = async (
     name: string,
     loc: string[],

@@ -41,7 +41,7 @@ export class Sidebar implements IComponent {
         if (this.comp) {
             return this.comp.getElement();
         }
-        this.comp = Tools.div({
+        this.comp = Tools.comp("aside", {
             class: "w-64 bg-gray-700 text-white p-4 min-h-[100vh] flex flex-col gap-5 overflow-y-auto",
             children: [
                 Tools.comp("h1", {
