@@ -40,7 +40,7 @@ export class Home implements IComponent {
 
 export const MainBody = () => {
     return Tools.container({
-        class: "flex-1  ",
+        class: "flex flex-col flex-1",
         children: [Header(), Table(), Footer()],
     });
 };
@@ -91,19 +91,18 @@ export const Header = () => {
 };
 export const Footer = () => {
     return Tools.div({
-        class: "px-6 py-3 flex justify-end space-x-4 border-t border-[#D1C5A5]",
+        class: " flex justify-end",
         children: [
             Tools.comp("button", {
-                class: "bg-[#F5C85F] hover:bg-[#eab330] text-gray-800 rounded-full w-10 h-10 flex items-center justify-center text-xl font-bold shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2 focus:ring-offset-[#E7DAB8]",
-                child: Tools.icon(Plus, { class: "hover:cursor-pointer" }),
+                class: "cursor-pointer mb-4 mr-4 bg-[#F5C85F] hover:bg-[#eab330] text-gray-800 rounded-full w-10 h-10 flex items-center justify-center text-xl font-bold shadow-md",
+                child: Tools.icon(Plus),
             }),
         ],
     });
 };
-
 export const Table = () => {
     return Tools.div({
-        class: "flex-1 overflow-y-auto px-4",
+        class: "flex flex-col flex-1 overflow-y-auto px-4",
         children: [
             Tools.div({
                 class: "grid grid-cols-[40px_1fr_2fr_1.5fr_1fr_100px] gap-4 px-4 py-2 bg-[#6D5E4B] text-white rounded-t-md font-medium text-sm sticky top-0 mt-6",
@@ -119,11 +118,10 @@ export const Table = () => {
                     }),
                 ],
             }),
-            ...Array.from({ length: 10 }, (_, i) => Row(i + 1)),
+            ...Array.from({ length: 5 }, (_, i) => Row(i + 1)),
         ],
     });
 };
-
 export const Ops = () => {
     return Tools.div({
         class: "flex justify-end space-x-3 text-[#4A8C71]",
@@ -134,7 +132,6 @@ export const Ops = () => {
         ],
     });
 };
-
 export const Row = (nr: any) => {
     return Tools.div({
         class: "grid grid-cols-[40px_1fr_2fr_1.5fr_1fr_100px] gap-4 px-4 py-3 items-center border-b border-[#E7DAB8]/70 text-sm text-gray-700 last:border-b-0",
