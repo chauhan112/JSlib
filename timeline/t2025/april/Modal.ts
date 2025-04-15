@@ -39,3 +39,11 @@ export class Modal implements IComponent {
         this.s.comp.content.clear();
     }
 }
+
+export class Main {
+    static modal(root?: any) {
+        let m = new Modal(root);
+        m.getElement();
+        return m;
+    }
+}

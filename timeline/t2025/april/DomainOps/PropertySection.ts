@@ -19,7 +19,7 @@ export class Table implements IComponent {
             createHeader: this.createHeader.bind(this),
             createData: this.createData.bind(this),
         };
-        this.s.root = root || this;
+        this.s.root = root ?? this;
     }
     getElement(): HTMLElement | SVGElement {
         if (this.comp) return this.comp.getElement();

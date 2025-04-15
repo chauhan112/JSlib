@@ -1,10 +1,5 @@
 import { GComponent, IComponent, Container } from "./GComponent";
-import {
-    Trash,
-    EllipsisVertical,
-    CornerDownRight,
-    CornerRightDown,
-} from "lucide";
+import { EllipsisVertical, CornerRightDown } from "lucide";
 import { DocumentHandler } from "./Array";
 import { Tools } from "./tools";
 
