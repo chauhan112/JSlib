@@ -6,8 +6,14 @@ export class DropdownMenu implements IComponent, IFormComponent {
     s: { [key: string]: any } = {};
     comp: GComponent | null = null;
     options: { [key: string]: any } = {};
-    constructor(options: any[] = [], defValue?: any) {
+    constructor(
+        options: HTMLOptionElement[] = [],
+        defValue?: any,
+        selectProps: any = {}
+    ) {
         this.s.options = options;
+        this.s.selectProps = selectProps;
+        this.s.defValue = defValue;
         this.s.funcs = {
             makeOption: this.makeOption.bind(this),
         };
@@ -15,12 +21,12 @@ export class DropdownMenu implements IComponent, IFormComponent {
             this.set(defValue);
         }
     }
-    setOptions(options: any[]) {
+    setOptions(options: HTMLOptionElement[]) {
         this.s.options = options;
         this.options = {};
         this.comp!.update({
             innerHTML: "",
-            children: this.s.options.map((option: any) => {
+            children: this.s.options.map((option: HTMLOptionElement) => {
                 const comp = this.s.funcs.makeOption(option);
                 this.options[option.value] = comp;
                 return comp;
@@ -33,7 +39,8 @@ export class DropdownMenu implements IComponent, IFormComponent {
         }
         this.comp = Tools.comp("select", {
             class: "w-full p-1 rounded-sm bg-gray-100 text-black border border-gray-300 transition-all duration-300",
-            children: this.s.options.map((option: any) => {
+            ...this.s.selectProps,
+            children: this.s.options.map((option: HTMLOptionElement) => {
                 const comp = this.s.funcs.makeOption(option);
                 this.options[option.value] = comp;
                 return comp;
@@ -54,8 +61,8 @@ export class DropdownMenu implements IComponent, IFormComponent {
         comp.value = value;
     }
     clear(): void {
-        const comp = this.getElement() as HTMLSelectElement;
-        comp.value = "";
+        if (this.s.defValue) this.set(this.s.defValue);
+        else if (this.s.options[0]) this.set(this.s.options[0].value);
     }
     makeOption(option: any) {
         return Tools.comp("option", option);
