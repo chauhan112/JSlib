@@ -263,13 +263,13 @@ export class Page implements IComponent {
     }
     getMainPage() {
         return Tools.div({
-            class: "w-10/12 h-full flex gap-4 items-start justify-center",
+            class: "w-[95%] h-full flex gap-4 items-start justify-center flex-col md:flex-row md:w-10/12",
             children: [this.getNavbar(), this.getContent()],
         });
     }
     header() {
         return Tools.div({
-            class: "w-[80%] text-4xl font-bold flex justify-between p-4 ",
+            class: "w-full text-4xl font-bold flex justify-between p-4 ",
             children: [
                 Tools.comp("h1", {
                     textContent: "Raja Babu",
@@ -284,7 +284,7 @@ export class Page implements IComponent {
     }
     getNavbar() {
         return Tools.comp("ul", {
-            class: "flex list-none items-start text-2xl font-mono flex-col sticky top-0 w-4/12 w-min",
+            class: "flex list-none items-start text-2xl font-mono flex-col sticky top-0  w-min z-2",
             children: this.s.infos.sections.map((val: string) => {
                 return Tools.comp(
                     "li",
@@ -332,7 +332,7 @@ export class Page implements IComponent {
             Contact: this.contact(),
         };
         return Tools.div({
-            class: "w-full h-full flex flex-col gap-4 ",
+            class: "flex flex-col gap-4 ",
             children: [
                 this.s.comps["About Me"],
                 this.s.comps.Resume,
@@ -465,7 +465,7 @@ export class Page implements IComponent {
             children: [
                 FancyTitle("Contact Me"),
                 Tools.comp("ul", {
-                    class: "flex gap-4 list-none ",
+                    class: "flex flex-wrap gap-4 list-none ",
                     children: [
                         PillComp("Email: rajababuchauhan500@gmail.com"),
                         PillComp("Phone: +49 162 7078024"),
@@ -477,6 +477,9 @@ export class Page implements IComponent {
                         class: "flex flex-col gap-4 mt-4 ",
                         children: [
                             Row(
+                                {
+                                    class: "flex gap-4 flex-wrap",
+                                },
                                 Tools.comp("input", {
                                     class: "border-b border-dashed border-black/20  p-2 flex-1 focus:outline-none",
                                     placeholder: "Name",
@@ -603,10 +606,11 @@ export const FancyTitle = (title: string, props: any = {}) => {
     });
 };
 
-export const Row = (...x: any[]) => {
+export const Row = (props: any = {}, ...x: any[]) => {
     return Tools.div({
         class: "flex gap-4",
         children: x,
+        ...props,
     });
 };
 
