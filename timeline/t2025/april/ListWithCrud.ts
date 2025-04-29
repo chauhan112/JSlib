@@ -2,6 +2,10 @@ import { GComponent, IComponent, Container } from "./GComponent";
 import { EllipsisVertical, CornerRightDown } from "lucide";
 import { DocumentHandler } from "./Array";
 import { Tools } from "./tools";
+type ElementType = {
+    name: string;
+    key: string;
+};
 
 export class ListWithCrud implements IComponent {
     s: { [key: string]: any } = {};
@@ -33,15 +37,21 @@ export class ListWithCrud implements IComponent {
         });
         return this.comp.getElement();
     }
-    setData(data: any[]) {
+    setData(data: ElementType[]) {
         this.s.data = data;
         this.comp!.update({
             innerHTML: "",
             children: this.s.data.map(this.s.funcs.createItem),
         });
     }
+    appendData(data: ElementType) {
+        this.s.data.push(data);
+        this.comp!.update({
+            child: this.s.funcs.createItem(data),
+        });
+    }
 
-    operationsMaker(item: any) {
+    operationsMaker(item: ElementType) {
         let contextMenu = new ContextMenu();
         contextMenu.s.item = item;
         contextMenu.s.funcs.onItemClick = this.s.funcs.contextMenuClick;
@@ -81,7 +91,7 @@ export class ListWithCrud implements IComponent {
             contextMenu,
         ];
     }
-    createItem(item: any) {
+    createItem(item: ElementType) {
         return Tools.div({
             class: "w-full flex items-center justify-between",
             children: [
