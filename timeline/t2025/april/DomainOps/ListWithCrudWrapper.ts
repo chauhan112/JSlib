@@ -19,6 +19,12 @@ export class ListWithCrudWrapper {
             data: ls.s.data,
             typ: this.typ,
         };
+        this.s.root.s.comps.content.comp.s.header.s.title.s.activityName.update(
+            {
+                textContent: ls.s.data.name,
+            }
+        );
+        console.log(this.s.root.propertySection.s.currentInfo);
         this.s.root.propertySection.fetchProperties();
         this.s.root.propertySection.show();
     }
