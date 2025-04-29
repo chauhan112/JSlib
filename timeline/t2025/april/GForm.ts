@@ -108,6 +108,14 @@ export class GForm implements IComponent {
     }
 }
 
+export class Main {
+    static form(structs: any[]) {
+        const formm = new GForm();
+        formm.s.data = structs;
+        formm.getElement();
+        return formm;
+    }
+}
 export const gformTest = () => {
     let gform = new GForm();
     gform.s.data = [
