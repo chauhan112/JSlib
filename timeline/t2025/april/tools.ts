@@ -69,8 +69,12 @@ export class Tools {
         let comp = new Input(props, typ);
         return comp;
     }
-    static dropdown(options: any[]) {
-        let comp = new DropdownMenu(options);
+    static dropdown(
+        options: HTMLOptionElement[],
+        defValue?: any,
+        props: any = {}
+    ) {
+        let comp = new DropdownMenu(options, defValue, props);
         comp.getElement();
         return comp;
     }
