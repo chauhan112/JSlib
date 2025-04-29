@@ -293,8 +293,8 @@ export class PropertySection implements IComponent {
         const table = new Table(this.s.root);
         table.s.header = ["Key", "Value", "Action"];
         table.s.data = [
-            ["created", "2025-01-01"],
-            ["modified", "2025-01-01"],
+            // ["created", "2025-01-01"],
+            // ["modified", "2025-01-01"],
         ];
         this.s.comps.table = table;
         table.s.funcs.createData = this.createData.bind(this);
