@@ -14,7 +14,7 @@ import {
     Pen,
     IconNode,
 } from "lucide";
-
+let modal = ModalMain.modal();
 export class Home implements IComponent {
     s: { [key: string]: any } = {};
     comp: GComponent | null = null;
@@ -38,6 +38,7 @@ export class Home implements IComponent {
                 this.sidebar,
                 this.s.comps.content,
                 this.propertySection,
+                modal,
             ],
         });
 
@@ -56,45 +57,56 @@ export const MainBody = (root?: any) => {
 };
 export const Header = (root?: any) => {
     return Tools.div({
-        class: "bg-[#F5C85F] px-6 py-3 shadow",
         key: "header",
+        class: "bg-[#F5C85F] px-6 py-3 shadow flex justify-between items-center",
         children: [
             Tools.div({
-                class: "flex justify-between items-center",
+                key: "title",
+                children: [
+                    Tools.comp("p", {
+                        key: "breadcrumb",
+                        class: "text-xs text-gray-600 mb-0.5",
+                        textContent: "Root/logger",
+                    }),
+                    Tools.comp("h2", {
+                        key: "activityName",
+                        class: "text-2xl font-semibold text-gray-800",
+                        textContent: "Activity_name",
+                    }),
+                ],
+            }),
+            Tools.div({
+                class: "flex items-center space-x-4",
                 children: [
                     Tools.div({
+                        class: "relative",
                         children: [
-                            Tools.comp("p", {
-                                class: "text-xs text-gray-600 mb-0.5",
-                                textContent: "Root/logger",
+                            Tools.icon(Search, {
+                                class: "absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 ",
                             }),
-                            Tools.comp("h2", {
-                                class: "text-2xl font-semibold text-gray-800",
-                                textContent: "Activity_name",
+                            Tools.comp("input", {
+                                type: "text",
+                                placeholder: "Search",
+                                class: "bg-[#F8D775] border border-gray-400/50 rounded-md py-2 pl-10 pr-4 w-64 focus:outline-none focus:ring-1 focus:ring-yellow-600 placeholder-gray-600/80 text-sm",
                             }),
                         ],
                     }),
-                    Tools.div({
-                        class: "flex items-center space-x-4",
-                        children: [
-                            Tools.div({
-                                class: "relative",
-                                children: [
-                                    Tools.icon(Search, {
-                                        class: "absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 ",
-                                    }),
-                                    Tools.comp("input", {
-                                        type: "text",
-                                        placeholder: "Search",
-                                        class: "bg-[#F8D775] border border-gray-400/50 rounded-md py-2 pl-10 pr-4 w-64 focus:outline-none focus:ring-1 focus:ring-yellow-600 placeholder-gray-600/80 text-sm",
-                                    }),
-                                ],
-                            }),
-                            Tools.icon(Menu, {
-                                class: "hover:cursor-pointer text-gray-700 hover:text-black text-xl",
-                            }),
-                        ],
-                    }),
+                    Tools.icon(
+                        Menu,
+                        {
+                            class: "hover:cursor-pointer text-gray-700 hover:text-black text-xl",
+                        },
+                        {
+                            click: (e: any, ls: any) => {
+                                modal.display(settingPage);
+                                settingPage.s.cancelSave.s.cancel.update(
+                                    {},
+                                    { click: () => modal.hide() }
+                                );
+                                console.log(settingPage);
+                            },
+                        }
+                    ),
                 ],
             }),
         ],
@@ -102,7 +114,6 @@ export const Header = (root?: any) => {
 };
 export const Footer = (root?: any) => {
     let uform = FormUnstructured();
-    let modal = ModalMain.modal();
 
     uform.s.form.s.cancelSave.s.cancel.update(
         {},
@@ -111,19 +122,18 @@ export const Footer = (root?: any) => {
     return Tools.div({
         class: " flex justify-end",
         children: [
-            modal,
-            Tools.comp("button", {
-                class: "cursor-pointer mb-4 mr-4 bg-[#F5C85F] hover:bg-[#eab330] text-gray-800 rounded-full w-10 h-10 flex items-center justify-center text-xl font-bold shadow-md",
-                child: Tools.icon(
-                    Plus,
-                    {},
-                    {
-                        click: (e: any, ls: any) => {
-                            modal.display(uform);
-                        },
-                    }
-                ),
-            }),
+            Tools.comp(
+                "button",
+                {
+                    class: "cursor-pointer mb-4 mr-4 bg-[#F5C85F] hover:bg-[#eab330] text-gray-800 rounded-full w-10 h-10 flex items-center justify-center text-xl font-bold shadow-md",
+                    child: Tools.icon(Plus),
+                },
+                {
+                    click: (e: any, ls: any) => {
+                        modal.display(uform);
+                    },
+                }
+            ),
         ],
     });
 };
@@ -176,7 +186,7 @@ export const Row = (nr: any) => {
                 textContent: "Activity_name",
             }),
             Tools.comp("span", { textContent: "Created_on" }),
-            Tools.comp("span", { textContent: "" }),
+            Tools.comp("span", { textContent: "--" }),
             Ops(),
         ],
     });
@@ -263,3 +273,12 @@ export const CancelSaveBtns = () => {
     });
 };
 export const StructuredForm = (struct: any) => {};
+
+export const StructureCreatingForm = () => {};
+
+export const SettingPage = () => {
+    return Tools.div({
+        children: [CancelSaveBtns()],
+    });
+};
+let settingPage = SettingPage();
