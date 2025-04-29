@@ -1,5 +1,4 @@
-export class LocalStorageJSONModel {
-    key: string = "LocalStorageModel";
+export class Model {
     data: any;
     constructor() {
         this.data = this.readFormStorage();
@@ -36,18 +35,17 @@ export class LocalStorageJSONModel {
     readEntry(location: string[]) {
         let x = this.data;
         for (let key of location) {
+            if (!x.hasOwnProperty(key)) {
+                throw new Error("Key does not exist");
+            }
             x = x[key];
         }
         return x;
     }
-    private readFormStorage() {
-        let x = localStorage.getItem(this.key);
-        if (x) return JSON.parse(x);
+    readFormStorage() {
         return {};
     }
-    private writeToStorage() {
-        localStorage.setItem(this.key, JSON.stringify(this.data));
-    }
+    writeToStorage() {}
     get_keys(location: string[]) {
         return Object.keys(this.readEntry(location));
     }
@@ -58,5 +56,23 @@ export class LocalStorageJSONModel {
         } catch {
             return false;
         }
+    }
+}
+
+export class LocalStorageJSONModel extends Model {
+    key: string;
+    data: any;
+    constructor(key?: string) {
+        super();
+        this.key = key || "LocalStorageModel";
+        this.data = this.readFormStorage();
+    }
+    readFormStorage() {
+        let x = localStorage.getItem(this.key);
+        if (x) return JSON.parse(x);
+        return {};
+    }
+    writeToStorage() {
+        localStorage.setItem(this.key, JSON.stringify(this.data));
     }
 }
