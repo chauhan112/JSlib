@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Responsive Components (Tailwind)</title>
+        <!-- Include Tailwind CSS (Use your preferred method: CDN, PostCSS, etc.) -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            // Optional: Configure Tailwind breakpoints if needed
+            tailwind.config = {
+                theme: {
+                    screens: {
+                        sm: "640px", // Small devices (mobiles)
+                        md: "768px", // Medium devices (tablets)
+                        lg: "1024px", // Large devices (desktops)
+                        xl: "1280px", // Extra large devices
+                    },
+                },
+            };
+        </script>
+    </head>
+    <body class="p-8 bg-gray-100">
+        <h1 class="text-2xl font-bold mb-4">Example 1: Pure Tailwind CSS</h1>
+
+        <div class="border p-4 rounded shadow bg-white">
+            <h2 class="text-lg font-semibold mb-2">Current View:</h2>
+
+            <!-- Component for Small Screens (Default) -->
+            <!-- Visible by default, hidden on medium screens and up -->
+            <div
+                class="p-4 bg-blue-100 border border-blue-300 rounded md:hidden"
+            >
+                <p class="font-bold text-blue-800">Mobile Component</p>
+                <p>This content is shown on small screens (less than 768px).</p>
+            </div>
+
+            <!-- Component for Medium Screens -->
+            <!-- Hidden by default, visible on medium screens, hidden on large screens and up -->
+            <div
+                class="hidden p-4 bg-green-100 border border-green-300 rounded md:block lg:hidden"
+            >
+                <p class="font-bold text-green-800">Tablet Component</p>
+                <p>
+                    This content is shown on medium screens (768px to 1023px).
+                </p>
+            </div>
+
+            <!-- Component for Large Screens -->
+            <!-- Hidden by default, visible on large screens and up -->
+            <div
+                class="hidden p-4 bg-purple-100 border border-purple-300 rounded lg:block"
+            >
+                <p class="font-bold text-purple-800">Desktop Component</p>
+                <p>This content is shown on large screens (1024px and up).</p>
+            </div>
+        </div>
+
+        <p class="mt-4 text-gray-600">
+            Resize your browser window to see the components change.
+        </p>
+    </body>
+</html>

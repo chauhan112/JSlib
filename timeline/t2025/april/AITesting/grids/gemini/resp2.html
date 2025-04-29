@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Flexbox Responsive Example</title>
+        <style>
+            .flex-container {
+                display: flex;
+                flex-wrap: wrap; /* Allows items to wrap onto a new line */
+                gap: 20px; /* Space between items */
+                padding: 20px;
+                background-color: #f0f0f0;
+            }
+
+            .flex-item {
+                /* flex-grow, flex-shrink, flex-basis */
+                /* Allows items to grow/shrink, initial basis is ~200px */
+                flex: 1 1 200px;
+                background-color: #fff;
+                border: 1px solid #ccc;
+                padding: 20px;
+                text-align: center;
+                box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            /* On smaller screens, make items take up more width */
+            @media (max-width: 600px) {
+                .flex-item {
+                    /* Make items take up almost full width (with padding) */
+                    flex-basis: 100%;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="flex-container">
+            <div class="flex-item">Item A</div>
+            <div class="flex-item">Item B</div>
+            <div class="flex-item">Item C</div>
+            <div class="flex-item">Item D</div>
+            <div class="flex-item">Item E</div>
+            <div class="flex-item">Item F</div>
+            <div class="flex-item">Item G</div>
+            <div class="flex-item">Item H</div>
+        </div>
+    </body>
+</html>

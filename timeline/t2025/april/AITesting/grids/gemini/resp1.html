@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tailwind CSS Responsive Grid Example</title>
+        <!-- Include Tailwind CSS via CDN (Good for demos, use build process for production) -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+    </head>
+    <body class="bg-gray-100 p-4">
+        <div class="container mx-auto">
+            <!-- Centers the content and provides some padding -->
+
+            <h1 class="text-2xl font-bold mb-6 text-center">
+                Responsive Grid with Tailwind CSS
+            </h1>
+
+            <!-- The Grid Container -->
+            <div
+                class="grid grid-cols-1 /* Default: 1 column on small screens */ sm:grid-cols-2 /* On screens 640px and up: 2 columns */ md:grid-cols-3 /* On screens 768px and up: 3 columns */ lg:grid-cols-4 /* On screens 1024px and up: 4 columns */ gap-4 /* Adds spacing (gap) between grid items */"
+            >
+                <!-- Grid Items -->
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-gray-700 font-semibold">Item 1</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-gray-700 font-semibold">Item 2</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-gray-700 font-semibold">Item 3</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-gray-700 font-semibold">Item 4</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-gray-700 font-semibold">Item 5</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-gray-700 font-semibold">Item 6</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-gray-700 font-semibold">Item 7</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-gray-700 font-semibold">Item 8</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-gray-700 font-semibold">Item 9</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-gray-700 font-semibold">Item 10</p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
