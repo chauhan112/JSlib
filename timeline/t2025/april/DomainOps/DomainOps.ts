@@ -1,19 +1,15 @@
-import { DocumentHandler } from "../Array";
 import { GForm } from "../GForm";
 import { Section } from "./Section";
 
 export class DomainsContent {
     section: Section;
-    docHandler: DocumentHandler;
     s: { [key: string]: any } = {};
-    constructor(root?: any, docHandler?: DocumentHandler) {
+    constructor(root?: any) {
         let rootComponent = root || this;
-        this.docHandler = docHandler || new DocumentHandler();
         this.section = new Section(
             rootComponent,
             "domains",
-            this.makeDomainForm(),
-            this.docHandler
+            this.makeDomainForm()
         );
         this.section.s.parent = this;
     }
@@ -40,16 +36,15 @@ export class DomainsContent {
 }
 export class OperationsContent {
     section: Section;
-    docHandler: DocumentHandler;
+
     s: { [key: string]: any } = {};
-    constructor(root?: any, docHandler?: DocumentHandler) {
+    constructor(root?: any) {
         let rootComponent = root || this;
-        this.docHandler = docHandler || new DocumentHandler();
+
         this.section = new Section(
             rootComponent,
             "operations",
-            this.makeOperationsForm(),
-            this.docHandler
+            this.makeOperationsForm()
         );
         this.section.funcs = {
             ...this.section.funcs,

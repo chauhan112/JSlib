@@ -24,7 +24,7 @@ export class ActivitiesContent {
     s: { [key: string]: any } = {};
     constructor(root?: any, docHandler?: DocumentHandler) {
         let rootComponent = root || this;
-        this.docHandler = docHandler || new DocumentHandler();
+        this.docHandler = docHandler || DocumentHandler.getInstance();
         this.form = this.makeForm();
         this.listWrapper = new ListWithCrudWrapper(this.typ, rootComponent);
         this.list = this.listWrapper.list;

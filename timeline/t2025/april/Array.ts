@@ -36,11 +36,16 @@ export class Undoers {
 }
 
 export class DocumentHandler {
+    static instance: DocumentHandler | null = null;
     undoer: Undoers = new Undoers();
     constructor() {
         document.addEventListener("click", (e: any) => this.onClick(e));
     }
     onClick(e: any) {
         this.undoer.undo();
+    }
+    static getInstance() {
+        DocumentHandler.instance ??= new DocumentHandler();
+        return DocumentHandler.instance;
     }
 }

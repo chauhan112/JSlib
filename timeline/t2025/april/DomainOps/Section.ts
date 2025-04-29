@@ -16,22 +16,13 @@ export class Section {
     endpoint: string = "update_name";
     listWrapper: ListWithCrudWrapper;
     s: { [key: string]: any } = {};
-    constructor(
-        root: any,
-        typ: string,
-        form: GForm,
-        docHandler?: DocumentHandler
-    ) {
+    constructor(root: any, typ: string, form: GForm) {
         this.typ = typ;
         this.form = form;
         this.listWrapper = new ListWithCrudWrapper(typ, root);
 
         this.list = this.listWrapper.list;
-        if (docHandler) {
-            this.list.docHandler = docHandler;
-        } else {
-            this.list.docHandler = new DocumentHandler();
-        }
+
         this.list.getElement();
         this.list.s.funcs.contextMenuClick = this.onContextMenuClick.bind(this);
         this.content = this.makeContent();

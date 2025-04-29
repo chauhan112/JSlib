@@ -1,6 +1,5 @@
 import { Tools } from "../tools";
 import { AccordionShowMany } from "../Accordion";
-import { DocumentHandler } from "../Array";
 import { ActivitiesContent } from "./ActivitiesCrud";
 import { DomainsContent, OperationsContent } from "./DomainOps";
 import { GComponent, IComponent } from "../GComponent";
@@ -8,7 +7,6 @@ import { GComponent, IComponent } from "../GComponent";
 export class Sidebar implements IComponent {
     accordion: AccordionShowMany;
     s: { [key: string]: any } = {};
-    docHandler: DocumentHandler;
     domContent: DomainsContent;
     opsContent: OperationsContent;
     activitiesSection: ActivitiesContent;
@@ -16,13 +14,9 @@ export class Sidebar implements IComponent {
     constructor(root?: any) {
         let rootComponent = root || this;
         this.accordion = new AccordionShowMany();
-        this.docHandler = new DocumentHandler();
-        this.domContent = new DomainsContent(rootComponent, this.docHandler);
-        this.opsContent = new OperationsContent(rootComponent, this.docHandler);
-        this.activitiesSection = new ActivitiesContent(
-            rootComponent,
-            this.docHandler
-        );
+        this.domContent = new DomainsContent(rootComponent);
+        this.opsContent = new OperationsContent(rootComponent);
+        this.activitiesSection = new ActivitiesContent(rootComponent);
         this.accordion.s.funcs.onPlusHandlerOnShow =
             this.onPlusClickShowForm.bind(this);
         this.accordion.s.funcs.onPlusHandlerOnHide =

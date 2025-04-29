@@ -8,7 +8,8 @@ export class ListWithCrud implements IComponent {
     comp: GComponent | null = null;
     docHandler: DocumentHandler | null = null;
 
-    constructor() {
+    constructor(docHandler?: DocumentHandler) {
+        this.docHandler = docHandler || DocumentHandler.getInstance();
         this.s.data = [];
         this.s.funcs = {
             createItem: this.createItem.bind(this),
@@ -82,7 +83,7 @@ export class ListWithCrud implements IComponent {
     }
     createItem(item: any) {
         return Tools.div({
-            class: "w-full flex items-center justify-between ",
+            class: "w-full flex items-center justify-between",
             children: [
                 Tools.div({ textContent: item.name }, {}, { data: item }),
                 Tools.div({
