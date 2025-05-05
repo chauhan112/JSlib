@@ -7,7 +7,7 @@ import {
 } from "./GComponent";
 import { IconNode } from "lucide";
 import { Icon } from "./icons";
-import { IFormComponent, Input } from "./GForm";
+import { Input } from "./GForm";
 
 import { MultiSelect, DropdownMenu } from "./Select";
 
