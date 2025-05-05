@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Hash Router Example</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                padding: 20px;
+            }
+            nav a {
+                margin-right: 15px;
+                text-decoration: none;
+                color: blue;
+            }
+            nav a:hover {
+                text-decoration: underline;
+            }
+            #app {
+                margin-top: 20px;
+                border: 1px solid #ccc;
+                padding: 20px;
+                min-height: 100px;
+            }
+            .active {
+                font-weight: bold;
+                color: black;
+            } /* Style for active link */
+        </style>
+    </head>
+    <body>
+        <h1>Hash-Based Router</h1>
+        <nav id="nav">
+            <a href="#/">Home</a>
+            <a href="#/about">About</a>
+            <a href="#/contact">Contact</a>
+            <a href="#/nonexistent">Broken Link</a>
+        </nav>
+
+        <div id="app">
+            <!-- Content will be loaded here -->
+            Loading...
+        </div>
+
+        <script src="router_hash.js"></script>
+    </body>
+</html>

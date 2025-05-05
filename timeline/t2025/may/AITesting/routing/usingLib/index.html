@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Page.js Router Example</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <header>
+            <h1>My Single Page App</h1>
+            <nav id="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/users/alice">User: Alice</a></li>
+                    <li><a href="/users/bob">User: Bob</a></li>
+                    <li><a href="/non-existent-page">Broken Link (404)</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main id="content">
+            <!-- Content will be loaded here by Page.js -->
+            <p>Loading...</p>
+        </main>
+
+        <footer>
+            <p>© 2023 My App</p>
+        </footer>
+
+        <!-- Include Page.js (use CDN for simplicity) -->
+        <script src="https://unpkg.com/page/page.js"></script>
+
+        <!-- Include your application script -->
+        <script src="app.js"></script>
+    </body>
+</html>
