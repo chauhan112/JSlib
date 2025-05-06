@@ -70,7 +70,7 @@ export class Tools {
         return comp;
     }
     static dropdown(
-        options: HTMLOptionElement[],
+        options: Partial<HTMLOptionElement>[],
         defValue?: any,
         props: any = {}
     ) {

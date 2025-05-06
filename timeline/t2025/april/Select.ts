@@ -7,7 +7,7 @@ export class DropdownMenu implements IComponent, IFormComponent {
     comp: GComponent | null = null;
     options: { [key: string]: any } = {};
     constructor(
-        options: HTMLOptionElement[] = [],
+        options: Partial<HTMLOptionElement>[] = [],
         defValue?: any,
         selectProps: any = {}
     ) {
@@ -21,16 +21,20 @@ export class DropdownMenu implements IComponent, IFormComponent {
             this.set(defValue);
         }
     }
-    setOptions(options: HTMLOptionElement[]) {
+    setOptions(options: Partial<HTMLOptionElement>[]) {
         this.s.options = options;
         this.options = {};
         this.comp!.update({
             innerHTML: "",
-            children: this.s.options.map((option: HTMLOptionElement) => {
-                const comp = this.s.funcs.makeOption(option);
-                this.options[option.value] = comp;
-                return comp;
-            }),
+            children: this.s.options.map(
+                (option: Partial<HTMLOptionElement>) => {
+                    const comp = this.s.funcs.makeOption(option);
+                    if (option.value) {
+                        this.options[option.value] = comp;
+                    }
+                    return comp;
+                }
+            ),
         });
     }
     getElement(): HTMLElement | SVGElement {
@@ -40,11 +44,15 @@ export class DropdownMenu implements IComponent, IFormComponent {
         this.comp = Tools.comp("select", {
             class: "w-full p-1 rounded-sm bg-gray-100 text-black border border-gray-300 transition-all duration-300",
             ...this.s.selectProps,
-            children: this.s.options.map((option: HTMLOptionElement) => {
-                const comp = this.s.funcs.makeOption(option);
-                this.options[option.value] = comp;
-                return comp;
-            }),
+            children: this.s.options.map(
+                (option: Partial<HTMLOptionElement>) => {
+                    const comp = this.s.funcs.makeOption(option);
+                    if (option.value) {
+                        this.options[option.value] = comp;
+                    }
+                    return comp;
+                }
+            ),
         });
 
         return this.comp.getElement();
