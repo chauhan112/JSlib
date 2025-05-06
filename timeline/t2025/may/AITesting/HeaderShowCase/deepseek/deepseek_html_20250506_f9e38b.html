@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Theme Header</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <header class="bg-gray-900 text-white">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-8">
+                <a href="#" class="text-2xl font-bold">Brand</a>
+                <nav class="hidden md:block">
+                    <ul class="flex space-x-6">
+                        <li><a href="#" class="hover:text-gray-300">Products</a></li>
+                        <li><a href="#" class="hover:text-gray-300">Solutions</a></li>
+                        <li><a href="#" class="hover:text-gray-300">Resources</a></li>
+                        <li><a href="#" class="hover:text-gray-300">Pricing</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="#" class="hidden md:inline-block hover:text-gray-300">Login</a>
+                <button class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md font-medium">Sign Up</button>
+                <button class="md:hidden focus:outline-none" id="dark-menu-toggle">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div class="md:hidden hidden bg-gray-800 px-4 py-3" id="dark-mobile-menu">
+            <ul class="space-y-3">
+                <li><a href="#" class="block py-1 hover:text-gray-300">Products</a></li>
+                <li><a href="#" class="block py-1 hover:text-gray-300">Solutions</a></li>
+                <li><a href="#" class="block py-1 hover:text-gray-300">Resources</a></li>
+                <li><a href="#" class="block py-1 hover:text-gray-300">Pricing</a></li>
+                <li><a href="#" class="block py-1 hover:text-gray-300">Login</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <script>
+        document.getElementById('dark-menu-toggle').addEventListener('click', function() {
+            const menu = document.getElementById('dark-mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>
