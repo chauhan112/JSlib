@@ -160,9 +160,14 @@ export class Page implements IComponent {
         this.s.infos = {
             sections: ["About Me", "Resume", "Portfolio", "Contact"],
             skills: [
-                "Frontend (40%)",
-                "Backend (20%)",
-                "Artificial Intelligence (40%)",
+                "Typescript",
+                "Tailwind",
+                "HTML",
+                "CSS",
+                "Js",
+                "SQL",
+                "Git",
+                "React",
             ],
             stats: [
                 { nr: 7, text: "years of experience" },
@@ -205,9 +210,10 @@ export class Page implements IComponent {
             ],
             projects: [
                 {
-                    title: "Imagine Art",
-                    tech: "Stable Diffusion, Next.js, Tailwind css",
-                    link: "#",
+                    title: "Python Library",
+                    tech: "ipywidgets, plotly, jupyterlab, sqlite",
+                    link: "https://github.com/chauhan112/Rlib/",
+                    backgroundImage: "rlib.png",
                 },
                 {
                     title: "Soul Gen",
@@ -361,7 +367,7 @@ export class Page implements IComponent {
                                 this.s.comps.typing,
                                 Tools.comp("img", {
                                     class: "min-w-[256px] h-[256px] rounded-full border-2 border-dashed border-black/20",
-                                    src: "",
+                                    src: "profile.jpeg",
                                 }),
                             ],
                         }),
@@ -445,20 +451,7 @@ export class Page implements IComponent {
                 Tools.div({
                     class: "flex flex-wrap justify-center ",
                     children: this.s.infos.projects.map((x: any) => {
-                        return Tools.comp("a", {
-                            class: "relative w-[400px] p-4 rounded-md bg-gray-100/80 h-[200px] mt-2 ml-2 cursor-pointer hover:bg-gray-200/80",
-                            children: [
-                                Tools.comp("p", {
-                                    class: "absolute flex text-sm justify-end top-2 right-2",
-                                    textContent: x.tech,
-                                }),
-                                Tools.comp("div", {
-                                    class: "flex text-2xl font-bold items-center justify-center h-full",
-                                    textContent: x.title,
-                                }),
-                            ],
-                            href: x.link,
-                        });
+                        return ProjectComponent(x);
                     }),
                 }),
             ],
@@ -624,5 +617,42 @@ export const Button = () => {
         class: "border border-dashed border-black/20 rounded-md p-2 w-fit cursor-pointer hover:bg-black/10",
         textContent: "Send Message",
         type: "submit",
+    });
+};
+
+// <div class="portfolio-box"> https://dtoyoda10.vercel.app/
+//           <!-- Image -->
+//           <img loading="lazy" src="/data/images/imagineart.jpg" alt="imagine_art" data-rjs="2">
+//           <!-- Category -->
+//           <span class="portfolio-category">Stable Diffusion,Next.js,Tailwind CSS</span>
+//           <!-- Caption -->
+//           <div class="portfolio-caption">
+//             <h1><a href="https://www.imagine.art" target="_blank">ImagineArt</a></h1>
+//           </div>
+//         </div>
+
+export const ProjectComponent = (x: any) => {
+    console.log(x);
+    x.backgroundImage ??=
+        "https://picsum.photos/400/200?random=" + Math.random();
+    return Tools.comp("a", {
+        class: "relative w-[400px] p-4 rounded-md bg-gray-100/80 h-[200px] mt-2 ml-2 cursor-pointer hover:bg-gray-200/80",
+        children: [
+            Tools.comp("p", {
+                class: "absolute flex text-sm justify-end top-2 right-2",
+                textContent: x.tech,
+            }),
+            Tools.comp("div", {
+                class: "flex text-2xl font-bold items-center justify-center h-full",
+                textContent: x.title,
+            }),
+        ],
+        style: {
+            backgroundImage: `url(${x.backgroundImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+        },
+        href: x.link,
+        target: "_blank",
     });
 };
