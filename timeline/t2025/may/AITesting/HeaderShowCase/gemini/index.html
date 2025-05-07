@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Tailwind Headers Showcase</title>
+        <!-- Include Tailwind CSS from CDN -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+        <style>
+            /* Optional: Basic body padding */
+            body {
+                padding-top: 2rem;
+                padding-bottom: 2rem;
+                font-family: sans-serif;
+            }
+
+            /* Style for the showcase sections */
+            .header-section {
+                border: 1px solid #e5e7eb; /* Tailwind gray-200 */
+                margin-bottom: 3rem; /* Tailwind mb-12 */
+                padding: 1.5rem; /* Tailwind p-6 */
+                background-color: #ffffff; /* White background */
+                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
+                    0 1px 2px 0 rgba(0, 0, 0, 0.06); /* Tailwind shadow-md */
+                border-radius: 0.5rem; /* Tailwind rounded-lg */
+            }
+
+            .header-section h2 {
+                font-size: 1.5rem; /* Tailwind text-2xl */
+                font-weight: bold; /* Tailwind font-bold */
+                margin-bottom: 1rem; /* Tailwind mb-4 */
+                color: #374151; /* Tailwind gray-700 */
+            }
+        </style>
+    </head>
+    <body class="bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">
+                10 Tailwind CSS Header Examples
+            </h1>
+
+            <!-- Header 1: Simple Left Logo, Right Nav -->
+            <div class="header-section">
+                <h2>Header 1: Simple Left Logo, Right Nav</h2>
+                <header
+                    class="flex justify-between items-center p-4 bg-blue-600 text-white"
+                >
+                    <div class="text-xl font-bold">BrandLogo</div>
+                    <nav>
+                        <ul class="flex space-x-4">
+                            <li>
+                                <a href="#" class="hover:underline">Home</a>
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline">About</a>
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline">Services</a>
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline">Contact</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+            </div>
+
+            <!-- Header 2: Left Logo, Centered Nav, Right Button -->
+            <div class="header-section">
+                <h2>Header 2: Left Logo, Centered Nav, Right Button</h2>
+                <header
+                    class="flex items-center justify-between p-4 bg-gray-800 text-white"
+                >
+                    <div class="text-xl font-bold">BrandLogo</div>
+                    <nav class="flex-grow text-center">
+                        <ul class="flex justify-center space-x-6">
+                            <li>
+                                <a href="#" class="hover:text-gray-300">Home</a>
+                            </li>
+                            <li>
+                                <a href="#" class="hover:text-gray-300"
+                                    >Products</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#" class="hover:text-gray-300">Blog</a>
+                            </li>
+                            <li>
+                                <a href="#" class="hover:text-gray-300"
+                                    >Support</a
+                                >
+                            </li>
+                        </ul>
+                    </nav>
+                    <a
+                        href="#"
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                        >Sign Up</a
+                    >
+                </header>
+            </div>
+
+            <!-- Header 3: Centered Logo, Nav Below -->
+            <div class="header-section">
+                <h2>Header 3: Centered Logo, Nav Below</h2>
+                <header
+                    class="flex flex-col items-center p-4 bg-purple-700 text-white"
+                >
+                    <div class="text-2xl font-extrabold mb-3">App Name</div>
+                    <nav>
+                        <ul class="flex space-x-6 text-sm">
+                            <li>
+                                <a href="#" class="hover:underline"
+                                    >Dashboard</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline">Settings</a>
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline">Profile</a>
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline">Logout</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+            </div>
+
+            <!-- Header 4: Transparent Background (Use with a hero section below) -->
+            <div class="header-section" style="position: relative">
+                <h2>
+                    Header 4: Transparent Background (often sits over hero
+                    content)
+                </h2>
+                <!-- Placeholder for content below the header -->
+                <div
+                    style="
+                        background-image: url('https://source.unsplash.com/random/800x300?nature');
+                        background-size: cover;
+                        height: 200px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        color: white;
+                        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+                    "
+                >
+                    <p class="text-2xl font-bold">Content Below Header</p>
+                </div>
+                <header
+                    class="absolute top-0 left-0 right-0 z-10 p-4 text-white"
+                    style="background-color: rgba(0, 0, 0, 0.3)"
+                >
+                    <!-- Semi-transparent background for visibility -->
+                    <div
+                        class="container mx-auto flex justify-between items-center"
+                    >
+                        <div class="text-xl font-bold">TransparentBrand</div>
+                        <nav>
+                            <ul class="flex space-x-4">
+                                <li>
+                                    <a href="#" class="hover:underline">Home</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="hover:underline"
+                                        >Features</a
+                                    >
+                                </li>
+                                <li>
+                                    <a href="#" class="hover:underline"
+                                        >Pricing</a
+                                    >
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </header>
+                <div class="pt-24 text-gray-700"></div>
+                <!-- Push content down -->
+            </div>
+
+            <!-- Header 5: Simple Left Logo, Right Auth Links -->
+            <div class="header-section">
+                <h2>Header 5: Simple Left Logo, Right Auth Links</h2>
+                <header
+                    class="flex justify-between items-center p-4 bg-pink-600 text-white"
+                >
+                    <div class="text-xl font-bold">SweetApp</div>
+                    <nav>
+                        <ul class="flex space-x-4 items-center">
+                            <li>
+                                <a href="#" class="hover:underline">Login</a>
+                            </li>
+                            <li><span class="text-gray-300">|</span></li>
+                            <li>
+                                <a
+                                    href="#"
+                                    class="bg-white text-pink-600 px-3 py-1 rounded hover:bg-gray-200"
+                                    >Sign Up</a
+                                >
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+            </div>
+
+            <!-- Header 6: With Search Bar -->
+            <div class="header-section">
+                <h2>Header 6: With Search Bar</h2>
+                <header
+                    class="flex justify-between items-center p-4 bg-teal-600 text-white"
+                >
+                    <div class="text-xl font-bold">SearchSite</div>
+                    <div class="flex items-center space-x-2">
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            class="px-3 py-1 rounded text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                        />
+                        <button
+                            class="bg-white text-teal-600 px-3 py-1 rounded hover:bg-gray-200"
+                        >
+                            Go
+                        </button>
+                    </div>
+                    <nav>
+                        <ul class="flex space-x-4">
+                            <li>
+                                <a href="#" class="hover:underline"
+                                    >Categories</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline">Latest</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+            </div>
+
+            <!-- Header 7: Stacked Logo & Nav -->
+            <div class="header-section">
+                <h2>Header 7: Stacked Logo & Nav</h2>
+                <header
+                    class="flex flex-col items-center p-4 bg-yellow-400 text-gray-900"
+                >
+                    <div class="text-2xl font-bold mb-3">StackedBrand</div>
+                    <nav class="w-full">
+                        <ul class="flex justify-center space-x-6">
+                            <li>
+                                <a href="#" class="hover:underline">Option 1</a>
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline">Option 2</a>
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline">Option 3</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+            </div>
+
+            <!-- Header 8: With User Avatar/Profile Link -->
+            <div class="header-section">
+                <h2>Header 8: With User Avatar/Profile Link</h2>
+                <header
+                    class="flex justify-between items-center p-4 bg-indigo-600 text-white"
+                >
+                    <div class="text-xl font-bold">UserApp</div>
+                    <nav>
+                        <ul class="flex space-x-4 items-center">
+                            <li>
+                                <a href="#" class="hover:underline">Settings</a>
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline">Messages</a>
+                            </li>
+                            <li>
+                                <a href="#" class="flex items-center space-x-2">
+                                    <img
+                                        src="https://via.placeholder.com/30/ffffff/000000?text=U"
+                                        alt="User Avatar"
+                                        class="rounded-full w-8 h-8 border-2 border-white"
+                                    />
+                                    <span>Profile</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+            </div>
+
+            <!-- Header 9: Simple Left Logo, Utility Nav Right -->
+            <div class="header-section">
+                <h2>Header 9: Simple Left Logo, Utility Nav Right</h2>
+                <header
+                    class="flex justify-between items-center p-4 bg-red-600 text-white"
+                >
+                    <div class="text-xl font-bold">UtilityCo</div>
+                    <nav>
+                        <ul class="flex space-x-4">
+                            <li>
+                                <a href="#" class="hover:underline text-sm"
+                                    >Support</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline text-sm"
+                                    >Help</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline text-sm"
+                                    >Status</a
+                                >
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+            </div>
+
+            <!-- Header 10: With Placeholder for Mobile Menu Toggle (Responsive Structure) -->
+            <div class="header-section">
+                <h2>
+                    Header 10: With Placeholder for Mobile Menu Toggle
+                    (Responsive Structure)
+                </h2>
+                <header
+                    class="flex justify-between items-center p-4 bg-blue-800 text-white"
+                >
+                    <div class="text-xl font-bold">ResponsiveSite</div>
+
+                    <!-- Mobile menu button (hidden on medium screens and up) -->
+                    <button
+                        id="mobile-menu-button"
+                        class="md:hidden focus:outline-none"
+                    >
+                        <svg
+                            class="w-6 h-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"
+                            ></path>
+                        </svg>
+                    </button>
+
+                    <!-- Navigation (hidden on small screens, flex on medium and up) -->
+                    <nav id="main-nav" class="hidden md:flex">
+                        <ul class="flex space-x-4">
+                            <li>
+                                <a href="#" class="hover:underline">Products</a>
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline"
+                                    >Solutions</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline">Company</a>
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline">Contact</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+                <!-- Placeholder for mobile menu content that would appear below -->
+                <div
+                    id="mobile-menu-content"
+                    class="hidden bg-blue-700 text-white py-2 md:hidden"
+                >
+                    <ul class="flex flex-col items-center space-y-2">
+                        <li>
+                            <a
+                                href="#"
+                                class="block px-4 py-2 hover:bg-blue-600 w-full text-center"
+                                >Products</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="#"
+                                class="block px-4 py-2 hover:bg-blue-600 w-full text-center"
+                                >Solutions</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="#"
+                                class="block px-4 py-2 hover:bg-blue-600 w-full text-center"
+                                >Company</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="#"
+                                class="block px-4 py-2 hover:bg-blue-600 w-full text-center"
+                                >Contact</a
+                            >
+                        </li>
+                    </ul>
+                </div>
+                <p class="mt-4 text-gray-700 text-sm">
+                    <em
+                        >Note: The mobile menu toggle in Header 10 requires
+                        JavaScript to show/hide the menu content. The JS below
+                        is just a placeholder.</em
+                    >
+                </p>
+            </div>
+        </div>
+
+        <!-- Vanilla JS placeholder -->
+        <script>
+            // This is where you would add vanilla JS for interactive elements.
+            // For example, to toggle a mobile menu:
+
+            const mobileMenuButton =
+                document.getElementById("mobile-menu-button");
+            const mobileMenuContent = document.getElementById(
+                "mobile-menu-content"
+            );
+            const mainNav = document.getElementById("main-nav");
+
+            // Basic toggle functionality for Header 10
+            if (mobileMenuButton && mobileMenuContent && mainNav) {
+                mobileMenuButton.addEventListener("click", () => {
+                    mobileMenuContent.classList.toggle("hidden");
+                    // You might also hide the main nav on click if needed,
+                    // depending on your desired mobile behavior.
+                    // mainNav.classList.toggle('hidden');
+                });
+
+                // Optional: Hide mobile menu on window resize if it becomes visible via MD breakpoint
+                window.addEventListener("resize", () => {
+                    if (window.innerWidth >= 768) {
+                        // 768px is Tailwind's 'md' breakpoint
+                        mobileMenuContent.classList.add("hidden");
+                        // mainNav.classList.remove('hidden'); // Ensure desktop nav is visible
+                    }
+                });
+            }
+
+            console.log(
+                "Vanilla JS loaded. Potential use cases: mobile menu toggles, dropdowns, sticky headers, etc."
+            );
+        </script>
+    </body>
+</html>

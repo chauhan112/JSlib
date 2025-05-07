@@ -409,7 +409,7 @@ export class Breadcrumb implements IComponent {
     ): void {
         throw new Error("Method not implemented.");
     }
-    getElement(): HTMLElement | null {
+    getElement(): HTMLElement {
         throw new Error("Method not implemented.");
     }
 }
@@ -432,7 +432,7 @@ export class Header implements IComponent {
     ): void {
         throw new Error("Method not implemented.");
     }
-    getElement(): HTMLElement | null {
+    getElement(): HTMLElement {
         throw new Error("Method not implemented.");
     }
 }
@@ -455,7 +455,7 @@ export class Sidebar implements IComponent {
     ): void {
         throw new Error("Method not implemented.");
     }
-    getElement(): HTMLElement | null {
+    getElement(): HTMLElement {
         throw new Error("Method not implemented.");
     }
 }
@@ -478,7 +478,7 @@ export class Footer implements IComponent {
     ): void {
         throw new Error("Method not implemented.");
     }
-    getElement(): HTMLElement | null {
+    getElement(): HTMLElement {
         throw new Error("Method not implemented.");
     }
 }
@@ -501,7 +501,7 @@ export class Modal implements IComponent {
     ): void {
         throw new Error("Method not implemented.");
     }
-    getElement(): HTMLElement | null {
+    getElement(): HTMLElement {
         throw new Error("Method not implemented.");
     }
 }
@@ -524,7 +524,7 @@ export class Tab implements IComponent {
     ): void {
         throw new Error("Method not implemented.");
     }
-    getElement(): HTMLElement | null {
+    getElement(): HTMLElement {
         throw new Error("Method not implemented.");
     }
 }
@@ -547,7 +547,7 @@ export class Card implements IComponent {
     ): void {
         throw new Error("Method not implemented.");
     }
-    getElement(): HTMLElement | null {
+    getElement(): HTMLElement {
         throw new Error("Method not implemented.");
     }
 }
@@ -570,7 +570,7 @@ export class HomeTitleSidebar implements IComponent {
     ): void {
         throw new Error("Method not implemented.");
     }
-    getElement(): HTMLElement | null {
+    getElement(): HTMLElement {
         throw new Error("Method not implemented.");
     }
 }
@@ -590,7 +590,7 @@ export class ContextMenu implements IComponent {
     ): void {
         throw new Error("Method not implemented.");
     }
-    getElement(): HTMLElement | null {
+    getElement(): HTMLElement {
         throw new Error("Method not implemented.");
     }
 }

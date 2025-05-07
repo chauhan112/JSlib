@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>10 Responsive Headers</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            body {
+                font-family: sans-serif;
+            }
+        </style>
+    </head>
+    <body class="bg-gray-100">
+        <!-- Navigation Buttons -->
+        <div class="sticky top-0 bg-white shadow-md z-50 overflow-x-auto">
+            <div class="container mx-auto flex space-x-2 p-2 text-sm">
+                <button
+                    onclick="showHeader('header-1')"
+                    class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                    Header 1
+                </button>
+                <button
+                    onclick="showHeader('header-2')"
+                    class="px-3 py-1 bg-pink-500 text-white rounded hover:bg-pink-600"
+                >
+                    Header 2
+                </button>
+                <button
+                    onclick="showHeader('header-3')"
+                    class="px-3 py-1 bg-amber-500 text-white rounded hover:bg-amber-600"
+                >
+                    Header 3
+                </button>
+                <button
+                    onclick="showHeader('header-4')"
+                    class="px-3 py-1 bg-gray-800 text-white rounded hover:bg-gray-700"
+                >
+                    Header 4
+                </button>
+                <button
+                    onclick="showHeader('header-5')"
+                    class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                >
+                    Header 5
+                </button>
+                <button
+                    onclick="showHeader('header-6')"
+                    class="px-3 py-1 bg-teal-500 text-white rounded hover:bg-teal-600"
+                >
+                    Header 6
+                </button>
+                <button
+                    onclick="showHeader('header-7')"
+                    class="px-3 py-1 bg-black text-white rounded hover:bg-gray-800"
+                >
+                    Header 7
+                </button>
+                <button
+                    onclick="showHeader('header-8')"
+                    class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                    Header 8
+                </button>
+                <button
+                    onclick="showHeader('header-9')"
+                    class="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700"
+                >
+                    Header 9
+                </button>
+                <button
+                    onclick="showHeader('header-10')"
+                    class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                >
+                    Header 10
+                </button>
+            </div>
+        </div>
+
+        <!-- Header Containers -->
+        <div id="header-1" class="header-container">
+            <!-- Header 1: Tech Startup -->
+            <header class="bg-blue-600 text-white p-4 shadow-md">
+                <div
+                    class="container mx-auto flex justify-between items-center"
+                >
+                    <div class="text-2xl font-bold">TechNova</div>
+                    <button
+                        id="menu-btn-1"
+                        class="block md:hidden focus:outline-none"
+                    >
+                        ☰
+                    </button>
+                    <nav class="hidden md:flex space-x-6">
+                        <a href="#" class="hover:underline">Home</a>
+                        <a href="#" class="hover:underline">Features</a>
+                        <a href="#" class="hover:underline">Pricing</a>
+                    </nav>
+                </div>
+                <nav id="mobile-menu-1" class="hidden md:hidden mt-2 space-y-2">
+                    <a href="#" class="block hover:underline">Home</a>
+                    <a href="#" class="block hover:underline">Features</a>
+                    <a href="#" class="block hover:underline">Pricing</a>
+                </nav>
+            </header>
+        </div>
+
+        <div id="header-2" class="header-container hidden">
+            <header class="bg-white border-b p-4">
+                <div
+                    class="container mx-auto flex justify-between items-center"
+                >
+                    <div class="text-xl font-serif">StyleNotes</div>
+                    <button
+                        id="menu-btn-2"
+                        class="block md:hidden focus:outline-none"
+                    >
+                        ☰
+                    </button>
+                    <nav class="hidden md:flex space-x-4">
+                        <a href="#" class="hover:text-gray-500">Articles</a>
+                        <a href="#" class="hover:text-gray-500">Lookbooks</a>
+                        <a href="#" class="hover:text-gray-500">Contact</a>
+                    </nav>
+                </div>
+                <nav id="mobile-menu-2" class="hidden md:hidden mt-2 space-y-1">
+                    <a href="#" class="block hover:text-gray-500">Articles</a>
+                    <a href="#" class="block hover:text-gray-500">Lookbooks</a>
+                    <a href="#" class="block hover:text-gray-500">Contact</a>
+                </nav>
+            </header>
+        </div>
+
+        <!-- Repeat for other headers... -->
+
+        <!-- Example: Header 3 -->
+        <div id="header-3" class="header-container hidden">
+            <header class="bg-amber-500 text-white p-4">
+                <div
+                    class="container mx-auto flex justify-between items-center"
+                >
+                    <div class="text-xl font-bold">Savory Bites</div>
+                    <button
+                        id="menu-btn-3"
+                        class="block md:hidden focus:outline-none"
+                    >
+                        ☰
+                    </button>
+                    <nav class="hidden md:flex space-x-4">
+                        <a href="#" class="hover:underline">Menu</a>
+                        <a href="#" class="hover:underline">Reservations</a>
+                        <a
+                            href="#"
+                            class="bg-white text-amber-500 px-4 py-1 rounded hover:bg-amber-100"
+                            >Book Now</a
+                        >
+                    </nav>
+                </div>
+                <nav id="mobile-menu-3" class="hidden md:hidden mt-2 space-y-2">
+                    <a href="#" class="block hover:underline">Menu</a>
+                    <a href="#" class="block hover:underline">Reservations</a>
+                    <a
+                        href="#"
+                        class="block bg-white text-amber-500 text-center py-2 rounded"
+                        >Book Now</a
+                    >
+                </nav>
+            </header>
+        </div>
+
+        <div id="header-4" class="header-container hidden">
+            <header class="bg-gray-900 text-white p-4">
+                <div
+                    class="container mx-auto flex justify-between items-center"
+                >
+                    <div class="text-lg font-semibold">FitZone</div>
+                    <button
+                        id="menu-btn-4"
+                        class="block md:hidden focus:outline-none"
+                    >
+                        ☰
+                    </button>
+                    <nav class="hidden md:flex space-x-6">
+                        <a href="#" class="hover:text-gray-300">Classes</a>
+                        <a href="#" class="hover:text-gray-300">Trainers</a>
+                        <a href="#" class="hover:text-gray-300">Membership</a>
+                    </nav>
+                </div>
+                <nav id="mobile-menu-4" class="hidden md:hidden mt-2 space-y-2">
+                    <a href="#" class="block hover:text-gray-300">Classes</a>
+                    <a href="#" class="block hover:text-gray-300">Trainers</a>
+                    <a href="#" class="block hover:text-gray-300">Membership</a>
+                </nav>
+            </header>
+        </div>
+
+        <div id="header-5" class="header-container hidden">
+            <header class="bg-indigo-700 text-white p-4">
+                <div
+                    class="container mx-auto flex justify-between items-center"
+                >
+                    <div class="text-xl font-bold">EduHub</div>
+                    <button
+                        id="menu-btn-5"
+                        class="block md:hidden focus:outline-none"
+                    >
+                        ☰
+                    </button>
+                    <nav class="hidden md:flex space-x-6">
+                        <a href="#" class="hover:underline">Courses</a>
+                        <a href="#" class="hover:underline">Instructors</a>
+                        <a href="#" class="hover:underline">Login</a>
+                    </nav>
+                </div>
+                <nav id="mobile-menu-5" class="hidden md:hidden mt-2 space-y-2">
+                    <a href="#" class="block hover:underline">Courses</a>
+                    <a href="#" class="block hover:underline">Instructors</a>
+                    <a href="#" class="block hover:underline">Login</a>
+                </nav>
+            </header>
+        </div>
+
+        <div id="header-6" class="header-container hidden">
+            <header class="bg-teal-500 text-white p-4">
+                <div
+                    class="container mx-auto flex justify-between items-center"
+                >
+                    <div class="text-xl font-bold">Wanderlust</div>
+                    <button
+                        id="menu-btn-6"
+                        class="block md:hidden focus:outline-none"
+                    >
+                        ☰
+                    </button>
+                    <nav class="hidden md:flex space-x-6">
+                        <a href="#" class="hover:underline">Destinations</a>
+                        <a href="#" class="hover:underline">Tours</a>
+                        <a href="#" class="hover:underline">Contact</a>
+                    </nav>
+                </div>
+                <nav id="mobile-menu-6" class="hidden md:hidden mt-2 space-y-2">
+                    <a href="#" class="block hover:underline">Destinations</a>
+                    <a href="#" class="block hover:underline">Tours</a>
+                    <a href="#" class="block hover:underline">Contact</a>
+                </nav>
+            </header>
+        </div>
+
+        <div id="header-7" class="header-container hidden">
+            <header class="bg-black text-white p-4">
+                <div
+                    class="container mx-auto flex justify-between items-center"
+                >
+                    <div class="text-lg font-mono">Alex Photos</div>
+                    <button
+                        id="menu-btn-7"
+                        class="block md:hidden focus:outline-none"
+                    >
+                        ☰
+                    </button>
+                    <nav class="hidden md:flex space-x-4">
+                        <a href="#" class="hover:text-gray-400">Portfolio</a>
+                        <a href="#" class="hover:text-gray-400">About</a>
+                        <a href="#" class="hover:text-gray-400">Contact</a>
+                    </nav>
+                </div>
+                <nav id="mobile-menu-7" class="hidden md:hidden mt-2 space-y-2">
+                    <a href="#" class="block hover:text-gray-400">Portfolio</a>
+                    <a href="#" class="block hover:text-gray-400">About</a>
+                    <a href="#" class="block hover:text-gray-400">Contact</a>
+                </nav>
+            </header>
+        </div>
+
+        <div id="header-8" class="header-container hidden">
+            <header class="bg-red-500 text-white p-4">
+                <div
+                    class="container mx-auto flex justify-between items-center"
+                >
+                    <div class="text-xl font-bold">Shopify</div>
+                    <button
+                        id="menu-btn-8"
+                        class="block md:hidden focus:outline-none"
+                    >
+                        ☰
+                    </button>
+                    <nav class="hidden md:flex space-x-6">
+                        <a href="#" class="hover:underline">Products</a>
+                        <a href="#" class="hover:underline">Cart</a>
+                        <a href="#" class="hover:underline">Account</a>
+                    </nav>
+                </div>
+                <nav id="mobile-menu-8" class="hidden md:hidden mt-2 space-y-2">
+                    <a href="#" class="block hover:underline">Products</a>
+                    <a href="#" class="block hover:underline">Cart</a>
+                    <a href="#" class="block hover:underline">Account</a>
+                </nav>
+            </header>
+        </div>
+
+        <div id="header-9" class="header-container hidden">
+            <header class="bg-purple-600 text-white p-4">
+                <div
+                    class="container mx-auto flex justify-between items-center"
+                >
+                    <div class="text-xl font-bold">Pixel Studio</div>
+                    <button
+                        id="menu-btn-9"
+                        class="block md:hidden focus:outline-none"
+                    >
+                        ☰
+                    </button>
+                    <nav class="hidden md:flex space-x-6">
+                        <a href="#" class="hover:underline">Work</a>
+                        <a href="#" class="hover:underline">Services</a>
+                        <a href="#" class="hover:underline">Hire Us</a>
+                    </nav>
+                </div>
+                <nav id="mobile-menu-9" class="hidden md:hidden mt-2 space-y-2">
+                    <a href="#" class="block hover:underline">Work</a>
+                    <a href="#" class="block hover:underline">Services</a>
+                    <a href="#" class="block hover:underline">Hire Us</a>
+                </nav>
+            </header>
+        </div>
+
+        <div id="header-10" class="header-container hidden">
+            <header class="bg-green-500 text-white p-4">
+                <div
+                    class="container mx-auto flex justify-between items-center"
+                >
+                    <div class="text-xl font-bold">WellnessCo</div>
+                    <button
+                        id="menu-btn-10"
+                        class="block md:hidden focus:outline-none"
+                    >
+                        ☰
+                    </button>
+                    <nav class="hidden md:flex space-x-6">
+                        <a href="#" class="hover:underline">Products</a>
+                        <a href="#" class="hover:underline">Blog</a>
+                        <a href="#" class="hover:underline">Consult</a>
+                    </nav>
+                </div>
+                <nav
+                    id="mobile-menu-10"
+                    class="hidden md:hidden mt-2 space-y-2"
+                >
+                    <a href="#" class="block hover:underline">Products</a>
+                    <a href="#" class="block hover:underline">Blog</a>
+                    <a href="#" class="block hover:underline">Consult</a>
+                </nav>
+            </header>
+        </div>
+
+        <script>
+            // Function to switch headers
+            function showHeader(id) {
+                document
+                    .querySelectorAll(".header-container")
+                    .forEach((el) => el.classList.add("hidden"));
+                document.getElementById(id).classList.remove("hidden");
+            }
+
+            // Attach mobile toggle listeners to each header
+            function setupMenuToggle(btnId, menuId) {
+                const btn = document.getElementById(btnId);
+                const menu = document.getElementById(menuId);
+
+                if (btn && menu) {
+                    btn.addEventListener("click", () => {
+                        menu.classList.toggle("hidden");
+                    });
+                }
+            }
+            for (let i = 1; i <= 10; i++) {
+                setupMenuToggle(`menu-btn-${i}`, `mobile-menu-${i}`);
+            }
+        </script>
+    </body>
+</html>

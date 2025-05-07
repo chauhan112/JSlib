@@ -29,7 +29,7 @@ export class Accordion implements IComponent {
             .getElement()
             ?.appendChild(this.states.itemsContainer.render());
 
-        return this.accordionComp.render();
+        return this.accordionComp.getElement();
     }
 
     private renderItems() {
@@ -87,13 +87,13 @@ export class Accordion implements IComponent {
             });
 
             // Build the item structure
-            itemComp.getElement()?.appendChild(header.render());
-            itemComp.getElement()?.appendChild(content.render());
+            itemComp.getElement()?.appendChild(header.getElement());
+            itemComp.getElement()?.appendChild(content.getElement());
 
             // Add item to container
             this.states.itemsContainer
                 .getElement()
-                ?.appendChild(itemComp.render());
+                ?.appendChild(itemComp.getElement());
         });
     }
 
@@ -118,7 +118,7 @@ export class Accordion implements IComponent {
         this.accordionComp.update(props, state, handlers);
     }
 
-    getElement(): HTMLElement | null {
+    getElement(): HTMLElement {
         return this.accordionComp.getElement();
     }
 }

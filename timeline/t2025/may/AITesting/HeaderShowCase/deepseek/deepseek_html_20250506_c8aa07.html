@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gradient Header</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body>
+    <header class="gradient-bg text-white">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <a href="#" class="text-2xl font-bold">Gradient</a>
+                
+                <nav class="hidden md:block">
+                    <ul class="flex space-x-8 items-center">
+                        <li class="relative group">
+                            <a href="#" class="hover:text-gray-200 flex items-center">
+                                Products
+                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </a>
+                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 hidden group-hover:block py-1">
+                                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-purple-100">Product 1</a>
+                                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-purple-100">Product 2</a>
+                                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-purple-100">Product 3</a>
+                            </div>
+                        </li>
+                        <li class="relative group">
+                            <a href="#" class="hover:text-gray-200 flex items-center">
+                                Solutions
+                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </a>
+                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 hidden group-hover:block py-1">
+                                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-purple-100">Solution 1</a>
+                                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-purple-100">Solution 2</a>
+                            </div>
+                        </li>
+                        <li><a href="#" class="hover:text-gray-200">Pricing</a></li>
+                        <li><a href="#" class="hover:text-gray-200">Contact</a></li>
+                        <li>
+                            <button class="bg-white text-purple-700 px-4 py-2 rounded-md font-medium hover:bg-gray-100">Sign Up</button>
+                        </li>
+                    </ul>
+                </nav>
+                
+                <button class="md:hidden focus:outline-none" id="gradient-menu-toggle">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Mobile menu -->
+            <div class="md:hidden hidden mt-4" id="gradient-mobile-menu">
+                <ul class="space-y-4">
+                    <li>
+                        <button class="flex items-center justify-between w-full py-2" onclick="toggleDropdown('products-dropdown')">
+                            Products
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <ul class="hidden pl-4 mt-2 space-y-2" id="products-dropdown">
+                            <li><a href="#" class="block py-1 hover:text-gray-200">Product 1</a></li>
+                            <li><a href="#" class="block py-1 hover:text-gray-200">Product 2</a></li>
+                            <li><a href="#" class="block py-1 hover:text-gray-200">Product 3</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <button class="flex items-center justify-between w-full py-2" onclick="toggleDropdown('solutions-dropdown')">
+                            Solutions
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <ul class="hidden pl-4 mt-2 space-y-2" id="solutions-dropdown">
+                            <li><a href="#" class="block py-1 hover:text-gray-200">Solution 1</a></li>
+                            <li><a href="#" class="block py-1 hover:text-gray-200">Solution 2</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#" class="block py-2 hover:text-gray-200">Pricing</a></li>
+                    <li><a href="#" class="block py-2 hover:text-gray-200">Contact</a></li>
+                    <li>
+                        <button class="w-full bg-white text-purple-700 px-4 py-2 rounded-md font-medium hover:bg-gray-100 mt-2">Sign Up</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <script>
+        document.getElementById('gradient-menu-toggle').addEventListener('click', function() {
+            const menu = document.getElementById('gradient-mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+        
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            dropdown.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domain Logger</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Heroicons -->
+  <script src="https://unpkg.com/heroicons@2.0.13/dist/heroicons.min.js"></script>
+  <!-- Custom Colors -->
+  <style>
+    @layer utilities {
+      .domain-green { --tw-bg-opacity:1; background-color: rgba(74,144,156,var(--tw-bg-opacity)); }
+      .sidebar-bg { --tw-bg-opacity:1; background-color: rgba(174,214,190,var(--tw-bg-opacity)); }
+      .main-bg { --tw-bg-opacity:1; background-color: rgba(245,234,172,var(--tw-bg-opacity)); }
+      .table-row-even { --tw-bg-opacity:1; background-color: rgba(199,220,190,var(--tw-bg-opacity)); }
+      .table-row-odd { --tw-bg-opacity:1; background-color: rgba(245,234,172,var(--tw-bg-opacity)); }
+      .header-bg { --tw-bg-opacity:1; background-color: rgba(120,100,66,var(--tw-bg-opacity)); }
+      .button-bg { --tw-bg-opacity:1; background-color: rgba(245,203,80,var(--tw-bg-opacity)); }
+    }
+  </style>
+</head>
+<body class="bg-domain-green text-gray-800 font-sans">
+  <div class="grid grid-cols-4 h-screen">
+    <!-- Sidebar -->
+    <div class="col-span-1 p-4 sidebar-bg">
+      <div class="flex items-center mb-8">
+        <img src="https://via.placeholder.com/100x100?text=DOMAIN+LOGGER" alt="Logo" class="w-20 h-20 mr-2">
+        <h1 class="text-2xl font-bold">DOMAIN LOGGER</h1>
+      </div>
+      <nav>
+        <ul>
+          <li class="mb-2">
+            <a href="#" class="flex items-center p-2 rounded-lg hover:bg-main-bg active:bg-main-bg">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 mr-2"><path d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75-4.365-9.75-9.75-9.75zm0 16.5a7.5 7.5 0 110-15 7.5 7.5 0 010 15z"/></svg>
+              <span>Domain</span>
+            </a>
+          </li>
+          <li class="mb-2">
+            <a href="#" class="flex items-center p-2 rounded-lg hover:bg-main-bg active:bg-main-bg">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 mr-2"><path d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75-4.365-9.75-9.75-9.75zM3 12a9 9 0 1018 0 9 9 0 00-18 0z"/></svg>
+              <span>Operation</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="flex items-center p-2 rounded-lg hover:bg-main-bg active:bg-main-bg">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 mr-2"><path d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75-4.365-9.75-9.75-9.75zM3 12a9 9 0 1018 0 9 9 0 00-18 0z"/></svg>
+              <span>Activity</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <!-- Main Content -->
+    <div class="col-span-2 p-4 main-bg">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">Root/logger</h2>
+        <div class="relative w-64">
+          <input type="text" placeholder="Search" class="w-full px-4 py-2 rounded-lg focus:outline-none">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute top-3 left-3 w-5 h-5 text-gray-400"><path d="M21 21l-5.19-5.19M16.81 16.81A9 9 0 104.18 4.18a9 9 0 0012.63 12.63zM10 17a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+      </div>
+      <table class="w-full">
+        <thead class="header-bg text-white">
+          <tr>
+            <th class="p-2">#</th>
+            <th class="p-2">Column_name</th>
+            <th class="p-2">Activity_name</th>
+            <th class="p-2">Status</th>
+            <th class="p-2">Date</th>
+            <th class="p-2"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="table-row-even">
+            <td class="p-2">1.</td>
+            <td class="p-2"><div class="h-2 bg-green-500"></div></td>
+            <td class="p-2">Activity_name</td>
+            <td class="p-2">Created_on</td>
+            <td class="p-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-green-500"><path d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75-4.365-9.75-9.75-9.75zM3 12a9 9 0 1018 0 9 9 0 00-18 0z"/></svg>
+            </td>
+            <td class="p-2">
+              <button class="mr-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-yellow-500"><path d="M21.731 2.269a2.625 2.625 0 00-3.712 0L12 10.5l-5.979-8.21c-.551-.719-1.85-.719-2.401 0a2.625 2.625 0 003.712 0l4.847 6.52m-8.943 1.5l-1.286 1.718A.75.75 0 006 19.5v.75H4.25a.75.75 0 000 1.5h1.5v.75a.75.75 0 001.5 0v-1.5h3.5a.75.75 0 00.75-.75v-3.289l5.307 7.13a1.5 1.5 0 002.34 0l8.943-11.956c.552-.719.552-1.856 0-2.575z"/></svg></button>
+              <button><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-red-500"><path d="M16.5 4.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM13.75 6.75a.75.75 0 011.5 0v1.5h1.5a.75.75 0 010 1.5h-1.5v1.5a.75.75 0 01-1.5 0v-1.5h-1.5a.75.75 0 010-1.5h1.5v-1.5z"/></svg></button>
+            </td>
+          </tr>
+          <!-- Repeat similar rows -->
+        </tbody>
+      </table>
+      <div class="fixed bottom-4 right-4">
+        <button class="button-bg p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75-4.365-9.75-9.75-9.75zM12 17a5 5 0 100-10 5 5 0 000 10z"/></svg></button>
+      </div>
+    </div>
+    <!-- Attributes Panel -->
+    <div class="col-span-1 p-4 domain-green">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-white">Attributes</h3>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-yellow-500"><path d="M21 21l-5.19-5.19M16.81 16.81A9 9 0 104.18 4.18a9 9 0 0012.63 12.63zM10 17a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      </div>
+      <div class="relative w-full">
+        <input type="text" placeholder="Search" class="w-full px-4 py-2 rounded-lg focus:outline-none bg-main-bg">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute top-3 left-3 w-5 h-5 text-gray-400"><path d="M21 21l-5.19-5.19M16.81 16.81A9 9 0 104.18 4.18a9 9 0 0012.63 12.63zM10 17a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sidebar active state
+    const links = document.querySelectorAll('.sidebar-bg a');
+    links.forEach(link => {
+      link.addEventListener('click', (e) => {
+        links.forEach(l => l.classList.remove('active'));
+        e.target.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

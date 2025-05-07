@@ -7,7 +7,7 @@ import {
 } from "./GComponent";
 import { IconNode } from "lucide";
 import { Icon } from "./icons";
-import { IFormComponent, Input } from "./GForm";
+import { Input } from "./GForm";
 
 import { MultiSelect, DropdownMenu } from "./Select";
 
@@ -70,7 +70,7 @@ export class Tools {
         return comp;
     }
     static dropdown(
-        options: HTMLOptionElement[],
+        options: Partial<HTMLOptionElement>[],
         defValue?: any,
         props: any = {}
     ) {
