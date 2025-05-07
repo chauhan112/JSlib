@@ -1,14 +1,16 @@
 import { Tools } from "../../april/tools";
-import { CircleCheck } from "lucide";
+import { CircleCheck, IconNode } from "lucide";
+import { Logo, GoBackOrHome, MainBody } from "./Components";
 
 export const CardComponent = (
     title: string = "Task Manager",
-    description: string = "Organize your daily tasks and boost productivity."
+    description: string = "Organize your daily tasks and boost productivity.",
+    icon: IconNode = CircleCheck
 ) => {
     return Tools.div({
         class: "tool-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col items-center text-center",
         children: [
-            Tools.icon(CircleCheck, {
+            Tools.icon(icon, {
                 class: "w-16 h-16 text-blue-500 mb-4",
             }),
             Tools.comp("h2", {
@@ -30,15 +32,13 @@ export const CardComponent = (
 
 export const Header = () => {
     return Tools.comp("header", {
-        class: "text-center mb-12",
+        class: "bg-gray-800 text-white px-4 py-2 sticky top-0 z-50",
+        key: "header",
         children: [
-            Tools.comp("h1", {
-                class: "text-4xl font-bold text-gray-900 mb-2",
-                textContent: "Tool Hub",
-            }),
-            Tools.comp("p", {
-                class: "text-lg text-gray-600",
-                textContent: "Your collection of useful utilities",
+            Tools.div({
+                key: "wrapper",
+                class: "mx-auto flex justify-between items-center",
+                children: [GoBackOrHome(), Logo()],
             }),
         ],
     });
@@ -63,10 +63,12 @@ export const Page = () => {
         class: "bg-gradient-to-br from-gray-100 to-blue-50 font-sans text-gray-800",
         children: [
             Tools.div({
-                class: "mx-auto px-4 py-12",
+                key: "wrapper",
+                class: "mx-auto",
                 children: [
                     Header(),
                     Tools.comp("main", {
+                        class: "p-2",
                         children: [
                             Grid([
                                 CardComponent(
