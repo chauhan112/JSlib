@@ -166,36 +166,41 @@ export class Page implements IComponent {
             ],
             stats: [
                 { nr: 7, text: "years of experience" },
-                { nr: 40, text: "hours of coding" },
+                { nr: 40, text: "hours of coding per week" },
                 { nr: 50, text: "Projects done" },
             ],
             educations: [
                 {
-                    title: "Bachelor of Computer Science",
-                    company: "Okayama University",
-                    date: "2018 - 2022",
+                    title: "Angewandte Mathematik und Informatik",
+                    company: "FH Aachen",
+                    date: "Sep 2018 - Feb 2022",
+                },
+                {
+                    title: "Studienkolleg / Feststellungsprüfung",
+                    company: "FH Kiel",
+                    date: "2018 ",
                 },
             ],
             experiences: [
                 {
-                    date: "Feb 2023 - Dec 2023",
-                    title: "AI & Software Engineer",
-                    company: "Pilot",
+                    date: "Oct 2022 - present",
+                    title: "Professional Development & Independent Projects",
+                    company: "Self-Development",
                 },
                 {
-                    date: "Apr 2021 - Dec 2022",
-                    title: "Lead Software Engineer",
-                    company: "BigHeroDesign",
+                    date: "Sep 2022 - Sep 2024",
+                    title: "Low Code Developer",
+                    company: "European Computer Telecoms AG",
                 },
                 {
-                    date: "Jul 2019 - Dec 2020",
-                    title: "AI & Backend Engineer",
-                    company: "Netwise",
+                    date: "Sep 2021 - Feb 2022",
+                    title: "HiWi",
+                    company: "Access e.V.",
                 },
                 {
-                    date: "Aug - Dec 2018",
-                    title: "Software Engineer",
-                    company: "PixoLabo",
+                    date: "Sep 2018 - Aug 2021",
+                    title: "Ausbildung MATSE",
+                    company: "Access e.V.",
                 },
             ],
             projects: [
@@ -356,7 +361,7 @@ export class Page implements IComponent {
                                 this.s.comps.typing,
                                 Tools.comp("img", {
                                     class: "min-w-[256px] h-[256px] rounded-full border-2 border-dashed border-black/20",
-                                    src: "https://dtoyoda10.vercel.app/data/images/avatar.jpg",
+                                    src: "",
                                 }),
                             ],
                         }),
