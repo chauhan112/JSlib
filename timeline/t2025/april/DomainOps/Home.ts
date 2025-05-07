@@ -14,6 +14,7 @@ import {
     Pen,
     IconNode,
 } from "lucide";
+import { StructureForm } from "./StructureForm";
 let modal = ModalMain.modal();
 export class Home implements IComponent {
     s: { [key: string]: any } = {};
@@ -257,7 +258,7 @@ export const FormUnstructured = () => {
 export const CancelSaveBtns = () => {
     return Tools.div({
         key: "cancelSave",
-        class: "flex gap-5 justify-end",
+        class: "flex gap-5 justify-end mt-5",
         children: [
             Tools.comp("button", {
                 key: "cancel",
@@ -277,8 +278,17 @@ export const StructuredForm = (struct: any) => {};
 export const StructureCreatingForm = () => {};
 
 export const SettingPage = () => {
+    let sf = StructureForm();
+    let title = Tools.comp("h2", {
+        class: "text-2xl font-semibold text-gray-800",
+        textContent: "Settings",
+    });
     return Tools.div({
-        children: [CancelSaveBtns()],
+        class: "flex flex-col bg-yellow-500 p-4 max-h-[100vh] overflow-y-auto justify-between",
+        children: [
+            Tools.div({ children: [title, sf.crud.layout] }),
+            CancelSaveBtns(),
+        ],
     });
 };
 let settingPage = SettingPage();
