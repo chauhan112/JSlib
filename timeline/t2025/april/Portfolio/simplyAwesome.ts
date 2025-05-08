@@ -216,38 +216,33 @@ export class Page implements IComponent {
                     backgroundImage: "rlib.png",
                 },
                 {
-                    title: "Soul Gen",
-                    tech: "Stable Diffusion, Vite, SCSS",
+                    title: "JavaScript Library",
+                    tech: "Vanilla JS, SOLID, Tailwind, HTML",
+                    link: "https://github.com/chauhan112/JSlib",
+                },
+                {
+                    title: "Domain Operation",
+                    tech: "Vanilla JS, SOLID, Tailwind, HTML",
+                    link: "https://github.com/chauhan112/DomainOpsV2",
+                },
+                {
+                    title: "Content Search",
+                    tech: "Vibe Coding, Typescript, Tailwind, CSS",
                     link: "#",
                 },
                 {
-                    title: "HeyGen",
-                    tech: "GANS, TTS, NLP, MERN",
-                    link: "#",
-                },
-                {
-                    title: "DESCRIPT",
-                    tech: "GENAI, TTS, Computer Vision",
-                    link: "#",
-                },
-                {
-                    title: "Plasbit",
-                    tech: "Mern, Meteorjs, web3",
-                    link: "#",
-                },
-                {
-                    title: "Stelareum",
-                    tech: "twig, laminas, coinbaseapi",
-                    link: "#",
+                    title: "Raja DevKit",
+                    tech: "Typescript, Tailwind, CSS",
+                    link: "https://chauhan112.github.io/MyTools/",
                 },
             ],
             links: [
                 { icon: Github, link: "https://github.com/chauhan112" },
                 {
                     icon: Linkedin,
-                    link: "https://www.linkedin.com/in/raja-babu-chauhan-7506b3222/",
+                    link: "https://www.linkedin.com/in/raja-babu-chauhan",
                 },
-                { icon: FileText, link: "https://twitter.com/iamjamesm" },
+                // { icon: FileText, link: "https://twitter.com/iamjamesm" },
             ],
         };
     }
@@ -289,7 +284,17 @@ export class Page implements IComponent {
                         textContent: " Chauhan",
                     }),
                 }),
-                Tools.div({ textContent: "Portfolio" }),
+                Tools.div({
+                    class: "flex gap-4",
+                    children: this.s.infos.links.map((x: any) => {
+                        return Tools.comp("a", {
+                            class: "w-5 h-5 rounded-full bg-white/80 hover:text-black/50 flex items-center justify-center cursor-pointer",
+                            child: Tools.icon(x.icon, { link: x.link }),
+                            href: x.link,
+                            target: "_blank",
+                        });
+                    }),
+                }),
             ],
         });
     }
@@ -449,7 +454,7 @@ export class Page implements IComponent {
                     textContent: "My Latest Works",
                 }),
                 Tools.div({
-                    class: "flex flex-wrap justify-center ",
+                    class: "flex flex-wrap justify-center gap-2",
                     children: this.s.infos.projects.map((x: any) => {
                         return ProjectComponent(x);
                     }),
@@ -620,37 +625,22 @@ export const Button = () => {
     });
 };
 
-// <div class="portfolio-box"> https://dtoyoda10.vercel.app/
-//           <!-- Image -->
-//           <img loading="lazy" src="/data/images/imagineart.jpg" alt="imagine_art" data-rjs="2">
-//           <!-- Category -->
-//           <span class="portfolio-category">Stable Diffusion,Next.js,Tailwind CSS</span>
-//           <!-- Caption -->
-//           <div class="portfolio-caption">
-//             <h1><a href="https://www.imagine.art" target="_blank">ImagineArt</a></h1>
-//           </div>
-//         </div>
-
 export const ProjectComponent = (x: any) => {
-    console.log(x);
-    x.backgroundImage ??=
-        "https://picsum.photos/400/200?random=" + Math.random();
     return Tools.comp("a", {
-        class: "relative w-[400px] p-4 rounded-md bg-gray-100/80 h-[200px] mt-2 ml-2 cursor-pointer hover:bg-gray-200/80",
+        class: "relative w-[400px] rounded-md h-[200px] cursor-pointer",
         children: [
             Tools.comp("p", {
-                class: "absolute flex text-sm justify-end top-2 right-2",
+                class: "absolute flex text-sm justify-end top-2 right-2 text-white bg-black/50 rounded-md px-2 py-1",
                 textContent: x.tech,
             }),
             Tools.comp("div", {
-                class: "flex text-2xl font-bold items-center justify-center h-full",
+                class: "w-full h-full rounded-md flex text-3xl font-bold justify-center items-center font-mono text-white bg-black/20",
                 textContent: x.title,
             }),
         ],
         style: {
-            backgroundImage: `url(${x.backgroundImage})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
+            background: `url(${x.backgroundImage})`,
+            "background-size": "cover",
         },
         href: x.link,
         target: "_blank",
