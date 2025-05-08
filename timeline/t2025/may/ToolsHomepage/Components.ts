@@ -1,6 +1,4 @@
 import { Tools } from "../../april/tools";
-import { Home } from "lucide";
-// import { logo } from "./logo.png";
 
 export const Logo = () => {
     return Tools.div({
