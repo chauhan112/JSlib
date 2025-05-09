@@ -58,10 +58,11 @@ export class Tools {
         return comp;
     }
     static container(
+        typ: string = "div",
         props?: { [key: string]: any },
         handlers?: { [key: string]: (...args: any[]) => void }
     ) {
-        let comp = new Container();
+        let comp = new Container(typ);
         comp.comp.update(props, handlers);
         return comp;
     }
