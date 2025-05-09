@@ -94,7 +94,9 @@ export class GComponent implements IComponent {
 export class Container implements IComponent {
     s: { [key: string]: any } = {};
     comp: GComponent = new GComponent();
-
+    constructor(typ: string = "div") {
+        this.comp.typ = typ;
+    }
     getProps(): { [key: string]: any } {
         return this.comp.getProps();
     }
