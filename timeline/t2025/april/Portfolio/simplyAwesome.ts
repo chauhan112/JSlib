@@ -1,6 +1,6 @@
 import { Tools } from "../tools";
 import { GComponent, IComponent } from "../GComponent";
-import clsx from "clsx";
+
 import {
     GraduationCap,
     IconNode,
@@ -30,9 +30,7 @@ export class RippleLines implements IComponent {
             class: "fixed top-0 left-0 w-full h-full z-[-1] delay-200",
             children: Array.from({ length: this.s.nrOfLines }, (_, i) => {
                 return Tools.div({
-                    class: clsx(
-                        `absolute top-0 left-0 h-full border border-[#dcdfe2] ripple-line`
-                    ),
+                    class: "absolute top-0 left-0 h-full border border-[#dcdfe2] ripple-line",
                     style: {
                         width: `${(i + 1) * k}%`,
                         "--delay": `${i * 2}s`,
