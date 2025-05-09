@@ -68,10 +68,14 @@ export const Page = () => {
     let homeBody = Grid([]);
     const router = Router.getInstance();
 
-    let mainBody = Tools.container("main", {
-        class: "mx-auto p-4 flex-1",
-        children: [homeBody],
-    });
+    let mainBody = Tools.container(
+        {
+            class: "mx-auto p-4 flex-1",
+            children: [homeBody],
+        },
+        {},
+        "main"
+    );
     let layout = Tools.div({
         class: "bg-gradient-to-br from-gray-100 to-blue-50 font-sans text-gray-800",
         children: [
