@@ -33,6 +33,6 @@ export const GoBackOrHome = () => {
                 alt: "Logo",
             }),
         ],
-        href: "/",
+        href: "#/",
     });
 };

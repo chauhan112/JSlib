@@ -1,30 +1,35 @@
 import { Tools } from "../../april/tools";
 import { CircleCheck, IconNode } from "lucide";
-import { Logo, GoBackOrHome, MainBody } from "./Components";
-
+import { Logo, GoBackOrHome } from "./Components";
+import { Router } from "./Router";
 export const CardComponent = (
     title: string = "Task Manager",
     description: string = "Organize your daily tasks and boost productivity.",
-    icon: IconNode = CircleCheck
+    icon: IconNode = CircleCheck,
+    link: string = "task-manager/"
 ) => {
     return Tools.div({
         class: "tool-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col items-center text-center",
         children: [
             Tools.icon(icon, {
+                key: "icon",
                 class: "w-16 h-16 text-blue-500 mb-4",
             }),
             Tools.comp("h2", {
+                key: "title",
                 class: "text-xl font-semibold mb-2",
                 textContent: title,
             }),
             Tools.comp("p", {
+                key: "description",
                 class: "text-gray-600 text-sm mb-4 flex-grow",
                 textContent: description,
             }),
             Tools.comp("a", {
+                key: "link",
                 class: "mt-auto inline-block bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-5 rounded-md transition-colors duration-300",
                 textContent: "Launch Tool",
-                href: "#task-manager",
+                href: "#" + link,
             }),
         ],
     });
@@ -59,51 +64,47 @@ export const Footer = () => {
 };
 
 export const Page = () => {
-    return Tools.div({
+    let s = {};
+    let homeBody = Grid([]);
+    const router = Router.getInstance();
+
+    let mainBody = Tools.container("main", {
+        class: "mx-auto p-4 flex-1",
+        children: [homeBody],
+    });
+    let layout = Tools.div({
         class: "bg-gradient-to-br from-gray-100 to-blue-50 font-sans text-gray-800",
         children: [
             Tools.div({
                 key: "wrapper",
-                class: "mx-auto",
-                children: [
-                    Header(),
-                    Tools.comp("main", {
-                        class: "p-2",
-                        children: [
-                            Grid([
-                                CardComponent(
-                                    "Task Manager",
-                                    "Organize your daily tasks and boost productivity."
-                                ),
-                                CardComponent(
-                                    "Link Shortener",
-                                    "Create short, shareable links from long URLs."
-                                ),
-                                CardComponent(
-                                    "Currency Converter",
-                                    "Check the latest exchange rates between currencies."
-                                ),
-                                CardComponent(
-                                    "Calendar Event",
-                                    "Quickly add an event to your default calendar."
-                                ),
-                                CardComponent(),
-                                CardComponent(),
-                                CardComponent(),
-                                CardComponent(),
-                                CardComponent(),
-                                CardComponent(),
-                                CardComponent(),
-                                CardComponent(),
-                            ]),
-                        ],
-                    }),
-
-                    Footer(),
-                ],
+                class: "mx-auto flex flex-col min-h-screen",
+                children: [Header(), mainBody, Footer()],
             }),
         ],
     });
+    router.addRoute("/", () => {
+        mainBody.display(homeBody);
+    });
+    const addApp = (app: {
+        title: string;
+        description: string;
+        link: string;
+        routeFunc: () => void;
+        icon: IconNode;
+        moreOps?: any;
+    }) => {
+        const { title, description, icon, link, moreOps } = app;
+        const card = CardComponent(title, description, icon, link);
+        homeBody.update({
+            child: card,
+        });
+        router.addRoute(link, app.routeFunc);
+    };
+    const getElement = () => {
+        return layout.getElement();
+    };
+    let state = { s, layout, getElement, homeBody, mainBody, router, addApp };
+    return state;
 };
 
 export const Grid = (comps: any[]) => {
