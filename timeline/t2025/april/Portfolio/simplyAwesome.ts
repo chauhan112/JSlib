@@ -127,28 +127,6 @@ export class Typing implements IComponent {
     }
 }
 
-export class StyleComp implements IComponent {
-    s: { [key: string]: any } = {};
-    comp: GComponent | null = null;
-    constructor(content: string) {
-        this.s.styles = content;
-        document.head.appendChild(this.getElement());
-    }
-    getElement(): HTMLElement | SVGElement {
-        if (this.comp) {
-            return this.comp.getElement();
-        }
-        this.s.comp = Tools.comp("style", {
-            type: "text/css",
-            textContent: this.s.styles,
-        });
-        return this.s.comp.getElement();
-    }
-    getProps(): { [key: string]: any } {
-        return this.comp!.getProps();
-    }
-}
-
 export class Page implements IComponent {
     s: { [key: string]: any } = {};
     comp: GComponent | null = null;
@@ -273,7 +251,7 @@ export class Page implements IComponent {
     }
     header() {
         return Tools.div({
-            class: "w-full text-4xl font-bold flex justify-between p-4 ",
+            class: "w-full text-2xl sm:text-3xl lg:text-4xl font-bold flex justify-between p-4 ",
             children: [
                 Tools.comp("h1", {
                     textContent: "Raja Babu",
@@ -286,7 +264,7 @@ export class Page implements IComponent {
                     class: "flex gap-4",
                     children: this.s.infos.links.map((x: any) => {
                         return Tools.comp("a", {
-                            class: "w-5 h-5 rounded-full bg-white/80 hover:text-black/50 flex items-center justify-center cursor-pointer",
+                            class: "w-8 h-8 rounded-full bg-white/80 hover:text-black/50 flex items-center justify-center cursor-pointer",
                             child: Tools.icon(x.icon, { link: x.link }),
                             href: x.link,
                             target: "_blank",
@@ -298,7 +276,7 @@ export class Page implements IComponent {
     }
     getNavbar() {
         return Tools.comp("ul", {
-            class: "flex list-none items-start text-2xl font-mono flex-col sticky top-0  w-min z-2",
+            class: "flex list-none items-start text-base sm:text-lg md:text-xl font-mono flex-col sticky top-4  w-min z-2",
             children: this.s.infos.sections.map((val: string) => {
                 return Tools.comp(
                     "li",
@@ -311,7 +289,7 @@ export class Page implements IComponent {
                             }),
                             Tools.comp("div", {
                                 key: "arrow",
-                                class: "flex w-[30px] h-[30px] transparent rounded-full flex-shrink-0 ml-4 border border-dashed items-center justify-center",
+                                class: "flex w-6 h-6 transparent rounded-full flex-shrink-0 ml-4 border border-dashed items-center justify-center",
                             }),
                         ],
                     },
@@ -346,7 +324,7 @@ export class Page implements IComponent {
             Contact: this.contact(),
         };
         return Tools.div({
-            class: "flex flex-col gap-4 ",
+            class: "flex flex-col gap-4 w-full md:w-auto md:flex-1",
             children: [
                 this.s.comps["About Me"],
                 this.s.comps.Resume,
@@ -357,7 +335,7 @@ export class Page implements IComponent {
     }
     intro() {
         this.s.comps.typing.comp.update({
-            class: "text-xl font-mono absolute bottom-2 left-4 bg-gray-100/50 ",
+            class: "text-lg sm:text-xl font-mono absolute bottom-2 left-4 bg-gray-100/50",
         });
         return CardComp({
             children: [
@@ -365,11 +343,11 @@ export class Page implements IComponent {
                     class: "flex flex-col flex-1 gap-8 mt-4 md:flex-row",
                     children: [
                         Tools.div({
-                            class: "relative h-fit",
+                            class: "relative h-fit mx-auto md:mx-0",
                             children: [
                                 this.s.comps.typing,
                                 Tools.comp("img", {
-                                    class: "min-w-[256px] h-[256px] rounded-full border-2 border-dashed border-black/20",
+                                    class: "w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 rounded-full border-2 border-dashed border-black/20",
                                     src: "profile.jpeg",
                                 }),
                             ],
@@ -379,7 +357,7 @@ export class Page implements IComponent {
                             children: [
                                 FancyTitle("About Me"),
                                 Tools.div({
-                                    class: "text-4xl font-mono mt-4 font-bold ",
+                                    class: "text-2xl sm:text-3xl lg:text-4xl font-mono mt-4 font-bold ",
                                     textContent: "AI & Software Engineer",
                                 }),
                                 Tools.comp("p", {
@@ -401,7 +379,7 @@ export class Page implements IComponent {
                             class: "flex gap-2 w-max flex-shrink-0 ",
                             children: [
                                 Tools.comp("span", {
-                                    class: "text-4xl font-bold",
+                                    class: "text-2xl sm:text-3xl lg:text-4xl font-bold",
                                     textContent: x.nr,
                                 }),
                                 Tools.comp("div", {
@@ -427,11 +405,11 @@ export class Page implements IComponent {
             children: [
                 FancyTitle("Resume"),
                 Tools.div({
-                    class: "text-4xl font-mono font-bold ",
+                    class: "text-2xl sm:text-3xl lg:text-4xl font-mono font-bold ",
                     textContent: "Education & Experience",
                 }),
                 Tools.div({
-                    class: "flex gap-4 mt-4 flex-wrap ",
+                    class: "flex flex-col md:flex-row gap-8 md:gap-4 mt-4 flex-wrap",
                     children: [
                         TimelineComp(this.s.infos.educations, GraduationCap),
                         TimelineComp(
@@ -448,7 +426,7 @@ export class Page implements IComponent {
             children: [
                 FancyTitle("Portfolio"),
                 Tools.div({
-                    class: "text-4xl font-mono font-bold ",
+                    class: "text-2xl sm:text-3xl lg:text-4xl font-mono font-bold ",
                     textContent: "My Latest Works",
                 }),
                 Tools.div({
@@ -585,7 +563,7 @@ export const TimelineComp = (items: any[], icon: IconNode) => {
 
 export const CardComp = (x: any) => {
     return Tools.div({
-        class: "flex flex-col gap-8 p-8 rounded-md shadow-[0_8px_26px_0_rgba(22,24,26,0.07)] hover:shadow-[0_8px_32px_0_rgba(22,24,26,0.11)] bg-white/80",
+        class: "flex flex-col gap-8 p-4 sm:p-6 lg:p-8 rounded-md shadow-[0_8px_26px_0_rgba(22,24,26,0.07)] hover:shadow-[0_8px_32px_0_rgba(22,24,26,0.11)] bg-white/80",
         ...x,
     });
 };
@@ -599,7 +577,7 @@ export const FancyTitle = (title: string, props: any = {}) => {
                 textContent: "// " + title,
             }),
             Tools.div({
-                class: "absolute bottom-0 left-0 opacity-15 text-4xl font-bold titleBack232342526",
+                class: "absolute bottom-0 left-0 opacity-15 text-2xl sm:text-3xl lg:text-4xl font-bold titleBack232342526",
                 textContent: title,
             }),
         ],
@@ -624,23 +602,30 @@ export const Button = () => {
 };
 
 export const ProjectComponent = (x: any) => {
-    return Tools.comp("a", {
-        class: "relative w-[400px] rounded-md h-[200px] cursor-pointer",
+    let inpProps: any = {
+        class: "relative w-full max-w-md rounded-md h-[200px] cursor-pointer",
         children: [
             Tools.comp("p", {
-                class: "absolute flex text-sm justify-end top-2 right-2 text-white bg-black/50 rounded-md px-2 py-1",
+                class: "absolute flex text-xs sm:text-sm justify-end top-2 right-2 text-white bg-black/50 rounded-md px-2 py-1",
                 textContent: x.tech,
             }),
             Tools.comp("div", {
-                class: "w-full h-full rounded-md flex text-3xl font-bold justify-center items-center font-mono text-white bg-black/20",
+                class: "w-full h-full rounded-md flex text-xl sm:text-2xl lg:text-3xl font-bold justify-center items-center font-mono text-white bg-black/20",
                 textContent: x.title,
             }),
         ],
-        style: {
-            background: `url(${x.backgroundImage})`,
-            "background-size": "cover",
-        },
+
         href: x.link,
         target: "_blank",
-    });
+    };
+    if (x.backgroundImage) {
+        inpProps = {
+            ...inpProps,
+            style: {
+                background: `url(${x.backgroundImage})`,
+                "background-size": "cover",
+            },
+        };
+    }
+    return Tools.comp("a", inpProps);
 };
