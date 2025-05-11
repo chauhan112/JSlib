@@ -51,7 +51,7 @@ export class Typing implements IComponent {
     s: { [key: string]: any } = {};
     comp: GComponent | null = null;
     constructor() {
-        this.s.content = ["Hello World", "I am Raja"];
+        this.s.content = ["Hello World", "I am Raja", "a full stack developer"];
         this.s.params = {
             typingSpeed: 100,
             deletingSpeed: 50,
