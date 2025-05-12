@@ -95,7 +95,7 @@ export const Page = () => {
             statusDisplay,
             searchInput,
             ResultArea(),
-            FileModel(),
+            // FileModel(),
         ],
     });
 };
