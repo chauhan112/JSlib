@@ -9,7 +9,7 @@ export const CardComponent = (
     link: string = "task-manager/"
 ) => {
     return Tools.div({
-        class: "tool-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col items-center text-center",
+        class: "tool-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col items-center text-center h-[fit-content]",
         children: [
             Tools.icon(icon, {
                 key: "icon",
@@ -61,7 +61,7 @@ export const Header = () => {
 
 export const Footer = () => {
     return Tools.comp("footer", {
-        class: "mt-16 pt-8 border-t border-gray-300 text-center text-gray-500 text-sm",
+        class: "pt-8 border-t border-gray-300 text-center text-gray-500 text-sm",
         children: [
             Tools.comp("p", {
                 textContent:
@@ -80,7 +80,7 @@ export const Page = () => {
 
     let mainBody = Tools.container(
         {
-            class: "mx-auto p-4 flex-1",
+            class: "flex flex-1 p-4",
             children: [homeBody],
         },
         {},
