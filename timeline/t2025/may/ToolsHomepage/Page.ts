@@ -1,6 +1,6 @@
 import { Tools } from "../../april/tools";
 import { CircleCheck, IconNode } from "lucide";
-import { Logo, GoBackOrHome } from "./Components";
+import { Logo, GoBackOrHome, DEF_TITLE } from "./Components";
 import { Router } from "./Router";
 export const CardComponent = (
     title: string = "Task Manager",
@@ -36,17 +36,27 @@ export const CardComponent = (
 };
 
 export const Header = () => {
-    return Tools.comp("header", {
-        class: "bg-gray-800 text-white px-4 py-2 sticky top-0 z-50",
-        key: "header",
-        children: [
-            Tools.div({
-                key: "wrapper",
-                class: "mx-auto flex justify-between items-center",
-                children: [GoBackOrHome(), Logo()],
-            }),
-        ],
-    });
+    const logo = Logo();
+    return Tools.comp(
+        "header",
+        {
+            class: "bg-gray-800 text-white px-4 py-2 sticky top-0 z-50",
+            key: "header",
+            children: [
+                Tools.div({
+                    key: "wrapper",
+                    class: "mx-auto flex justify-between items-center",
+                    children: [GoBackOrHome(), logo],
+                }),
+            ],
+        },
+        {},
+        {
+            updateTitle: (title: string) => {
+                logo.s.header.update({ textContent: title });
+            },
+        }
+    );
 };
 
 export const Footer = () => {
@@ -87,7 +97,9 @@ export const Page = () => {
         ],
     });
     router.addRoute("/", () => {
+        mainBody.clear();
         mainBody.display(homeBody);
+        layout.s.wrapper.s.header.s.updateTitle(DEF_TITLE);
     });
     const addApp = (app: {
         title: string;
