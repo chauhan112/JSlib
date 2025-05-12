@@ -4,8 +4,8 @@ import LightningFS from "@isomorphic-git/lightning-fs";
 
 export class FileSearchModel {
     private files: string[] = [];
-    private lfsWrapper: LightFsWrapper;
-    private contentSearcher: ContentSearch;
+    private readonly lfsWrapper: LightFsWrapper;
+    private readonly contentSearcher: ContentSearch;
 
     constructor(lfsWrapper: LightFsWrapper) {
         this.lfsWrapper = lfsWrapper;
@@ -83,8 +83,8 @@ export class ContentSearch {
 const CORS_PROXY = "https://cors.isomorphic-git.org";
 
 export class IsoGitWrapper {
-    private fs: LightningFS;
-    private dir: string;
+    private readonly fs: LightningFS;
+    private readonly dir: string;
 
     constructor(lfsWrapper: LightFsWrapper, gitDir: string = "/repo") {
         this.fs = lfsWrapper.fs; // isomorphic-git expects the direct fs object
