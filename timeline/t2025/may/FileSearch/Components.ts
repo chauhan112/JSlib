@@ -1,41 +1,84 @@
 import { Tools } from "../../april/tools";
+import { LocalStorageJSONModel } from "../../april/LocalStorage";
+
 export const title = "Clone Git Repo & Search Files";
-export const InputWithLabel = (label: string, inp: any = {}) => {
+export const Allowed_Extensions = [".js", ".jsx", ".ts", ".tsx", ".css"];
+export const InputWithLabel = (
+    label: string,
+    inp: any = {},
+    key?: string,
+    loc?: string
+) => {
+    let fnc = {};
+
+    if (loc) {
+        let model = new LocalStorageJSONModel(loc);
+
+        if (model.exists([loc])) {
+            inp = {
+                ...inp,
+                value: model.readEntry([loc]),
+            };
+        }
+
+        fnc = {
+            change: (e: any) => {
+                model.updateEntry([loc], e.target.value);
+            },
+        };
+    }
     return Tools.div({
+        key: key || "w",
         children: [
             Tools.comp("label", {
                 for: label,
                 class: "block text-sm font-medium text-gray-700 mb-1",
                 textContent: label,
             }),
-            Tools.comp("input", {
-                class: "block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500",
-                type: "text",
-                ...inp,
-            }),
+            Tools.comp(
+                "input",
+                {
+                    key: "input",
+                    class: "block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500",
+                    type: "text",
+                    ...inp,
+                },
+                fnc
+            ),
         ],
     });
 };
 export const RepoInput = () => {
-    let password = InputWithLabel("Auth Token (Optional):", {
-        type: "password",
-        placeholder: "Personal Access Token (if private)",
-    });
+    let password = InputWithLabel(
+        "Auth Token (Optional):",
+        {
+            type: "password",
+            placeholder: "Personal Access Token (if private)",
+        },
+        "password"
+    );
     password.update({
         child: Tools.comp("p", {
             class: "text-xs text-gray-500 mt-1",
             textContent: "Needed for private repos. Use PAT as password/token.",
         }),
     });
-    return Tools.div({
+    let wid = Tools.div({
         class: "grid grid-cols-1 md:grid-cols-2 gap-4",
         children: [
-            InputWithLabel("Repository HTTPS URL:", {
-                placeholder: "https://github.com/user/repo.git",
-            }),
+            InputWithLabel(
+                "Repository HTTPS URL:",
+                {
+                    placeholder: "https://github.com/user/repo.git",
+                },
+                "repo",
+                "wid.s.repo.s.input.component.value"
+            ),
             password,
         ],
     });
+
+    return wid;
 };
 export const FileModel = () => {};
 export const ResultArea = () => {
@@ -61,20 +104,53 @@ export const ResultArea = () => {
         ],
     });
 };
+export class GitTools {
+    static validateAndParseGitHubUrl(urlInput: string) {
+        const githubHttpsRegex =
+            /^https:\/\/github\.com\/([a-zA-Z0-9-]+\/[a-zA-Z0-9.-]+)\.git$/;
+
+        if (typeof urlInput !== "string") {
+            return null;
+        }
+
+        const match = githubHttpsRegex.exec(urlInput);
+
+        if (match === null) {
+            return null;
+        } else {
+            const fullUrl = match[0];
+            const projectName = match[1];
+
+            return {
+                url: fullUrl,
+                projectName: projectName,
+            };
+        }
+    }
+}
 export const Page = () => {
     let actionBtn = Tools.div({
-        child: Tools.comp("button", {
-            class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center",
-            children: [
-                Tools.comp("span", {
-                    textContent: "Load/Clone Repository",
-                }),
-                Tools.div({
-                    id: "loader",
-                    class: "loader hidden",
-                }),
-            ],
-        }),
+        child: Tools.comp(
+            "button",
+            {
+                class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center",
+                children: [
+                    Tools.comp("span", {
+                        textContent: "Load/Clone Repository",
+                    }),
+                    Tools.div({
+                        id: "loader",
+                        class: "loader hidden",
+                    }),
+                ],
+            },
+            {
+                click: () => {
+                    console.log("clicked");
+                    onLoad();
+                },
+            }
+        ),
     });
     let statusDisplay = Tools.div({
         class: "mb-4 text-sm text-gray-600 bg-gray-50 p-3 rounded border border-gray-200 min-h-[40px]",
@@ -87,15 +163,27 @@ export const Page = () => {
         disabled: true,
         class: "block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-200 disabled:cursor-not-allowed",
     });
+    let repoInput = RepoInput();
+
+    const onLoad = () => {
+        let repoUrl = repoInput.s.repo.s.input.component.value.trim();
+
+        console.log(GitTools.validateAndParseGitHubUrl(repoUrl));
+    };
+    const setBusy = () => {};
+    const updateStatus = () => {};
+    const handleLoadRepo = () => {};
+    const clearFolder = () => {};
+
     return Tools.div({
         class: "flex flex-col gap-4",
         children: [
-            RepoInput(),
+            repoInput,
             actionBtn,
             statusDisplay,
             searchInput,
             ResultArea(),
-            FileModel(),
+            // FileModel(),
         ],
     });
 };

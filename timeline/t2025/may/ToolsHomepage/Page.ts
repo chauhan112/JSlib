@@ -1,6 +1,6 @@
 import { Tools } from "../../april/tools";
 import { CircleCheck, IconNode } from "lucide";
-import { Logo, GoBackOrHome } from "./Components";
+import { Logo, GoBackOrHome, DEF_TITLE } from "./Components";
 import { Router } from "./Router";
 export const CardComponent = (
     title: string = "Task Manager",
@@ -9,7 +9,7 @@ export const CardComponent = (
     link: string = "task-manager/"
 ) => {
     return Tools.div({
-        class: "tool-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col items-center text-center",
+        class: "tool-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col items-center text-center h-[fit-content]",
         children: [
             Tools.icon(icon, {
                 key: "icon",
@@ -36,22 +36,32 @@ export const CardComponent = (
 };
 
 export const Header = () => {
-    return Tools.comp("header", {
-        class: "bg-gray-800 text-white px-4 py-2 sticky top-0 z-50",
-        key: "header",
-        children: [
-            Tools.div({
-                key: "wrapper",
-                class: "mx-auto flex justify-between items-center",
-                children: [GoBackOrHome(), Logo()],
-            }),
-        ],
-    });
+    const logo = Logo();
+    return Tools.comp(
+        "header",
+        {
+            class: "bg-gray-800 text-white px-4 py-2 sticky top-0 z-50",
+            key: "header",
+            children: [
+                Tools.div({
+                    key: "wrapper",
+                    class: "mx-auto flex justify-between items-center",
+                    children: [GoBackOrHome(), logo],
+                }),
+            ],
+        },
+        {},
+        {
+            updateTitle: (title: string) => {
+                logo.s.header.update({ textContent: title });
+            },
+        }
+    );
 };
 
 export const Footer = () => {
     return Tools.comp("footer", {
-        class: "mt-16 pt-8 border-t border-gray-300 text-center text-gray-500 text-sm",
+        class: "pt-8 border-t border-gray-300 text-center text-gray-500 text-sm",
         children: [
             Tools.comp("p", {
                 textContent:
@@ -70,7 +80,7 @@ export const Page = () => {
 
     let mainBody = Tools.container(
         {
-            class: "mx-auto p-4 flex-1",
+            class: "flex flex-1 p-4",
             children: [homeBody],
         },
         {},
@@ -87,7 +97,9 @@ export const Page = () => {
         ],
     });
     router.addRoute("/", () => {
+        mainBody.clear();
         mainBody.display(homeBody);
+        layout.s.wrapper.s.header.s.updateTitle(DEF_TITLE);
     });
     const addApp = (app: {
         title: string;

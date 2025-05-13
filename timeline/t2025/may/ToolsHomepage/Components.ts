@@ -1,12 +1,14 @@
 import { Tools } from "../../april/tools";
-
+export const DEF_TITLE = "RajaDevKit";
 export const Logo = () => {
     return Tools.div({
+        key: "title",
         class: "text-center flex-grow",
         children: [
             Tools.comp("h1", {
+                key: "header",
                 class: "text-4xl font-bold  mb-2",
-                textContent: "RajaDevKit",
+                textContent: DEF_TITLE,
             }),
         ],
     });
