@@ -5,10 +5,8 @@ import {
     GraduationCap,
     IconNode,
     BriefcaseBusiness,
-    FileText,
     Github,
     Linkedin,
-    Pi,
 } from "lucide";
 import "./style1.css";
 import { Undoers } from "../Array";

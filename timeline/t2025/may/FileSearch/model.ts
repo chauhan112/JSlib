@@ -112,7 +112,7 @@ export class IsoGitWrapper {
                 depth: depth,
                 singleBranch: singleBranch,
                 ref: ref, // if undefined, clones default branch
-                onProgress: (progress) => {
+                onProgress: (progress: any) => {
                     console.log(
                         "Clone progress:",
                         progress.phase,
@@ -144,7 +144,7 @@ export class IsoGitWrapper {
                 ref: ref,
                 author: author,
                 singleBranch: singleBranch,
-                onProgress: (progress) => {
+                onProgress: (progress: any) => {
                     console.log(
                         "Pull progress:",
                         progress.phase,
@@ -189,7 +189,7 @@ export class IsoGitWrapper {
                 ref: ref,
                 force: force,
                 onAuth: onAuth
-                    ? (url) => {
+                    ? (url: string) => {
                           const auth = onAuth(url);
                           return {
                               username: auth.username,
@@ -197,7 +197,7 @@ export class IsoGitWrapper {
                           };
                       }
                     : undefined,
-                onProgress: (progress) => {
+                onProgress: (progress: any) => {
                     console.log(
                         "Push progress:",
                         progress.phase,
