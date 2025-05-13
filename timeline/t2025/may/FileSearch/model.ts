@@ -84,12 +84,15 @@ const CORS_PROXY = "https://cors.isomorphic-git.org";
 
 export class IsoGitWrapper {
     private readonly fs: LightningFS;
-    private readonly dir: string;
+    private dir: string;
 
     constructor(lfsWrapper: LightFsWrapper, gitDir: string = "/repo") {
         this.fs = lfsWrapper.fs; // isomorphic-git expects the direct fs object
         this.dir = gitDir;
         lfsWrapper.mkdir(gitDir, true).catch(console.error);
+    }
+    setDir(dir: string) {
+        this.dir = dir;
     }
 
     async clone(

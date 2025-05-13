@@ -22,7 +22,6 @@ export class Router {
     route() {
         const hash = window.location.hash.slice(1) || "/";
         const routeFunc = Router.routes[hash];
-        console.log(hash, Router.routes);
         if (routeFunc) {
             routeFunc();
         } else {
