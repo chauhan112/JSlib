@@ -1,7 +1,32 @@
 import { Tools } from "../../april/tools";
+import { LocalStorageJSONModel } from "../../april/LocalStorage";
+
 export const title = "Clone Git Repo & Search Files";
 export const Allowed_Extensions = [".js", ".jsx", ".ts", ".tsx", ".css"];
-export const InputWithLabel = (label: string, inp: any = {}, key?: string) => {
+export const InputWithLabel = (
+    label: string,
+    inp: any = {},
+    key?: string,
+    loc?: string
+) => {
+    let fnc = {};
+
+    if (loc) {
+        let model = new LocalStorageJSONModel(loc);
+
+        if (model.exists([loc])) {
+            inp = {
+                ...inp,
+                value: model.readEntry([loc]),
+            };
+        }
+
+        fnc = {
+            change: (e: any) => {
+                model.updateEntry([loc], e.target.value);
+            },
+        };
+    }
     return Tools.div({
         key: key || "w",
         children: [
@@ -10,12 +35,16 @@ export const InputWithLabel = (label: string, inp: any = {}, key?: string) => {
                 class: "block text-sm font-medium text-gray-700 mb-1",
                 textContent: label,
             }),
-            Tools.comp("input", {
-                key: "input",
-                class: "block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500",
-                type: "text",
-                ...inp,
-            }),
+            Tools.comp(
+                "input",
+                {
+                    key: "input",
+                    class: "block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500",
+                    type: "text",
+                    ...inp,
+                },
+                fnc
+            ),
         ],
     });
 };
@@ -34,7 +63,7 @@ export const RepoInput = () => {
             textContent: "Needed for private repos. Use PAT as password/token.",
         }),
     });
-    return Tools.div({
+    let wid = Tools.div({
         class: "grid grid-cols-1 md:grid-cols-2 gap-4",
         children: [
             InputWithLabel(
@@ -42,11 +71,14 @@ export const RepoInput = () => {
                 {
                     placeholder: "https://github.com/user/repo.git",
                 },
-                "repo"
+                "repo",
+                "wid.s.repo.s.input.component.value"
             ),
             password,
         ],
     });
+
+    return wid;
 };
 export const FileModel = () => {};
 export const ResultArea = () => {
