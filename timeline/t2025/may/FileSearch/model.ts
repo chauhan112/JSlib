@@ -1,15 +1,17 @@
 import git from "isomorphic-git";
 import http from "isomorphic-git/http/web";
 import LightningFS from "@isomorphic-git/lightning-fs";
+import { StringTool } from "./tools";
 
 export class FileSearchModel {
-    private files: string[] = [];
+    files: string[] = [];
     private readonly lfsWrapper: LightFsWrapper;
     private readonly contentSearcher: ContentSearch;
-
+    private contentCache: any;
     constructor(lfsWrapper: LightFsWrapper) {
         this.lfsWrapper = lfsWrapper;
         this.contentSearcher = new ContentSearch();
+        this.contentCache = {};
     }
 
     set_files(files: string[]) {
@@ -25,8 +27,12 @@ export class FileSearchModel {
         if (!query) return results;
 
         for (const filePath of this.files) {
-            const content = await this.lfsWrapper.read(filePath);
-            this.contentSearcher.set_text(content);
+            if (!this.contentCache.hasOwnProperty(filePath)) {
+                const abc = await this.lfsWrapper.read(filePath);
+                this.contentCache[filePath] = abc;
+            }
+
+            this.contentSearcher.set_text(this.contentCache[filePath]);
             const [found, lineNumber] = this.contentSearcher.search(
                 query,
                 caseSensitive,
@@ -283,7 +289,7 @@ export class LightFsWrapper {
         this.pfs = this.fs.promises;
     }
 
-    async dirlist(path: string, walk: boolean): Promise<string[]> {
+    async dirlist(path: string, walk: boolean = false): Promise<string[]> {
         const dirents = await this.pfs.readdir(path);
         const results: string[] = [];
 
@@ -366,11 +372,15 @@ export class LightFsWrapper {
         }
     }
 
-    async listfiles(path: string, walk: boolean = false): Promise<string[]> {
+    async listfiles(
+        path: string,
+        walk: boolean = false,
+        cond: (file: string) => boolean = (f: string) => true
+    ): Promise<string[]> {
         const dirs = await this.dirlist(path, walk);
         const filePromises = dirs.map(async (dir) => ({
             dir,
-            isFile: await this.isFile(dir),
+            isFile: (await this.isFile(dir)) && cond(dir),
         }));
         const files = await Promise.all(filePromises);
         return files.filter((file) => file.isFile).map((file) => file.dir);
@@ -408,8 +418,12 @@ export class LightFsWrapper {
                 }
             }
         }
-        return allFiles;
+        return allFiles.map((f) => `${StringTool.rstrip(baseDir, "/")}/${f}`);
     }
+    async filesWithExtension(ext: string): Promise<string[]> {
+        return this.listfiles("", true, (f) => f.endsWith(ext));
+    }
+
     async mkdir(path: string, recursive: boolean = false): Promise<void> {
         // LightningFS mkdir is not recursive by default in its promisified version's types
         // but the underlying implementation might support it.
