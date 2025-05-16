@@ -1,7 +1,9 @@
 import { Tools } from "../../april/tools";
 import { LocalStorageJSONModel } from "../../april/LocalStorage";
 import { LightFsWrapper, IsoGitWrapper, FileSearchModel } from "./model";
-import { StringTool } from "./tools";
+import { StringTool, FileTools } from "./tools";
+import { AceEditor } from "../Editor/ace";
+
 export const TITLE = "Clone Git Repo & Search Files";
 export const GIT_DIR = "git-search-repo-fs";
 export const Allowed_Extensions = [
@@ -98,7 +100,43 @@ export const RepoInput = () => {
 
     return wid;
 };
-export const FileModel = () => {};
+export const FileModel = (closeFunc: (e: any, ls: any) => void) => {
+    const fileName = Tools.comp("h3", {
+        class: "text-lg font-semibold text-gray-800 break-all",
+        textContent: "FileName",
+    });
+    const codeSec = Tools.div({
+        class: "flex items-center justify-between p-4 border-b border-gray-200",
+        children: [
+            fileName,
+            Tools.comp(
+                "button",
+                {
+                    class: "text-gray-500 hover:text-gray-800 text-2xl font-bold",
+                    textContent: "X",
+                },
+                {
+                    click: closeFunc,
+                }
+            ),
+        ],
+    });
+    const codeArea = Tools.div({ class: "p-2 overflow-y-auto" });
+    return Tools.div(
+        {
+            class: "fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden",
+            child: Tools.div({
+                class: "bg-white rounded-lg shadow-xl w-full max-h-[90vh] flex flex-col",
+                children: [codeSec, codeArea],
+            }),
+        },
+        {},
+        {
+            fileName,
+            codeArea,
+        }
+    );
+};
 export const ResultArea = () => {
     return Tools.div({
         class: "mt-4",
@@ -186,9 +224,15 @@ export const Page = () => {
     });
     let repoInput = RepoInput();
     let resArea = ResultArea();
+    let editor = AceEditor();
     const fileSys = new LightFsWrapper(GIT_DIR);
     const gitWrap = new IsoGitWrapper(fileSys);
     const filesSearcher = new FileSearchModel(fileSys);
+
+    let fileModal = FileModel((e: any, ls: any) => {
+        fileModal.getElement().classList.toggle("hidden");
+    });
+
     const cloneIt = async (url: string, projectName: string) => {
         let pn = "/" + StringTool.lstrip(projectName, "/");
         let exists = await fileSys.exists(pn);
@@ -258,7 +302,6 @@ export const Page = () => {
             });
         }
     };
-
     const onSearch = () => {
         let term = searchInput.s.input.component.value.trim();
 
@@ -277,12 +320,37 @@ export const Page = () => {
                 resArea.s.out.update({
                     innerHTML: "",
                     children: results.map((f) => {
-                        return Tools.div(
+                        return Tools.comp(
+                            "button",
                             {
                                 textContent: f.path,
-                                class: "p-2 border-b border-gray-100 bg-white hover:bg-indigo-50 text-sm cursor-pointer rounded",
+                                class: "p-2 border-b border-gray-100 bg-white hover:bg-indigo-50 text-sm cursor-pointer rounded flex w-full",
                             },
-                            {},
+                            {
+                                click: (e: any, ls: any) => {
+                                    fileModal
+                                        .getElement()
+                                        .classList.toggle("hidden");
+                                    console.log(ls.s.data);
+                                    fileSys
+                                        .read(ls.s.data.path)
+                                        .then((data) => {
+                                            editor.s.editor.setLangAndContent(
+                                                FileTools.getExtension(
+                                                    ls.s.data.path
+                                                ),
+                                                data
+                                            );
+                                        });
+                                    fileModal.s.codeArea.update({
+                                        innerHTML: "",
+                                        children: [editor],
+                                    });
+                                    fileModal.s.fileName.update({
+                                        innerHTML: ls.s.data.path,
+                                    });
+                                },
+                            },
                             {
                                 data: f,
                             }
@@ -292,6 +360,7 @@ export const Page = () => {
             }
         });
     };
+
     searchInput.s.input.update(
         {},
         {
@@ -309,7 +378,7 @@ export const Page = () => {
                 statusDisplay,
                 searchInput,
                 resArea,
-                // FileModel(),
+                fileModal,
             ],
         },
         {},
