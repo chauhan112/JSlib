@@ -1,4 +1,10 @@
-// Import the editor core
+// npm install monaco-editor vite-plugin-monaco-editor
+// setup in vite.config.ts
+
+// import monacoEditorPlugin from 'vite-plugin-monaco-editor';
+// monacoEditorPlugin.default({}); - dont worry about the typescript error
+//
+
 import { editor as monacoEditor, IPosition } from "monaco-editor";
 import { Tools } from "../../april/tools";
 import { GComponent } from "../../april/GComponent";
