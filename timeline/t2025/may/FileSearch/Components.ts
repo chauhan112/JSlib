@@ -331,7 +331,7 @@ export const Page = () => {
                                     fileModal
                                         .getElement()
                                         .classList.toggle("hidden");
-                                    console.log(ls.s.data);
+
                                     fileSys
                                         .read(ls.s.data.path)
                                         .then((data) => {
@@ -340,6 +340,9 @@ export const Page = () => {
                                                     ls.s.data.path
                                                 ),
                                                 data
+                                            );
+                                            editor.s.editor.goToLine(
+                                                ls.s.data.line
                                             );
                                         });
                                     fileModal.s.codeArea.update({
