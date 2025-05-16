@@ -13,7 +13,6 @@ export const Logo = () => {
         ],
     });
 };
-
 export const MainBody = () => {
     return Tools.comp("main", {
         class: "container mx-auto p-4",
