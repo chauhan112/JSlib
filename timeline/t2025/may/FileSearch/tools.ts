@@ -39,3 +39,12 @@ export class StringTool {
         return s.substring(0, end);
     }
 }
+
+export class FileTools {
+    static getFileName(filePath: string) {
+        return filePath.substring(filePath.lastIndexOf("/") + 1);
+    }
+    static getExtension(filePath: string) {
+        return filePath.substring(filePath.lastIndexOf(".") + 1);
+    }
+}

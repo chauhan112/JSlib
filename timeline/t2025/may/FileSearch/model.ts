@@ -45,7 +45,6 @@ export class FileSearchModel {
         return results;
     }
 }
-
 export class ContentSearch {
     private text: string = "";
 
@@ -85,7 +84,6 @@ export class ContentSearch {
         return [false, 0];
     }
 }
-
 const CORS_PROXY = "https://cors.isomorphic-git.org";
 
 export class IsoGitWrapper {
@@ -288,7 +286,6 @@ export class LightFsWrapper {
         this.fs = new LightningFS(name);
         this.pfs = this.fs.promises;
     }
-
     async dirlist(path: string, walk: boolean = false): Promise<string[]> {
         const dirents = await this.pfs.readdir(path);
         const results: string[] = [];
@@ -313,7 +310,6 @@ export class LightFsWrapper {
             return "";
         }
     }
-
     async write(path: string, content: string): Promise<void> {
         try {
             const dirPath = path.substring(0, path.lastIndexOf("/"));
@@ -325,7 +321,6 @@ export class LightFsWrapper {
             console.error(`Error writing file ${path}:`, e);
         }
     }
-
     async delete(path: string, recursive: boolean = false): Promise<void> {
         try {
             if (await this.isFile(path)) {
@@ -343,7 +338,6 @@ export class LightFsWrapper {
             console.error(`Error deleting ${path}:`, e);
         }
     }
-
     async exists(path: string): Promise<boolean> {
         try {
             await this.pfs.stat(path);
@@ -352,7 +346,6 @@ export class LightFsWrapper {
             return false; // Typically "ENOENT" error
         }
     }
-
     async isFile(path: string): Promise<boolean> {
         try {
             const stat = await this.pfs.stat(path);
@@ -362,7 +355,6 @@ export class LightFsWrapper {
             return false;
         }
     }
-
     async isDir(path: string): Promise<boolean> {
         try {
             const stat = await this.pfs.stat(path);
@@ -371,7 +363,6 @@ export class LightFsWrapper {
             return false;
         }
     }
-
     async listfiles(
         path: string,
         walk: boolean = false,
@@ -423,7 +414,6 @@ export class LightFsWrapper {
     async filesWithExtension(ext: string): Promise<string[]> {
         return this.listfiles("", true, (f) => f.endsWith(ext));
     }
-
     async mkdir(path: string, recursive: boolean = false): Promise<void> {
         // LightningFS mkdir is not recursive by default in its promisified version's types
         // but the underlying implementation might support it.
@@ -457,7 +447,6 @@ export class LightFsWrapper {
         }
     }
 }
-
 export class LightFsWrapperTest {
     create() {
         const fs = new LightFsWrapper("test-fs");
