@@ -1,5 +1,7 @@
 // npm install ace-builds
+//
 // setup in vite.config.ts
+// npm install -D vite-plugin-static-copy
 // import { viteStaticCopy } from 'vite-plugin-static-copy';
 // viteStaticCopy({
 //     targets: [
