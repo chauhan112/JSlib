@@ -37,7 +37,11 @@ export class GComponent implements IComponent {
         }
     }
 
-    private updateChild(value: GComponent) {
+    private updateChild(value: GComponent | Text) {
+        if (value instanceof Text) {
+            this.component!.appendChild(value);
+            return;
+        }
         if (value.getProps().key) {
             this.s[value.getProps().key] = value;
         }
