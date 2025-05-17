@@ -302,6 +302,38 @@ export const Page = () => {
             });
         }
     };
+    const resultComponent = (f: { path: string; line: number }) => {
+        return Tools.comp(
+            "button",
+            {
+                textContent: f.path,
+                class: "p-2 border-b border-gray-100 bg-white hover:bg-indigo-50 text-sm cursor-pointer rounded flex w-full text-ellipsis",
+            },
+            {
+                click: (e: any, ls: any) => {
+                    fileModal.getElement().classList.toggle("hidden");
+
+                    fileSys.read(ls.s.data.path).then((data) => {
+                        editor.s.editor.setLangAndContent(
+                            FileTools.getExtension(ls.s.data.path),
+                            data
+                        );
+                        editor.s.editor.goToLine(ls.s.data.line);
+                    });
+                    fileModal.s.codeArea.update({
+                        innerHTML: "",
+                        children: [editor],
+                    });
+                    fileModal.s.fileName.update({
+                        innerHTML: ls.s.data.path,
+                    });
+                },
+            },
+            {
+                data: f,
+            }
+        );
+    };
     const onSearch = () => {
         let term = searchInput.s.input.component.value.trim();
 
