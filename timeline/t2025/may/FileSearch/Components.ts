@@ -351,46 +351,11 @@ export const Page = () => {
             } else {
                 resArea.s.out.update({
                     innerHTML: "",
-                    children: results.map((f) => {
-                        return Tools.comp(
-                            "button",
-                            {
-                                textContent: f.path,
-                                class: "p-2 border-b border-gray-100 bg-white hover:bg-indigo-50 text-sm cursor-pointer rounded flex w-full",
-                            },
-                            {
-                                click: (e: any, ls: any) => {
-                                    fileModal
-                                        .getElement()
-                                        .classList.toggle("hidden");
-
-                                    fileSys
-                                        .read(ls.s.data.path)
-                                        .then((data) => {
-                                            editor.s.editor.setLangAndContent(
-                                                FileTools.getExtension(
-                                                    ls.s.data.path
-                                                ),
-                                                data
-                                            );
-                                            editor.s.editor.goToLine(
-                                                ls.s.data.line
-                                            );
-                                        });
-                                    fileModal.s.codeArea.update({
-                                        innerHTML: "",
-                                        children: [editor],
-                                    });
-                                    fileModal.s.fileName.update({
-                                        innerHTML: ls.s.data.path,
-                                    });
-                                },
-                            },
-                            {
-                                data: f,
-                            }
-                        );
-                    }),
+                    children: results.map(
+                        (f: { path: string; line: number }) => {
+                            return resultComponent(f);
+                        }
+                    ),
                 });
             }
         });
@@ -423,6 +388,7 @@ export const Page = () => {
                 setBusy,
                 updateStatus,
                 onSearch,
+                resultComponent,
             },
             ins: {},
         }
