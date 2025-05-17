@@ -112,7 +112,7 @@ export const FileModel = (closeFunc: (e: any, ls: any) => void) => {
             Tools.comp(
                 "button",
                 {
-                    class: "text-gray-500 hover:text-gray-800 text-2xl font-bold",
+                    class: "text-gray-500 hover:text-gray-800 text-2xl font-bold px-2 py-1 cursor-pointer hover:bg-gray-200",
                     textContent: "X",
                 },
                 {
@@ -147,7 +147,7 @@ export const ResultArea = () => {
             }),
             Tools.div({
                 key: "out",
-                class: "space-y-1 overflow-y-auto border border-gray-200 rounded p-3 bg-gray-50",
+                class: "space-y-1 overflow-auto border border-gray-200 rounded p-3 bg-gray-50",
                 children: [
                     Tools.comp("p", {
                         class: "text-gray-400",
@@ -371,7 +371,7 @@ export const Page = () => {
     );
     return Tools.div(
         {
-            class: "flex flex-col gap-4",
+            class: "flex flex-col gap-4 w-full md:w-auto md:flex-1",
             children: [
                 repoInput,
                 actionBtn,
