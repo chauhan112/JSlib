@@ -7,7 +7,7 @@ export const Logo = () => {
         children: [
             Tools.comp("h1", {
                 key: "header",
-                class: "text-4xl font-bold  mb-2",
+                class: "text-xl md:text-2xl lg:text-3xl font-bold mb-2",
                 textContent: DEF_TITLE,
             }),
         ],
