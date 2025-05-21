@@ -3,6 +3,7 @@ import { LocalStorageJSONModel } from "../../april/LocalStorage";
 import { LightFsWrapper, IsoGitWrapper, FileSearchModel } from "./model";
 import { StringTool, FileTools } from "./tools";
 import { AceEditor } from "../Editor/ace";
+import { GenericModal } from "./Modal";
 
 export const TITLE = "Clone Git Repo & Search Files";
 export const GIT_DIR = "git-search-repo-fs";
@@ -99,43 +100,6 @@ export const RepoInput = () => {
     });
 
     return wid;
-};
-export const FileModel = (closeFunc: (e: any, ls: any) => void) => {
-    const fileName = Tools.comp("h3", {
-        class: "text-lg font-semibold text-gray-800 break-all",
-        textContent: "FileName",
-    });
-    const codeSec = Tools.div({
-        class: "flex items-center justify-between p-4 border-b border-gray-200",
-        children: [
-            fileName,
-            Tools.comp(
-                "button",
-                {
-                    class: "text-gray-500 hover:text-gray-800 text-2xl font-bold px-2 py-1 cursor-pointer hover:bg-gray-200",
-                    textContent: "X",
-                },
-                {
-                    click: closeFunc,
-                }
-            ),
-        ],
-    });
-    const codeArea = Tools.div({ class: "p-2 overflow-y-auto" });
-    return Tools.div(
-        {
-            class: "fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden",
-            child: Tools.div({
-                class: "bg-white rounded-lg shadow-xl w-full max-h-[90vh] flex flex-col",
-                children: [codeSec, codeArea],
-            }),
-        },
-        {},
-        {
-            fileName,
-            codeArea,
-        }
-    );
 };
 export const ResultArea = () => {
     return Tools.div({
