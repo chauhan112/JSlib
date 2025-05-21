@@ -149,6 +149,160 @@ export class GitTools {
         }
     }
 }
+export const DivWrap = (child: any, props: any = {}) => {
+    return Tools.div({
+        class: "flex flex-col gap-4 w-full ",
+        children: [child],
+        ...props,
+    });
+};
+export const RepoSelectForm = () => {
+    let password = InputWithLabel(
+        "Auth Token (Optional):",
+        {
+            type: "password",
+            placeholder: "Personal Access Token (if private)",
+        },
+        "password"
+    );
+    password.update({
+        class: "flex-1",
+        child: Tools.comp("p", {
+            class: "text-xs text-gray-500 mt-1",
+            textContent: "Needed for private repos. Use PAT as password/token.",
+        }),
+    });
+    let label = InputWithLabel(
+        "Repository HTTPS URL:",
+        {
+            placeholder: "https://github.com/user/repo.git",
+        },
+        "repo",
+        "wid.s.repo.s.input.component.value"
+    );
+    label.update({
+        class: "flex-1",
+    });
+
+    const listComp = (name: string, val: any) => {
+        return Tools.comp("div", {
+            class: "flex items-center justify-between p-2 border-b border-gray-200",
+            children: [
+                Tools.comp("span", {
+                    class: "text-gray-700",
+                    textContent: name,
+                }),
+                Tools.div({
+                    class: "flex items-center gap-2",
+                    children: [
+                        Tools.comp("button", {
+                            class: "bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded cursor-pointer",
+                            textContent: "select",
+                        }),
+                        Tools.comp("button", {
+                            class: "bg-red-700 hover:bg-red-800 text-white font-bold py-1 px-2 rounded cursor-pointer",
+                            textContent: "delete",
+                        }),
+                        Tools.comp("button", {
+                            class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded cursor-pointer",
+                            textContent: "pull",
+                        }),
+                    ],
+                }),
+            ],
+        });
+    };
+    let clonedRepo = ["repo1", "repo2", "repo3"];
+    const getCurrentlySelectedRepo = () => {
+        let repo = label.s.input.component.value.trim();
+        return repo;
+    };
+    return Tools.div(
+        {
+            class: "flex flex-col gap-4 w-full p-2",
+            children: [
+                Tools.comp("h2", {
+                    class: "text-xl font-semibold mb-2 text-gray-700",
+                    textContent: "Select Repository:",
+                }),
+                Tools.div({
+                    class: "flex items-center gap-4 ",
+                    children: [
+                        Tools.div({
+                            class: "flex flex-1 gap-4",
+                            children: [label, password],
+                        }),
+                        Tools.comp("button", {
+                            class: "w-fit bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer",
+                            textContent: "select",
+                        }),
+                    ],
+                }),
+                Tools.div({
+                    class: "p-2 border border-gray-200 rounded bg-gray-50",
+                    children: [
+                        Tools.comp("h2", {
+                            class: "text-xl font-semibold mb-2 text-gray-700",
+                            textContent: "Cloned Repository:",
+                        }),
+                        Tools.comp("div", {
+                            class: "text-gray-400",
+                            children: clonedRepo.map((name) => {
+                                return listComp(name, name);
+                            }),
+                        }),
+                    ],
+                }),
+            ],
+        },
+        {},
+        {
+            getCurrentlySelectedRepo,
+        }
+    );
+};
+
+export const ProjectInfo = () => {
+    let valComp = Tools.comp("span", {
+        class: "font-semibold text-gray-700 ",
+        // textContent: "https://github.com/chauhan112/JSlib.git",
+    });
+    const modal = GenericModal("Project Info");
+    const form = RepoSelectForm();
+    valComp.update({
+        textContent: form.s.getCurrentlySelectedRepo(),
+    });
+    return Tools.div(
+        {
+            class: "flex w-full gap-4 items-center flex-wrap",
+            children: [
+                Tools.comp("span", {
+                    class: "font-semibold text-gray-700",
+                    textContent: "Repo :",
+                }),
+                valComp,
+                Tools.comp(
+                    "button",
+                    {
+                        class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ",
+                        textContent: "set",
+                    },
+                    {
+                        click: (e: any, ls: any) => {
+                            modal.s.handlers.display(form);
+                            modal.s.handlers.show();
+                        },
+                    }
+                ),
+                modal,
+            ],
+        },
+        {},
+        {
+            getValue: form.s.getCurrentlySelectedRepo,
+        }
+    );
+};
 export const Page = () => {
     let actionBtn = Tools.div({
         child: Tools.comp(
