@@ -340,16 +340,14 @@ export const Page = () => {
         disabled: true,
         class: "block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-200 disabled:cursor-not-allowed",
     });
-    let repoInput = RepoInput();
     let resArea = ResultArea();
     let editor = AceEditor();
+    let projectInfo = ProjectInfo();
     const fileSys = new LightFsWrapper(GIT_DIR);
     const gitWrap = new IsoGitWrapper(fileSys);
     const filesSearcher = new FileSearchModel(fileSys);
 
-    let fileModal = FileModel((e: any, ls: any) => {
-        fileModal.getElement().classList.toggle("hidden");
-    });
+    let fileModal = GenericModal("File Content");
 
     const cloneIt = async (url: string, projectName: string) => {
         let pn = "/" + StringTool.lstrip(projectName, "/");
@@ -363,7 +361,7 @@ export const Page = () => {
         }
     };
     const onLoad = async () => {
-        let repoUrl = repoInput.s.repo.s.input.component.value.trim();
+        let repoUrl = projectInfo.s.getValue();
         const resp = GitTools.validateAndParseGitHubUrl(repoUrl);
         setBusy(true, "Initializing...");
         try {
@@ -429,7 +427,7 @@ export const Page = () => {
             },
             {
                 click: (e: any, ls: any) => {
-                    fileModal.getElement().classList.toggle("hidden");
+                    fileModal.s.handlers.toggle();
 
                     fileSys.read(ls.s.data.path).then((data) => {
                         editor.s.editor.setLangAndContent(
@@ -438,11 +436,8 @@ export const Page = () => {
                         );
                         editor.s.editor.goToLine(ls.s.data.line);
                     });
-                    fileModal.s.codeArea.update({
-                        innerHTML: "",
-                        children: [editor],
-                    });
-                    fileModal.s.fileName.update({
+                    fileModal.s.handlers.display(editor);
+                    fileModal.s.modalTitle.update({
                         innerHTML: ls.s.data.path,
                     });
                 },
@@ -491,7 +486,7 @@ export const Page = () => {
         {
             class: "flex flex-col gap-4 w-full md:w-auto md:flex-1",
             children: [
-                repoInput,
+                projectInfo,
                 actionBtn,
                 statusDisplay,
                 searchInput,
