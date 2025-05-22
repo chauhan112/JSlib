@@ -132,6 +132,56 @@ export const DivWrap = (child: any, props: any = {}) => {
         ...props,
     });
 };
+export const ListComp = (
+    name: string,
+    val: any,
+    ops: any[] = [
+        { textContent: "edit" },
+        { textContent: "delete" },
+        { textContent: "view" },
+    ],
+    onClick: any = (val: any, op: any) => {
+        console.log("clicked", val, op);
+    }
+) => {
+    let state = {
+        onClick,
+    };
+    return Tools.comp(
+        "div",
+        {
+            class: "flex items-center justify-between p-2 border-b border-gray-200",
+            children: [
+                Tools.comp("span", {
+                    class: "text-gray-700",
+                    textContent: name,
+                }),
+                Tools.div({
+                    class: "flex items-center gap-2",
+                    children: ops.map((op) => {
+                        return Tools.comp(
+                            "button",
+                            {
+                                class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded cursor-pointer",
+                                ...op,
+                            },
+                            {
+                                click: (e: any, ls: any) => {
+                                    state.onClick(ls.s.data, op.textContent);
+                                },
+                            },
+                            {
+                                data: val,
+                            }
+                        );
+                    }),
+                }),
+            ],
+        },
+        {},
+        { val: val, state }
+    );
+};
 export const RepoSelectForm = () => {
     let password = InputWithLabel(
         "Auth Token (Optional):",
