@@ -294,26 +294,20 @@ export const RepoSelectForm = () => {
         }
     );
 };
-
 export const ProjectInfo = () => {
     let valComp = Tools.comp("span", {
-        class: "font-semibold text-gray-700 ",
-        // textContent: "https://github.com/chauhan112/JSlib.git",
+        key: "title",
+        class: "text-gray-700",
     });
     const modal = GenericModal("Project Info");
     const form = RepoSelectForm();
     valComp.update({
-        textContent: form.s.getCurrentlySelectedRepo(),
+        textContent: form.s.handlers.getCurrentlySelectedRepo(),
     });
     return Tools.div(
         {
             class: "flex w-full gap-4 items-center flex-wrap",
             children: [
-                Tools.comp("span", {
-                    class: "font-semibold text-gray-700",
-                    textContent: "Repo :",
-                }),
-                valComp,
                 Tools.comp(
                     "button",
                     {
@@ -327,12 +321,22 @@ export const ProjectInfo = () => {
                         },
                     }
                 ),
+                Tools.comp("span", {
+                    class: "font-semibold text-gray-700",
+                    textContent: "Repo :",
+                }),
+                valComp,
+
                 modal,
             ],
         },
         {},
         {
-            getValue: form.s.getCurrentlySelectedRepo,
+            getValue: form.s.handlers.getCurrentlySelectedRepo,
+            inst: {
+                form,
+                modal,
+            },
         }
     );
 };
