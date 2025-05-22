@@ -1,7 +1,7 @@
 import { Tools } from "../../april/tools";
 import { LocalStorageJSONModel } from "../../april/LocalStorage";
 import { LightFsWrapper, IsoGitWrapper, FileSearchModel } from "./model";
-import { StringTool, FileTools } from "./tools";
+import { StringTool, FileTools, GitTools } from "./tools";
 import { AceEditor } from "../Editor/ace";
 import { GenericModal } from "./Modal";
 
@@ -125,30 +125,6 @@ export const ResultArea = () => {
         ],
     });
 };
-export class GitTools {
-    static validateAndParseGitHubUrl(urlInput: string) {
-        const githubHttpsRegex =
-            /^https:\/\/github\.com\/([a-zA-Z0-9-]+\/[a-zA-Z0-9.-]+)\.git$/;
-
-        if (typeof urlInput !== "string") {
-            return null;
-        }
-
-        const match = githubHttpsRegex.exec(urlInput);
-
-        if (match === null) {
-            return null;
-        } else {
-            const fullUrl = match[0];
-            const projectName = match[1];
-
-            return {
-                url: fullUrl,
-                projectName: projectName,
-            };
-        }
-    }
-}
 export const DivWrap = (child: any, props: any = {}) => {
     return Tools.div({
         class: "flex flex-col gap-4 w-full ",
