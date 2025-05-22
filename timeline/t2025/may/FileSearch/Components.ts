@@ -210,38 +210,36 @@ export const RepoSelectForm = () => {
         class: "flex-1",
     });
 
-    const listComp = (name: string, val: any) => {
-        return Tools.comp("div", {
-            class: "flex items-center justify-between p-2 border-b border-gray-200",
-            children: [
-                Tools.comp("span", {
-                    class: "text-gray-700",
-                    textContent: name,
-                }),
-                Tools.div({
-                    class: "flex items-center gap-2",
-                    children: [
-                        Tools.comp("button", {
-                            class: "bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded cursor-pointer",
-                            textContent: "select",
-                        }),
-                        Tools.comp("button", {
-                            class: "bg-red-700 hover:bg-red-800 text-white font-bold py-1 px-2 rounded cursor-pointer",
-                            textContent: "delete",
-                        }),
-                        Tools.comp("button", {
-                            class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded cursor-pointer",
-                            textContent: "pull",
-                        }),
-                    ],
-                }),
-            ],
-        });
-    };
     let clonedRepo = ["repo1", "repo2", "repo3"];
     const getCurrentlySelectedRepo = () => {
         let repo = label.s.input.component.value.trim();
         return repo;
+    };
+    let listOps = [
+        {
+            class: "bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded cursor-pointer",
+            textContent: "select",
+        },
+        {
+            class: "bg-red-700 hover:bg-red-800 text-white font-bold py-1 px-2 rounded cursor-pointer",
+            textContent: "delete",
+        },
+        {
+            class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded cursor-pointer",
+            textContent: "pull",
+        },
+    ];
+
+    let loadBtn = Tools.comp("button", {
+        key: "loadBtn",
+        class: "w-fit bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer",
+        textContent: "load repo",
+    });
+    let handlers = {
+        onClickOfOpInList: (val: any, op: any) => {
+            console.log("clicked-1", val, op);
+        },
+        getCurrentlySelectedRepo,
     };
     return Tools.div(
         {
