@@ -340,32 +340,138 @@ export const ProjectInfo = () => {
         }
     );
 };
-export const Page = () => {
-    let actionBtn = Tools.div({
-        child: Tools.comp(
-            "button",
-            {
-                key: "btn",
-                class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center",
-                children: [
-                    Tools.comp("span", {
-                        key: "text",
-                        textContent: "Load/Clone Repository",
-                    }),
-                    Tools.div({
-                        key: "loader",
-                        id: "loader",
-                        class: "loader hidden",
-                    }),
-                ],
-            },
-            {
-                click: () => {
-                    onLoad();
-                },
+
+export class PageHandlers {
+    instances: any = {};
+    constructor(instances: any) {
+        this.instances = instances;
+    }
+
+    async cloneIt(url: string, projectName: string) {
+        let pn = "/" + StringTool.lstrip(projectName, "/");
+        let exists = await this.instances.fileSys.exists(pn);
+        if (!exists) {
+            await this.instances.fileSys.mkdir(pn, true);
+            this.instances.gitWrap.setDir(pn);
+            await this.instances.gitWrap.clone(url);
+        } else {
+            console.log("repo already exists. using the cached data.");
+        }
+    }
+    async onLoad() {
+        let repoUrl = this.instances.projectInfo.s.getValue();
+        const resp = GitTools.validateAndParseGitHubUrl(repoUrl);
+        this.setBusy(true);
+        try {
+            if (resp) {
+                const { url, projectName } = resp;
+                await this.cloneIt(url, projectName);
+                let files = await this.instances.fileSys.listfilesWithIgnore(
+                    "/" + projectName,
+                    [".git"]
+                );
+                let filesWithAllowedExt = files.filter((f) => {
+                    return Allowed_Extensions.some((ext) => f.endsWith(ext));
+                });
+                this.instances.filesSearcher.set_files(filesWithAllowedExt);
+                this.updateStatus(
+                    `Indexed ${filesWithAllowedExt.length} relevant files. Ready to search.`,
+                    false
+                );
+            } else {
+                this.updateStatus("Please enter a valid repository URL.", true);
             }
-        ),
-    });
+        } catch (e) {
+            this.updateStatus(
+                "Error loading/cloning repository: " + e + ".",
+                true
+            );
+        } finally {
+            this.setBusy(false);
+        }
+    }
+    setBusy(busy: boolean) {
+        this.instances.searchInput.s.activate(!busy);
+    }
+    updateStatus(message: string, isError = false) {
+        if (isError) {
+            this.instances.statusDisplay.update({
+                textContent: message,
+                class: "mb-4 text-sm p-3 rounded border bg-red-100 border-red-300 text-red-800 min-h-[40px]",
+            });
+        } else {
+            this.instances.statusDisplay.update({
+                textContent: message,
+                class: "mb-4 text-sm p-3 rounded border bg-gray-50 border-gray-200 text-gray-600 min-h-[40px]",
+            });
+        }
+    }
+    onResultClick(e: any, ls: any) {
+        this.instances.fileModal.s.handlers.toggle();
+
+        this.instances.fileSys.read(ls.s.data.path).then((data: any) => {
+            this.instances.editor.s.editor.setLangAndContent(
+                FileTools.getExtension(ls.s.data.path),
+                data
+            );
+            this.instances.editor.s.editor.goToLine(ls.s.data.line);
+        });
+        this.instances.fileModal.s.handlers.display(this.instances.editor);
+        this.instances.fileModal.s.modalTitle.update({
+            innerHTML: ls.s.data.path,
+        });
+    }
+    onSearch() {
+        let term = this.instances.searchInput.s.input.component.value.trim();
+
+        this.instances.filesSearcher.search(term).then((results: any) => {
+            if (results.length === 0) {
+                this.instances.resArea.s.out.update({
+                    innerHTML: "",
+                    children: [
+                        Tools.comp("p", {
+                            class: "text-gray-400",
+                            textContent: "No results found",
+                        }),
+                    ],
+                });
+            } else {
+                this.instances.resArea.s.out.update({
+                    innerHTML: "",
+                    children: results.map(
+                        (f: { path: string; line: number }) => {
+                            return ResultComponent(
+                                f,
+                                this.onResultClick.bind(this)
+                            );
+                        }
+                    ),
+                });
+            }
+        });
+    }
+}
+
+export const ResultComponent = (
+    f: { path: string; line: number },
+    onClick: (e: any, ls: any) => void
+) => {
+    return Tools.comp(
+        "button",
+        {
+            textContent: f.path,
+            class: "p-2 border-b border-gray-100 bg-white hover:bg-indigo-50 text-sm cursor-pointer rounded flex w-full text-ellipsis",
+        },
+        {
+            click: onClick,
+        },
+        {
+            data: f,
+        }
+    );
+};
+
+export const Page = () => {
     let statusDisplay = Tools.div({
         class: "mb-4 text-sm text-gray-600 bg-gray-50 p-3 rounded border border-gray-200 min-h-[40px]",
         textContent:
@@ -380,167 +486,49 @@ export const Page = () => {
     let resArea = ResultArea();
     let editor = AceEditor();
     let projectInfo = ProjectInfo();
+
     const fileSys = new LightFsWrapper(GIT_DIR);
     const gitWrap = new IsoGitWrapper(fileSys);
     const filesSearcher = new FileSearchModel(fileSys);
 
     let fileModal = GenericModal("File Content");
-
-    const cloneIt = async (url: string, projectName: string) => {
-        let pn = "/" + StringTool.lstrip(projectName, "/");
-        let exists = await fileSys.exists(pn);
-        if (!exists) {
-            await fileSys.mkdir(pn, true);
-            gitWrap.setDir(pn);
-            await gitWrap.clone(url);
-        } else {
-            console.log("repo already exists. using the cached data.");
-        }
-    };
-    const onLoad = async () => {
-        let repoUrl = projectInfo.s.getValue();
-        const resp = GitTools.validateAndParseGitHubUrl(repoUrl);
-        setBusy(true, "Initializing...");
-        try {
-            if (resp) {
-                const { url, projectName } = resp;
-                await cloneIt(url, projectName);
-                console.log("repo cloned.");
-                let files = await fileSys.listfilesWithIgnore(
-                    "/" + projectName,
-                    [".git"]
-                );
-                let filesWithAllowedExt = files.filter((f) => {
-                    return Allowed_Extensions.some((ext) => f.endsWith(ext));
-                });
-                filesSearcher.set_files(filesWithAllowedExt);
-                updateStatus(
-                    `Indexed ${filesWithAllowedExt.length} relevant files. Ready to search.`,
-                    false
-                );
-            } else {
-                updateStatus("Please enter a valid repository URL.", true);
-            }
-        } catch (e) {
-            updateStatus("Error loading/cloning repository: " + e + ".", true);
-        } finally {
-            setBusy(false, "all done.");
-        }
-    };
-    const setBusy = (busy: boolean, message: string = "Loading...") => {
-        console.log("setBusy", busy);
-        searchInput.s.activate(!busy);
-        actionBtn.s.btn.getElement().disabled = busy;
-        if (busy) {
-            actionBtn.s.btn.s.text.update({
-                textContent: message,
-            });
-        } else {
-            actionBtn.s.btn.s.text.update({
-                textContent: "Load/Clone Repository",
-            });
-        }
-        actionBtn.s.btn.s.loader.getElement().classList.toggle("hidden", !busy);
-    };
-    const updateStatus = (message: string, isError = false) => {
-        if (isError) {
-            statusDisplay.update({
-                textContent: message,
-                class: "mb-4 text-sm p-3 rounded border bg-red-100 border-red-300 text-red-800 min-h-[40px]",
-            });
-        } else {
-            statusDisplay.update({
-                textContent: message,
-                class: "mb-4 text-sm p-3 rounded border bg-gray-50 border-gray-200 text-gray-600 min-h-[40px]",
-            });
-        }
-    };
-    const resultComponent = (f: { path: string; line: number }) => {
-        return Tools.comp(
-            "button",
-            {
-                textContent: f.path,
-                class: "p-2 border-b border-gray-100 bg-white hover:bg-indigo-50 text-sm cursor-pointer rounded flex w-full text-ellipsis",
-            },
-            {
-                click: (e: any, ls: any) => {
-                    fileModal.s.handlers.toggle();
-
-                    fileSys.read(ls.s.data.path).then((data) => {
-                        editor.s.editor.setLangAndContent(
-                            FileTools.getExtension(ls.s.data.path),
-                            data
-                        );
-                        editor.s.editor.goToLine(ls.s.data.line);
-                    });
-                    fileModal.s.handlers.display(editor);
-                    fileModal.s.modalTitle.update({
-                        innerHTML: ls.s.data.path,
-                    });
-                },
-            },
-            {
-                data: f,
-            }
-        );
-    };
-    const onSearch = () => {
-        let term = searchInput.s.input.component.value.trim();
-
-        filesSearcher.search(term).then((results) => {
-            if (results.length === 0) {
-                resArea.s.out.update({
-                    innerHTML: "",
-                    children: [
-                        Tools.comp("p", {
-                            class: "text-gray-400",
-                            textContent: "No results found",
-                        }),
-                    ],
-                });
-            } else {
-                resArea.s.out.update({
-                    innerHTML: "",
-                    children: results.map(
-                        (f: { path: string; line: number }) => {
-                            return resultComponent(f);
-                        }
-                    ),
-                });
-            }
-        });
-    };
+    let handlers = new PageHandlers({
+        fileSys,
+        gitWrap,
+        filesSearcher,
+        searchInput,
+        resArea,
+        statusDisplay,
+        projectInfo,
+        fileModal,
+        editor,
+    });
 
     searchInput.s.input.update(
         {},
         {
             change: (e: any) => {
-                onSearch();
+                handlers.onSearch();
             },
         }
     );
-    return Tools.div(
-        {
-            class: "flex flex-col gap-4 w-full md:w-auto md:flex-1",
-            children: [
-                projectInfo,
-                actionBtn,
-                statusDisplay,
-                searchInput,
-                resArea,
-                fileModal,
-            ],
-        },
+    projectInfo.s.inst.form.s.repoInp.s.loadBtn.update(
         {},
         {
-            funcs: {
-                onLoad,
-                setBusy,
-                updateStatus,
-                onSearch,
-                resultComponent,
+            click: (e: any, ls: any) => {
+                handlers.onLoad();
+                projectInfo.s.inst.modal.s.handlers.close();
+                projectInfo.s.title.update({
+                    textContent: projectInfo.s.getValue(),
+                });
             },
-            ins: {},
         }
     );
+    if (projectInfo.s.getValue()) {
+        handlers.onLoad();
+    }
+    return Tools.div({
+        class: "flex flex-col gap-4 w-full md:w-auto md:flex-1",
+        children: [projectInfo, statusDisplay, searchInput, resArea, fileModal],
+    });
 };

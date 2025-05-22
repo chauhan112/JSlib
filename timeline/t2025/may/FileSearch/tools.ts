@@ -48,3 +48,27 @@ export class FileTools {
         return filePath.substring(filePath.lastIndexOf(".") + 1);
     }
 }
+export class GitTools {
+    static validateAndParseGitHubUrl(urlInput: string) {
+        const githubHttpsRegex =
+            /^https:\/\/github\.com\/([a-zA-Z0-9-]+\/[a-zA-Z0-9.-]+)\.git$/;
+
+        if (typeof urlInput !== "string") {
+            return null;
+        }
+
+        const match = githubHttpsRegex.exec(urlInput);
+
+        if (match === null) {
+            return null;
+        } else {
+            const fullUrl = match[0];
+            const projectName = match[1];
+
+            return {
+                url: fullUrl,
+                projectName: projectName,
+            };
+        }
+    }
+}
