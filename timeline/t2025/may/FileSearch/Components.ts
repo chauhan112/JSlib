@@ -250,16 +250,15 @@ export const RepoSelectForm = () => {
                     textContent: "Select Repository:",
                 }),
                 Tools.div({
-                    class: "flex items-center gap-4 ",
+                    key: "repoInp",
+                    class: "flex items-center gap-4",
                     children: [
                         Tools.div({
+                            key: "wrap",
                             class: "flex flex-1 gap-4",
                             children: [label, password],
                         }),
-                        Tools.comp("button", {
-                            class: "w-fit bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer",
-                            textContent: "select",
-                        }),
+                        loadBtn,
                     ],
                 }),
                 Tools.div({
@@ -272,7 +271,12 @@ export const RepoSelectForm = () => {
                         Tools.comp("div", {
                             class: "text-gray-400",
                             children: clonedRepo.map((name) => {
-                                return listComp(name, name);
+                                return ListComp(
+                                    name,
+                                    name,
+                                    listOps,
+                                    handlers.onClickOfOpInList
+                                );
                             }),
                         }),
                     ],
@@ -281,7 +285,12 @@ export const RepoSelectForm = () => {
         },
         {},
         {
-            getCurrentlySelectedRepo,
+            inst: {
+                label,
+                password,
+                loadBtn,
+            },
+            handlers,
         }
     );
 };
