@@ -295,17 +295,7 @@ export const RepoSelectForm = () => {
                             class: "text-xl font-semibold mb-2 text-gray-700",
                             textContent: "Cloned Repository:",
                         }),
-                        Tools.comp("div", {
-                            class: "text-gray-400",
-                            children: clonedRepo.map((name) => {
-                                return ListComp(
-                                    name,
-                                    name,
-                                    listOps,
-                                    handlers.onClickOfOpInList
-                                );
-                            }),
-                        }),
+                        clonedRepoContainer,
                     ],
                 }),
             ],
@@ -405,6 +395,7 @@ export class PageHandlers {
                     `Indexed ${filesWithAllowedExt.length} relevant files. Ready to search.`,
                     false
                 );
+                this.instances.cloneRepoModal.addRepo(url, projectName);
             } else {
                 this.updateStatus("Please enter a valid repository URL.", true);
             }
@@ -517,7 +508,8 @@ export const Page = () => {
     const fileSys = new LightFsWrapper(GIT_DIR);
     const gitWrap = new IsoGitWrapper(fileSys);
     const filesSearcher = new FileSearchModel(fileSys);
-
+    const cloneRepoModal = new CloneRepoModal(GIT_DIR, fileSys, gitWrap);
+    projectInfo.update({}, {}, { model: cloneRepoModal });
     let fileModal = GenericModal("File Content");
     let handlers = new PageHandlers({
         fileSys,
@@ -529,6 +521,7 @@ export const Page = () => {
         projectInfo,
         fileModal,
         editor,
+        cloneRepoModal,
     });
 
     searchInput.s.input.update(
