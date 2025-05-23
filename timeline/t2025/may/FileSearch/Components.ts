@@ -4,6 +4,7 @@ import { LightFsWrapper, IsoGitWrapper, FileSearchModel } from "./model";
 import { StringTool, FileTools, GitTools } from "./tools";
 import { AceEditor } from "../Editor/ace";
 import { GenericModal } from "./Modal";
+import { ObjectTools } from "../../april/Array";
 
 export const TITLE = "Clone Git Repo & Search Files";
 export const GIT_DIR = "git-search-repo-fs";
@@ -150,7 +151,7 @@ export const ListComp = (
     return Tools.comp(
         "div",
         {
-            class: "flex items-center justify-between p-2 border-b border-gray-200",
+            class: "flex items-center justify-between p-2 border-b border-gray-200 flex-wrap",
             children: [
                 Tools.comp("span", {
                     class: "text-gray-700",
@@ -251,11 +252,11 @@ export const RepoSelectForm = () => {
                 }),
                 Tools.div({
                     key: "repoInp",
-                    class: "flex items-center gap-4",
+                    class: "flex items-center gap-4 md:flex-row flex-col",
                     children: [
                         Tools.div({
                             key: "wrap",
-                            class: "flex flex-1 gap-4",
+                            class: "flex flex-1 gap-4 md:flex-row flex-col",
                             children: [label, password],
                         }),
                         loadBtn,
