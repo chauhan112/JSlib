@@ -49,3 +49,18 @@ export class DocumentHandler {
         return DocumentHandler.instance;
     }
 }
+
+export class ObjectTools {
+    static getKeys(obj: any) {
+        return Object.keys(obj);
+    }
+    static getValues(obj: any) {
+        return Object.values(obj);
+    }
+    static getEntries(obj: any) {
+        return Object.entries(obj);
+    }
+    static getKeysAndValues(obj: any) {
+        return Object.entries(obj).map(([key, value]) => [key, value]);
+    }
+}
