@@ -236,11 +236,37 @@ export const RepoSelectForm = () => {
         class: "w-fit bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer",
         textContent: "load repo",
     });
+    let clonedRepoContainer = Tools.comp("div", {
+        class: "text-gray-400",
+    });
+    let onClick = (val: any, op: any) => {
+        if (op === "select") {
+            label.s.input.component.value = val.url;
+            loadBtn.getElement().click();
+        } else if (op === "delete") {
+            let res = confirm(
+                "Are you sure you want to delete this repository? This action cannot be undone."
+            );
+            if (res) {
+            }
+        } else if (op === "pull") {
+            console.log("pulled", val);
+        }
+    };
+    const setReposAndFuncs = (repos: { url: string; val: any }[]) => {
+        clonedRepoContainer.update({
+            innerHTML: "",
+            children: repos.map((repo) => {
+                return ListComp(repo.url, repo, listOps, onClick);
+            }),
+        });
+    };
     let handlers = {
         onClickOfOpInList: (val: any, op: any) => {
             console.log("clicked-1", val, op);
         },
         getCurrentlySelectedRepo,
+        setReposAndFuncs,
     };
     return Tools.div(
         {
