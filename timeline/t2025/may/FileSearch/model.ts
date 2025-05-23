@@ -3,6 +3,8 @@ import http from "isomorphic-git/http/web";
 import LightningFS from "@isomorphic-git/lightning-fs";
 import { StringTool } from "./tools";
 
+const CORS_PROXY = "https://cors.isomorphic-git.org";
+
 export class FileSearchModel {
     files: string[] = [];
     private readonly lfsWrapper: LightFsWrapper;
@@ -84,8 +86,6 @@ export class ContentSearch {
         return [false, 0];
     }
 }
-const CORS_PROXY = "https://cors.isomorphic-git.org";
-
 export class IsoGitWrapper {
     private readonly fs: LightningFS;
     private dir: string;

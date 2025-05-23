@@ -211,7 +211,6 @@ export const RepoSelectForm = () => {
         class: "flex-1",
     });
 
-    let clonedRepo = ["repo1", "repo2", "repo3"];
     const getCurrentlySelectedRepo = () => {
         let repo = label.s.input.component.value.trim();
         return repo;
@@ -321,6 +320,7 @@ export const ProjectInfo = () => {
     valComp.update({
         textContent: form.s.handlers.getCurrentlySelectedRepo(),
     });
+
     return Tools.div(
         {
             class: "flex w-full gap-4 items-center flex-wrap",
@@ -335,6 +335,17 @@ export const ProjectInfo = () => {
                         click: (e: any, ls: any) => {
                             modal.s.handlers.display(form);
                             modal.s.handlers.show();
+                            console.log(
+                                "clicked",
+                                ls.s.parent.s.model.listRepos()
+                            );
+                            form.s.handlers.setReposAndFuncs(
+                                ls.s.parent.s.model
+                                    .listRepos()
+                                    .map((rep: any) => {
+                                        return { url: rep[0], val: rep[1] };
+                                    })
+                            );
                         },
                     }
                 ),
@@ -343,7 +354,6 @@ export const ProjectInfo = () => {
                     textContent: "Repo :",
                 }),
                 valComp,
-
                 modal,
             ],
         },
@@ -357,6 +367,38 @@ export const ProjectInfo = () => {
         }
     );
 };
+
+export class CloneRepoModal {
+    localStorage: LocalStorageJSONModel;
+    fileSys: LightFsWrapper;
+    gitWrap: IsoGitWrapper;
+    key: string = "clonedRepos";
+    constructor(key: string, fileSys: LightFsWrapper, gitWrap: IsoGitWrapper) {
+        this.fileSys = fileSys;
+        this.localStorage = new LocalStorageJSONModel(key);
+        this.gitWrap = gitWrap;
+    }
+    listRepos() {
+        let lst = this.localStorage;
+
+        return ObjectTools.getKeysAndValues(lst.readEntry([this.key]));
+    }
+    pullRepo(repoUrl: string) {
+        let data = this.localStorage.readEntry([this.key, repoUrl]);
+    }
+    deleteRepo(repoUrl: string) {
+        let path = this.localStorage.readEntry([this.key, repoUrl, "dirLoc"]);
+        this.fileSys.delete(path, true);
+        this.localStorage.deleteEntry([this.key, repoUrl]);
+        console.log("deleted", path);
+    }
+    addRepo(repoUrl: string, projectName: string) {
+        let lst = this.localStorage;
+        if (!lst.exists([this.key, repoUrl])) {
+            lst.addEntry([this.key, repoUrl], { dirLoc: projectName });
+        }
+    }
+}
 
 export class PageHandlers {
     instances: any = {};
