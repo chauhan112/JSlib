@@ -91,11 +91,12 @@ export class ContentSearch {
 export class IsoGitWrapper {
     private readonly fs: LightningFS;
     private dir: string;
+    private lfwrapper: LightFsWrapper;
 
     constructor(lfsWrapper: LightFsWrapper, gitDir: string = "/repo") {
         this.fs = lfsWrapper.fs; // isomorphic-git expects the direct fs object
         this.dir = gitDir;
-        lfsWrapper.mkdir(gitDir, true).catch(console.error);
+        this.lfwrapper = lfsWrapper;
     }
     setDir(dir: string) {
         this.dir = dir;
@@ -107,6 +108,7 @@ export class IsoGitWrapper {
         singleBranch: boolean = true,
         ref?: string // e.g. 'main'
     ): Promise<void> {
+        // this.lfwrapper.mkdir(this.dir, true).catch(console.error);
         try {
             console.log(`Cloning ${url} into ${this.dir}...`);
             await git.clone({
@@ -163,6 +165,31 @@ export class IsoGitWrapper {
             console.log("Pull complete.");
         } catch (e) {
             console.error("Pull failed:", e);
+            throw e;
+        }
+    }
+    async fetch(): Promise<void> {
+        try {
+            console.log(`Fetching for ${this.dir}...`);
+            await git.fetch({
+                fs: this.fs,
+                http,
+                dir: this.dir,
+                depth: 1,
+                corsProxy: CORS_PROXY,
+                onProgress: (progress: any) => {
+                    console.log(
+                        "Fetch progress:",
+                        progress.phase,
+                        progress.loaded,
+                        "/",
+                        progress.total
+                    );
+                },
+            });
+            console.log("Fetch complete.");
+        } catch (e) {
+            console.error("Fetch failed:", e);
             throw e;
         }
     }
@@ -484,19 +511,35 @@ export class CloneRepoModal {
 
         return ObjectTools.getKeysAndValues(lst.readEntry([this.key]));
     }
-    pullRepo(repoUrl: string) {
+    fetchRepo(repoUrl: string) {
         let data = this.localStorage.readEntry([this.key, repoUrl]);
+        this.gitWrap.setDir("/" + data.dirLoc);
+        return this.gitWrap.pull({ name: "raja", email: "raja@raja.com" });
     }
-    deleteRepo(repoUrl: string) {
+    async deleteRepo(repoUrl: string) {
         let path = this.localStorage.readEntry([this.key, repoUrl, "dirLoc"]);
-        this.fileSys.delete(path, true);
+        await this.fileSys.delete("/" + path, true);
         this.localStorage.deleteEntry([this.key, repoUrl]);
-        console.log("deleted", path);
     }
     addRepo(repoUrl: string, projectName: string) {
         let lst = this.localStorage;
         if (!lst.exists([this.key, repoUrl])) {
             lst.addEntry([this.key, repoUrl], { dirLoc: projectName });
+        }
+    }
+    getCurrentRepo(): string | undefined {
+        let key = "currentRepo";
+        if (!this.localStorage.exists([key])) {
+            return "";
+        }
+        return this.localStorage.readEntry([key]);
+    }
+    setCurrentRepo(repoUrl: string) {
+        let key = "currentRepo";
+        if (this.localStorage.exists([key])) {
+            this.localStorage.updateEntry([key], repoUrl);
+        } else {
+            this.localStorage.addEntry([key], repoUrl);
         }
     }
 }
