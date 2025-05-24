@@ -92,14 +92,9 @@ export const RepoInput = () => {
     let wid = Tools.div({
         class: "grid grid-cols-1 md:grid-cols-2 gap-4",
         children: [
-            InputWithLabel(
-                "Repository HTTPS URL:",
-                {
+            InputWithLabel("Repository HTTPS URL:", {
                     placeholder: "https://github.com/user/repo.git",
-                },
-                "repo",
-                "wid.s.repo.s.input.component.value"
-            ),
+            }),
             password,
         ],
     });
@@ -203,20 +198,15 @@ export const RepoSelectForm = () => {
             textContent: "Needed for private repos. Use PAT as password/token.",
         }),
     });
-    let label = InputWithLabel(
-        "Repository HTTPS URL:",
-        {
+    let urlInput = InputWithLabel("Repository HTTPS URL:", {
             placeholder: "https://github.com/user/repo.git",
-        },
-        "repo",
-        "wid.s.repo.s.input.component.value"
-    );
-    label.update({
+    });
+    urlInput.update({
         class: "flex-1",
     });
 
     const getCurrentlySelectedRepo = () => {
-        let repo = label.s.input.component.value.trim();
+        let repo = urlInput.s.input.component.value.trim();
         return repo;
     };
     let listOps = [
