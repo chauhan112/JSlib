@@ -2,6 +2,8 @@ import git from "isomorphic-git";
 import http from "isomorphic-git/http/web";
 import LightningFS from "@isomorphic-git/lightning-fs";
 import { StringTool } from "./tools";
+import { ObjectTools } from "../../april/Array";
+import { LocalStorageJSONModel } from "../../april/LocalStorage";
 
 const CORS_PROXY = "https://cors.isomorphic-git.org";
 
@@ -465,5 +467,36 @@ export class LightFsWrapperTest {
         fs.delete("/testdir", true).then(() => {
             console.log("File deleted");
         });
+    }
+}
+export class CloneRepoModal {
+    localStorage: LocalStorageJSONModel;
+    fileSys: LightFsWrapper;
+    gitWrap: IsoGitWrapper;
+    key: string = "clonedRepos";
+    constructor(key: string, fileSys: LightFsWrapper, gitWrap: IsoGitWrapper) {
+        this.fileSys = fileSys;
+        this.localStorage = new LocalStorageJSONModel(key);
+        this.gitWrap = gitWrap;
+    }
+    listRepos() {
+        let lst = this.localStorage;
+
+        return ObjectTools.getKeysAndValues(lst.readEntry([this.key]));
+    }
+    pullRepo(repoUrl: string) {
+        let data = this.localStorage.readEntry([this.key, repoUrl]);
+    }
+    deleteRepo(repoUrl: string) {
+        let path = this.localStorage.readEntry([this.key, repoUrl, "dirLoc"]);
+        this.fileSys.delete(path, true);
+        this.localStorage.deleteEntry([this.key, repoUrl]);
+        console.log("deleted", path);
+    }
+    addRepo(repoUrl: string, projectName: string) {
+        let lst = this.localStorage;
+        if (!lst.exists([this.key, repoUrl])) {
+            lst.addEntry([this.key, repoUrl], { dirLoc: projectName });
+        }
     }
 }

@@ -1,10 +1,14 @@
 import { Tools } from "../../april/tools";
 import { LocalStorageJSONModel } from "../../april/LocalStorage";
-import { LightFsWrapper, IsoGitWrapper, FileSearchModel } from "./model";
+import {
+    LightFsWrapper,
+    IsoGitWrapper,
+    FileSearchModel,
+    CloneRepoModal,
+} from "./model";
 import { StringTool, FileTools, GitTools } from "./tools";
 import { AceEditor } from "../Editor/ace";
 import { GenericModal } from "./Modal";
-import { ObjectTools } from "../../april/Array";
 
 export const TITLE = "Clone Git Repo & Search Files";
 export const GIT_DIR = "git-search-repo-fs";
@@ -367,38 +371,6 @@ export const ProjectInfo = () => {
         }
     );
 };
-
-export class CloneRepoModal {
-    localStorage: LocalStorageJSONModel;
-    fileSys: LightFsWrapper;
-    gitWrap: IsoGitWrapper;
-    key: string = "clonedRepos";
-    constructor(key: string, fileSys: LightFsWrapper, gitWrap: IsoGitWrapper) {
-        this.fileSys = fileSys;
-        this.localStorage = new LocalStorageJSONModel(key);
-        this.gitWrap = gitWrap;
-    }
-    listRepos() {
-        let lst = this.localStorage;
-
-        return ObjectTools.getKeysAndValues(lst.readEntry([this.key]));
-    }
-    pullRepo(repoUrl: string) {
-        let data = this.localStorage.readEntry([this.key, repoUrl]);
-    }
-    deleteRepo(repoUrl: string) {
-        let path = this.localStorage.readEntry([this.key, repoUrl, "dirLoc"]);
-        this.fileSys.delete(path, true);
-        this.localStorage.deleteEntry([this.key, repoUrl]);
-        console.log("deleted", path);
-    }
-    addRepo(repoUrl: string, projectName: string) {
-        let lst = this.localStorage;
-        if (!lst.exists([this.key, repoUrl])) {
-            lst.addEntry([this.key, repoUrl], { dirLoc: projectName });
-        }
-    }
-}
 
 export class PageHandlers {
     instances: any = {};
