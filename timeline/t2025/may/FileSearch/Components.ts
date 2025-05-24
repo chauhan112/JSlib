@@ -550,6 +550,7 @@ export const Page = () => {
     const cloneRepoModal = new CloneRepoModal(GIT_DIR, fileSys, gitWrap);
     projectInfo.update({}, {}, { model: cloneRepoModal });
     projectInfo.s.inst.form.update({}, {}, { model: cloneRepoModal });
+
     projectInfo.s.initialize();
     let fileModal = GenericModal("File Content");
     let handlers = new PageHandlers({
