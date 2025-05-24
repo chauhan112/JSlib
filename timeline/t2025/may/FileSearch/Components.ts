@@ -93,7 +93,7 @@ export const RepoInput = () => {
         class: "grid grid-cols-1 md:grid-cols-2 gap-4",
         children: [
             InputWithLabel("Repository HTTPS URL:", {
-                    placeholder: "https://github.com/user/repo.git",
+                placeholder: "https://github.com/user/repo.git",
             }),
             password,
         ],
@@ -167,7 +167,12 @@ export const ListComp = (
                             },
                             {
                                 click: (e: any, ls: any) => {
-                                    state.onClick(ls.s.data, op.textContent);
+                                    state.onClick({
+                                        val: ls.s.data,
+                                        op: op.textContent,
+                                        ls,
+                                        e,
+                                    });
                                 },
                             },
                             {
@@ -199,7 +204,7 @@ export const RepoSelectForm = () => {
         }),
     });
     let urlInput = InputWithLabel("Repository HTTPS URL:", {
-            placeholder: "https://github.com/user/repo.git",
+        placeholder: "https://github.com/user/repo.git",
     });
     urlInput.update({
         class: "flex-1",
@@ -232,18 +237,36 @@ export const RepoSelectForm = () => {
     let clonedRepoContainer = Tools.comp("div", {
         class: "text-gray-400",
     });
-    let onClick = (val: any, op: any) => {
+    let onClick = ({
+        val,
+        op,
+        ...rest
+    }: {
+        val: any;
+        op: any;
+        ls: any;
+        e: any;
+    }) => {
         if (op === "select") {
-            label.s.input.component.value = val.url;
+            urlInput.s.input.component.value = val.url;
             loadBtn.getElement().click();
         } else if (op === "delete") {
             let res = confirm(
                 "Are you sure you want to delete this repository? This action cannot be undone."
             );
             if (res) {
+                layout.s.model.deleteRepo(val.url).then(() => {
+                    rest.ls.s.parent.s.parent
+                        .getElement()
+                        .classList.toggle("hidden");
+                });
             }
         } else if (op === "pull") {
-            console.log("pulled", val);
+            // console.log(
+            //     "Pulling changes for",
+            //     layout.s.model.fileSys.dirlist("/chauhan112/Editor", true)
+            // );
+            layout.s.model.fetchRepo(val.url);
         }
     };
     const setReposAndFuncs = (repos: { url: string; val: any }[]) => {
@@ -254,6 +277,7 @@ export const RepoSelectForm = () => {
             }),
         });
     };
+
     let handlers = {
         onClickOfOpInList: (val: any, op: any) => {
             console.log("clicked-1", val, op);
@@ -261,7 +285,8 @@ export const RepoSelectForm = () => {
         getCurrentlySelectedRepo,
         setReposAndFuncs,
     };
-    return Tools.div(
+
+    let layout = Tools.div(
         {
             class: "flex flex-col gap-4 w-full p-2",
             children: [
@@ -276,7 +301,7 @@ export const RepoSelectForm = () => {
                         Tools.div({
                             key: "wrap",
                             class: "flex flex-1 gap-4 md:flex-row flex-col",
-                            children: [label, password],
+                            children: [urlInput, password],
                         }),
                         loadBtn,
                     ],
@@ -296,13 +321,14 @@ export const RepoSelectForm = () => {
         {},
         {
             inst: {
-                label,
+                urlInput,
                 password,
                 loadBtn,
             },
             handlers,
         }
     );
+    return layout;
 };
 export const ProjectInfo = () => {
     let valComp = Tools.comp("span", {
@@ -314,8 +340,14 @@ export const ProjectInfo = () => {
     valComp.update({
         textContent: form.s.handlers.getCurrentlySelectedRepo(),
     });
-
-    return Tools.div(
+    const initialize = () => {
+        const curRepo = layout.s.model.getCurrentRepo();
+        valComp.update({
+            textContent: curRepo,
+        });
+        form.s.inst.urlInput.s.input.component.value = curRepo;
+    };
+    const layout = Tools.div(
         {
             class: "flex w-full gap-4 items-center flex-wrap",
             children: [
@@ -358,8 +390,10 @@ export const ProjectInfo = () => {
                 form,
                 modal,
             },
+            initialize,
         }
     );
+    return layout;
 };
 
 export class PageHandlers {
@@ -382,6 +416,7 @@ export class PageHandlers {
     async onLoad() {
         let repoUrl = this.instances.projectInfo.s.getValue();
         const resp = GitTools.validateAndParseGitHubUrl(repoUrl);
+        this.instances.cloneRepoModal.setCurrentRepo(repoUrl);
         this.setBusy(true);
         try {
             if (resp) {
@@ -391,7 +426,7 @@ export class PageHandlers {
                     "/" + projectName,
                     [".git"]
                 );
-                let filesWithAllowedExt = files.filter((f) => {
+                let filesWithAllowedExt = files.filter((f: string) => {
                     return Allowed_Extensions.some((ext) => f.endsWith(ext));
                 });
                 this.instances.filesSearcher.set_files(filesWithAllowedExt);
@@ -514,6 +549,8 @@ export const Page = () => {
     const filesSearcher = new FileSearchModel(fileSys);
     const cloneRepoModal = new CloneRepoModal(GIT_DIR, fileSys, gitWrap);
     projectInfo.update({}, {}, { model: cloneRepoModal });
+    projectInfo.s.inst.form.update({}, {}, { model: cloneRepoModal });
+    projectInfo.s.initialize();
     let fileModal = GenericModal("File Content");
     let handlers = new PageHandlers({
         fileSys,
