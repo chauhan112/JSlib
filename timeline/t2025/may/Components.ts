@@ -55,7 +55,6 @@ export const Sidebar = (secs: { title: string; href: string }[]) => {
         ],
     });
 };
-
 export const Header = (title: string) => {
     return Tools.comp("header", {
         class: "bg-indigo-600 text-white p-4 shadow-md sticky top-0 z-20",
@@ -68,7 +67,6 @@ export const Header = (title: string) => {
         ],
     });
 };
-
 export const MainBody = () => {
     return Tools.comp("main", {
         class: "flex-grow bg-white p-6 shadow-lg rounded-lg w-full md:w-auto overflow-y-auto",

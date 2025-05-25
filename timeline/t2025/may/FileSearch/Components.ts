@@ -1,5 +1,5 @@
 import { Tools } from "../../april/tools";
-import { LocalStorageJSONModel } from "../../april/LocalStorage";
+import { InputWithLabel } from "./LabeledInput";
 import {
     LightFsWrapper,
     IsoGitWrapper,
@@ -21,86 +21,7 @@ export const Allowed_Extensions = [
     ".py",
     ".java",
 ];
-export const InputWithLabel = (
-    label: string,
-    inp: any = {},
-    key?: string,
-    loc?: string
-) => {
-    let fnc = {};
 
-    if (loc) {
-        let model = new LocalStorageJSONModel(loc);
-
-        if (model.exists([loc])) {
-            inp = {
-                ...inp,
-                value: model.readEntry([loc]),
-            };
-        }
-
-        fnc = {
-            change: (e: any) => {
-                model.updateEntry([loc], e.target.value);
-            },
-        };
-    }
-    let inpComp = Tools.comp(
-        "input",
-        {
-            key: "input",
-            class: "block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500",
-            type: "text",
-            ...inp,
-        },
-        fnc
-    );
-    const activate = (active: boolean) => {
-        (inpComp.getElement() as HTMLInputElement).disabled = !active;
-    };
-    return Tools.div(
-        {
-            key: key || "w",
-            children: [
-                Tools.comp("label", {
-                    for: label,
-                    class: "block text-sm font-medium text-gray-700 mb-1",
-                    textContent: label,
-                }),
-                inpComp,
-            ],
-        },
-        {},
-        { activate }
-    );
-};
-export const RepoInput = () => {
-    let password = InputWithLabel(
-        "Auth Token (Optional):",
-        {
-            type: "password",
-            placeholder: "Personal Access Token (if private)",
-        },
-        "password"
-    );
-    password.update({
-        child: Tools.comp("p", {
-            class: "text-xs text-gray-500 mt-1",
-            textContent: "Needed for private repos. Use PAT as password/token.",
-        }),
-    });
-    let wid = Tools.div({
-        class: "grid grid-cols-1 md:grid-cols-2 gap-4",
-        children: [
-            InputWithLabel("Repository HTTPS URL:", {
-                placeholder: "https://github.com/user/repo.git",
-            }),
-            password,
-        ],
-    });
-
-    return wid;
-};
 export const ResultArea = () => {
     return Tools.div({
         class: "mt-4",
@@ -125,13 +46,7 @@ export const ResultArea = () => {
         ],
     });
 };
-export const DivWrap = (child: any, props: any = {}) => {
-    return Tools.div({
-        class: "flex flex-col gap-4 w-full ",
-        children: [child],
-        ...props,
-    });
-};
+
 export const ListComp = (
     name: string,
     val: any,
@@ -262,10 +177,6 @@ export const RepoSelectForm = () => {
                 });
             }
         } else if (op === "pull") {
-            // console.log(
-            //     "Pulling changes for",
-            //     layout.s.model.fileSys.dirlist("/chauhan112/Editor", true)
-            // );
             layout.s.model.fetchRepo(val.url);
         }
     };
