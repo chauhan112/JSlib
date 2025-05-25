@@ -553,6 +553,7 @@ export const Page = () => {
 
     projectInfo.s.initialize();
     let fileModal = GenericModal("File Content");
+    fileModal.s.wrap.getElement().classList.toggle("h-screen");
     let handlers = new PageHandlers({
         fileSys,
         gitWrap,

@@ -25,11 +25,12 @@ export const GenericModal = (title: string) => {
             ),
         ],
     });
-    const contentArea = Tools.div({ class: "p-2 overflow-y-auto" });
+    const contentArea = Tools.div({ class: "flex flex-1 p-2" });
     let wid = Tools.div(
         {
             class: "fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden",
             child: Tools.div({
+                key: "wrap",
                 class: "bg-white rounded-lg shadow-xl w-full max-h-[90vh] flex flex-col",
                 children: [codeSec, contentArea],
             }),
