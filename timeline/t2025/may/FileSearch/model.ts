@@ -28,7 +28,6 @@ export class FileSearchModel {
         regex: boolean = false
     ): Promise<{ path: string; line: number }[]> {
         const results: { path: string; line: number }[] = [];
-        if (!query) return results;
 
         for (const filePath of this.files) {
             if (!this.contentCache.hasOwnProperty(filePath)) {
@@ -62,8 +61,8 @@ export class ContentSearch {
         regex: boolean = false
     ): [boolean, number] {
         // [found, firstLineNumber (1-based)]
-        if (!this.text || !query) {
-            return [false, 0];
+        if (query === "") {
+            return [true, 0];
         }
 
         let searchText = caseSensitive ? this.text : this.text.toLowerCase();

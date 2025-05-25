@@ -9,6 +9,7 @@ import {
 import { StringTool, FileTools, GitTools } from "./tools";
 import { AceEditor } from "../Editor/ace";
 import { GenericModal } from "./Modal";
+import { SearchComponent } from "./Search";
 
 export const TITLE = "Clone Git Repo & Search Files";
 export const GIT_DIR = "git-search-repo-fs";
@@ -359,7 +360,7 @@ export class PageHandlers {
         }
     }
     setBusy(busy: boolean) {
-        this.instances.searchInput.s.activate(!busy);
+        this.instances.searchComponent.s.handlers.activate(!busy);
     }
     updateStatus(message: string, isError = false) {
         if (isError) {
@@ -389,34 +390,34 @@ export class PageHandlers {
             innerHTML: ls.s.data.path,
         });
     }
-    onSearch() {
-        let term = this.instances.searchInput.s.input.component.value.trim();
-
-        this.instances.filesSearcher.search(term).then((results: any) => {
-            if (results.length === 0) {
-                this.instances.resArea.s.out.update({
-                    innerHTML: "",
-                    children: [
-                        Tools.comp("p", {
-                            class: "text-gray-400",
-                            textContent: "No results found",
-                        }),
-                    ],
-                });
-            } else {
-                this.instances.resArea.s.out.update({
-                    innerHTML: "",
-                    children: results.map(
-                        (f: { path: string; line: number }) => {
-                            return ResultComponent(
-                                f,
-                                this.onResultClick.bind(this)
-                            );
-                        }
-                    ),
-                });
-            }
-        });
+    onSearch(term: string = "", caseSensitive = false, reg: boolean = false) {
+        this.instances.filesSearcher
+            .search(term, caseSensitive, reg)
+            .then((results: any) => {
+                if (results.length === 0) {
+                    this.instances.resArea.s.out.update({
+                        innerHTML: "",
+                        children: [
+                            Tools.comp("p", {
+                                class: "text-gray-400",
+                                textContent: "No results found",
+                            }),
+                        ],
+                    });
+                } else {
+                    this.instances.resArea.s.out.update({
+                        innerHTML: "",
+                        children: results.map(
+                            (f: { path: string; line: number }) => {
+                                return ResultComponent(
+                                    f,
+                                    this.onResultClick.bind(this)
+                                );
+                            }
+                        ),
+                    });
+                }
+            });
     }
 }
 
@@ -445,12 +446,17 @@ export const Page = () => {
         textContent:
             "Enter repo details and click load. Cloned data will be cached in your browser's IndexedDB.",
     });
-    let searchInput = InputWithLabel("Search Term:", {
-        type: "search",
-        placeholder: "Enter search term...",
-        disabled: true,
-        class: "block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-200 disabled:cursor-not-allowed",
-    });
+    let searchComponent = SearchComponent();
+
+    searchComponent.s.comps.searchBtn.update(
+        {},
+        {
+            click: (e: any, ls: any) => {
+                let vals = searchComponent.s.handlers.getValues();
+                handlers.onSearch(vals.word, vals.caseSensitive, vals.reg);
+            },
+        }
+    );
     let resArea = ResultArea();
     let editor = AceEditor();
     let projectInfo = ProjectInfo();
@@ -469,7 +475,7 @@ export const Page = () => {
         fileSys,
         gitWrap,
         filesSearcher,
-        searchInput,
+        searchComponent,
         resArea,
         statusDisplay,
         projectInfo,
@@ -478,14 +484,6 @@ export const Page = () => {
         cloneRepoModal,
     });
 
-    searchInput.s.input.update(
-        {},
-        {
-            change: (e: any) => {
-                handlers.onSearch();
-            },
-        }
-    );
     projectInfo.s.inst.form.s.repoInp.s.loadBtn.update(
         {},
         {
@@ -503,6 +501,12 @@ export const Page = () => {
     }
     return Tools.div({
         class: "flex flex-col gap-4 w-full md:w-auto md:flex-1",
-        children: [projectInfo, statusDisplay, searchInput, resArea, fileModal],
+        children: [
+            projectInfo,
+            statusDisplay,
+            searchComponent,
+            resArea,
+            fileModal,
+        ],
     });
 };
