@@ -85,3 +85,12 @@ export class Tools {
         return comp;
     }
 }
+
+export class MoreTools {
+    static removeLastElement(ele: GComponent) {
+        let lastChild = ele.getElement().lastChild;
+        if (lastChild) {
+            ele.getElement().removeChild(lastChild);
+        }
+    }
+}
