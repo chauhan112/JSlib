@@ -273,10 +273,6 @@ export const ProjectInfo = () => {
                         click: (e: any, ls: any) => {
                             modal.s.handlers.display(form);
                             modal.s.handlers.show();
-                            console.log(
-                                "clicked",
-                                ls.s.parent.s.model.listRepos()
-                            );
                             form.s.handlers.setReposAndFuncs(
                                 ls.s.parent.s.model
                                     .listRepos()
