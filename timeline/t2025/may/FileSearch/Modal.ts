@@ -1,5 +1,6 @@
 import { GComponent } from "../../april/GComponent";
 import { Tools } from "../../april/tools";
+import { X } from "lucide";
 
 export const GenericModal = (title: string) => {
     const modalTitle = Tools.comp("h3", {
@@ -15,7 +16,7 @@ export const GenericModal = (title: string) => {
                 "button",
                 {
                     class: "text-gray-500 hover:text-gray-800 text-2xl font-bold px-2 py-1 cursor-pointer hover:bg-gray-200",
-                    textContent: "X",
+                    child: Tools.icon(X, { class: "w-8 h-8" }),
                 },
                 {
                     click: (e: any, ls: any) => {
