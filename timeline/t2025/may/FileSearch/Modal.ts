@@ -26,7 +26,7 @@ export const GenericModal = (title: string) => {
             ),
         ],
     });
-    const contentArea = Tools.div({ class: "flex flex-1 p-2" });
+    const contentArea = Tools.div({ class: "flex flex-1 p-2 min-h-0" });
     let wid = Tools.div(
         {
             class: "fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden",

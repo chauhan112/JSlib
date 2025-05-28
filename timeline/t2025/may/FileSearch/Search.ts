@@ -66,6 +66,7 @@ export const SearchComponent = () => {
     );
     let simpleSearch = SimpleSearch();
     let modal = GenericModal("Search Settings");
+    modal.s.wrap.getElement().classList.add("h-full", "w-full");
     let lay = Tools.div(
         {
             class: "flex w-full items-center gap-2 rounded-md border border-gray-300 bg-white p-2 shadow-sm",
@@ -90,7 +91,7 @@ export const ConcatenatedSearch = () => {
         let closeBtn = Tools.icon(
             X,
             {
-            class: "w-6 h-6 text-red-500 cursor-pointer hover:text-red-700",
+                class: "w-6 h-6 text-red-500 cursor-pointer hover:text-red-700",
             },
             {
                 click: (e: any, ls: any) => {
@@ -129,7 +130,9 @@ export const ConcatenatedSearch = () => {
             innerHTML: "",
         });
     };
-    const filters = Tools.div({ class: "flex flex-col gap-2" });
+    const filters = Tools.div({
+        class: "flex flex-col gap-2 flex-1 overflow-y-auto min-h-0",
+    });
     const resetBtn = Tools.icon(
         RotateCcw,
         {
@@ -158,7 +161,7 @@ export const ConcatenatedSearch = () => {
         }
     );
     return Tools.div({
-        class: "w-full",
+        class: "w-full flex flex-1 flex-col",
         children: [
             Tools.div({
                 class: "flex w-full items-center justify-between",
