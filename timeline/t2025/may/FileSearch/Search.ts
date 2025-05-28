@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 export const SimpleSearch = () => {
     let inpComp = Tools.comp("input", {
         class: "w-full p-2 border border-gray-300 rounded-md",
-        placeholder: "search simply",
+        placeholder: "word to search",
         name: "search",
     });
     let caseInp = LabeledInput(
@@ -31,6 +31,8 @@ export const SimpleSearch = () => {
 
     let activate = (active: boolean) => {
         (inpComp.getElement() as HTMLInputElement).disabled = !active;
+        caseInp.s.inpComp.getElement().disabled = !active;
+        regInp.s.inpComp.getElement().disabled = !active;
     };
     const getValues = () => {
         return {
@@ -67,6 +69,20 @@ export const SearchComponent = () => {
     let simpleSearch = SimpleSearch();
     let modal = GenericModal("Search Settings");
     modal.s.wrap.getElement().classList.add("h-full", "w-full");
+    const getSearchParams = () => {
+        const isActive = concSearch.s.handlers.isActive();
+        if (isActive) {
+            return {
+                type: "concat",
+                params: concSearch.s.handlers.getFilters(),
+            };
+        }
+        return {
+            type: "simple",
+            params: simpleSearch.s.handlers.getValues(),
+        };
+    };
+
     let lay = Tools.div(
         {
             class: "flex w-full items-center gap-2 rounded-md border border-gray-300 bg-white p-2 shadow-sm",
@@ -75,28 +91,67 @@ export const SearchComponent = () => {
         {},
         {
             comps: { settingComp, simpleSearch, ...simpleSearch.s.comps },
-            handlers: { ...simpleSearch.s.handlers },
+            handlers: { ...simpleSearch.s.handlers, getSearchParams },
         }
     );
     let concSearch = ConcatenatedSearch();
+    const toggleSimpleSearch = (active: boolean) => {
+        if (active) {
+            simpleSearch.s.handlers.activate(active);
+            simpleSearch.s.comps.inpComp.update({
+                placeholder: "word to search",
+                value: "",
+            });
+        } else {
+            simpleSearch.s.handlers.activate(active);
+            simpleSearch.s.comps.inpComp.update({
+                placeholder:
+                    "concat search is active so simple search is disabled",
+            });
+        }
+    };
 
+    const onDoneClicked = (e: any, ls: any) => {
+        const isActive = concSearch.s.handlers.isActive();
+        if (isActive) {
+            toggleSimpleSearch(false);
+        } else {
+            toggleSimpleSearch(true);
+        }
+        modal.s.handlers.hide();
+    };
+    concSearch.s.comps.doneBtn.update({}, { click: onDoneClicked });
+
+    return lay;
+};
+const SearchCompCrud = () => {
+    const uuid = uuidv4();
+    const ss = SimpleSearch();
+    let closeBtn = Tools.icon(X, {
+        class: "w-6 h-6 text-red-500 cursor-pointer hover:text-red-700",
+    });
+    let lay = Tools.div(
+        {
+            class: "flex items-center gap-2 rounded-md ",
+            children: [closeBtn, ss],
+        },
+        {},
+        { id: uuid, searchComp: ss, closeBtn }
+    );
     return lay;
 };
 
 export const ConcatenatedSearch = () => {
     let searchComps: any = [];
-    const SearchCompCrud = () => {
-        const uuid = uuidv4();
-        const ss = SimpleSearch();
-        let closeBtn = Tools.icon(
-            X,
-            {
-                class: "w-6 h-6 text-red-500 cursor-pointer hover:text-red-700",
-            },
+
+    const onAdd = () => {
+        const newSearchComp = SearchCompCrud();
+        newSearchComp.s.closeBtn.update(
+            {},
             {
                 click: (e: any, ls: any) => {
                     searchComps = searchComps.filter(
-                        (comp: any) => comp.s.id !== uuid
+                        (comp: any) => comp.s.id !== newSearchComp.s.id
                     );
                     filters.update({
                         innerHTML: "",
@@ -105,18 +160,6 @@ export const ConcatenatedSearch = () => {
                 },
             }
         );
-        let lay = Tools.div(
-            {
-                class: "flex items-center gap-2 rounded-md ",
-                children: [closeBtn, ss],
-            },
-            {},
-            { id: uuid, searchComp: ss }
-        );
-        return lay;
-    };
-    const onAdd = () => {
-        const newSearchComp = SearchCompCrud();
         searchComps.push(newSearchComp);
         MoreTools.removeLastElement(newSearchComp.s.searchComp);
         filters.update({
@@ -144,11 +187,19 @@ export const ConcatenatedSearch = () => {
             },
         }
     );
-    let searchBtn = Tools.comp("button", {
-        class: "flex items-center justify-center p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer w-24",
-        textContent: "done",
-    });
-
+    let doneBtn = Tools.comp(
+        "button",
+        {
+            class: "flex items-center justify-center p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer w-24",
+            textContent: "done",
+        },
+        {
+            click: (e: any, ls: any) => {
+                const values = getFilters();
+                console.log("Search Values:", values);
+            },
+        }
+    );
     const plusIcon = Tools.icon(
         Plus,
         {
@@ -160,14 +211,31 @@ export const ConcatenatedSearch = () => {
             },
         }
     );
-    return Tools.div({
-        class: "w-full flex flex-1 flex-col",
-        children: [
-            Tools.div({
-                class: "flex w-full items-center justify-between",
-                children: [resetBtn, plusIcon, searchBtn],
-            }),
-            filters,
-        ],
-    });
+    const getFilters = () => {
+        return searchComps
+            .map((comp: any) => {
+                return comp.s.searchComp.s.handlers.getValues();
+            })
+            .filter((val: any) => val.word && val.word.trim() !== "");
+    };
+    const isActive = () => {
+        return searchComps.length > 0 && getFilters().length > 0;
+    };
+    return Tools.div(
+        {
+            class: "w-full flex flex-1 flex-col",
+            children: [
+                Tools.div({
+                    class: "flex w-full items-center justify-between",
+                    children: [resetBtn, plusIcon, doneBtn],
+                }),
+                filters,
+            ],
+        },
+        {},
+        {
+            handlers: { getFilters, onReset, onAdd, isActive },
+            comps: { resetBtn, plusIcon, doneBtn },
+        }
+    );
 };

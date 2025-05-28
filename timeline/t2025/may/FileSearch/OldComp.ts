@@ -2,7 +2,6 @@ import { Tools } from "../../april/tools";
 import { InputWithLabel } from "./LabeledInput";
 export const DivWrap = (child: any, props: any = {}) => {
     return Tools.div({
-        class: "flex flex-col gap-4 w-full ",
         children: [child],
         ...props,
     });

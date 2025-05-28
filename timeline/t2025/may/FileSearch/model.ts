@@ -47,6 +47,33 @@ export class FileSearchModel {
         }
         return results;
     }
+    async concatSearch(
+        params: { word: string; caseSensitive: boolean; reg: boolean }[]
+    ): Promise<{ path: string; line: number }[]> {
+        let results: { path: string; line: number }[] = [];
+        let files = this.files;
+        for (const { word, caseSensitive, reg } of params) {
+            results = [];
+            for (const filePath of files) {
+                if (!this.contentCache.hasOwnProperty(filePath)) {
+                    const abc = await this.lfsWrapper.read(filePath);
+                    this.contentCache[filePath] = abc;
+                }
+
+                this.contentSearcher.set_text(this.contentCache[filePath]);
+                const [found, lineNumber] = this.contentSearcher.search(
+                    word,
+                    caseSensitive,
+                    reg
+                );
+                if (found) {
+                    results.push({ path: filePath, line: lineNumber });
+                }
+            }
+            files = results.map((r) => r.path);
+        }
+        return results;
+    }
 }
 export class ContentSearch {
     private text: string = "";

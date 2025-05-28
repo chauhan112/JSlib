@@ -20,8 +20,13 @@ export const ResultArea = () => {
         class: "mt-4",
         children: [
             Tools.comp("h2", {
+                key: "resTitle",
                 class: "text-xl font-semibold mb-2 text-gray-700",
                 textContent: "Results:",
+                child: Tools.comp("span", {
+                    key: "count",
+                    class: "text-gray-600",
+                }),
             }),
             Tools.div({
                 key: "out",
@@ -39,7 +44,6 @@ export const ResultArea = () => {
         ],
     });
 };
-
 export const ListComp = (
     name: string,
     val: any,
@@ -311,8 +315,23 @@ export const Page = () => {
         {},
         {
             click: (e: any, ls: any) => {
-                let vals = searchComponent.s.handlers.getValues();
-                handlers.onSearch(vals.word, vals.caseSensitive, vals.reg);
+                console.log("Search clicked");
+                let params = searchComponent.s.handlers.getSearchParams();
+                if (params.type === "concat") {
+                    filesSearcher
+                        .concatSearch(params.params)
+                        .then((res: any) => {
+                            handlers.displaySearchResults(res);
+                        });
+                } else {
+                    const vals = params.params;
+                    console.log("searching", vals);
+                    filesSearcher
+                        .search(vals.word, vals.caseSensitive, vals.reg)
+                        .then((res: any) => {
+                            handlers.displaySearchResults(res);
+                        });
+                }
             },
         }
     );
