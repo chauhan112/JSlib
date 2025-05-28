@@ -42,7 +42,7 @@ export class Tools {
         states: Record<string, any> = {}
     ) {
         let comp = new Icon(icon);
-        comp.update(props, states, handlers);
+        comp.update(props, handlers, states);
         return comp;
     }
     static ifComp(

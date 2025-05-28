@@ -26,8 +26,8 @@ export class Icon implements IComponent {
 
     update(
         props?: { [key: string]: string },
-        state?: { [key: string]: any },
-        handlers?: { [key: string]: (...args: any[]) => void }
+        handlers?: { [key: string]: (...args: any[]) => void },
+        state?: { [key: string]: any }
     ) {
         if (this.component) {
             this.getElement();
