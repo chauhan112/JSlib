@@ -2,6 +2,8 @@ import { Tools, MoreTools } from "../../april/tools";
 import { LabeledInput } from "./LabeledInput";
 import { Cog, RotateCcw, Plus, X } from "lucide";
 import { GenericModal } from "./Modal";
+import { v4 as uuidv4 } from "uuid";
+
 export const SimpleSearch = () => {
     let inpComp = Tools.comp("input", {
         class: "w-full p-2 border border-gray-300 rounded-md",
@@ -81,30 +83,48 @@ export const SearchComponent = () => {
 };
 
 export const ConcatenatedSearch = () => {
-    const SearchCompCrud = (val: any) => {
+    let searchComps: any = [];
+    const SearchCompCrud = () => {
+        const uuid = uuidv4();
         const ss = SimpleSearch();
-        let closeBtn = Tools.icon(X, {
+        let closeBtn = Tools.icon(
+            X,
+            {
             class: "w-6 h-6 text-red-500 cursor-pointer hover:text-red-700",
-        });
+            },
+            {
+                click: (e: any, ls: any) => {
+                    searchComps = searchComps.filter(
+                        (comp: any) => comp.s.id !== uuid
+                    );
+                    filters.update({
+                        innerHTML: "",
+                        children: searchComps,
+                    });
+                },
+            }
+        );
         let lay = Tools.div(
             {
                 class: "flex items-center gap-2 rounded-md ",
                 children: [closeBtn, ss],
             },
             {},
-            { val: val, searchComp: ss }
+            { id: uuid, searchComp: ss }
         );
         return lay;
     };
     const onAdd = () => {
-        const newSearchComp = SearchCompCrud({});
+        const newSearchComp = SearchCompCrud();
+        searchComps.push(newSearchComp);
         MoreTools.removeLastElement(newSearchComp.s.searchComp);
         filters.update({
             child: newSearchComp,
         });
     };
-    const onRemove = () => {};
+
     const onReset = () => {
+        searchComps = [];
         filters.update({
             innerHTML: "",
         });
