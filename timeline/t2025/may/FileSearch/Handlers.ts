@@ -47,7 +47,7 @@ export class PageHandlers {
             console.log("repo already exists. using the cached data.");
         }
     }
-    async onLoad() {
+    async onLoad(fileFilters: string[] = []) {
         let repoUrl = this.instances.projectInfo.s.getValue();
         const resp = GitTools.validateAndParseGitHubUrl(repoUrl);
         this.instances.cloneRepoModal.setCurrentRepo(repoUrl);
@@ -61,6 +61,11 @@ export class PageHandlers {
                     [".git"]
                 );
                 let filesWithAllowedExt = files.filter((f: string) => {
+                    if (fileFilters.length > 0) {
+                        return fileFilters.some((filter: string) =>
+                            f.endsWith(filter)
+                        );
+                    }
                     return Allowed_Extensions.some((ext) => f.endsWith(ext));
                 });
                 this.instances.filesSearcher.set_files(filesWithAllowedExt);
@@ -88,12 +93,12 @@ export class PageHandlers {
         if (isError) {
             this.instances.statusDisplay.update({
                 textContent: message,
-                class: "mb-4 text-sm p-3 rounded border bg-red-100 border-red-300 text-red-800 min-h-[40px]",
+                ...this.instances.statusDisplay.s.danger,
             });
         } else {
             this.instances.statusDisplay.update({
                 textContent: message,
-                class: "mb-4 text-sm p-3 rounded border bg-gray-50 border-gray-200 text-gray-600 min-h-[40px]",
+                ...this.instances.statusDisplay.s.success,
             });
         }
     }

@@ -38,6 +38,9 @@ export const InputWithLabel = (
     const activate = (active: boolean) => {
         (inpComp.getElement() as HTMLInputElement).disabled = !active;
     };
+    const getValue = () => {
+        return (inpComp.getElement() as HTMLInputElement).value;
+    };
     return Tools.div(
         {
             key: key || "w",
@@ -51,7 +54,7 @@ export const InputWithLabel = (
             ],
         },
         {},
-        { activate }
+        { activate, getValue }
     );
 };
 

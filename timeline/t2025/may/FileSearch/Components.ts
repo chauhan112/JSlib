@@ -186,12 +186,27 @@ export const RepoSelectForm = () => {
         });
     };
 
+    const fileFilters = InputWithLabel("File extensions:", {
+        placeholder:
+            "Filter files by name or extension separated by commas (e.g., js,html,css)",
+    });
+    const getFileFilters = () => {
+        let filters = fileFilters.s.getValue().trim();
+        if (filters) {
+            return filters
+                .split(",")
+                .map((f: string) => "." + f.trim().toLowerCase());
+        }
+        return [];
+    };
+
     let handlers = {
         onClickOfOpInList: (val: any, op: any) => {
             console.log("clicked-1", val, op);
         },
         getCurrentlySelectedRepo,
         setReposAndFuncs,
+        getFileFilters,
     };
 
     let layout = Tools.div(
@@ -214,6 +229,7 @@ export const RepoSelectForm = () => {
                         loadBtn,
                     ],
                 }),
+                fileFilters,
                 Tools.div({
                     class: "p-2 border border-gray-200 rounded bg-gray-50",
                     children: [
@@ -232,6 +248,7 @@ export const RepoSelectForm = () => {
                 urlInput,
                 password,
                 loadBtn,
+                fileFilters,
             },
             handlers,
         }
@@ -260,7 +277,7 @@ export const ProjectInfo = () => {
     };
     const layout = Tools.div(
         {
-            class: "flex w-full gap-4 items-center flex-wrap",
+            class: "flex gap-4 items-center flex-wrap w-fit",
             children: [
                 Tools.comp(
                     "button",
@@ -304,11 +321,23 @@ export const ProjectInfo = () => {
 };
 
 export const Page = () => {
-    let statusDisplay = Tools.div({
-        class: "mb-4 text-sm text-gray-600 bg-gray-50 p-3 rounded border border-gray-200 min-h-[40px]",
-        textContent:
-            "Enter repo details and click load. Cloned data will be cached in your browser's IndexedDB.",
-    });
+    let css = {
+        class: "text-sm text-gray-600 bg-gray-50 p-3 rounded border border-gray-200 min-h-[40px] min-w-fit",
+    };
+    let statusDisplay = Tools.div(
+        {
+            ...css,
+            textContent:
+                "Enter repo details and click load. Cloned data will be cached in your browser's IndexedDB.",
+        },
+        {},
+        {
+            danger: {
+                class: "text-sm p-3 rounded border bg-red-100 border-red-300 text-red-800 min-h-[40px] min-w-fit",
+            },
+            success: css,
+        }
+    );
     let searchComponent = SearchComponent();
 
     searchComponent.s.comps.searchBtn.update(
@@ -366,7 +395,9 @@ export const Page = () => {
         {},
         {
             click: (e: any, ls: any) => {
-                handlers.onLoad();
+                const fileFilters =
+                    projectInfo.s.inst.form.s.handlers.getFileFilters();
+                handlers.onLoad(fileFilters);
                 projectInfo.s.inst.modal.s.handlers.close();
                 projectInfo.s.title.update({
                     textContent: projectInfo.s.getValue(),
@@ -375,13 +406,16 @@ export const Page = () => {
         }
     );
     if (projectInfo.s.getValue()) {
-        handlers.onLoad();
+        const fileFilters = projectInfo.s.inst.form.s.handlers.getFileFilters();
+        handlers.onLoad(fileFilters);
     }
     return Tools.div({
         class: "flex flex-col gap-4 w-full md:w-auto md:flex-1",
         children: [
-            projectInfo,
-            statusDisplay,
+            Tools.div({
+                class: "flex flex-wrap justify-between items-center gap-4",
+                children: [projectInfo, statusDisplay],
+            }),
             searchComponent,
             resArea,
             fileModal,
