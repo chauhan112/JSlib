@@ -61,7 +61,7 @@ export const GenericModal = (title: string) => {
         {},
         {},
         {
-            handlers: { close, show, display, toggle },
+            handlers: { close, show, display, toggle, hide: close },
         }
     );
     return wid;
