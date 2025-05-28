@@ -243,18 +243,21 @@ export const RepoSelectForm = () => {
     return layout;
 };
 export const ProjectInfo = () => {
-    let valComp = Tools.comp("span", {
+    let valComp = Tools.comp("a", {
         key: "title",
-        class: "text-gray-700",
+        class: "text-red-500 hover:text-red-700",
+        target: "_blank",
     });
     const modal = GenericModal("Project Info");
     const form = RepoSelectForm();
     valComp.update({
+        href: form.s.handlers.getCurrentlySelectedRepo(),
         textContent: form.s.handlers.getCurrentlySelectedRepo(),
     });
     const initialize = () => {
         const curRepo = layout.s.model.getCurrentRepo();
         valComp.update({
+            href: curRepo,
             textContent: curRepo,
         });
         form.s.inst.urlInput.s.input.component.value = curRepo;
