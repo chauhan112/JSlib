@@ -175,7 +175,7 @@ export const Page = () => {
     return Tools.comp("div", {
         children: [
             Tools.comp("div", {
-                class: "container mx-auto p-4 md:p-8",
+                class: "mx-auto p-4 md:p-8",
                 children: [
                     Tools.comp("header", {
                         class: "mb-8 text-center",
