@@ -1,5 +1,11 @@
+// npm install prettier
+
 import { GComponent } from "../../april/GComponent";
 import { Tools } from "../../april/tools";
+import prettier from "prettier";
+import * as parserEstree from "prettier/plugins/estree";
+import * as parserTypescript from "prettier/plugins/typescript";
+import { CopyTools } from "./copyTools";
 
 export const ALLOWED_ATTRIBUTES = new Set([
     "for",
@@ -20,7 +26,7 @@ export class HTMLParseAndMyLib {
     }
     parseCode() {
         let ele = this.node!.body;
-        return this._parse2Code(ele);
+        return this._parseCode(ele);
     }
     private _parse2Code(ele: HTMLElement): GComponent {
         let attrs: any = {};
@@ -55,11 +61,22 @@ export class HTMLParseAndMyLib {
 
         return Tools.comp(tagName, attrs);
     }
-    parseToString() {
+    async parseToString(copyTextToClipboard: boolean = false) {
         let ele = this.node!.body;
-        return this._parse2String(ele);
+
+        let code = await this.parse2String(ele);
+        let parser = "typescript";
+
+        const formattedCode = await prettier.format(code, {
+            parser: parser,
+            plugins: [parserTypescript, parserEstree.default],
+        });
+        if (copyTextToClipboard) {
+            CopyTools.copyTextToClipboard(formattedCode);
+        }
+        return formattedCode;
     }
-    _parse2String(ele: HTMLElement): string {
+    private checkForAttrs(ele: HTMLElement) {
         let attrs: any = {};
         for (const attr of ele.attributes) {
             if (ALLOWED_ATTRIBUTES.has(attr.name)) {
