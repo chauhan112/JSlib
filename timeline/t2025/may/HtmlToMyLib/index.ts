@@ -16,11 +16,14 @@ export const ALLOWED_ATTRIBUTES = new Set([
     "required",
     "key",
     "class",
+    "id",
 ]);
 export class HTMLParseAndMyLib {
     unprocessAttrs = new Set<string>();
     private readonly parser = new DOMParser();
     node: Document | null = null;
+    private variables: string[] = [];
+
     set_text(text: string) {
         this.node = this.parser.parseFromString(text, "text/html");
     }
@@ -56,14 +59,18 @@ export class HTMLParseAndMyLib {
     }
     async parseToString(copyTextToClipboard: boolean = false) {
         let ele = this.node!.body;
-
+        this.variables = [];
         let code = await this.parse2String(ele);
         let parser = "typescript";
+        console.log(this.variables.join("\n\n") + "\n\n" + code);
 
-        const formattedCode = await prettier.format(code, {
-            parser: parser,
-            plugins: [parserTypescript, parserEstree.default],
-        });
+        const formattedCode = await prettier.format(
+            this.variables.join("\n\n") + "\n\n" + code,
+            {
+                parser: parser,
+                plugins: [parserTypescript, parserEstree.default],
+            }
+        );
         if (copyTextToClipboard) {
             CopyTools.copyTextToClipboard(formattedCode);
         }
@@ -93,13 +100,22 @@ export class HTMLParseAndMyLib {
             if (childNode.nodeType === Node.ELEMENT_NODE) {
                 const childElement = childNode as HTMLElement;
                 if (childElement.tagName === "SCRIPT") continue;
+                let childAttrs = this.checkForAttrs(childElement);
                 let ppp = await this.parse2String(childElement);
-                processedChildren.push(ppp);
+
+                if (childAttrs.hasOwnProperty("id")) {
+                    let varName = "var_" + childAttrs["id"];
+                    this.variables.push("const " + varName + " = " + ppp + ";");
+                    processedChildren.push(varName);
+                } else {
+                    processedChildren.push(ppp);
+                }
             } else if (childNode.nodeType === Node.TEXT_NODE) {
                 let va = (childNode as Text).textContent?.trim();
                 if (va && va !== "") attrs["textContent"] = va;
             }
         }
+        delete attrs["id"];
 
         if (processedChildren.length > 0) {
             return `Tools.comp("${tagName}", { ${this.keyValToString(
