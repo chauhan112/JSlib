@@ -24,6 +24,154 @@ export const CardComponent = (title: string, description: string) => {
 };
 
 export const Page = () => {
+    const var_addCollectionBtn = Tools.comp("button", {
+        class: "bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded shadow-md transition duration-150 ease-in-out",
+        textContent: "+ Add New Collection",
+    });
+
+    const var_collectionsContainer = Tools.comp("div", {
+        class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
+        children: [
+            Tools.comp("p", {
+                class: "text-gray-500 col-span-full text-center",
+                textContent: "Loading collections...",
+            }),
+        ],
+    });
+
+    const var_collectionModalTitle = Tools.comp("h2", {
+        class: "text-2xl font-semibold mb-4 text-gray-800",
+        textContent: "Add Collection",
+    });
+
+    const var_collectionIdInput = Tools.comp("input", { type: "hidden" });
+
+    const var_collectionTitleInput = Tools.comp("input", {
+        type: "text",
+        required: "",
+        class: "mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
+    });
+
+    const var_cancelCollectionModal = Tools.comp("button", {
+        type: "button",
+        class: "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded transition duration-150 ease-in-out",
+        textContent: "Cancel",
+    });
+
+    const var_collectionForm = Tools.comp("form", {
+        children: [
+            var_collectionIdInput,
+            Tools.comp("div", {
+                children: [
+                    Tools.comp("label", {
+                        for: "collectionTitleInput",
+                        class: "block text-sm font-medium text-gray-700 mb-1",
+                        textContent: "Collection Title:",
+                    }),
+                    var_collectionTitleInput,
+                ],
+            }),
+            Tools.comp("div", {
+                class: "mt-6 flex justify-end space-x-3",
+                children: [
+                    var_cancelCollectionModal,
+                    Tools.comp("button", {
+                        type: "submit",
+                        class: "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out",
+                        textContent: "Save Collection",
+                    }),
+                ],
+            }),
+        ],
+    });
+
+    const var_collectionModal = Tools.comp("div", {
+        class: "fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden z-50",
+        children: [
+            Tools.comp("div", {
+                class: "bg-white p-6 md:p-8 rounded-lg shadow-xl w-full max-w-md mx-4 modal-content",
+                children: [var_collectionModalTitle, var_collectionForm],
+            }),
+        ],
+    });
+
+    const var_linkModalTitle = Tools.comp("h2", {
+        class: "text-2xl font-semibold mb-4 text-gray-800",
+        textContent: "Add Link",
+    });
+
+    const var_linkCollectionIdInput = Tools.comp("input", { type: "hidden" });
+
+    const var_linkIdInput = Tools.comp("input", { type: "hidden" });
+
+    const var_linkTitleInput = Tools.comp("input", {
+        type: "text",
+        required: "",
+        class: "mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
+    });
+
+    const var_linkUrlInput = Tools.comp("input", {
+        type: "url",
+        required: "",
+        placeholder: "https://example.com",
+        class: "mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
+    });
+
+    const var_cancelLinkModal = Tools.comp("button", {
+        type: "button",
+        class: "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded transition duration-150 ease-in-out",
+        textContent: "Cancel",
+    });
+
+    const var_linkForm = Tools.comp("form", {
+        children: [
+            var_linkCollectionIdInput,
+            var_linkIdInput,
+            Tools.comp("div", {
+                class: "mb-4",
+                children: [
+                    Tools.comp("label", {
+                        for: "linkTitleInput",
+                        class: "block text-sm font-medium text-gray-700 mb-1",
+                        textContent: "Link Title (Key):",
+                    }),
+                    var_linkTitleInput,
+                ],
+            }),
+            Tools.comp("div", {
+                children: [
+                    Tools.comp("label", {
+                        for: "linkUrlInput",
+                        class: "block text-sm font-medium text-gray-700 mb-1",
+                        textContent: "Link URL (Value):",
+                    }),
+                    var_linkUrlInput,
+                ],
+            }),
+            Tools.comp("div", {
+                class: "mt-6 flex justify-end space-x-3",
+                children: [
+                    var_cancelLinkModal,
+                    Tools.comp("button", {
+                        type: "submit",
+                        class: "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out",
+                        textContent: "Save Link",
+                    }),
+                ],
+            }),
+        ],
+    });
+
+    const var_linkModal = Tools.comp("div", {
+        class: "fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden z-50",
+        children: [
+            Tools.comp("div", {
+                class: "bg-white p-6 md:p-8 rounded-lg shadow-xl w-full max-w-md mx-4 modal-content",
+                children: [var_linkModalTitle, var_linkForm],
+            }),
+        ],
+    });
+
     return Tools.comp("div", {
         children: [
             Tools.comp("div", {
@@ -40,141 +188,13 @@ export const Page = () => {
                     }),
                     Tools.comp("div", {
                         class: "mb-6",
-                        children: [
-                            Tools.comp("button", {
-                                class: "bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded shadow-md transition duration-150 ease-in-out",
-                                textContent: "+ Add New Collection",
-                            }),
-                        ],
+                        children: [var_addCollectionBtn],
                     }),
-                    Tools.comp("div", {
-                        class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
-                        children: [
-                            Tools.comp("p", {
-                                class: "text-gray-500 col-span-full text-center",
-                                textContent: "Loading collections...",
-                            }),
-                        ],
-                    }),
+                    var_collectionsContainer,
                 ],
             }),
-            Tools.comp("div", {
-                class: "fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden z-50",
-                children: [
-                    Tools.comp("div", {
-                        class: "bg-white p-6 md:p-8 rounded-lg shadow-xl w-full max-w-md mx-4 modal-content",
-                        children: [
-                            Tools.comp("h2", {
-                                class: "text-2xl font-semibold mb-4 text-gray-800",
-                                textContent: "Add Collection",
-                            }),
-                            Tools.comp("form", {
-                                children: [
-                                    Tools.comp("input", { type: "hidden" }),
-                                    Tools.comp("div", {
-                                        children: [
-                                            Tools.comp("label", {
-                                                for: "collectionTitleInput",
-                                                class: "block text-sm font-medium text-gray-700 mb-1",
-                                                textContent:
-                                                    "Collection Title:",
-                                            }),
-                                            Tools.comp("input", {
-                                                type: "text",
-                                                required: "",
-                                                class: "mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
-                                            }),
-                                        ],
-                                    }),
-                                    Tools.comp("div", {
-                                        class: "mt-6 flex justify-end space-x-3",
-                                        children: [
-                                            Tools.comp("button", {
-                                                type: "button",
-                                                class: "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded transition duration-150 ease-in-out",
-                                                textContent: "Cancel",
-                                            }),
-                                            Tools.comp("button", {
-                                                type: "submit",
-                                                class: "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out",
-                                                textContent: "Save Collection",
-                                            }),
-                                        ],
-                                    }),
-                                ],
-                            }),
-                        ],
-                    }),
-                ],
-            }),
-            Tools.comp("div", {
-                class: "fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden z-50",
-                children: [
-                    Tools.comp("div", {
-                        class: "bg-white p-6 md:p-8 rounded-lg shadow-xl w-full max-w-md mx-4 modal-content",
-                        children: [
-                            Tools.comp("h2", {
-                                class: "text-2xl font-semibold mb-4 text-gray-800",
-                                textContent: "Add Link",
-                            }),
-                            Tools.comp("form", {
-                                children: [
-                                    Tools.comp("input", { type: "hidden" }),
-                                    Tools.comp("input", { type: "hidden" }),
-                                    Tools.comp("div", {
-                                        class: "mb-4",
-                                        children: [
-                                            Tools.comp("label", {
-                                                for: "linkTitleInput",
-                                                class: "block text-sm font-medium text-gray-700 mb-1",
-                                                textContent:
-                                                    "Link Title (Key):",
-                                            }),
-                                            Tools.comp("input", {
-                                                type: "text",
-                                                required: "",
-                                                class: "mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
-                                            }),
-                                        ],
-                                    }),
-                                    Tools.comp("div", {
-                                        children: [
-                                            Tools.comp("label", {
-                                                for: "linkUrlInput",
-                                                class: "block text-sm font-medium text-gray-700 mb-1",
-                                                textContent:
-                                                    "Link URL (Value):",
-                                            }),
-                                            Tools.comp("input", {
-                                                type: "url",
-                                                required: "",
-                                                placeholder:
-                                                    "https://example.com",
-                                                class: "mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
-                                            }),
-                                        ],
-                                    }),
-                                    Tools.comp("div", {
-                                        class: "mt-6 flex justify-end space-x-3",
-                                        children: [
-                                            Tools.comp("button", {
-                                                type: "button",
-                                                class: "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded transition duration-150 ease-in-out",
-                                                textContent: "Cancel",
-                                            }),
-                                            Tools.comp("button", {
-                                                type: "submit",
-                                                class: "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out",
-                                                textContent: "Save Link",
-                                            }),
-                                        ],
-                                    }),
-                                ],
-                            }),
-                        ],
-                    }),
-                ],
-            }),
+            var_collectionModal,
+            var_linkModal,
         ],
     });
 };
