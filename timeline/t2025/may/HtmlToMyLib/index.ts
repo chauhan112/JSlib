@@ -28,15 +28,8 @@ export class HTMLParseAndMyLib {
         let ele = this.node!.body;
         return this._parseCode(ele);
     }
-    private _parse2Code(ele: HTMLElement): GComponent {
-        let attrs: any = {};
-        for (const attr of ele.attributes) {
-            if (ALLOWED_ATTRIBUTES.has(attr.name)) {
-                attrs[attr.name] = attr.value;
-            } else {
-                this.unprocessAttrs.add(attr.name);
-            }
-        }
+    private _parseCode(ele: HTMLElement): GComponent {
+        let attrs = this.checkForAttrs(ele);
 
         let tagName = ele.tagName.toLocaleLowerCase();
         if (tagName === "body") tagName = "div";
@@ -47,7 +40,7 @@ export class HTMLParseAndMyLib {
             if (childNode.nodeType === Node.ELEMENT_NODE) {
                 const childElement = childNode as HTMLElement;
                 if (childElement.tagName === "SCRIPT") continue;
-                processedChildren.push(this._parse2Code(childElement));
+                processedChildren.push(this._parseCode(childElement));
             } else if (childNode.nodeType === Node.TEXT_NODE) {
                 processedChildren.push(childNode as Text);
             }
@@ -85,26 +78,29 @@ export class HTMLParseAndMyLib {
                 this.unprocessAttrs.add(attr.name);
             }
         }
+        return attrs;
+    }
+
+    private async parse2String(ele: HTMLElement): Promise<string> {
+        let attrs = this.checkForAttrs(ele);
 
         let tagName = ele.tagName.toLocaleLowerCase();
         if (tagName === "body") tagName = "div";
         if (tagName === "svg") return `Tools.comp("div", { innerHTML: "svg" })`;
 
-        let processedChildren: (HTMLElement | string)[] = [];
+        let processedChildren: string[] = [];
         for (const childNode of Array.from(ele.childNodes)) {
             if (childNode.nodeType === Node.ELEMENT_NODE) {
                 const childElement = childNode as HTMLElement;
                 if (childElement.tagName === "SCRIPT") continue;
-                processedChildren.push(this._parse2String(childElement));
+                let ppp = await this.parse2String(childElement);
+                processedChildren.push(ppp);
             } else if (childNode.nodeType === Node.TEXT_NODE) {
-                let va = (childNode as Text).textContent;
-                if (va) {
-                    va = va.trim();
-                }
-                if (va !== "") attrs["textContent"] = va;
+                let va = (childNode as Text).textContent?.trim();
+                if (va && va !== "") attrs["textContent"] = va;
             }
         }
-        console.log("processedChildren", processedChildren);
+
         if (processedChildren.length > 0) {
             return `Tools.comp("${tagName}", { ${this.keyValToString(
                 attrs
@@ -184,7 +180,7 @@ export const Page = () => {
                                                     htmlToString.unprocessAttrs
                                                 ).join(", ")
                                         );
-    }
+                                    }
                                 },
                             }
                         ),
