@@ -1,7 +1,9 @@
 import { Tools, MoreTools } from "../../april/tools";
 import { LabeledInput } from "./LabeledInput";
+// npm install lucide
 import { Cog, RotateCcw, Plus, X } from "lucide";
 import { GenericModal } from "./Modal";
+// npm install uuid
 import { v4 as uuidv4 } from "uuid";
 
 export const SimpleSearch = () => {
