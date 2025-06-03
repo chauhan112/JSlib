@@ -23,7 +23,8 @@ export class HTMLParseAndMyLib {
     private readonly parser = new DOMParser();
     node: Document | null = null;
     private variables: string[] = [];
-
+    private depth_counter = 1;
+    depthControl: number = 3;
     set_text(text: string) {
         this.node = this.parser.parseFromString(text, "text/html");
     }
@@ -60,9 +61,10 @@ export class HTMLParseAndMyLib {
     async parseToString(copyTextToClipboard: boolean = false) {
         let ele = this.node!.body;
         this.variables = [];
+        this.depth_counter = 1;
+        this.unprocessAttrs = new Set<string>();
         let code = await this.parse2String(ele);
         let parser = "typescript";
-        console.log(this.variables.join("\n\n") + "\n\n" + code);
 
         const formattedCode = await prettier.format(
             this.variables.join("\n\n") + "\n\n" + code,
@@ -88,7 +90,10 @@ export class HTMLParseAndMyLib {
         return attrs;
     }
 
-    private async parse2String(ele: HTMLElement): Promise<string> {
+    private async parse2String(
+        ele: HTMLElement,
+        depth: number = 0
+    ): Promise<string> {
         let attrs = this.checkForAttrs(ele);
 
         let tagName = ele.tagName.toLocaleLowerCase();
@@ -101,13 +106,20 @@ export class HTMLParseAndMyLib {
                 const childElement = childNode as HTMLElement;
                 if (childElement.tagName === "SCRIPT") continue;
                 let childAttrs = this.checkForAttrs(childElement);
-                let ppp = await this.parse2String(childElement);
 
                 if (childAttrs.hasOwnProperty("id")) {
+                    let ppp = await this.parse2String(childElement, 1);
                     let varName = "var_" + childAttrs["id"];
                     this.variables.push("const " + varName + " = " + ppp + ";");
                     processedChildren.push(varName);
+                } else if (depth > this.depthControl) {
+                    let ppp = await this.parse2String(childElement, 1);
+                    let varName = `var_depth_${this.depth_counter}`;
+                    this.depth_counter++;
+                    this.variables.push("const " + varName + " = " + ppp + ";");
+                    processedChildren.push(varName);
                 } else {
+                    let ppp = await this.parse2String(childElement, depth + 1);
                     processedChildren.push(ppp);
                 }
             } else if (childNode.nodeType === Node.TEXT_NODE) {
@@ -129,7 +141,7 @@ export class HTMLParseAndMyLib {
         let res: string[] = [];
         for (const key in keyVal) {
             if (keyVal.hasOwnProperty(key)) {
-                res.push(`${key}: "${keyVal[key]}"`);
+                res.push(`${key}: ${JSON.stringify(keyVal[key])}`);
             }
         }
         let resStr = res.join(", ");
