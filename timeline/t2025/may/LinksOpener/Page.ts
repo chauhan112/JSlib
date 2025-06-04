@@ -27,6 +27,223 @@ export const CardComponent = (title: string, description: string) => {
     });
 };
 
+export class LinkOpenerTools {
+    static show(comp: GComponent) {
+        comp.getElement().classList.remove("hidden");
+    }
+    static hide(comp: GComponent) {
+        comp.getElement().classList.add("hidden");
+    }
+}
+
+export class Handlers {
+    instances: any;
+    model = new LocalStorageJSONModel(STORE_KEY);
+    constructor(instances: any) {
+        this.instances = instances;
+    }
+    readCollections() {
+        let loc = ["collections"];
+        if (!this.model.exists(loc)) {
+            this.model.addEntry(loc, []);
+        }
+        return this.model.readEntry(loc);
+    }
+    writeCollections(collections: any[]) {
+        let loc = ["collections"];
+        this.model.updateEntry(loc, collections);
+    }
+    renderCollections(collections: any[]) {
+        if (collections.length === 0) {
+            this.instances.collectionsContainer.update({
+                innerHTML: "",
+                child: InfoCompCollection(),
+            });
+            return;
+        }
+        this.instances.collectionsContainer.update({
+            innerHTML: "",
+            children: collections.map((collection: any) => {
+                return CollectionCard(collection);
+            }),
+        });
+    }
+    populateCollectionForm(collection: any) {
+        this.instances.collectionModalTitle.update({
+            textContent: "Edit Collection",
+        });
+        this.instances.collectionIdInput.getElement().value = collection.id;
+        this.instances.collectionTitleInput.getElement().value = collection.id;
+    }
+    populateLinkForm(collectionId: string, link: any = null) {
+        this.instances.collectionIdInput.getElement().value = collectionId;
+        if (link) {
+            this.instances.linkModalTitle.update({ textContent: "Edit Link" });
+            this.instances.linkIdInput.getElement().value = link.id;
+            this.instances.linkTitleInput.getElement().value = link.title;
+            this.instances.linkUrlInput.getElement().value = link.url;
+        } else {
+            this.instances.linkModalTitle.update({
+                textContent: "Add Link to Collection",
+            });
+            this.instances.linkIdInput.getElement().value = ""; // Clear for new link
+            this.instances.linkTitleInput.getElement().value = "";
+            this.instances.linkUrlInput.getElement().value = "";
+        }
+    }
+    getAsInput(comp: GComponent) {
+        return comp.getElement() as HTMLInputElement;
+    }
+}
+
+export const InfoCompCollection = () => {
+    return Tools.comp("p", {
+        class: "text-gray-500 col-span-full text-center",
+        textContent: `No collections yet. Click "Add New Collection" to get started!`,
+    });
+};
+export const InfoCompLink = () => {
+    return Tools.comp("p", {
+        class: "text-sm text-gray-500 mb-3",
+        textContent: `No links in this collection yet.`,
+    });
+};
+
+export const CollectionCard = (collection: {
+    id: string;
+    title: string;
+    links: { id: string; title: string; url: string }[];
+}) => {
+    let titleAndInfo = Tools.comp("div", {
+        children: [
+            Tools.comp("div", {
+                class: "flex justify-between items-center mb-3",
+                children: [
+                    Tools.comp("h3", {
+                        class: "text-2xl font-semibold text-gray-800 truncate",
+                        textContent: collection.title,
+                        title: collection.title,
+                    }),
+                    Tools.comp("div", {
+                        class: "flex space-x-2 flex-shrink-0",
+                        children: [
+                            Tools.comp("button", {
+                                class: "edit-collection-btn text-yellow-500 hover:text-yellow-700 p-1",
+                                textContent: "✏️",
+                            }),
+                            Tools.comp("button", {
+                                class: "delete-collection-btn text-red-500 hover:text-red-700 p-1",
+                                textContent: "🗑️",
+                            }),
+                        ],
+                    }),
+                ],
+            }),
+        ],
+    });
+    const linksList = Tools.comp("ul", {
+        class: "space-y-2 mb-3 max-h-60 overflow-y-auto border p-2 rounded-md",
+    });
+
+    const opsBtns = Tools.comp("div", {
+        class: "mt-4 flex flex-wrap gap-2",
+        children: [
+            Tools.comp("button", {
+                key: "openAll",
+                class: "add-link-to-collection-btn bg-teal-500 hover:bg-teal-600 text-white text-sm py-2 px-3 rounded shadow transition duration-150 ease-in-out",
+                textContent: `Open All`,
+            }),
+            Tools.comp("button", {
+                class: "add-link-to-collection-btn bg-teal-500 hover:bg-teal-600 text-white text-sm py-2 px-3 rounded shadow transition duration-150 ease-in-out",
+                textContent: "+ Add Link",
+            }),
+        ],
+    });
+
+    const lay = Tools.div(
+        {
+            class: "bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200",
+            children: [titleAndInfo, linksList, opsBtns],
+        },
+        {},
+        { id: collection.id, titleAndInfo }
+    );
+    const setLinks = (links: { id: string; title: string; url: string }[]) => {
+        if (links && links.length > 0) {
+            linksList.update({
+                innerHTML: "",
+                children: links.map((link) => SingleLinkComp(link)),
+            });
+            opsBtns.s.openAll.textContent = `Open All(${links.length})`;
+            opsBtns.s.openAll.getElement().disabled = false;
+        } else {
+            linksList.update({ innerHTML: "", children: [InfoCompLink()] });
+            opsBtns.s.openAll.getElement().disabled = true;
+            opsBtns.s.openAll
+                .getElement()
+                .classList.add("opacity-50", "cursor-not-allowed");
+        }
+    };
+    setLinks(collection.links);
+    lay.update(
+        {},
+        {},
+        {
+            setLinks,
+        }
+    );
+    return lay;
+};
+
+export const SingleLinkComp = (link: {
+    id: string;
+    title: string;
+    url: string;
+}) => {
+    return Tools.comp(
+        "li",
+        {
+            class: "flex justify-between items-center p-2 bg-gray-50 rounded hover:bg-gray-100",
+            children: [
+                Tools.div({
+                    class: "w-full mr-2",
+                    children: [
+                        Tools.comp("strong", {
+                            class: "text-gray-700 block truncate",
+                            title: link.title,
+                            textContent: link.title,
+                        }),
+                        Tools.comp("a", {
+                            class: "text-blue-500 hover:text-blue-700 hover:underline break-all text-sm",
+                            href: link.url,
+                            target: "_blank",
+                            rel: "noopener noreferrer",
+                            title: link.title,
+                            textContent: link.url,
+                        }),
+                    ],
+                }),
+                Tools.div({
+                    class: "flex space-x-1 flex-shrink-0",
+                    children: [
+                        Tools.comp("button", {
+                            class: "edit-link-btn text-xs text-yellow-500 hover:text-yellow-700 p-1",
+                            title: "Edit Link",
+                            child: Tools.icon(Pencil, { class: "w-4 h-4" }),
+                        }),
+                        Tools.comp("button", {
+                            class: "delete-link-btn text-xs text-red-500 hover:text-red-700 p-1",
+                            title: "Delete Link",
+                            child: Tools.icon(Trash, { class: "w-4 h-4" }),
+                        }),
+                    ],
+                }),
+            ],
+        },
+        {},
+        { data: link }
+    );
+};
 export const Page = () => {
     let model = new LocalStorageJSONModel(STORE_KEY);
 
