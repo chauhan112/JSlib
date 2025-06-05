@@ -186,7 +186,6 @@ export const Page = () => {
         {
             click: (e: any, ls: any) => {
                 collectionModalTitle.update({ textContent: "Add Collection" });
-                handlers.getAsInput(collectionIdInput).value = "";
                 (collectionForm.getElement() as HTMLFormElement).reset();
                 LinkOpenerTools.show(collectionModal);
                 collectionTitleInput.getElement().focus();
@@ -208,8 +207,6 @@ export const Page = () => {
         class: "text-2xl font-semibold mb-4 text-gray-800",
         textContent: "Add Collection",
     });
-
-    const collectionIdInput = Tools.comp("input", { type: "hidden" });
 
     const collectionTitleInput = Tools.comp("input", {
         type: "text",
@@ -235,7 +232,6 @@ export const Page = () => {
         "form",
         {
             children: [
-                collectionIdInput,
                 Tools.comp("div", {
                     children: [
                         Tools.comp("label", {
@@ -262,7 +258,7 @@ export const Page = () => {
         {
             submit: (e: any, ls: any) => {
                 e.preventDefault();
-                const id = handlers.getAsInput(collectionIdInput).value;
+                const id = collectionForm.s.collectionId;
                 const title = handlers
                     .getAsInput(collectionTitleInput)
                     .value.trim();
@@ -319,10 +315,6 @@ export const Page = () => {
         textContent: "Add Link",
     });
 
-    const linkCollectionIdInput = Tools.comp("input", { type: "hidden" });
-
-    const linkIdInput = Tools.comp("input", { type: "hidden" });
-
     const linkTitleInput = Tools.comp("input", {
         type: "text",
         required: "",
@@ -354,8 +346,6 @@ export const Page = () => {
         "form",
         {
             children: [
-                linkCollectionIdInput,
-                linkIdInput,
                 Tools.comp("div", {
                     class: "mb-4",
                     children: [
@@ -393,13 +383,11 @@ export const Page = () => {
         {
             submit: (e: any, ls: any) => {
                 e.preventDefault();
-                const collectionId = handlers.getAsInput(
-                    linkCollectionIdInput
-                ).value;
-                const linkId = handlers.getAsInput(linkIdInput).value;
+                const collectionId = linkForm.s.collectionId;
+                const linkId = linkForm.s.linkId;
                 const title = handlers.getAsInput(linkTitleInput).value.trim();
                 const url = handlers.getAsInput(linkUrlInput).value.trim();
-
+                console.log(title, url);
                 if (!title || !url) {
                     alert("Link title and URL cannot be empty.");
                     return;
@@ -457,16 +445,18 @@ export const Page = () => {
     const handlers = new Handlers({
         collectionsContainer,
         collectionModalTitle,
-        collectionIdInput,
         collectionTitleInput,
         linkModal,
         linkModalTitle,
-        linkIdInput,
+        linkForm,
         linkTitleInput,
         linkUrlInput,
+        collectionModal,
+        collectionForm,
     });
     let collections = handlers.readCollections();
     handlers.renderCollections(collections);
+    handlers.instances.collections = collections;
     return Tools.comp("div", {
         children: [
             Tools.comp("div", {
