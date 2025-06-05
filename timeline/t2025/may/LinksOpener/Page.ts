@@ -19,8 +19,12 @@ export class LinkOpenerTools {
 export class Handlers {
     instances: any;
     model = new LocalStorageJSONModel(STORE_KEY);
+    colHandler: CollectionCrudHandlers;
+    linkHandler: LinkCrudHandlers;
     constructor(instances: any) {
         this.instances = instances;
+        this.colHandler = new CollectionCrudHandlers({ parent: this });
+        this.linkHandler = new LinkCrudHandlers({ parent: this });
     }
     readCollections() {
         let loc = ["collections"];
@@ -44,7 +48,40 @@ export class Handlers {
         this.instances.collectionsContainer.update({
             innerHTML: "",
             children: collections.map((collection: any) => {
-                return CollectionCard(collection);
+                const cc = CollectionCard(collection);
+                cc.s.editBtn.update(
+                    {},
+                    {
+                        click: (e: any, ls: any) => {
+                            this.colHandler.onEditCollection(e, ls);
+                        },
+                    }
+                );
+                cc.s.deleteBtn.update(
+                    {},
+                    {
+                        click: (e: any, ls: any) => {
+                            this.colHandler.onDeleteCollection(e, ls);
+                        },
+                    }
+                );
+                cc.s.addLinkBtn.update(
+                    {},
+                    {
+                        click: (e: any, ls: any) => {
+                            this.linkHandler.onAddLink(e, ls);
+                        },
+                    }
+                );
+                cc.s.openAllLinksBtn.update(
+                    {},
+                    {
+                        click: (e: any, ls: any) => {
+                            this.linkHandler.onOpenAllLinks(e, ls);
+                        },
+                    }
+                );
+                return cc;
             }),
         });
     }
@@ -52,21 +89,23 @@ export class Handlers {
         this.instances.collectionModalTitle.update({
             textContent: "Edit Collection",
         });
-        this.instances.collectionIdInput.getElement().value = collection.id;
-        this.instances.collectionTitleInput.getElement().value = collection.id;
+
+        this.instances.collectionForm.s.collectionId = collection.id;
+        this.instances.collectionTitleInput.getElement().value =
+            collection.title;
     }
     populateLinkForm(collectionId: string, link: any = null) {
-        this.instances.collectionIdInput.getElement().value = collectionId;
+        console.log(collectionId, link);
+        this.instances.linkForm.s.collectionId = collectionId;
         if (link) {
             this.instances.linkModalTitle.update({ textContent: "Edit Link" });
-            this.instances.linkIdInput.getElement().value = link.id;
             this.instances.linkTitleInput.getElement().value = link.title;
             this.instances.linkUrlInput.getElement().value = link.url;
+            this.instances.linkForm.s.linkId = link.id;
         } else {
             this.instances.linkModalTitle.update({
                 textContent: "Add Link to Collection",
             });
-            this.instances.linkIdInput.getElement().value = ""; // Clear for new link
             this.instances.linkTitleInput.getElement().value = "";
             this.instances.linkUrlInput.getElement().value = "";
         }
@@ -74,6 +113,60 @@ export class Handlers {
     getAsInput(comp: GComponent) {
         return comp.getElement() as HTMLInputElement;
     }
+}
+
+export class CollectionCrudHandlers {
+    states: any;
+    constructor(states: any) {
+        this.states = states;
+    }
+    private getCollection(collectionId: string) {
+        return this.states.parent.instances.collections.find(
+            (c: any) => c.id === collectionId
+        );
+    }
+    onEditCollection(e: any, ls: any) {
+        let collection = this.getCollection(ls.s.id);
+        console.log(collection);
+        this.states.parent.populateCollectionForm(collection); // From ui.js content above
+        LinkOpenerTools.show(this.states.parent.instances.collectionModal);
+        this.states.parent.instances.collectionTitleInput.getElement().focus();
+    }
+    onDeleteCollection(e: any, ls: any) {
+        let collection = this.getCollection(ls.s.id);
+        if (
+            confirm(
+                `Are you sure you want to delete the collection "${collection.title}"?`
+            )
+        ) {
+            this.states.parent.instances.collections =
+                this.states.parent.instances.collections.filter(
+                    (c: any) => c.id !== ls.s.id
+                );
+            this.states.parent.writeCollections(
+                this.states.parent.instances.collections
+            );
+            this.states.parent.renderCollections(
+                this.states.parent.instances.collections
+            );
+        }
+    }
+}
+
+export class LinkCrudHandlers {
+    states: any;
+    constructor(states: any) {
+        this.states = states;
+    }
+    onEditLink(e: any, ls: any) {}
+    onDeleteLink(e: any, ls: any) {}
+    onAddLink(e: any, ls: any) {
+        console.log(ls.s.id);
+        this.states.parent.populateLinkForm(ls.s.id);
+        LinkOpenerTools.show(this.states.parent.instances.linkModal);
+        this.states.parent.instances.linkTitleInput.getElement().focus();
+    }
+    onOpenAllLinks(e: any, ls: any) {}
 }
 
 export const InfoCompCollection = () => {
