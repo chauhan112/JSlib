@@ -6,16 +6,26 @@ export const SingleLinkComp = (link: {
     title: string;
     url: string;
 }) => {
-    const editLinkBtn = Tools.comp("button", {
-        class: "edit-link-btn text-xs text-yellow-500 hover:text-yellow-700 p-1",
-        title: "Edit Link",
-        child: Tools.icon(Pencil, { class: "w-4 h-4" }, {}, { id: link.id }),
-    });
-    const deleteLinkBtn = Tools.comp("button", {
-        class: "delete-link-btn text-xs text-red-500 hover:text-red-700 p-1",
-        title: "Delete Link",
-        child: Tools.icon(Trash, { class: "w-4 h-4" }, {}, { id: link.id }),
-    });
+    const editLinkBtn = Tools.comp(
+        "button",
+        {
+            class: "edit-link-btn text-xs text-yellow-500 hover:text-yellow-700 p-1 cursor-pointer",
+            title: "Edit Link",
+            child: Tools.icon(Pencil, { class: "w-4 h-4" }),
+        },
+        {},
+        { id: link.id }
+    );
+    const deleteLinkBtn = Tools.comp(
+        "button",
+        {
+            class: "delete-link-btn text-xs text-red-500 hover:text-red-700 p-1 cursor-pointer",
+            title: "Delete Link",
+            child: Tools.icon(Trash, { class: "w-4 h-4" }),
+        },
+        {},
+        { id: link.id }
+    );
     return Tools.comp(
         "li",
         {
@@ -46,7 +56,7 @@ export const SingleLinkComp = (link: {
             ],
         },
         {},
-        { data: link }
+        { data: link, editBtn: editLinkBtn, deleteBtn: deleteLinkBtn }
     );
 };
 export const InfoCompLink = () => {
@@ -124,7 +134,10 @@ export const CollectionCard = (collection: {
         class: "mt-4 flex flex-wrap gap-2",
         children: [openAllLinksBtn, addLinkBtn],
     });
-
+    const callbacks = {
+        onDelete: (e: any, ls: any) => {},
+        onEdit: (e: any, ls: any) => {},
+    };
     const lay = Tools.div(
         {
             class: "bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200",
@@ -137,7 +150,29 @@ export const CollectionCard = (collection: {
         if (links && links.length > 0) {
             linksList.update({
                 innerHTML: "",
-                children: links.map((link) => SingleLinkComp(link)),
+                children: links.map((link: any) => {
+                    let slc = SingleLinkComp(link);
+                    slc.s.deleteBtn.update(
+                        {},
+                        {
+                            click: (e: any, ls: any) =>
+                                callbacks.onDelete(e, ls),
+                        },
+                        {
+                            collectionId: collection.id,
+                        }
+                    );
+                    slc.s.editBtn.update(
+                        {},
+                        {
+                            click: (e: any, ls: any) => callbacks.onEdit(e, ls),
+                        },
+                        {
+                            collectionId: collection.id,
+                        }
+                    );
+                    return slc;
+                }),
             });
             opsBtns.s.openAll.textContent = `Open All(${links.length})`;
             opsBtns.s.openAll.getElement().disabled = false;
@@ -159,6 +194,7 @@ export const CollectionCard = (collection: {
             deleteBtn,
             openAllLinksBtn,
             addLinkBtn,
+            callbacks,
         }
     );
     return lay;

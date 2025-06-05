@@ -81,6 +81,12 @@ export class Handlers {
                         },
                     }
                 );
+                cc.s.callbacks.onEdit = (e: any, ls: any) => {
+                    this.linkHandler.onEditLink(e, ls);
+                };
+                cc.s.callbacks.onDelete = (e: any, ls: any) => {
+                    this.linkHandler.onDeleteLink(e, ls);
+                };
                 return cc;
             }),
         });
@@ -95,7 +101,6 @@ export class Handlers {
             collection.title;
     }
     populateLinkForm(collectionId: string, link: any = null) {
-        console.log(collectionId, link);
         this.instances.linkForm.s.collectionId = collectionId;
         if (link) {
             this.instances.linkModalTitle.update({ textContent: "Edit Link" });
@@ -127,8 +132,7 @@ export class CollectionCrudHandlers {
     }
     onEditCollection(e: any, ls: any) {
         let collection = this.getCollection(ls.s.id);
-        console.log(collection);
-        this.states.parent.populateCollectionForm(collection); // From ui.js content above
+        this.states.parent.populateCollectionForm(collection);
         LinkOpenerTools.show(this.states.parent.instances.collectionModal);
         this.states.parent.instances.collectionTitleInput.getElement().focus();
     }
@@ -158,15 +162,53 @@ export class LinkCrudHandlers {
     constructor(states: any) {
         this.states = states;
     }
-    onEditLink(e: any, ls: any) {}
-    onDeleteLink(e: any, ls: any) {}
+    onEditLink(e: any, ls: any) {
+        let linkId = ls.s.id;
+        let collectionId = ls.s.collectionId;
+        let collection = this.getCollection(collectionId);
+        let link = collection.links.find((l: any) => l.id === linkId);
+        this.states.parent.populateLinkForm(collectionId, link);
+        LinkOpenerTools.show(this.states.parent.instances.linkModal);
+        this.states.parent.instances.linkTitleInput.getElement().focus();
+    }
+    onDeleteLink(e: any, ls: any) {
+        let linkId = ls.s.id;
+        let collectionId = ls.s.collectionId;
+        let collection = this.getCollection(collectionId);
+        let link = collection.links.find((l: any) => l.id === linkId);
+        if (
+            confirm(`Are you sure you want to delete the link "${link.title}"?`)
+        ) {
+            collection.links = collection.links.filter(
+                (l: any) => l.id !== linkId
+            );
+            this.states.parent.writeCollections(
+                this.states.parent.instances.collections
+            );
+            this.states.parent.renderCollections(
+                this.states.parent.instances.collections
+            );
+        }
+    }
     onAddLink(e: any, ls: any) {
-        console.log(ls.s.id);
         this.states.parent.populateLinkForm(ls.s.id);
         LinkOpenerTools.show(this.states.parent.instances.linkModal);
         this.states.parent.instances.linkTitleInput.getElement().focus();
     }
-    onOpenAllLinks(e: any, ls: any) {}
+    private getCollection(collectionId: string) {
+        return this.states.parent.instances.collections.find(
+            (c: any) => c.id === collectionId
+        );
+    }
+    onOpenAllLinks(e: any, ls: any) {
+        const collection = this.getCollection(ls.s.id);
+        if (collection.links && collection.links.length > 0) {
+            collection.links.forEach((link: any) => {
+                const validUrl = new URL(link.url);
+                window.open(validUrl.href, "_blank");
+            });
+        }
+    }
 }
 
 export const InfoCompCollection = () => {
@@ -387,7 +429,6 @@ export const Page = () => {
                 const linkId = linkForm.s.linkId;
                 const title = handlers.getAsInput(linkTitleInput).value.trim();
                 const url = handlers.getAsInput(linkUrlInput).value.trim();
-                console.log(title, url);
                 if (!title || !url) {
                     alert("Link title and URL cannot be empty.");
                     return;
