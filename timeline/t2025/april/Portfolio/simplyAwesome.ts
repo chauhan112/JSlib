@@ -194,21 +194,21 @@ export class Page implements IComponent {
                     tech: "Vanilla JS, SOLID, Tailwind, HTML",
                     link: "https://github.com/chauhan112/JSlib",
                 },
-                // {
-                //     title: "Domain Operation",
-                //     tech: "Vanilla JS, SOLID, Tailwind, HTML",
-                //     link: "https://github.com/chauhan112/DomainOpsV2",
-                // },
+                {
+                    title: "Domain Operation",
+                    tech: "Vanilla JS, SOLID, Tailwind, HTML",
+                    link: "https://github.com/chauhan112/DomainOpsV2",
+                },
                 {
                     title: "Raja DevKit",
                     tech: "Typescript, Tailwind, CSS",
                     link: "https://chauhan112.github.io/MyTools/",
                 },
-                {
-                    title: "GlitchGarden",
-                    tech: "Vibe Coding, Typescript, Tailwind, CSS",
-                    link: "https://chauhan112.github.io/AITesting/",
-                },
+                // {
+                //     title: "GlitchGarden",
+                //     tech: "Vibe Coding, Typescript, Tailwind, CSS",
+                //     link: "https://chauhan112.github.io/AITesting/",
+                // },
             ],
             links: [
                 { icon: Github, link: "https://github.com/chauhan112" },
