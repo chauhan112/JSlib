@@ -22,7 +22,7 @@ export class FirebaseInst {
     }
     getApp() {
         if (this.app === null) {
-            this.app = initializeApp(this.config);
+            this.app = initializeApp(this.getConfig());
         }
         return this.app;
     }
