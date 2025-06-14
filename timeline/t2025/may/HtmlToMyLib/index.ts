@@ -109,7 +109,7 @@ export class HTMLParseAndMyLib {
 
                 if (childAttrs.hasOwnProperty("id")) {
                     let ppp = await this.parse2String(childElement, 1);
-                    let varName = "var_" + childAttrs["id"];
+                    let varName = "var_" + this.getVarName(childAttrs["id"]);
                     this.variables.push("const " + varName + " = " + ppp + ";");
                     processedChildren.push(varName);
                 } else if (depth > this.depthControl) {
@@ -137,6 +137,20 @@ export class HTMLParseAndMyLib {
 
         return `Tools.comp("${tagName}", {${this.keyValToString(attrs)}})`;
     }
+
+    getVarName(name: string) {
+        const identifierRegex = /^[\p{ID_Start}$_][\p{ID_Continue}$_]*$/u;
+        let s = "";
+        for (const char of name) {
+            if (identifierRegex.test(char)) {
+                s += char;
+            } else {
+                s += "_";
+            }
+        }
+        return s;
+    }
+
     keyValToString(keyVal: { [key: string]: string }): string {
         let res: string[] = [];
         for (const key in keyVal) {
