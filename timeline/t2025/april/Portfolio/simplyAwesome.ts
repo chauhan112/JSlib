@@ -200,20 +200,15 @@ export class Page implements IComponent {
                     link: "https://github.com/chauhan112/DomainOpsV2",
                 },
                 {
-                    title: "Content Search",
-                    tech: "Vibe Coding, Typescript, Tailwind, CSS",
-                    link: "https://chauhan112.github.io/AITesting/timeline/2025/05_May/libSearch/index.html",
-                },
-                {
                     title: "Raja DevKit",
                     tech: "Typescript, Tailwind, CSS",
                     link: "https://chauhan112.github.io/MyTools/",
                 },
-                {
-                    title: "GlitchGarden",
-                    tech: "Vibe Coding, Typescript, Tailwind, CSS",
-                    link: "https://chauhan112.github.io/AITesting/",
-                },
+                // {
+                //     title: "GlitchGarden",
+                //     tech: "Vibe Coding, Typescript, Tailwind, CSS",
+                //     link: "https://chauhan112.github.io/AITesting/",
+                // },
             ],
             links: [
                 { icon: Github, link: "https://github.com/chauhan112" },
@@ -350,7 +345,7 @@ export class Page implements IComponent {
                             children: [
                                 this.s.comps.typing,
                                 Tools.comp("img", {
-                                    class: "w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 rounded-full border-2 border-dashed border-black/20",
+                                    class: "min-w-40 w-40 h-auto sm:w-48 md:w-56 lg:w-64 rounded-full border-2 border-dashed border-black/20",
                                     src: "profile.jpeg",
                                 }),
                             ],

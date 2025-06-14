@@ -167,7 +167,7 @@ export class HTMLParseAndMyLib {
 }
 export const Page = () => {
     let inpComp = Tools.comp("textarea", {
-        class: "h-[80vh] w-full border p-2 rounded-md bg-gray-100 text-black",
+        class: "w-full border p-2 rounded-md bg-gray-100 text-black",
         placeholder: "Enter HTML code",
     });
     const setValue = (comp: GComponent, val: string) => {
@@ -187,48 +187,39 @@ export const Page = () => {
         return (comp.getElement() as HTMLTextAreaElement).value;
     };
     let outComp = Tools.comp("textarea", {
-        class: "h-[80vh] w-full border p-2 rounded-md bg-gray-100 text-black",
+        class: "w-full border p-2 rounded-md bg-gray-100 text-black",
         placeholder: "Result will appear here",
     });
     const htmlToString = new HTMLParseAndMyLib();
     return Tools.div(
         {
-            class: "bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4 w-full",
+            class: "flex flex-1 flex-wrap md:flex-nowrap w-full justify-center",
             children: [
-                Tools.comp("h1", {
-                    class: "text-3xl font-semibold",
-                    textContent: "HTML to MyLib",
-                }),
-                Tools.div({
-                    class: "flex flex-1 flex-wrap md:flex-nowrap w-full items-center justify-center",
-                    children: [
-                        inpComp,
-                        Tools.comp(
-                            "button",
-                            {
-                                class: "mx-4 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-300",
-                                textContent: "Convert to MyLib",
-                            },
-                            {
-                                click: (e: any, ls: any) => {
-                                    htmlToString.set_text(getValue(inpComp));
-                                    htmlToString.parseToString().then((res) => {
-                                        setValue(outComp, res);
-                                    });
-                                    if (htmlToString.unprocessAttrs.size > 0) {
-                                        alert(
-                                            "Unprocessed attributes: " +
-                                                Array.from(
-                                                    htmlToString.unprocessAttrs
-                                                ).join(", ")
-                                        );
-                                    }
-                                },
+                inpComp,
+                Tools.comp(
+                    "button",
+                    {
+                        class: "self-center h-fit mx-4 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-300",
+                        textContent: "Convert to MyLib",
+                    },
+                    {
+                        click: (e: any, ls: any) => {
+                            htmlToString.set_text(getValue(inpComp));
+                            htmlToString.parseToString().then((res) => {
+                                setValue(outComp, res);
+                            });
+                            if (htmlToString.unprocessAttrs.size > 0) {
+                                alert(
+                                    "Unprocessed attributes: " +
+                                        Array.from(
+                                            htmlToString.unprocessAttrs
+                                        ).join(", ")
+                                );
                             }
-                        ),
-                        outComp,
-                    ],
-                }),
+                        },
+                    }
+                ),
+                outComp,
             ],
         },
         {},
