@@ -1,8 +1,9 @@
 // npm install motion
 import { animate } from "motion";
+import { Tools } from "../../april/tools";
 import { createNS, SVGCreator } from "./SVGCreator";
 
-export const AppLogo = () => {
+export const AppLogoSVG = (animateIt: boolean = true) => {
     let path = createNS("path", {
         "stroke-linecap": "round",
         "stroke-linejoin": "round",
@@ -16,17 +17,38 @@ export const AppLogo = () => {
         class: "w-full h-full",
         child: path,
     });
-    animate(
-        path,
+    if (animateIt)
+        animate(
+            path,
+            {
+                pathLength: [0, 1],
+                fill: ["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 1)"],
+            },
+            {
+                duration: 3,
+                ease: "anticipate",
+            }
+        );
+    return { svg, path };
+};
+
+export const AppLogo = () => {
+    let { svg, path } = AppLogoSVG();
+
+    return Tools.div(
         {
-            pathLength: [0, 1],
-            fill: ["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 1)"],
+            class: "flex flex-col items-center justify-center",
+            children: [
+                svg,
+                Tools.comp("p", {
+                    class: " text-xl font-bold",
+                    textContent: "Domain LOGGER",
+                }),
+            ],
         },
+        {},
         {
-            duration: 3,
-            ease: "anticipate",
+            svgComp: svg,
         }
     );
-
-    return svg;
 };
