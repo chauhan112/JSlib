@@ -95,10 +95,13 @@ export const Navigation = () => {
                         class: "hover:bg-gray-100 px-4 py-2 flex-1 border border-dashed cursor-pointer",
                         textContent: "Operations",
                     }),
-                    SmallCRUDops([
+                    SmallCRUDops(
+                        [
                         { name: "Domain 1", id: "dom1" },
                         { name: "Domain 2", id: "dom2" },
-                    ]),
+                        ],
+                        DomainOpsForm()
+                    ),
                 ],
             }),
         ],
@@ -146,10 +149,33 @@ export const BodyContent = () => {
 };
 
 export const Properties = () => {
-    const crudOps = SmallCRUDops([
+    const crudOps = SmallCRUDops(
+        [
         { name: "key-value", id: "key1" },
         { name: "key2-value", id: "key2" },
-    ]);
+        ],
+        Tools.comp("form", {
+            class: "w-full flex flex-col items-center justify-center py-2",
+            children: [
+                Tools.comp("input", {
+                    class: "w-full bg-white border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500",
+                    type: "text",
+                    placeholder: "key",
+                    name: "key",
+                }),
+                Tools.comp("input", {
+                    class: "w-full bg-white border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500",
+                    type: "text",
+                    placeholder: "value",
+                    name: "value",
+                }),
+                Tools.comp("input", {
+                    class: "w-full bg-white border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500",
+                    type: "submit",
+                }),
+            ],
+        })
+    );
     const lay = Tools.div({
         class: "flex flex-col items-center w-2/12 bg-[#1ABC9C] h-full",
         key: "right",
