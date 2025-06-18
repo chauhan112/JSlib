@@ -26,38 +26,66 @@ export const CardComponentWrapper = (comp: GComponent) => {
     return lay;
 };
 export const NewDesign = () => {
+    const header = Header();
+    header.s.closeLeftSideBarIcon.update(
+        {},
+        {
+            click: () => {
+                mainBody.s.nav.getElement().classList.toggle("hidden");
+                header.s.closeLeftSideBarIcon
+                    .getElement()
+                    .classList.toggle("rotate-180");
+            },
+        }
+    );
+    header.s.closePropertiesSideBarIcon.update(
+        {},
+        {
+            click: () => {
+                mainBody.s.right.getElement().classList.toggle("hidden");
+                header.s.closePropertiesSideBarIcon
+                    .getElement()
+                    .classList.toggle("rotate-180");
+            },
+        }
+    );
+    const mainBody = MainBody();
+    console.log(mainBody);
     return Tools.div({
         class: "h-screen flex flex-col",
-        children: [Header(), MainBody()],
+        children: [header, mainBody],
     });
 };
 export const Header = () => {
     const { svg } = AppLogoSVG();
     svg.update({ class: "w-[2.6rem] ml-4" });
-    return Tools.div({
-        class: "flex items-center justify-between px-4 bg-[#F5C85F]",
-        children: [
-            Tools.div({
-                class: "m-2 flex items-center gap-4 ",
-                children: [
-                    Tools.icon(ChevronLeft, {
-                        class: "w-8 h-8 absolute left-0 cursor-pointer",
-                    }),
-                    svg,
-                ],
-            }),
-            Tools.div({
-                class: "text-xl font-bold",
-                textContent: "Domain Ops Logger",
-            }),
-            Tools.div({
-                class: "m-2 flex items-center gap-4 pr-4",
-                child: Tools.icon(ChevronLeft, {
-                    class: "w-8 h-8 absolute right-0",
-                }),
-            }),
-        ],
+    const closeLeftSideBarIcon = Tools.icon(ChevronLeft, {
+        class: "w-8 h-8 absolute left-0 cursor-pointer",
     });
+    const closePropertiesSideBarIcon = Tools.icon(ChevronLeft, {
+        class: "w-8 h-8 absolute right-0 rotate-180 cursor-pointer",
+    });
+    return Tools.div(
+        {
+            class: "flex items-center justify-between px-4 bg-[#F5C85F]",
+            children: [
+                Tools.div({
+                    class: "m-2 flex items-center gap-4 ",
+                    children: [closeLeftSideBarIcon, svg],
+                }),
+                Tools.div({
+                    class: "text-xl font-bold",
+                    textContent: "Domain Ops Logger",
+                }),
+                Tools.div({
+                    class: "m-2 flex items-center gap-4 pr-4",
+                    child: closePropertiesSideBarIcon,
+                }),
+            ],
+        },
+        {},
+        { closeLeftSideBarIcon, closePropertiesSideBarIcon }
+    );
 };
 export const SmallCRUDops = (ops: any[], form: GComponent) => {
     form.getElement().classList.add("hidden");
