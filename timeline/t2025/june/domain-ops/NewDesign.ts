@@ -178,3 +178,20 @@ export const NavChild = ({
         ],
     });
 };
+
+export const ActivityComponent = () => {
+    return Tools.div({
+        class: "flex flex-col gap-2",
+        children: [
+            Tools.comp("h1", { textContent: "Activity Name" }),
+            Tools.comp("h3", { textContent: "renamed version of activity" }),
+            Tools.comp("span", { textContent: "operation" }),
+            Tools.comp("ul", {
+                children: [
+                    Tools.comp("li", { textContent: "domain1" }),
+                    Tools.comp("li", { textContent: "domain2" }),
+                ],
+            }),
+        ],
+    });
+};
