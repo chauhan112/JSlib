@@ -52,14 +52,24 @@ export const Header = () => {
         ],
     });
 };
-export const SmallCRUDops = (ops: any[]) => {
+export const SmallCRUDops = (ops: any[], form: GComponent) => {
+    form.getElement().classList.add("hidden");
     return Tools.div({
         class: "w-full",
         children: [
-            Tools.comp("button", {
+            Tools.comp(
+                "button",
+                {
                 textContent: "+ create new",
                 class: "text-2xl w-full flex items-center justify-center py-4 hover:border cursor-pointer",
-            }),
+                },
+                {
+                    click: (e: any, ls: any) => {
+                        form.getElement().classList.toggle("hidden");
+                    },
+                }
+            ),
+            form,
             Tools.div({
                 class: "w-full flex flex-col items-center px-2 gap-2",
                 key: "navItems",
