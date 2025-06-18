@@ -1,8 +1,15 @@
-import { ChevronLeft, ChevronRight, EllipsisVertical } from "lucide";
+import {
+    ChevronLeft,
+    EllipsisVertical,
+    LogIn,
+    PencilLine,
+    Plus,
+    Trash,
+} from "lucide";
 import { Tools } from "../../april/tools";
 import { AppLogoSVG } from "./Logo";
 import { SearchComponent } from "../../may/FileSearch/Search";
-import { GComponent } from "../../april/GComponent";
+import { GComponent, IComponent } from "../../april/GComponent";
 
 export const CardComponentWrapper = (comp: GComponent) => {
     const lay = Tools.div({
@@ -60,8 +67,8 @@ export const SmallCRUDops = (ops: any[], form: GComponent) => {
             Tools.comp(
                 "button",
                 {
-                textContent: "+ create new",
-                class: "text-2xl w-full flex items-center justify-center py-4 hover:border cursor-pointer",
+                    textContent: "+ create new",
+                    class: "text-2xl w-full flex items-center justify-center py-4 hover:border cursor-pointer",
                 },
                 {
                     click: (e: any, ls: any) => {
@@ -97,8 +104,8 @@ export const Navigation = () => {
                     }),
                     SmallCRUDops(
                         [
-                        { name: "Domain 1", id: "dom1" },
-                        { name: "Domain 2", id: "dom2" },
+                            { name: "Domain 1", id: "dom1" },
+                            { name: "Domain 2", id: "dom2" },
                         ],
                         DomainOpsForm()
                     ),
@@ -114,7 +121,6 @@ export const MainBody = () => {
         children: [Navigation(), BodyContent(), Properties()],
     });
 };
-
 export const BodyContent = () => {
     return Tools.div({
         class: "flex flex-col items-center flex-1 h-full ",
@@ -147,12 +153,11 @@ export const BodyContent = () => {
         ],
     });
 };
-
 export const Properties = () => {
     const crudOps = SmallCRUDops(
         [
-        { name: "key-value", id: "key1" },
-        { name: "key2-value", id: "key2" },
+            { name: "key-value", id: "key1" },
+            { name: "key2-value", id: "key2" },
         ],
         Tools.comp("form", {
             class: "w-full flex flex-col items-center justify-center py-2",
@@ -234,18 +239,30 @@ export const NavChild = ({
         ],
     });
 };
-
 export const ActivityComponent = () => {
-    return Tools.div({
-        class: "flex flex-col gap-2",
+    const opsContainer = Tools.div({
+        class: "flex flex-col hidden w-full absolute bottom-0 right-0 flex items-center gap-2 z-10 bg-gray-200 transparent h-2/3 items-center justify-around",
         children: [
-            Tools.comp("h1", { textContent: "Activity Name" }),
-            Tools.comp("h3", { textContent: "renamed version of activity" }),
-            Tools.comp("span", { textContent: "operation" }),
-            Tools.comp("ul", {
+            Tools.comp("button", {
+                class: "flex items-center justify-center w-full cursor-pointer hover:border border-green-500  py-2",
+                child: Tools.icon(LogIn),
+            }),
+            Tools.div({
+                class: "flex items-center gap-4",
                 children: [
-                    Tools.comp("li", { textContent: "domain1" }),
-                    Tools.comp("li", { textContent: "domain2" }),
+                    Tools.comp("button", {
+                        class: "flex items-center justify-center cursor-pointer hover:border border-yellow-500 w-full p-1",
+                        child: Tools.icon(PencilLine),
+                    }),
+
+                    Tools.comp("button", {
+                        class: "flex items-center justify-center cursor-pointer hover:border border-yellow-500 w-full p-1",
+                        child: Tools.icon(Trash),
+                    }),
+                    Tools.comp("button", {
+                        class: "flex items-center justify-center cursor-pointer hover:border border-yellow-500 w-full p-1",
+                        child: Tools.icon(EllipsisVertical),
+                    }),
                 ],
             }),
         ],
