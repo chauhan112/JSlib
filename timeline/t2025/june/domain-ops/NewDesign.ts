@@ -24,7 +24,6 @@ export const NewDesign = () => {
         children: [Header(), MainBody()],
     });
 };
-
 export const Header = () => {
     const { svg } = AppLogoSVG();
     svg.update({ class: "w-[2.6rem] ml-4" });
@@ -69,7 +68,6 @@ export const SmallCRUDops = (ops: any[]) => {
         ],
     });
 };
-
 export const Navigation = () => {
     return Tools.div({
         class: "flex flex-col items-center min-w-[10rem] w-2/12 bg-[#1ABC9C] h-full",
@@ -100,40 +98,62 @@ export const MainBody = () => {
     return Tools.div({
         key: "body",
         class: "flex-1 flex items-center justify-center",
+        children: [Navigation(), BodyContent(), Properties()],
+    });
+};
+
+export const BodyContent = () => {
+    return Tools.div({
+        class: "flex flex-col items-center flex-1 h-full ",
+        key: "contentArea",
         children: [
-            Navigation(),
             Tools.div({
-                class: "flex flex-col items-center flex-1 h-full ",
-                key: "contentArea",
+                class: "w-full flex flex-col px-2 border-gray-300",
                 children: [
+                    Tools.comp("span", {
+                        textContent: "Properties/Domains/Operations",
+                    }),
                     Tools.div({
-                        class: "w-full flex px-2 border-b border-gray-300",
+                        class: "flex items-center justify-between gap-2 mt-2",
                         children: [
-                            Tools.comp("span", {
-                                textContent: "Properties/Domains/Operations",
+                            Tools.icon(Plus, {
+                                class: "w-12 h-12 cursor-pointer hover:bg-gray-200",
                             }),
+                            SearchComponent(),
                         ],
                     }),
-                ],
-            }),
-            Tools.div({
-                class: "flex flex-col items-center w-2/12 bg-[#1ABC9C] h-full",
-                key: "right",
-                children: [
                     Tools.div({
-                        class: "bg-slate-700 py-2 text-xl font-bold border-white border-b w-full text-center text-white",
-                        textContent: "Properties",
+                        class: "flex flex-wrap gap-2 mt-2 bg-gray-200 p-2 rounded-lg h-full flex-1",
+                        children: [
+                            CardComponentWrapper(ActivityComponent()),
+                            CardComponentWrapper(ActivityComponent()),
+                        ],
                     }),
-                    SmallCRUDops([
-                        { name: "key-value", id: "key1" },
-                        { name: "key2-value", id: "key2" },
-                    ]),
                 ],
             }),
         ],
     });
 };
 
+export const Properties = () => {
+    const crudOps = SmallCRUDops([
+        { name: "key-value", id: "key1" },
+        { name: "key2-value", id: "key2" },
+    ]);
+    const lay = Tools.div({
+        class: "flex flex-col items-center w-2/12 bg-[#1ABC9C] h-full",
+        key: "right",
+        children: [
+            Tools.div({
+                class: "bg-slate-700 py-2 text-xl font-bold border-white border-b w-full text-center text-white",
+                textContent: "Properties",
+            }),
+            crudOps,
+        ],
+    });
+    crudOps.getElement();
+    return lay;
+};
 export const NavChild = ({
     name,
     id,
