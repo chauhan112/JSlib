@@ -1,8 +1,23 @@
 import { ChevronLeft, ChevronRight, EllipsisVertical } from "lucide";
 import { Tools } from "../../april/tools";
 import { AppLogoSVG } from "./Logo";
-import { text } from "motion/react-client";
+import { SearchComponent } from "../../may/FileSearch/Search";
+import { GComponent } from "../../april/GComponent";
 
+export const CardComponentWrapper = (comp: GComponent) => {
+    const lay = Tools.div({
+        class: "w-fit bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col items-center text-center h-[fit-content]",
+    });
+    const display = (comp: GComponent) => {
+        lay.update({
+            innerHTML: "",
+            child: comp,
+        });
+    };
+    display(comp);
+    lay.s.display = display;
+    return lay;
+};
 export const NewDesign = () => {
     return Tools.div({
         class: "h-screen flex flex-col",
@@ -38,8 +53,7 @@ export const Header = () => {
         ],
     });
 };
-
-const SmallCRUDops = (ops: any[]) => {
+export const SmallCRUDops = (ops: any[]) => {
     return Tools.div({
         class: "w-full",
         children: [
