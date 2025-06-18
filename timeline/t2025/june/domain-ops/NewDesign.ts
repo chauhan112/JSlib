@@ -250,4 +250,69 @@ export const ActivityComponent = () => {
             }),
         ],
     });
+
+    return Tools.div(
+        {
+            class: "flex flex-col gap-2 relative",
+            children: [
+                Tools.comp("h1", {
+                    textContent: "Activity Name",
+                    class: "font-bold text-lg",
+                }),
+                Tools.comp("h3", {
+                    textContent: "renamed version of activity",
+                }),
+                Tools.comp("p", {
+                    textContent: "operation",
+                    class: "font-bold text-sm text-green-500 flex ",
+                }), // tag
+                Tools.comp("ul", {
+                    class: "flex flex-wrap gap-2",
+                    children: [
+                        Tools.comp("li", {
+                            textContent: "domain1",
+                            class: "font-bold text-sm text-blue-500 ",
+                        }),
+                        Tools.comp("li", {
+                            textContent: "domain2",
+                            class: "font-bold text-sm text-blue-500 ",
+                        }),
+                    ],
+                }),
+
+                opsContainer,
+            ],
+        },
+        {
+            mouseenter: () => {
+                opsContainer.getElement().classList.remove("hidden");
+            },
+            mouseleave: () => {
+                opsContainer.getElement().classList.add("hidden");
+            },
+        }
+    );
+};
+export const DivWrapper = (children: IComponent[], ...props: any) => {
+    return Tools.div({
+        children: children,
+        ...props,
+    });
+};
+export const DomainOpsForm = () => {
+    return Tools.comp("form", {
+        class: "w-full flex flex-col items-center justify-center py-2 hidden",
+        children: [
+            Tools.comp("input", {
+                class: "w-full bg-white border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500",
+                type: "text",
+                placeholder: "enter name",
+                name: "name",
+            }),
+            Tools.comp("input", {
+                class: "w-full bg-white border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500",
+                type: "submit",
+            }),
+        ],
+    });
 };
