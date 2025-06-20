@@ -34,3 +34,52 @@ export class Model {
         return vals;
     }
 }
+
+export class Domain {
+    create(loc: string[], name: string) {}
+    read(loc: string[]) {}
+    updateName(loc: string[], name: string) {}
+    delete(loc: string[]) {}
+}
+
+export class Operations {
+    create(loc: string[], name: string) {}
+    read(loc: string[]) {}
+    updateName(loc: string[], name: string) {}
+    delete(loc: string[]) {}
+}
+
+export class Activity {
+    create(loc: string[], name: string) {}
+    read(loc: string[]) {}
+    updateName(loc: string[], name: string) {}
+    delete(loc: string[]) {}
+}
+
+export class Logger {
+    create(loc: string[], name: string) {}
+    read(loc: string[]) {}
+    updateName(loc: string[], name: string) {}
+    delete(loc: string[]) {}
+}
+
+export class LogStructure {
+    create(loc: string[], name: string) {}
+    read(loc: string[]) {}
+    updateName(loc: string[], name: string) {}
+    delete(loc: string[]) {}
+}
+
+export class Properties {
+    create(loc: string[], name: string) {}
+    read(loc: string[]) {}
+    updateName(loc: string[], name: string) {}
+    delete(loc: string[]) {}
+}
+
+export class SearchFilters {
+    create(loc: string[], name: string) {}
+    read(loc: string[]) {}
+    updateName(loc: string[], name: string) {}
+    delete(loc: string[]) {}
+}
