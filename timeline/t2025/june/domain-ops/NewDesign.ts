@@ -194,6 +194,7 @@ export const Navigation = () => {
                         submit: onCreateNew,
                     }
                 );
+                (createForm.getElement() as HTMLFormElement).reset();
             },
         }
     );
@@ -208,7 +209,7 @@ export const Navigation = () => {
             let item = ls.s.data;
             if (item.label === "Edit") {
                 console.log("Delete", item.info);
-                createForm.getElement().classList.toggle("hidden");
+                createForm.getElement().classList.remove("hidden");
                 createForm.s.setFormValues({ name: item.info.name });
                 createForm.update(
                     {},
