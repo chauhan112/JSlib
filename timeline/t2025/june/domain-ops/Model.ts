@@ -64,9 +64,10 @@ export class Domain {
         if (!this.model?.exists([...loc, this.key])) return [];
         return this.model?.readEntry([...loc, this.key]);
     }
-    updateName(loc: string[], name: string) {
-        if (!this.model?.exists([...loc, "name"])) return;
-        this.model.updateEntry([...loc, "name"], name);
+    updateName(loc: string[], id: string, name: string) {
+        let path = [...loc, this.key, id, "name"];
+        if (!this.model?.exists(path)) return;
+        this.model.updateEntry(path, name);
     }
     delete(id: string, loc: string[]) {
         if (!this.model?.exists([...loc, this.key, id])) {
