@@ -111,13 +111,13 @@ export const SmallCRUDops = (ops: any[], form: GComponent) => {
     };
     const getNavItem = (item: any) => {
         return NavChild({
-                ...item,
-                onMainBodyClick: (e: any, ls: any) => {
-                    state.onMainBodyClick(e, ls);
-                },
-                onMenuOptionClick: (e: any, ls: any) => {
-                    state.onMenuOptionClick(e, ls);
-                },
+            ...item,
+            onMainBodyClick: (e: any, ls: any) => {
+                state.onMainBodyClick(e, ls);
+            },
+            onMenuOptionClick: (e: any, ls: any) => {
+                state.onMenuOptionClick(e, ls);
+            },
         });
     };
     const navItem = Tools.div({
@@ -137,8 +137,8 @@ export const SmallCRUDops = (ops: any[], form: GComponent) => {
             children: [
                 Tools.comp("button", {
                     key: "createBtn",
-                        textContent: "+ create new",
-                        class: "text-2xl w-full flex items-center justify-center py-4 hover:border cursor-pointer",
+                    textContent: "+ create new",
+                    class: "text-2xl w-full flex items-center justify-center py-4 hover:border cursor-pointer",
                 }),
                 form,
                 navItem,
@@ -150,41 +150,82 @@ export const SmallCRUDops = (ops: any[], form: GComponent) => {
 };
 export const Navigation = () => {
     const createForm = DomainOpsForm();
-    createForm.update(
-        {},
-        {
-            submit: (e: any, ls: any) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const name = formData.get("name") as string;
-                const curKey = tabComp.s.getCurrentKey();
-                if (curKey === "Domains") {
-                    model.domain.create([], name);
-                } else if (curKey === "Operations") {
-                    model.operations.create([], name);
-                }
-                (createForm.getElement() as HTMLFormElement).reset();
-                createForm.getElement().classList.add("hidden");
-                updateNavItems();
-            },
-        }
-    );
+    const onCreateNew = (e: any, ls: any) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const name = formData.get("name") as string;
+        const curKey = tabComp.s.getCurrentKey();
+        curKey.s.info.create([], name);
+        (createForm.getElement() as HTMLFormElement).reset();
+        createForm.getElement().classList.add("hidden");
+        updateNavItems();
+    };
+    const onEdit = (e: any, ls: any) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const name = formData.get("name") as string;
+        const curKey = tabComp.s.getCurrentKey();
+        curKey.s.info.updateName([], createForm.s.info.id, name);
+        (createForm.getElement() as HTMLFormElement).reset();
+        createForm.getElement().classList.add("hidden");
+        updateNavItems();
+    };
+
     const tabComp = TabComponent([
-        { label: "Domains" },
-        { label: "Operations" },
+        { label: "Domains", info: model.domain },
+        { label: "Operations", info: model.operations },
     ]);
 
     const updateNavItems = () => {
         const curKey = tabComp.s.getCurrentKey();
-        if (curKey === "Domains") {
-            domCrud.s.updateNavItems(model.domain.readNameAndId([]));
-        } else if (curKey === "Operations") {
-            domCrud.s.updateNavItems(model.operations.readNameAndId([]));
-        }
+        domCrud.s.updateNavItems(curKey.s.info.readNameAndId([]));
     };
 
     const domCrud = SmallCRUDops([], createForm);
     updateNavItems();
+    domCrud.s.createBtn.update(
+        {},
+        {
+            click: (e: any, ls: any) => {
+                createForm.getElement().classList.toggle("hidden");
+                createForm.update(
+                    {},
+                    {
+                        submit: onCreateNew,
+                    }
+                );
+            },
+        }
+    );
+
+    domCrud.s.state.onMenuOptionClick = (e: any, ls: any) => {
+        contextMenu.s.setOptions([
+            { label: "Edit", info: ls.s.data },
+            { label: "Delete", info: ls.s.data },
+        ]);
+        let curKey = tabComp.s.getCurrentKey();
+        contextMenu.s.state.onMenuItemClick = (e: any, ls: any) => {
+            let item = ls.s.data;
+            if (item.label === "Edit") {
+                console.log("Delete", item.info);
+                createForm.getElement().classList.toggle("hidden");
+                createForm.s.setFormValues({ name: item.info.name });
+                createForm.update(
+                    {},
+                    {
+                        submit: onEdit,
+                    },
+                    {
+                        info: item.info,
+                    }
+                );
+            } else if (item.label === "Delete") {
+                curKey.s.info.delete(item.info.id, []);
+                updateNavItems();
+            }
+        };
+        contextMenu.s.displayMenu(e, ls);
+    };
 
     tabComp.s.setOnTabClick((e: any, ls: any) => {
         tabComp.s.onTabClick(e, ls);
@@ -304,7 +345,7 @@ export const NavChild = ({
                 {
                     click: props.onMainBodyClick,
                 },
-                { data: id, props: props }
+                { data: { name, id, ...props } }
             ),
             Tools.div({
                 class: "w-fit flex items-center justify-between",
@@ -315,7 +356,7 @@ export const NavChild = ({
                             class: "w-8 h-8 cursor-pointer hover:border border-yellow-500",
                         },
                         { click: props.onMenuOptionClick },
-                        { data: id, props: props }
+                        { data: { name, id, ...props } }
                     ),
                 ],
             }),
@@ -400,7 +441,7 @@ export const DivWrapper = (children: IComponent[], ...props: any) => {
     });
 };
 export const DomainOpsForm = () => {
-    return Tools.comp("form", {
+    let form = Tools.comp("form", {
         class: "w-full flex flex-col items-center justify-center py-2 hidden",
         children: [
             Tools.comp("input", {
@@ -408,6 +449,7 @@ export const DomainOpsForm = () => {
                 type: "text",
                 placeholder: "enter name",
                 name: "name",
+                key: "name",
             }),
             Tools.comp("input", {
                 class: "w-full bg-white border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500",
@@ -415,6 +457,17 @@ export const DomainOpsForm = () => {
             }),
         ],
     });
+    const setFormValues = (data: { name: string }) => {
+        form.s.name.getElement().value = data.name || "";
+    };
+    form.update(
+        {},
+        {},
+        {
+            setFormValues,
+        }
+    );
+    return form;
 };
 
 export const TabComponent = (ops: { label: string; info?: any }[]) => {
@@ -440,7 +493,7 @@ export const TabComponent = (ops: { label: string; info?: any }[]) => {
                 click: (e: any, ls: any) => {
                     onTabClick(e, ls);
                     if (ls.info) {
-                        console.log(ls.info); // Handle the info as needed
+                        console.log(ls.info);
                     }
                 },
             },
@@ -448,9 +501,7 @@ export const TabComponent = (ops: { label: string; info?: any }[]) => {
         );
     });
     const getCurrentKey = () => {
-        return currentButton
-            ? (currentButton.getElement() as HTMLButtonElement).textContent
-            : "";
+        return currentButton;
     };
 
     const setOnTabClick = (callback: (e: any, ls: any) => void) => {
