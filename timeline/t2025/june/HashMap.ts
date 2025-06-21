@@ -1,4 +1,4 @@
-class HashMapDataStructure {
+export class HashMapDataStructure {
     data: any = {};
     add(key: string, value: any, overwrite = false) {
         if (!overwrite && this.exists(key)) {

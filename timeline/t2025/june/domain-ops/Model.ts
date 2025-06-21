@@ -1,6 +1,8 @@
 import { LocalStorageJSONModel } from "../../april/LocalStorage";
 import { v4 as uuidv4 } from "uuid";
-import { Atool, SetWrapper } from "../../april/Array";
+import { SetWrapper } from "../../april/Array";
+import { HashMapDataStructure } from "../HashMap";
+import { all } from "axios";
 
 export class Model {
     model = new LocalStorageJSONModel("dom-ops-logger");
@@ -176,10 +178,27 @@ export class Activity {
         }[] = [];
         let allDoms = this.parent?.domain.readNameAndId(loc);
         let allOps = this.parent?.operations.readNameAndId(loc);
+        let domMap = new HashMapDataStructure();
+        let opMap = new HashMapDataStructure();
+        allDoms?.forEach((dom) => {
+            domMap.add(dom.id, dom.name);
+        });
+        allOps?.forEach((op) => {
+            opMap.add(op.id, op.name);
+        });
         for (let id in vals) {
-            result.push({});
+            let doms: { name: string; id: string }[] = [];
+            vals[id][this.dom].forEach((domId: string) => {
+                doms.push({ name: domMap.read(domId), id: domId });
+            });
+            let opId = vals[id][this.ops];
+            let opName = opMap.read(opId);
+            result.push({
+                domains: doms,
+                operation: { name: opName, id: opId },
+                id: id,
+            });
         }
-
         return result;
     }
 }
