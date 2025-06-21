@@ -253,6 +253,14 @@ export const MainBody = () => {
     });
 };
 export const BodyContent = () => {
+    const getActivityComponent = (op: string, doms: string[]) => {
+        return CardComponentWrapper(ActivityComponent({ op, doms }));
+    };
+    let listDisplayer = Tools.div({
+        class: "flex flex-wrap gap-2 mt-2 bg-gray-200 p-2 rounded-lg h-full flex-1",
+        textContent: "no activities yet",
+    });
+
     return Tools.div({
         class: "flex flex-col items-center flex-1 h-full ",
         key: "contentArea",
@@ -272,13 +280,7 @@ export const BodyContent = () => {
                             SearchComponent(),
                         ],
                     }),
-                    Tools.div({
-                        class: "flex flex-wrap gap-2 mt-2 bg-gray-200 p-2 rounded-lg h-full flex-1",
-                        children: [
-                            CardComponentWrapper(ActivityComponent()),
-                            CardComponentWrapper(ActivityComponent()),
-                        ],
-                    }),
+                    listDisplayer,
                 ],
             }),
         ],
@@ -364,7 +366,15 @@ export const NavChild = ({
         ],
     });
 };
-export const ActivityComponent = () => {
+export const ActivityComponent = ({
+    op,
+    doms,
+    ...props
+}: {
+    op: string;
+    doms: string[];
+    [key: string]: any;
+}) => {
     const opsContainer = Tools.div({
         class: "flex flex-col hidden w-full absolute bottom-0 right-0 flex items-center gap-2 z-10 bg-gray-200 transparent h-2/3 items-center justify-around",
         children: [
@@ -397,13 +407,6 @@ export const ActivityComponent = () => {
         {
             class: "flex flex-col gap-2 relative",
             children: [
-                Tools.comp("h1", {
-                    textContent: "Activity Name",
-                    class: "font-bold text-lg",
-                }),
-                Tools.comp("h3", {
-                    textContent: "renamed version of activity",
-                }),
                 Tools.comp("p", {
                     textContent: "operation",
                     class: "font-bold text-sm text-green-500 flex ",
@@ -420,6 +423,9 @@ export const ActivityComponent = () => {
                             class: "font-bold text-sm text-blue-500 ",
                         }),
                     ],
+                }),
+                Tools.comp("h3", {
+                    textContent: "renamed version of activity",
                 }),
 
                 opsContainer,
