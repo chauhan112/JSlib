@@ -134,23 +134,7 @@ export const Navigation = () => {
         children: [
             Tools.div({
                 class: "w-full flex justify-between flex-wrap",
-                children: [
-                    Tools.comp("button", {
-                        class: "hover:bg-gray-100 px-4 py-2 flex-1 border border-dashed cursor-pointer",
-                        textContent: "Domains",
-                    }),
-                    Tools.comp("button", {
-                        class: "hover:bg-gray-100 px-4 py-2 flex-1 border border-dashed cursor-pointer",
-                        textContent: "Operations",
-                    }),
-                    SmallCRUDops(
-                        [
-                            { name: "Domain 1", id: "dom1" },
-                            { name: "Domain 2", id: "dom2" },
-                        ],
-                        DomainOpsForm()
-                    ),
-                ],
+                children: [tabComp, domCrud],
             }),
         ],
     });
@@ -159,7 +143,7 @@ export const MainBody = () => {
     return Tools.div({
         key: "body",
         class: "flex-1 flex items-center justify-center",
-        children: [Navigation(), BodyContent(), Properties()],
+        children: [Navigation(), BodyContent(), Properties(), contextMenu],
     });
 };
 export const BodyContent = () => {
@@ -251,28 +235,22 @@ export const NavChild = ({
             Tools.div(
                 {
                     textContent: name,
-                    class: "bg-gray-100 flex-1 text-center py-1",
+                    class: "text-white flex-1 text-center py-1 cursor-pointer hover:bg-gray-200 hover:text-black",
                 },
-                {},
+                {
+                    click: props.onMainBodyClick,
+                },
                 { data: id, props: props }
             ),
             Tools.div({
                 class: "w-fit flex items-center justify-between",
                 children: [
-                    // Tools.icon(
-                    //     ChevronRight,
-                    //     {
-                    //         class: "w-8 h-8 cursor-pointer hover:border border-yellow-500",
-                    //     },
-                    //     {},
-                    //     { data: id, props: props }
-                    // ),
                     Tools.icon(
                         EllipsisVertical,
                         {
                             class: "w-8 h-8 cursor-pointer hover:border border-yellow-500",
                         },
-                        {},
+                        { click: props.onMenuOptionClick },
                         { data: id, props: props }
                     ),
                 ],
