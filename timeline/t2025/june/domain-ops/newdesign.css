@@ -1,0 +1,14 @@
+:root {
+    --color-bg: #ffffff;
+    --color-bg-secondary: #1abc9c;
+    --color-text: #333;
+    --color-text-secondary: white;
+}
+.tab-selected {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+.tab-unselected {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+}
