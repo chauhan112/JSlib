@@ -16,6 +16,22 @@ export class Atool {
         }
         return newArray;
     }
+    // static sorted
+    static sorted(array: any[], compareFn?: (a: any, b: any) => number) {
+        return array.slice().sort(compareFn);
+    }
+}
+
+export class SetWrapper {
+    static union(set: Set<any>, otherSet: Set<any>) {
+        return new Set([...set, ...otherSet]);
+    }
+    static intersection(set: Set<any>, otherSet: Set<any>) {
+        return new Set([...set].filter((x) => otherSet.has(x)));
+    }
+    static difference(set: Set<any>, otherSet: Set<any>) {
+        return new Set([...set].filter((x) => !otherSet.has(x)));
+    }
 }
 
 export class Undoers {
