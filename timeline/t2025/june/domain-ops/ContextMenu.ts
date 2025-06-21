@@ -61,6 +61,7 @@ export const ContextMenu = (items: { label: string; info?: any }[]) => {
             setOptions,
             displayMenu,
             setMenuClickHandler,
+            state,
             insts: { docHandler },
         }
     );
