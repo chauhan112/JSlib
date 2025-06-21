@@ -27,6 +27,9 @@ export class Tools {
         model: LocalStorageJSONModel,
         typ = "domains"
     ) {
+        if (!model.exists([...loc, typ])) {
+            return false;
+        }
         let vals = model.readEntry([...loc, typ]);
         for (let id in vals) {
             if (vals[id]["name"] == name) {
@@ -58,6 +61,7 @@ export class Domain {
         return this.model.readEntry([...loc, this.key, id]);
     }
     readAll(loc: string[]) {
+        if (!this.model?.exists([...loc, this.key])) return [];
         return this.model?.readEntry([...loc, this.key]);
     }
     updateName(loc: string[], name: string) {
@@ -72,6 +76,15 @@ export class Domain {
     }
     exists(name: string, loc: string[]) {
         return Tools.exists(name, loc, this.model!, this.key);
+    }
+    readNameAndId(loc: string[]) {
+        if (!this.model?.exists([...loc, this.key])) return [];
+        let vals = this.model.readEntry([...loc, this.key]);
+        let result: { name: string; id: string }[] = [];
+        for (let id in vals) {
+            result.push({ name: vals[id]["name"], id: id });
+        }
+        return result;
     }
 }
 
