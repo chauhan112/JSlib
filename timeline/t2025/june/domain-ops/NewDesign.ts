@@ -10,6 +10,19 @@ import { Tools } from "../../april/tools";
 import { AppLogoSVG } from "./Logo";
 import { SearchComponent } from "../../may/FileSearch/Search";
 import { GComponent, IComponent } from "../../april/GComponent";
+import { Model } from "./Model";
+import "./newdesign.css";
+import { ContextMenu } from "./ContextMenu";
+
+let model = new Model();
+let contextMenu = ContextMenu([
+    { label: "Edit" },
+    { label: "Delete" },
+    { label: "Copy" },
+    { label: "Paste" },
+    { label: "Cut" },
+    { label: "Select All" },
+]);
 
 export const CardComponentWrapper = (comp: GComponent) => {
     const lay = Tools.div({
@@ -360,4 +373,59 @@ export const DomainOpsForm = () => {
             }),
         ],
     });
+};
+
+export const TabComponent = (ops: { label: string; info?: any }[]) => {
+    let currentButton: GComponent | null = null;
+    let onTabClick = (e: any, ls: any) => {
+        e.target.classList.add("tab-selected");
+        e.target.classList.remove("tab-unselected");
+        if (currentButton) {
+            currentButton.getElement().classList.remove("tab-selected");
+            currentButton.getElement().classList.add("tab-unselected");
+        }
+
+        currentButton = ls;
+    };
+    const children = ops.map((op) => {
+        return Tools.comp(
+            "button",
+            {
+                textContent: op.label,
+                class: "hover:bg-white px-4 py-2 flex-1 border border-dashed cursor-pointer tab-unselected",
+            },
+            {
+                click: (e: any, ls: any) => {
+                    onTabClick(e, ls);
+                    if (ls.info) {
+                        console.log(ls.info); // Handle the info as needed
+                    }
+                },
+            },
+            { info: op.info, label: op.label }
+        );
+    });
+    const getCurrentKey = () => {
+        return currentButton
+            ? (currentButton.getElement() as HTMLButtonElement).textContent
+            : "";
+    };
+
+    const setOnTabClick = (callback: (e: any, ls: any) => void) => {
+        onTabClick = callback;
+    };
+
+    const tabContainer = Tools.div(
+        {
+            class: "flex items-center justify-between w-full p-2 ",
+            children,
+        },
+        {},
+        { getCurrentKey, onTabClick, setOnTabClick }
+    );
+
+    if (ops.length > 0) {
+        (children[0].getElement() as HTMLButtonElement).click(); // Simulate click on the first tab
+    }
+    return tabContainer;
 };
