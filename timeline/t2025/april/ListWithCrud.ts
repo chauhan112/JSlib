@@ -221,7 +221,7 @@ export class Test {
             },
         ];
         let list = new ListWithCrud();
-        list.docHandler = new DocumentHandler();
+        list.docHandler = DocumentHandler.getInstance();
         list.s.data = items;
         list.getElement();
         return list;
