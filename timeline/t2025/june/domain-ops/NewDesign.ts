@@ -103,22 +103,14 @@ export const Header = () => {
 export const SmallCRUDops = (ops: any[], form: GComponent) => {
     form.getElement().classList.add("hidden");
 
-    const onMainBodyClick = (e: any, ls: any) => {
-        console.log(ls);
-    };
-    const onMenuOptionClick = (e: any, ls: any) => {
-        console.log(e);
-        contextMenu.s.displayMenu(e, ls);
-    };
+    const onMainBodyClick = (e: any, ls: any) => {};
+    const onMenuOptionClick = (e: any, ls: any) => {};
     let state = {
         onMainBodyClick,
         onMenuOptionClick,
     };
-    const navItem = Tools.div({
-        class: "w-full flex flex-col items-center px-2 gap-2",
-        key: "navItems",
-        children: ops.map((item: any) =>
-            NavChild({
+    const getNavItem = (item: any) => {
+        return NavChild({
                 ...item,
                 onMainBodyClick: (e: any, ls: any) => {
                     state.onMainBodyClick(e, ls);
@@ -126,41 +118,28 @@ export const SmallCRUDops = (ops: any[], form: GComponent) => {
                 onMenuOptionClick: (e: any, ls: any) => {
                     state.onMenuOptionClick(e, ls);
                 },
-            })
-        ),
+        });
+    };
+    const navItem = Tools.div({
+        class: "w-full flex flex-col items-center px-2 gap-2",
+        key: "navItems",
+        children: ops.map(getNavItem),
     });
     const updateNavItems = (items: any[]) => {
         navItem.update({
             innerHTML: "",
-            children: items.map((item: any) =>
-                NavChild({
-                    ...item,
-                    onMainBodyClick: (e: any, ls: any) => {
-                        onMainBodyClick(e, ls);
-                    },
-                    onMenuOptionClick: (e: any, ls: any) => {
-                        onMenuOptionClick(e, ls);
-                    },
-                })
-            ),
+            children: items.map(getNavItem),
         });
     };
     return Tools.div(
         {
             class: "w-full",
             children: [
-                Tools.comp(
-                    "button",
-                    {
+                Tools.comp("button", {
+                    key: "createBtn",
                         textContent: "+ create new",
                         class: "text-2xl w-full flex items-center justify-center py-4 hover:border cursor-pointer",
-                    },
-                    {
-                        click: (e: any, ls: any) => {
-                            form.getElement().classList.toggle("hidden");
-                        },
-                    }
-                ),
+                }),
                 form,
                 navItem,
             ],
