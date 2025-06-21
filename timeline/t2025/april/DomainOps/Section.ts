@@ -4,7 +4,6 @@ import { create, readAll, deleteItem, updateName } from "./api/pythonAnywhere";
 import { GComponent } from "../GComponent";
 import { GForm } from "../GForm";
 import { ListWithCrud } from "../ListWithCrud";
-import { DocumentHandler } from "../Array";
 import { ListWithCrudWrapper } from "./ListWithCrudWrapper";
 export class Section {
     form: any = null;
