@@ -480,12 +480,12 @@ export const DomainOpsForm = () => {
 export const TabComponent = (ops: { label: string; info?: any }[]) => {
     let currentButton: GComponent | null = null;
     let onTabClick = (e: any, ls: any) => {
-        e.target.classList.add("tab-selected");
-        e.target.classList.remove("tab-unselected");
         if (currentButton) {
             currentButton.getElement().classList.remove("tab-selected");
             currentButton.getElement().classList.add("tab-unselected");
         }
+        e.target.classList.add("tab-selected");
+        e.target.classList.remove("tab-unselected");
 
         currentButton = ls;
     };
