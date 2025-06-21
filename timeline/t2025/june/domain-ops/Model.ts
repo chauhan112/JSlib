@@ -1,5 +1,7 @@
 import { LocalStorageJSONModel } from "../../april/LocalStorage";
 import { v4 as uuidv4 } from "uuid";
+import { Atool, SetWrapper } from "../../april/Array";
+
 export class Model {
     model = new LocalStorageJSONModel("dom-ops-logger");
     domain: Domain = new Domain();
@@ -13,6 +15,8 @@ export class Model {
         this.domain.setModel(this.model);
         this.operations.setModel(this.model);
         this.activity.setModel(this.model);
+        this.activity.parent = this;
+
         this.logger.setModel(this.model);
         this.logStructure.setModel(this.model);
         this.properties.setModel(this.model);
@@ -94,16 +98,89 @@ export class Operations extends Domain {
 }
 
 export class Activity {
+    key: string = "activity";
+    dom: string = "domains";
+    ops: string = "operation";
     model: LocalStorageJSONModel | null = null;
+    parent: Model | null = null;
     setModel(model: LocalStorageJSONModel) {
         this.model = model;
     }
-    create(loc: string[], name: string) {}
-    read(loc: string[]) {}
-    updateName(loc: string[], name: string) {}
-    delete(loc: string[]) {}
-    exists(name: string, loc: string[]) {
-        return Tools.exists(name, loc, this.model!, "activity");
+    create(
+        loc: string[],
+        name: string,
+        operation: string,
+        domains: string[],
+        infos?: any
+    ) {
+        if (this.exists(domains, operation, loc)) {
+            throw new Error("Domain already exists");
+        }
+
+        let idd = uuidv4();
+        let newLoc = [...loc, this.key, idd];
+        this.model?.addEntry(newLoc, {
+            name: name,
+            [this.dom]: domains,
+            [this.ops]: operation,
+            ...infos,
+        });
+    }
+    isEqual(doms: string[], op: string, dom2: string[], op2: string) {
+        if (op !== op2) return false;
+        if (doms.length !== dom2.length) return false;
+        return SetWrapper.difference(new Set(doms), new Set(dom2)).size === 0;
+    }
+    read(loc: string[], id: string) {
+        return this.model?.readEntry([...loc, this.key, id]);
+    }
+    updateName(loc: string[], id: string, doms: string[], ops: string) {
+        if (!this.model?.exists([...loc, this.key, id])) {
+            throw new Error("Activity does not exist");
+        }
+        let path = [...loc, this.key, id];
+        if (doms.length > 0) {
+            this.model.updateEntry([...path, this.dom], doms);
+        }
+        if (ops) {
+            this.model.updateEntry([...path, this.ops], ops);
+        }
+    }
+    delete(loc: string[], id: string) {
+        if (!this.model?.exists([...loc, this.key, id])) {
+            throw new Error("Activity does not exist");
+        }
+        this.model.deleteEntry([...loc, this.key, id]);
+    }
+    exists(doms: string[], ops: string, loc: string[]) {
+        if (!this.model?.exists([...loc, this.key])) {
+            return false;
+        }
+        let vals = this.model.readEntry([...loc, this.key]);
+        for (let id in vals) {
+            if (
+                this.isEqual(vals[id][this.dom], vals[id][this.ops], doms, ops)
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+    readAll(loc: string[]) {
+        if (!this.model?.exists([...loc, this.key])) return [];
+        let vals = this.model.readEntry([...loc, this.key]);
+        let result: {
+            domains: { name: string; id: string }[];
+            operation: { name: string; id: string };
+            id: string;
+        }[] = [];
+        let allDoms = this.parent?.domain.readNameAndId(loc);
+        let allOps = this.parent?.operations.readNameAndId(loc);
+        for (let id in vals) {
+            result.push({});
+        }
+
+        return result;
     }
 }
 
