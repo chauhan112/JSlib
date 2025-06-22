@@ -1,18 +1,18 @@
-import {
-    ChevronLeft,
-    EllipsisVertical,
-    LogIn,
-    PencilLine,
-    Plus,
-    Trash,
-} from "lucide";
+import { ChevronLeft, Plus } from "lucide";
 import { Tools } from "../../april/tools";
 import { AppLogoSVG } from "./Logo";
 import { SearchComponent } from "../../may/FileSearch/Search";
-import { GComponent, IComponent } from "../../april/GComponent";
+import { GComponent } from "../../april/GComponent";
 import { Model } from "./Model";
-import "./newdesign.css";
+
 import { ContextMenu } from "./ContextMenu";
+import { GenericModal } from "../../may/FileSearch/Modal";
+import {
+    ActitivityForm,
+    TabComponent,
+    ActivityComponent,
+    NavChild,
+} from "./Component";
 
 let model = new Model();
 let contextMenu = ContextMenu([
@@ -23,6 +23,7 @@ let contextMenu = ContextMenu([
     { label: "Cut" },
     { label: "Select All" },
 ]);
+let modal = GenericModal("Activity Create Form");
 
 export const CardComponentWrapper = (comp: GComponent) => {
     const lay = Tools.div({
@@ -249,17 +250,52 @@ export const MainBody = () => {
     return Tools.div({
         key: "body",
         class: "flex-1 flex items-center justify-center",
-        children: [Navigation(), BodyContent(), Properties(), contextMenu],
+        children: [
+            Navigation(),
+            BodyContent(),
+            Properties(),
+            contextMenu,
+            modal,
+        ],
     });
 };
 export const BodyContent = () => {
-    const getActivityComponent = (op: string, doms: string[]) => {
+    const getActivityComponent = (
+        op: { name: string; id: string },
+        doms: { name: string; id: string }[]
+    ) => {
         return CardComponentWrapper(ActivityComponent({ op, doms }));
     };
     let listDisplayer = Tools.div({
         class: "flex flex-wrap gap-2 mt-2 bg-gray-200 p-2 rounded-lg h-full flex-1",
         textContent: "no activities yet",
     });
+
+    let res = model.activity.readAll([]);
+    const renderActivities = (
+        act: {
+            domains: { name: string; id: string }[];
+            operation: { name: string; id: string };
+            id: string;
+        }[]
+    ) => {
+        if (act.length === 0) {
+            listDisplayer.update({
+                innerHTML: "",
+                textContent: "no activities yet",
+            });
+            return;
+        }
+        listDisplayer.update({
+            innerHTML: "",
+            children: act.map((item) =>
+                getActivityComponent(item.operation, item.domains)
+            ),
+        });
+    };
+    renderActivities(res);
+
+    const activityCreateForm = ActitivityForm();
 
     return Tools.div({
         class: "flex flex-col items-center flex-1 h-full ",
@@ -274,9 +310,21 @@ export const BodyContent = () => {
                     Tools.div({
                         class: "flex items-center justify-between gap-2 mt-2",
                         children: [
-                            Tools.icon(Plus, {
-                                class: "w-12 h-12 cursor-pointer hover:bg-gray-200",
-                            }),
+                            Tools.icon(
+                                Plus,
+                                {
+                                    class: "w-12 h-12 cursor-pointer hover:bg-gray-200",
+                                },
+                                {
+                                    click: (e: any, ls: any) => {
+                                        console.log("Create Activity");
+                                        modal.s.handlers.display(
+                                            activityCreateForm
+                                        );
+                                        modal.s.handlers.show();
+                                    },
+                                }
+                            ),
                             SearchComponent(),
                         ],
                     }),
@@ -328,125 +376,6 @@ export const Properties = () => {
     crudOps.getElement();
     return lay;
 };
-export const NavChild = ({
-    name,
-    id,
-    ...props
-}: {
-    name: string;
-    id: string;
-    [key: string]: any;
-}) => {
-    return Tools.div({
-        class: "w-full flex items-center justify-between",
-        children: [
-            Tools.div(
-                {
-                    textContent: name,
-                    class: "text-white flex-1 text-center py-1 cursor-pointer hover:bg-gray-200 hover:text-black",
-                },
-                {
-                    click: props.onMainBodyClick,
-                },
-                { data: { name, id, ...props } }
-            ),
-            Tools.div({
-                class: "w-fit flex items-center justify-between",
-                children: [
-                    Tools.icon(
-                        EllipsisVertical,
-                        {
-                            class: "w-8 h-8 cursor-pointer hover:border border-yellow-500",
-                        },
-                        { click: props.onMenuOptionClick },
-                        { data: { name, id, ...props } }
-                    ),
-                ],
-            }),
-        ],
-    });
-};
-export const ActivityComponent = ({
-    op,
-    doms,
-    ...props
-}: {
-    op: string;
-    doms: string[];
-    [key: string]: any;
-}) => {
-    const opsContainer = Tools.div({
-        class: "flex flex-col hidden w-full absolute bottom-0 right-0 flex items-center gap-2 z-10 bg-gray-200 transparent h-2/3 items-center justify-around",
-        children: [
-            Tools.comp("button", {
-                class: "flex items-center justify-center w-full cursor-pointer hover:border border-green-500  py-2",
-                child: Tools.icon(LogIn),
-            }),
-            Tools.div({
-                class: "flex items-center gap-4",
-                children: [
-                    Tools.comp("button", {
-                        class: "flex items-center justify-center cursor-pointer hover:border border-yellow-500 w-full p-1",
-                        child: Tools.icon(PencilLine),
-                    }),
-
-                    Tools.comp("button", {
-                        class: "flex items-center justify-center cursor-pointer hover:border border-yellow-500 w-full p-1",
-                        child: Tools.icon(Trash),
-                    }),
-                    Tools.comp("button", {
-                        class: "flex items-center justify-center cursor-pointer hover:border border-yellow-500 w-full p-1",
-                        child: Tools.icon(EllipsisVertical),
-                    }),
-                ],
-            }),
-        ],
-    });
-
-    return Tools.div(
-        {
-            class: "flex flex-col gap-2 relative",
-            children: [
-                Tools.comp("p", {
-                    textContent: "operation",
-                    class: "font-bold text-sm text-green-500 flex ",
-                }), // tag
-                Tools.comp("ul", {
-                    class: "flex flex-wrap gap-2",
-                    children: [
-                        Tools.comp("li", {
-                            textContent: "domain1",
-                            class: "font-bold text-sm text-blue-500 ",
-                        }),
-                        Tools.comp("li", {
-                            textContent: "domain2",
-                            class: "font-bold text-sm text-blue-500 ",
-                        }),
-                    ],
-                }),
-                Tools.comp("h3", {
-                    textContent: "renamed version of activity",
-                }),
-
-                opsContainer,
-            ],
-        },
-        {
-            mouseenter: () => {
-                opsContainer.getElement().classList.remove("hidden");
-            },
-            mouseleave: () => {
-                opsContainer.getElement().classList.add("hidden");
-            },
-        }
-    );
-};
-export const DivWrapper = (children: IComponent[], ...props: any) => {
-    return Tools.div({
-        children: children,
-        ...props,
-    });
-};
 export const DomainOpsForm = () => {
     let form = Tools.comp("form", {
         class: "w-full flex flex-col items-center justify-center py-2 hidden",
@@ -475,57 +404,4 @@ export const DomainOpsForm = () => {
         }
     );
     return form;
-};
-
-export const TabComponent = (ops: { label: string; info?: any }[]) => {
-    let currentButton: GComponent | null = null;
-    let onTabClick = (e: any, ls: any) => {
-        if (currentButton) {
-            currentButton.getElement().classList.remove("tab-selected");
-            currentButton.getElement().classList.add("tab-unselected");
-        }
-        e.target.classList.add("tab-selected");
-        e.target.classList.remove("tab-unselected");
-
-        currentButton = ls;
-    };
-    const children = ops.map((op) => {
-        return Tools.comp(
-            "button",
-            {
-                textContent: op.label,
-                class: "hover:bg-white px-4 py-2 flex-1 border border-dashed cursor-pointer tab-unselected",
-            },
-            {
-                click: (e: any, ls: any) => {
-                    onTabClick(e, ls);
-                    if (ls.info) {
-                        console.log(ls.info);
-                    }
-                },
-            },
-            { info: op.info, label: op.label }
-        );
-    });
-    const getCurrentKey = () => {
-        return currentButton;
-    };
-
-    const setOnTabClick = (callback: (e: any, ls: any) => void) => {
-        onTabClick = callback;
-    };
-
-    const tabContainer = Tools.div(
-        {
-            class: "flex items-center justify-between w-full p-2 ",
-            children,
-        },
-        {},
-        { getCurrentKey, onTabClick, setOnTabClick }
-    );
-
-    if (ops.length > 0) {
-        (children[0].getElement() as HTMLButtonElement).click(); // Simulate click on the first tab
-    }
-    return tabContainer;
 };

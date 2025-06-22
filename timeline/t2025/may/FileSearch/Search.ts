@@ -142,7 +142,6 @@ const SearchCompCrud = () => {
     );
     return lay;
 };
-
 export const ConcatenatedSearch = () => {
     let searchComps: any = [];
 
