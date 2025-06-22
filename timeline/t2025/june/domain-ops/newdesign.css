@@ -12,3 +12,16 @@
     background-color: var(--color-bg-secondary);
     color: var(--color-text-secondary);
 }
+.glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.glass-input {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.glass-input:focus {
+    border-color: rgba(99, 102, 241, 0.8);
+}
