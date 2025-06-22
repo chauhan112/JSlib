@@ -165,24 +165,24 @@ export const ActitivityForm = () => {
     };
     return Tools.div(
         {
-        class: "flex items-center justify-center mx-auto bg-gradient-to-r from-[#1ABC9C] to-[#16A085] ",
+            class: "flex items-center justify-center mx-auto bg-gradient-to-r from-[#1ABC9C] to-[#16A085] ",
 
-        child: Tools.comp("form", {
+            child: Tools.comp("form", {
                 key: "form",
-            class: "glass-card p-8 rounded-2xl shadow-xl max-w-md w-full",
-            children: [
+                class: "glass-card p-8 rounded-2xl shadow-xl max-w-md w-full",
+                children: [
                     aliasName,
                     domainSelect,
                     operationSelect,
 
-                Tools.comp("button", {
+                    Tools.comp("button", {
                         key: "submitBtn",
-                    type: "submit",
-                    class: "w-full py-3 bg-white/20 hover:bg-white/30 text-white font-medium rounded-lg transition-colors border border-white/20",
+                        type: "submit",
+                        class: "w-full py-3 bg-white/20 hover:bg-white/30 text-white font-medium rounded-lg transition-colors border border-white/20",
                         textContent: "create",
-                        }),
-                    ],
-                }),
+                    }),
+                ],
+            }),
         },
         {},
         {
@@ -336,4 +336,129 @@ export const FormInputWrapper = (
         {},
         { labelComp, getValue, setValue, ...props }
     );
+};
+export const MultiSelectComponent = (options: any[], props?: any) => {
+    let optionsComp: { [key: string]: GComponent } = {};
+
+    const makeOption = (option: any) => {
+        const comp = Tools.comp("label", {
+            class: "flex items-center px-4 py-2 hover:border-l-2 hover:border-gray-600 cursor-pointer text-gray-700",
+            children: [
+                Tools.comp(
+                    "input",
+                    {
+                        key: "checkbox",
+                        type: "checkbox",
+                        class: "w-4 h-4 text-black border-gray-400 rounded-none focus:ring-0",
+                        value: option.value,
+                    },
+                    {
+                        change: (e: any, ls: any) => {
+                            updateBtnText();
+                        },
+                    },
+                    {
+                        data: option,
+                    }
+                ),
+                Tools.comp("span", {
+                    class: "ml-2",
+                    textContent: option.textContent,
+                }),
+            ],
+        });
+        optionsComp[option.value] = comp;
+        return comp;
+    };
+    const dropdownMenu = Tools.div(
+        {
+            class: "absolute w-full bg-white border-b-2 border-gray-400 rounded-none shadow-md max-h-60 overflow-y-auto z-10 hidden",
+            children: options.map(makeOption),
+        },
+        {
+            click: (e: any) => {
+                e.stopPropagation();
+            },
+        }
+    );
+    const selectedItems: any[] = [];
+    const selectButton = Tools.comp(
+        "button",
+        {
+            textContent: "Select Options",
+            class: "w-full px-4 py-2 text-left bg-white text-gray-800 border-b-2 border-gray-400 rounded-none focus:outline-none focus:border-black transition-colors",
+        },
+        {
+            click: (e: any, ls: any) => {
+                e.preventDefault();
+                dropdownMenu.getElement().classList.toggle("hidden");
+                DocumentHandler.getInstance().undoer.add(() => {
+                    dropdownMenu.getElement().classList.add("hidden");
+                });
+                e.stopPropagation();
+            },
+        }
+    );
+    const updateBtnText = () => {
+        selectedItems.length = 0;
+        for (const key in optionsComp) {
+            if (optionsComp[key].s.checkbox.component.checked) {
+                selectedItems.push(optionsComp[key].s.checkbox.s.data);
+            }
+        }
+        let btnText = "";
+        const selected = selectedItems.map((item: any) => item.textContent);
+        if (selected.length === 0) {
+            btnText = "Select options";
+        } else if (selected.length <= 2) {
+            btnText = selected.join(", ");
+        } else {
+            btnText = `${selected.length} options selected`;
+        }
+        selectButton.update({
+            textContent: btnText,
+        });
+    };
+    const setOptions = (options: any[]) => {
+        dropdownMenu.update({
+            innerHTML: "",
+            children: options.map(makeOption),
+        });
+    };
+    const getValue = () => {
+        return selectedItems;
+    };
+    const setValue = (value: any[]) => {
+        selectedItems.length = 0;
+        for (const key in optionsComp) {
+            optionsComp[key].s.checkbox.component.checked = false;
+        }
+        for (const option of value) {
+            optionsComp[option.value].s.checkbox.component.checked = true;
+        }
+        updateBtnText();
+    };
+    const clear = () => {
+        setValue([]);
+    };
+
+    let comp = Tools.div(
+        {
+            class: "relative",
+            children: [selectButton, dropdownMenu],
+        },
+        {},
+        {
+            selectButton,
+            dropdownMenu,
+            optionsComp,
+            makeOption,
+            updateBtnText,
+            setOptions,
+            getValue,
+            setValue,
+            clear,
+        }
+    );
+    return comp;
 };
