@@ -195,11 +195,7 @@ export const ActitivityForm = () => {
         }
     );
 };
-export const ActivityComponent = ({
-    op,
-    doms,
-    ...props
-}: {
+export const ActivityComponent = (value: {
     op: { name: string; id: string };
     doms: { name: string; id: string }[];
     [key: string]: any;
@@ -231,27 +227,23 @@ export const ActivityComponent = ({
             }),
         ],
     });
-
+    const DomElement = (dom: { name: string; id: string }) => {
+        return Tools.comp("li", {
+            textContent: dom.name,
+            class: "font-bold text-sm text-blue-500 ",
+        });
+    };
     return Tools.div(
         {
             class: "flex flex-col gap-2 relative",
             children: [
                 Tools.comp("p", {
-                    textContent: "operation",
+                    textContent: value.op.name,
                     class: "font-bold text-sm text-green-500 flex ",
                 }), // tag
                 Tools.comp("ul", {
                     class: "flex flex-wrap gap-2",
-                    children: [
-                        Tools.comp("li", {
-                            textContent: "domain1",
-                            class: "font-bold text-sm text-blue-500 ",
-                        }),
-                        Tools.comp("li", {
-                            textContent: "domain2",
-                            class: "font-bold text-sm text-blue-500 ",
-                        }),
-                    ],
+                    children: value.doms.map(DomElement),
                 }),
                 Tools.comp("h3", {
                     textContent: "renamed version of activity",
@@ -320,7 +312,7 @@ export const FormInputComponent = (label: string): GComponent => {
 export const FormInputWrapper = (
     label: string,
     props: {
-        inpComp: GComponent;
+        inpComp: IComponent;
         getValue?: () => any;
         setValue?: (string: string) => void;
     }
