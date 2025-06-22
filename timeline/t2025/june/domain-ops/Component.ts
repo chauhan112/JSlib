@@ -1,7 +1,7 @@
 import { EllipsisVertical, LogIn, PencilLine, Trash } from "lucide";
 import { Tools } from "../../april/tools";
 import { GComponent } from "../../april/GComponent";
-
+import "./newdesign.css";
 export const SearchComp = () => {
     return Tools.comp("form", {
         class: "w-full flex items-center justify-around",
