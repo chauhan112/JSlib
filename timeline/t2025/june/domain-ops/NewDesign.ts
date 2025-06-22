@@ -296,7 +296,46 @@ export const BodyContent = () => {
     renderActivities(res);
 
     const activityCreateForm = ActitivityForm();
-
+    activityCreateForm.s.form.update(
+        {},
+        {
+            submit: (e: any, ls: any) => {
+                e.preventDefault();
+                let values = activityCreateForm.s.getValue();
+                if (values.domains.length > 0 && values.operation) {
+                    activityCreateForm.s.resetForm();
+                    model.activity.create(
+                        [],
+                        values.aliasName,
+                        values.operation,
+                        values.domains
+                    );
+                } else {
+                    throw new Error("Please select a domain and an operation");
+                }
+                renderActivities(model.activity.readAll([]));
+                modal.s.handlers.hide();
+            },
+        }
+    );
+    const onCreate = (e: any, ls: any) => {
+        const domains = model.domain.readNameAndId([]).map((item) => {
+            return {
+                textContent: item.name,
+                value: item.id,
+            };
+        });
+        const operations = model.operations.readNameAndId([]).map((item) => {
+            return {
+                textContent: item.name,
+                value: item.id,
+            };
+        });
+        activityCreateForm.s.setDomains(domains);
+        activityCreateForm.s.setOperations(operations);
+        modal.s.handlers.display(activityCreateForm);
+        modal.s.handlers.show();
+    };
     return Tools.div({
         class: "flex flex-col items-center flex-1 h-full ",
         key: "contentArea",
@@ -316,13 +355,7 @@ export const BodyContent = () => {
                                     class: "w-12 h-12 cursor-pointer hover:bg-gray-200",
                                 },
                                 {
-                                    click: (e: any, ls: any) => {
-                                        console.log("Create Activity");
-                                        modal.s.handlers.display(
-                                            activityCreateForm
-                                        );
-                                        modal.s.handlers.show();
-                                    },
+                                    click: onCreate,
                                 }
                             ),
                             SearchComponent(),
