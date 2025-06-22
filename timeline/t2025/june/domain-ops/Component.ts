@@ -1,7 +1,8 @@
 import { EllipsisVertical, LogIn, PencilLine, Trash } from "lucide";
 import { Tools } from "../../april/tools";
-import { GComponent } from "../../april/GComponent";
+import { GComponent, IComponent } from "../../april/GComponent";
 import "./newdesign.css";
+import { DocumentHandler } from "../../april/Array";
 export const SearchComp = () => {
     return Tools.comp("form", {
         class: "w-full flex items-center justify-around",
@@ -27,7 +28,7 @@ export const SearchSettingBtn = () => {
 </svg>`,
     });
 };
-export const SelectComponent = (ops: any[]) => {
+export const SelectComponent = (ops: any[], props?: any) => {
     const makeOps = (option: Partial<HTMLOptionElement>) => {
         return Tools.comp("option", option);
     };
@@ -51,6 +52,7 @@ export const SelectComponent = (ops: any[]) => {
         {
             class: "w-full p-1 rounded-sm bg-gray-100 text-black border border-gray-300 transition-all duration-300",
             children: ops.map(makeOps),
+            ...props,
         },
         {},
         {
