@@ -116,64 +116,84 @@ export const TabComponent = (ops: { label: string; info?: any }[]) => {
     return tabContainer;
 };
 export const ActitivityForm = () => {
-    const dropdown = SelectComponent([
-        { value: "domain1", label: "Domain 1" },
-        { value: "domain2", label: "Domain 2" },
-    ]);
-
-    return Tools.div({
-        class: "flex items-center justify-center mx-auto bg-gradient-to-r from-[#1ABC9C] to-[#16A085] ",
-        child: Tools.comp("form", {
-            class: "glass-card p-8 rounded-2xl shadow-xl max-w-md w-full",
-            children: [
-                dropdown,
-                Tools.comp("div", {
-                    class: "mb-4",
-                    children: [
-                        Tools.comp("label", {
-                            class: "block text-white/80 mb-2",
-                            textContent: "Email",
-                        }),
-                        Tools.comp("input", {
-                            type: "email",
-                            class: "glass-input w-full p-3 rounded-lg text-white placeholder-white/50 focus:outline-none",
-                            placeholder: "your@email.com",
-                        }),
-                    ],
-                }),
-                Tools.comp("div", {
-                    class: "mb-6",
-                    children: [
-                        Tools.comp("label", {
-                            class: "block text-white/80 mb-2",
-                            textContent: "Password",
-                        }),
-                        Tools.comp("input", {
-                            type: "password",
-                            class: "glass-input w-full p-3 rounded-lg text-white placeholder-white/50 focus:outline-none",
-                            placeholder: "••••••••",
-                        }),
-                    ],
-                }),
-                Tools.comp("button", {
-                    type: "submit",
-                    class: "w-full py-3 bg-white/20 hover:bg-white/30 text-white font-medium rounded-lg transition-colors border border-white/20",
-                    textContent: "Login",
-                }),
-                Tools.comp("p", {
-                    class: "text-center mt-4 text-white/70",
-                    textContent: "Don't have an account?",
-                    children: [
-                        Tools.comp("a", {
-                            href: "#",
-                            class: "text-white hover:underline",
-                            textContent: "Sign up",
-                        }),
-                    ],
-                }),
-            ],
+    const aliasName = FormInputWrapper("alternate name", {
+        inpComp: Tools.comp("input", {
+            class: "glass-input w-full p-3 rounded-lg text-white placeholder-white/50 focus:outline-none",
+            placeholder: "name or alias",
+            name: "alternateName",
         }),
     });
+    const domainSelect = FormInputWrapper("select domain", {
+        inpComp: MultiSelectComponent([]),
+    });
+    const operationSelect = FormInputWrapper("select operation", {
+        inpComp: SelectComponent([]),
+    });
+
+    const setValue = (value: {
+        aliasName: string;
+        domains: { name: string; id: string }[];
+        operation: string;
+    }) => {
+        (aliasName.s.inpComp.getElement() as HTMLInputElement).value =
+            value.aliasName;
+        domainSelect.s.inpComp.s.setValue(value.domains);
+        operationSelect.s.inpComp.s.setValue(value.operation);
+    };
+    const getValue = () => {
+        let doms = domainSelect.s.inpComp.s
+            .getValue()
+            .map((d: { value: string; textContent: string }) => d.value);
+        return {
+            aliasName: (aliasName.s.inpComp.getElement() as HTMLInputElement)
+                .value,
+            domains: doms,
+            operation: (
+                operationSelect.s.inpComp.getElement() as HTMLSelectElement
+            ).value,
+        };
+    };
+    const setDomains = (domains: { value: string; label: string }[]) => {
+        domainSelect.s.inpComp.s.setOptions(domains);
+    };
+    const setOperations = (operations: { value: string; label: string }[]) => {
+        operationSelect.s.inpComp.s.setOptions(operations);
+    };
+
+    const resetForm = () => {
+        setValue({ aliasName: "", domains: [], operation: "" });
+    };
+    return Tools.div(
+        {
+        class: "flex items-center justify-center mx-auto bg-gradient-to-r from-[#1ABC9C] to-[#16A085] ",
+
+        child: Tools.comp("form", {
+                key: "form",
+            class: "glass-card p-8 rounded-2xl shadow-xl max-w-md w-full",
+            children: [
+                    aliasName,
+                    domainSelect,
+                    operationSelect,
+
+                Tools.comp("button", {
+                        key: "submitBtn",
+                    type: "submit",
+                    class: "w-full py-3 bg-white/20 hover:bg-white/30 text-white font-medium rounded-lg transition-colors border border-white/20",
+                        textContent: "create",
+                        }),
+                    ],
+                }),
+        },
+        {},
+        {
+            setValue,
+            getValue,
+            setDomains,
+            setOperations,
+            resetForm,
+            comps: { aliasName, domainSelect, operationSelect },
+        }
+    );
 };
 export const ActivityComponent = ({
     op,
