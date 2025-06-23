@@ -136,17 +136,27 @@ export class Activity {
     read(loc: string[], id: string) {
         return this.model?.readEntry([...loc, this.key, id]);
     }
-    updateName(loc: string[], id: string, doms: string[], ops: string) {
+    update(
+        loc: string[],
+        id: string,
+        doms: string[],
+        ops: string,
+        infos?: any
+    ) {
         if (!this.model?.exists([...loc, this.key, id])) {
             throw new Error("Activity does not exist");
         }
         let path = [...loc, this.key, id];
+        let curActivity = this.read(loc, id);
+
         if (doms.length > 0) {
-            this.model.updateEntry([...path, this.dom], doms);
+            curActivity[this.dom] = doms;
         }
         if (ops) {
-            this.model.updateEntry([...path, this.ops], ops);
+            curActivity[this.ops] = ops;
         }
+        curActivity = { ...curActivity, ...infos };
+        this.model?.updateEntry(path, curActivity);
     }
     delete(loc: string[], id: string) {
         if (!this.model?.exists([...loc, this.key, id])) {
