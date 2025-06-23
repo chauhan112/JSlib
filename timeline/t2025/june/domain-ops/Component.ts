@@ -1,8 +1,9 @@
-import { EllipsisVertical, LogIn, PencilLine, Trash } from "lucide";
+import { EllipsisVertical, LogIn, PencilLine, Trash, IconNode } from "lucide";
 import { Tools } from "../../april/tools";
 import { GComponent, IComponent } from "../../april/GComponent";
 import "./newdesign.css";
 import { DocumentHandler } from "../../april/Array";
+
 export const SearchComp = () => {
     return Tools.comp("form", {
         class: "w-full flex items-center justify-around",
@@ -131,12 +132,12 @@ export const ActitivityForm = () => {
     });
 
     const setValue = (value: {
-        aliasName: string;
+        name: string;
         domains: { name: string; id: string }[];
         operation: string;
     }) => {
         (aliasName.s.inpComp.getElement() as HTMLInputElement).value =
-            value.aliasName;
+            value.name;
         domainSelect.s.inpComp.s.setValue(value.domains);
         operationSelect.s.inpComp.s.setValue(value.operation);
     };
@@ -145,8 +146,7 @@ export const ActitivityForm = () => {
             .getValue()
             .map((d: { value: string; textContent: string }) => d.value);
         return {
-            aliasName: (aliasName.s.inpComp.getElement() as HTMLInputElement)
-                .value,
+            name: (aliasName.s.inpComp.getElement() as HTMLInputElement).value,
             domains: doms,
             operation: (
                 operationSelect.s.inpComp.getElement() as HTMLSelectElement
@@ -161,7 +161,7 @@ export const ActitivityForm = () => {
     };
 
     const resetForm = () => {
-        setValue({ aliasName: "", domains: [], operation: "" });
+        setValue({ name: "", domains: [], operation: "" });
     };
     return Tools.div(
         {
@@ -198,6 +198,7 @@ export const ActitivityForm = () => {
 export const ActivityComponent = (value: {
     op: { name: string; id: string };
     doms: { name: string; id: string }[];
+        name: string;
     [key: string]: any;
 }) => {
     const opsContainer = Tools.div({
@@ -246,7 +247,7 @@ export const ActivityComponent = (value: {
                     children: value.doms.map(DomElement),
                 }),
                 Tools.comp("h3", {
-                    textContent: "renamed version of activity",
+                    textContent: value.name,
                 }),
 
                 opsContainer,

@@ -262,9 +262,13 @@ export const MainBody = () => {
 export const BodyContent = () => {
     const getActivityComponent = (
         op: { name: string; id: string },
-        doms: { name: string; id: string }[]
+        doms: { name: string; id: string }[],
+        name: string,
+        id: string
     ) => {
-        return CardComponentWrapper(ActivityComponent({ op, doms }));
+        return CardComponentWrapper(
+            ActivityComponent({ op, doms, id, name }, onOpsClicked)
+        );
     };
     let listDisplayer = Tools.div({
         class: "flex flex-wrap gap-2 mt-2 bg-gray-200 p-2 rounded-lg h-full flex-1",
@@ -276,6 +280,7 @@ export const BodyContent = () => {
         act: {
             domains: { name: string; id: string }[];
             operation: { name: string; id: string };
+            name: string;
             id: string;
         }[]
     ) => {

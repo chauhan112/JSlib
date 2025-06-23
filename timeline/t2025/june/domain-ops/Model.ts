@@ -175,6 +175,7 @@ export class Activity {
             domains: { name: string; id: string }[];
             operation: { name: string; id: string };
             id: string;
+            name: string;
         }[] = [];
         let allDoms = this.parent?.domain.readNameAndId(loc);
         let allOps = this.parent?.operations.readNameAndId(loc);
@@ -196,7 +197,8 @@ export class Activity {
             result.push({
                 domains: doms,
                 operation: { name: opName, id: opId },
-                id: id,
+                id,
+                name: vals[id]["name"],
             });
         }
         return result;
