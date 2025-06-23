@@ -192,10 +192,10 @@ export const ActitivityForm = () => {
 };
 export const ActivityComponent = (
     value: {
-    op: { name: string; id: string };
-    doms: { name: string; id: string }[];
+        op: { name: string; id: string };
+        doms: { name: string; id: string }[];
         name: string;
-    [key: string]: any;
+        [key: string]: any;
     },
     onOpsClicked: (e: any, ls: any) => void
 ) => {
@@ -232,7 +232,7 @@ export const ActivityComponent = (
     };
     return Tools.div(
         {
-            class: "flex flex-col gap-2 relative",
+            class: "flex flex-col gap-2 relative min-h-32 w-32",
             children: [
                 Tools.comp("p", {
                     textContent: value.op.name,
@@ -431,7 +431,7 @@ export const MultiSelectComponent = (options: any[], props?: any) => {
             optionsComp[key].s.checkbox.component.checked = false;
         }
         for (const option of value) {
-            optionsComp[option.value].s.checkbox.component.checked = true;
+            optionsComp[option].s.checkbox.component.checked = true;
         }
         updateBtnText();
     };
