@@ -12,15 +12,6 @@ import { SmallCRUDops } from "./SimpleCrudOps";
 import { GlobalStates } from "./GlobalStates";
 
 let model = new Model();
-let contextMenu = ContextMenu([
-    { label: "Edit" },
-    { label: "Delete" },
-    { label: "Copy" },
-    { label: "Paste" },
-    { label: "Cut" },
-    { label: "Select All" },
-]);
-let modal = GenericModal("Activity Create Form");
 
 export const CardComponentWrapper = (comp: GComponent) => {
     const lay = Tools.div({
@@ -53,7 +44,7 @@ export const NewDesign = () => {
         {},
         {
             click: () => {
-                mainBody.s.right.getElement().classList.toggle("hidden");
+                mainBody.s.properties.getElement().classList.toggle("hidden");
                 header.s.closePropertiesSideBarIcon
                     .getElement()
                     .classList.toggle("rotate-180");
@@ -181,12 +172,10 @@ export const Navigation = (props?: any) => {
         };
         contextMenu.s.displayMenu(e, ls);
     };
-
     tabComp.s.setOnTabClick((e: any, ls: any) => {
         tabComp.s.onTabClick(e, ls);
         updateNavItems();
     });
-
     return Tools.div({
         class: "flex flex-col items-center min-w-[10rem] w-2/12 bg-[#1ABC9C] h-full",
 
@@ -200,19 +189,20 @@ export const Navigation = (props?: any) => {
     });
 };
 export const MainBody = () => {
-    return Tools.div({
-        key: "body",
-        class: "flex-1 flex items-center justify-center",
-        children: [
-            Navigation(),
-            BodyContent(),
-            Properties(),
-            contextMenu,
-            modal,
-        ],
-    });
+    let modal = GlobalStates.getInstance().getState("modal");
+    const properties = Properties();
+    return Tools.div(
+        {
+            key: "body",
+            class: "flex-1 flex items-center justify-center",
+            children: [Navigation(), BodyContent(), properties, modal],
+        },
+        {},
+        { properties }
+    );
 };
 export const BodyContent = () => {
+    let modal = GlobalStates.getInstance().getState("modal");
     const onOpsClicked = (e: any, ls: any) => {
         const typ = ls.s.data.type;
         const info = ls.s.data.info;
@@ -232,6 +222,7 @@ export const BodyContent = () => {
             activityCreateForm.s.comps.submitBtn.update({
                 textContent: "Update",
             });
+            modal.s.modalTitle.update({ textContent: "Update Activity" });
         } else if (typ === "delete") {
             if (confirm("Are you sure you want to delete this activity?")) {
                 model.activity.delete([], activityId);
@@ -253,7 +244,6 @@ export const BodyContent = () => {
         class: "flex flex-wrap gap-2 mt-2 bg-gray-200 p-2 rounded-lg h-full flex-1",
         textContent: "no activities yet",
     });
-
     let res = model.activity.readAll([]);
     const renderActivities = (
         act: {
@@ -305,7 +295,6 @@ export const BodyContent = () => {
     };
     const onEdit = (e: any, ls: any) => {
         e.preventDefault();
-        console.log("onEdit");
         let values = activityCreateForm.s.getValue();
         if (values.domains.length > 0 && values.operation) {
             activityCreateForm.s.resetForm();
@@ -344,6 +333,8 @@ export const BodyContent = () => {
         activityCreateForm.s.comps.submitBtn.update({
             textContent: "Create",
         });
+        modal.s.modalTitle.update({ textContent: "Create Activity" });
+        activityCreateForm.s.resetForm();
         activityCreateForm.s.setDomains(domains);
         activityCreateForm.s.setOperations(operations);
         modal.s.handlers.display(activityCreateForm);
