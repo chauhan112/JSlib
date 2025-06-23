@@ -1,6 +1,10 @@
+import { GenericModal } from "../../may/FileSearch/Modal";
 export class GlobalStates {
     static instance: GlobalStates;
-    private constructor() {}
+    private constructor() {
+        this.states = {};
+        this.addState("modal", GenericModal(""));
+    }
     static getInstance() {
         GlobalStates.instance ??= new GlobalStates();
         return GlobalStates.instance;
@@ -11,5 +15,8 @@ export class GlobalStates {
     }
     addState(key: string, value: any) {
         this.states[key] = value;
+    }
+    getState(key: string) {
+        return this.states[key];
     }
 }
