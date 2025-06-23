@@ -163,6 +163,12 @@ export const ActitivityForm = () => {
     const resetForm = () => {
         setValue({ name: "", domains: [], operation: "" });
     };
+    const submitBtn = Tools.comp("button", {
+        key: "submitBtn",
+        type: "submit",
+        class: "w-full py-3 bg-white/20 hover:bg-white/30 text-white font-medium rounded-lg transition-colors border border-white/20",
+        textContent: "create",
+    });
     return Tools.div(
         {
             class: "flex items-center justify-center mx-auto bg-gradient-to-r from-[#1ABC9C] to-[#16A085] ",
@@ -170,18 +176,7 @@ export const ActitivityForm = () => {
             child: Tools.comp("form", {
                 key: "form",
                 class: "glass-card p-8 rounded-2xl shadow-xl max-w-md w-full",
-                children: [
-                    aliasName,
-                    domainSelect,
-                    operationSelect,
-
-                    Tools.comp("button", {
-                        key: "submitBtn",
-                        type: "submit",
-                        class: "w-full py-3 bg-white/20 hover:bg-white/30 text-white font-medium rounded-lg transition-colors border border-white/20",
-                        textContent: "create",
-                    }),
-                ],
+                children: [aliasName, domainSelect, operationSelect, submitBtn],
             }),
         },
         {},
@@ -191,39 +186,40 @@ export const ActitivityForm = () => {
             setDomains,
             setOperations,
             resetForm,
-            comps: { aliasName, domainSelect, operationSelect },
+            comps: { aliasName, domainSelect, operationSelect, submitBtn },
         }
     );
 };
-export const ActivityComponent = (value: {
+export const ActivityComponent = (
+    value: {
     op: { name: string; id: string };
     doms: { name: string; id: string }[];
         name: string;
     [key: string]: any;
-}) => {
+    },
+    onOpsClicked: (e: any, ls: any) => void
+) => {
+    const UIComp = (icon: IconNode, info?: any) => {
+        return Tools.comp(
+            "button",
+            {
+                class: "flex items-center justify-center cursor-pointer hover:bg-gray-400 border-yellow-500 w-full p-1",
+                child: Tools.icon(icon),
+            },
+            { click: (e: any, ls: any) => onOpsClicked(e, ls) },
+            { data: info }
+        );
+    };
     const opsContainer = Tools.div({
         class: "flex flex-col hidden w-full absolute bottom-0 right-0 flex items-center gap-2 z-10 bg-gray-200 transparent h-2/3 items-center justify-around",
         children: [
-            Tools.comp("button", {
-                class: "flex items-center justify-center w-full cursor-pointer hover:border border-green-500  py-2",
-                child: Tools.icon(LogIn),
-            }),
+            UIComp(LogIn, { type: "select", info: value }),
             Tools.div({
                 class: "flex items-center gap-4",
                 children: [
-                    Tools.comp("button", {
-                        class: "flex items-center justify-center cursor-pointer hover:border border-yellow-500 w-full p-1",
-                        child: Tools.icon(PencilLine),
-                    }),
-
-                    Tools.comp("button", {
-                        class: "flex items-center justify-center cursor-pointer hover:border border-yellow-500 w-full p-1",
-                        child: Tools.icon(Trash),
-                    }),
-                    Tools.comp("button", {
-                        class: "flex items-center justify-center cursor-pointer hover:border border-yellow-500 w-full p-1",
-                        child: Tools.icon(EllipsisVertical),
-                    }),
+                    UIComp(PencilLine, { type: "edit", info: value }),
+                    UIComp(Trash, { type: "delete", info: value }),
+                    // UIComp(EllipsisVertical),
                 ],
             }),
         ],
