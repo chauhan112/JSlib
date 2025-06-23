@@ -332,29 +332,44 @@ export const BodyContent = () => {
     renderActivities(res);
 
     const activityCreateForm = ActitivityForm();
-    activityCreateForm.s.form.update(
-        {},
-        {
-            submit: (e: any, ls: any) => {
-                e.preventDefault();
-                let values = activityCreateForm.s.getValue();
-                if (values.domains.length > 0 && values.operation) {
-                    activityCreateForm.s.resetForm();
-                    model.activity.create(
-                        [],
-                values.name,
-                        values.operation,
-                        values.domains
-                    );
-                } else {
-                    throw new Error("Please select a domain and an operation");
-                }
-                renderActivities(model.activity.readAll([]));
-                modal.s.handlers.hide();
-            },
-        }
-    );
+
     const onCreate = (e: any, ls: any) => {
+        e.preventDefault();
+        let values = activityCreateForm.s.getValue();
+        if (values.domains.length > 0 && values.operation) {
+            activityCreateForm.s.resetForm();
+            model.activity.create(
+                [],
+                values.name,
+                values.operation,
+                values.domains
+            );
+        } else {
+            throw new Error("Please select a domain and an operation");
+        }
+        renderActivities(model.activity.readAll([]));
+        modal.s.handlers.hide();
+    };
+    const onEdit = (e: any, ls: any) => {
+        e.preventDefault();
+        console.log("onEdit");
+        let values = activityCreateForm.s.getValue();
+        if (values.domains.length > 0 && values.operation) {
+            activityCreateForm.s.resetForm();
+            model.activity.update(
+                [],
+                activityCreateForm.s.curId,
+                values.domains,
+                values.operation,
+                { name: values.name }
+            );
+        } else {
+            throw new Error("Please select a domain and an operation");
+        }
+        renderActivities(model.activity.readAll([]));
+        modal.s.handlers.hide();
+    };
+    const onPlusClicked = (e: any, ls: any) => {
         const domains = model.domain.readNameAndId([]).map((item) => {
             return {
                 textContent: item.name,
@@ -366,6 +381,15 @@ export const BodyContent = () => {
                 textContent: item.name,
                 value: item.id,
             };
+        });
+        activityCreateForm.s.form.update(
+            {},
+            {
+                submit: onCreate,
+            }
+        );
+        activityCreateForm.s.comps.submitBtn.update({
+            textContent: "Create",
         });
         activityCreateForm.s.setDomains(domains);
         activityCreateForm.s.setOperations(operations);
@@ -391,7 +415,7 @@ export const BodyContent = () => {
                                     class: "w-12 h-12 cursor-pointer hover:bg-gray-200",
                                 },
                                 {
-                                    click: onCreate,
+                                    click: onPlusClicked,
                                 }
                             ),
                             SearchComponent(),
