@@ -260,6 +260,32 @@ export const MainBody = () => {
     });
 };
 export const BodyContent = () => {
+    const onOpsClicked = (e: any, ls: any) => {
+        const typ = ls.s.data.type;
+        const info = ls.s.data.info;
+        let activityId = info.id;
+        if (typ === "select") {
+        } else if (typ === "edit") {
+            let activity = model.activity.read([], activityId);
+            onPlusClicked(e, ls);
+            activityCreateForm.s.setValue(activity);
+            activityCreateForm.s.curId = activityId;
+            activityCreateForm.s.form.update(
+                {},
+                {
+                    submit: onEdit,
+                }
+            );
+            activityCreateForm.s.comps.submitBtn.update({
+                textContent: "Update",
+            });
+        } else if (typ === "delete") {
+            if (confirm("Are you sure you want to delete this activity?")) {
+                model.activity.delete([], activityId);
+                renderActivities(model.activity.readAll([]));
+            }
+        }
+    };
     const getActivityComponent = (
         op: { name: string; id: string },
         doms: { name: string; id: string }[],
@@ -294,7 +320,12 @@ export const BodyContent = () => {
         listDisplayer.update({
             innerHTML: "",
             children: act.map((item) =>
-                getActivityComponent(item.operation, item.domains)
+                getActivityComponent(
+                    item.operation,
+                    item.domains,
+                    item.name,
+                    item.id
+                )
             ),
         });
     };
@@ -311,7 +342,7 @@ export const BodyContent = () => {
                     activityCreateForm.s.resetForm();
                     model.activity.create(
                         [],
-                        values.aliasName,
+                values.name,
                         values.operation,
                         values.domains
                     );
