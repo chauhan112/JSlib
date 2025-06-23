@@ -258,7 +258,6 @@ export class PropertySection implements IComponent {
         }
     }
     createProps() {
-        let p = { class: "hidden" }; // to trigger the tailwind class activation
         this.attributeForm!.s.comps.okBtn.getElement().classList.toggle(
             "hidden"
         );
