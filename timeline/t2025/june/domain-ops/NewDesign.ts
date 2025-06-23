@@ -6,13 +6,10 @@ import { GComponent } from "../../april/GComponent";
 import { Model } from "./Model";
 
 import { ContextMenu } from "./ContextMenu";
-import { GenericModal } from "../../may/FileSearch/Modal";
-import {
-    ActitivityForm,
-    TabComponent,
-    ActivityComponent,
-    NavChild,
-} from "./Component";
+import { ActitivityForm, TabComponent, ActivityComponent } from "./Component";
+import { Properties } from "./Properties";
+import { SmallCRUDops } from "./SimpleCrudOps";
+import { GlobalStates } from "./GlobalStates";
 
 let model = new Model();
 let contextMenu = ContextMenu([
@@ -101,55 +98,15 @@ export const Header = () => {
         { closeLeftSideBarIcon, closePropertiesSideBarIcon }
     );
 };
-export const SmallCRUDops = (ops: any[], form: GComponent) => {
-    form.getElement().classList.add("hidden");
-
-    const onMainBodyClick = (e: any, ls: any) => {};
-    const onMenuOptionClick = (e: any, ls: any) => {};
-    let state = {
-        onMainBodyClick,
-        onMenuOptionClick,
-    };
-    const getNavItem = (item: any) => {
-        return NavChild({
-            ...item,
-            onMainBodyClick: (e: any, ls: any) => {
-                state.onMainBodyClick(e, ls);
-            },
-            onMenuOptionClick: (e: any, ls: any) => {
-                state.onMenuOptionClick(e, ls);
-            },
-        });
-    };
-    const navItem = Tools.div({
-        class: "w-full flex flex-col items-center px-2 gap-2",
-        key: "navItems",
-        children: ops.map(getNavItem),
-    });
-    const updateNavItems = (items: any[]) => {
-        navItem.update({
-            innerHTML: "",
-            children: items.map(getNavItem),
-        });
-    };
-    return Tools.div(
-        {
-            class: "w-full",
-            children: [
-                Tools.comp("button", {
-                    key: "createBtn",
-                    textContent: "+ create new",
-                    class: "text-2xl w-full flex items-center justify-center py-4 hover:border cursor-pointer",
-                }),
-                form,
-                navItem,
-            ],
-        },
-        {},
-        { updateNavItems, state }
-    );
-};
-export const Navigation = () => {
+export const Navigation = (props?: any) => {
+    let contextMenu = ContextMenu([
+        { label: "Edit" },
+        { label: "Delete" },
+        { label: "Copy" },
+        { label: "Paste" },
+        { label: "Cut" },
+        { label: "Select All" },
+    ]);
     const createForm = DomainOpsForm();
     const onCreateNew = (e: any, ls: any) => {
         e.preventDefault();
@@ -171,17 +128,14 @@ export const Navigation = () => {
         createForm.getElement().classList.add("hidden");
         updateNavItems();
     };
-
     const tabComp = TabComponent([
         { label: "Domains", info: model.domain },
         { label: "Operations", info: model.operations },
     ]);
-
     const updateNavItems = () => {
         const curKey = tabComp.s.getCurrentKey();
         domCrud.s.updateNavItems(curKey.s.info.readNameAndId([]));
     };
-
     const domCrud = SmallCRUDops([], createForm);
     updateNavItems();
     domCrud.s.createBtn.update(
@@ -199,7 +153,6 @@ export const Navigation = () => {
             },
         }
     );
-
     domCrud.s.state.onMenuOptionClick = (e: any, ls: any) => {
         contextMenu.s.setOptions([
             { label: "Edit", info: ls.s.data },
@@ -241,7 +194,7 @@ export const Navigation = () => {
         children: [
             Tools.div({
                 class: "w-full flex justify-between flex-wrap",
-                children: [tabComp, domCrud],
+                children: [tabComp, domCrud, contextMenu],
             }),
         ],
     });
@@ -426,48 +379,6 @@ export const BodyContent = () => {
             }),
         ],
     });
-};
-export const Properties = () => {
-    const crudOps = SmallCRUDops(
-        [
-            { name: "key-value", id: "key1" },
-            { name: "key2-value", id: "key2" },
-        ],
-        Tools.comp("form", {
-            class: "w-full flex flex-col items-center justify-center py-2",
-            children: [
-                Tools.comp("input", {
-                    class: "w-full bg-white border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500",
-                    type: "text",
-                    placeholder: "key",
-                    name: "key",
-                }),
-                Tools.comp("input", {
-                    class: "w-full bg-white border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500",
-                    type: "text",
-                    placeholder: "value",
-                    name: "value",
-                }),
-                Tools.comp("input", {
-                    class: "w-full bg-white border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500",
-                    type: "submit",
-                }),
-            ],
-        })
-    );
-    const lay = Tools.div({
-        class: "flex flex-col items-center w-2/12 bg-[#1ABC9C] h-full",
-        key: "right",
-        children: [
-            Tools.div({
-                class: "bg-slate-700 py-2 text-xl font-bold border-white border-b w-full text-center text-white",
-                textContent: "Properties",
-            }),
-            crudOps,
-        ],
-    });
-    crudOps.getElement();
-    return lay;
 };
 export const DomainOpsForm = () => {
     let form = Tools.comp("form", {
