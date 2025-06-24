@@ -4,7 +4,6 @@ import { AppLogoSVG } from "./Logo";
 import { SearchComponent } from "../../may/FileSearch/Search";
 import { GComponent } from "../../april/GComponent";
 import { Model } from "./Model";
-
 import { ContextMenu } from "./ContextMenu";
 import { ActitivityForm, TabComponent, ActivityComponent } from "./Component";
 import { Properties } from "./Properties";
@@ -29,6 +28,7 @@ export const CardComponentWrapper = (comp: GComponent) => {
 };
 export const NewDesign = () => {
     const header = Header();
+    const mainBody = MainBody();
     header.s.closeLeftSideBarIcon.update(
         {},
         {
@@ -40,30 +40,48 @@ export const NewDesign = () => {
             },
         }
     );
-    header.s.closePropertiesSideBarIcon.getElement().classList.add("hidden");
-
-    header.s.closePropertiesSideBarIcon.update(
-        {},
-        {
-            click: () => {
-                mainBody.s.properties.getElement().classList.toggle("hidden");
-                header.s.closePropertiesSideBarIcon
-                    .getElement()
-                    .classList.toggle("rotate-180");
-            },
-        }
-    );
-    const mainBody = MainBody();
-    mainBody.s.nav.s.comps.contextMenu.s.contextMenuOptions.push({
-        label: "Properties",
-        onClick: (e: any, ls: any) => {
+    const propsStateActions: any = {
+        open: () => {
+            mainBody.s.properties.getElement().classList.remove("hidden");
             header.s.closePropertiesSideBarIcon
                 .getElement()
                 .classList.remove("hidden");
-            mainBody.s.properties.getElement().classList.remove("hidden");
+            header.s.closePropertiesSideBarIcon
+                .getElement()
+                .classList.add("rotate-180");
+        },
+        close: () => {
+            mainBody.s.properties.getElement().classList.add("hidden");
+            header.s.closePropertiesSideBarIcon
+                .getElement()
+                .classList.remove("rotate-180");
+        },
+        hideBtn: () => {
+            header.s.closePropertiesSideBarIcon
+                .getElement()
+                .classList.add("hidden");
+        },
+        toggle: () => {
+            mainBody.s.properties.getElement().classList.toggle("hidden");
+            header.s.closePropertiesSideBarIcon
+                .getElement()
+                .classList.toggle("rotate-180");
+        },
+    };
+    propsStateActions.hideBtn();
+    propsStateActions.close();
+    header.s.closePropertiesSideBarIcon.update(
+        {},
+        {
+            click: () => propsStateActions.toggle(),
+        }
+    );
+    mainBody.s.nav.s.comps.contextMenu.s.contextMenuOptions.push({
+        label: "Properties",
+        onClick: (e: any, ls: any) => {
+            propsStateActions.open();
         },
     });
-    mainBody.s.properties.getElement().classList.toggle("hidden");
     return Tools.div({
         class: "h-screen flex flex-col",
         children: [header, mainBody],
