@@ -231,32 +231,43 @@ export const MainBody = () => {
 };
 export const BodyContent = () => {
     let modal = GlobalStates.getInstance().getState("modal");
-    const onOpsClicked = (e: any, ls: any) => {
-        const typ = ls.s.data.type;
+    const onActivityEdit = (e: any, ls: any) => {
         const info = ls.s.data.info;
         let activityId = info.id;
-        if (typ === "select") {
-        } else if (typ === "edit") {
-            let activity = model.activity.read([], activityId);
-            onPlusClicked(e, ls);
+        let activity = model.activity.read([], activityId);
+        onPlusClicked(e, ls);
+        try {
             activityCreateForm.s.setValue(activity);
-            activityCreateForm.s.curId = activityId;
-            activityCreateForm.s.form.update(
-                {},
-                {
-                    submit: onEdit,
-                }
-            );
-            activityCreateForm.s.comps.submitBtn.update({
-                textContent: "Update",
-            });
-            modal.s.modalTitle.update({ textContent: "Update Activity" });
-        } else if (typ === "delete") {
-            if (confirm("Are you sure you want to delete this activity?")) {
-                model.activity.delete([], activityId);
-                renderActivities(model.activity.readAll([]));
-            }
+        } catch (error) {
+            console.log(error);
         }
+        activityCreateForm.s.curId = activityId;
+        activityCreateForm.s.form.update(
+            {},
+            {
+                submit: onEditSubmit,
+            }
+        );
+        activityCreateForm.s.comps.submitBtn.update({
+            textContent: "Update",
+        });
+        modal.s.modalTitle.update({ textContent: "Update Activity" });
+    };
+    const onActivityDelete = (e: any, ls: any) => {
+        const info = ls.s.data.info;
+        let activityId = info.id;
+        if (confirm("Are you sure you want to delete this activity?")) {
+            model.activity.delete([], activityId);
+            renderActivities(model.activity.readAll([]));
+        }
+    };
+    const activityOps: any = {
+        edit: onActivityEdit,
+        delete: onActivityDelete,
+    };
+    const onOpsClicked = (e: any, ls: any) => {
+        const typ = ls.s.data.type;
+        activityOps[typ]?.(e, ls);
     };
     const getActivityComponent = (
         op: { name: string; id: string },
@@ -304,7 +315,7 @@ export const BodyContent = () => {
 
     const activityCreateForm = ActitivityForm();
 
-    const onCreate = (e: any, ls: any) => {
+    const onCreateSubmit = (e: any, ls: any) => {
         e.preventDefault();
         let values = activityCreateForm.s.getValue();
         if (values.domains.length > 0 && values.operation) {
@@ -321,7 +332,7 @@ export const BodyContent = () => {
         renderActivities(model.activity.readAll([]));
         modal.s.handlers.hide();
     };
-    const onEdit = (e: any, ls: any) => {
+    const onEditSubmit = (e: any, ls: any) => {
         e.preventDefault();
         let values = activityCreateForm.s.getValue();
         if (values.domains.length > 0 && values.operation) {
@@ -355,7 +366,7 @@ export const BodyContent = () => {
         activityCreateForm.s.form.update(
             {},
             {
-                submit: onCreate,
+                submit: onCreateSubmit,
             }
         );
         activityCreateForm.s.comps.submitBtn.update({
@@ -368,36 +379,51 @@ export const BodyContent = () => {
         modal.s.handlers.display(activityCreateForm);
         modal.s.handlers.show();
     };
-    return Tools.div({
-        class: "flex flex-col items-center flex-1 h-full ",
-        key: "contentArea",
-        children: [
-            Tools.div({
-                class: "w-full flex flex-col px-2 border-gray-300",
-                children: [
-                    Tools.comp("span", {
-                        textContent: "Properties/Domains/Operations",
-                    }),
-                    Tools.div({
-                        class: "flex items-center justify-between gap-2 mt-2",
-                        children: [
-                            Tools.icon(
-                                Plus,
-                                {
-                                    class: "w-12 h-12 cursor-pointer hover:bg-gray-200",
-                                },
-                                {
-                                    click: onPlusClicked,
-                                }
-                            ),
-                            SearchComponent(),
-                        ],
-                    }),
-                    listDisplayer,
-                ],
-            }),
-        ],
-    });
+    return Tools.div(
+        {
+            class: "flex flex-col items-center flex-1 h-full ",
+            key: "contentArea",
+            children: [
+                Tools.div({
+                    class: "w-full flex flex-col px-2 border-gray-300",
+                    children: [
+                        Tools.comp("span", {
+                            textContent: "Properties/Domains/Operations",
+                        }),
+                        Tools.div({
+                            class: "flex items-center justify-between gap-2 mt-2",
+                            children: [
+                                Tools.icon(
+                                    Plus,
+                                    {
+                                        class: "w-12 h-12 cursor-pointer hover:bg-gray-200",
+                                    },
+                                    {
+                                        click: onPlusClicked,
+                                    }
+                                ),
+                                SearchComponent(),
+                            ],
+                        }),
+                        listDisplayer,
+                    ],
+                }),
+            ],
+        },
+        {},
+        {
+            comps: { activityCreateForm, listDisplayer },
+            handlers: {
+                renderActivities,
+                activityOps,
+                onOpsClicked,
+                getActivityComponent,
+                onCreateSubmit,
+                onEditSubmit,
+                onPlusClicked,
+            },
+        }
+    );
 };
 export const DomainOpsForm = () => {
     let form = Tools.comp("form", {
