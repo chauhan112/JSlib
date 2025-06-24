@@ -19,10 +19,14 @@ export const Properties = () => {
     });
     const form = new AttributeForm();
     form.getElement();
-    let comp = Tools.div({
-        class: "flex flex-col items-center w-fit bg-[#1ABC9C] h-full",
-        children: [header, table],
-    });
+    let comp = Tools.div(
+        {
+            class: "flex flex-col items-center w-fit bg-[#1ABC9C] h-full",
+            children: [header, table],
+        },
+        {},
+        { header, table, form }
+    );
     form.s.comps.closeBtn.getElement().classList.add("hidden");
 
     header.s.plus.update(
@@ -36,6 +40,7 @@ export const Properties = () => {
             },
         }
     );
+
     return comp;
 };
 
