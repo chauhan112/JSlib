@@ -41,9 +41,7 @@ export const NewDesign = () => {
         }
     );
     header.s.closePropertiesSideBarIcon.getElement().classList.add("hidden");
-    header.s.closePropertiesSideBarIcon
-        .getElement()
-        .classList.toggle("rotate-180");
+
     header.s.closePropertiesSideBarIcon.update(
         {},
         {
@@ -62,7 +60,7 @@ export const NewDesign = () => {
             header.s.closePropertiesSideBarIcon
                 .getElement()
                 .classList.remove("hidden");
-            header.s.closePropertiesSideBarIcon.handlers.click();
+            mainBody.s.properties.getElement().classList.remove("hidden");
         },
     });
     mainBody.s.properties.getElement().classList.toggle("hidden");
