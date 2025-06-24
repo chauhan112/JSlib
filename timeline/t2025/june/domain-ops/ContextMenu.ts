@@ -2,8 +2,11 @@ import { DocumentHandler } from "../../april/Array";
 import { Tools } from "../../april/tools";
 export const ContextMenu = (items: { label: string; info?: any }[]) => {
     const docHandler = DocumentHandler.getInstance();
-    const onMenuItemClick = (e: any, ls: any) => {};
-    const createMenuItem = (item: { label: string; info?: any }) => {
+    const createMenuItem = (item: {
+        label: string;
+        onClick?: (e: any, ls: any) => void;
+        info?: any;
+    }) => {
         return Tools.comp(
             "button",
             {
@@ -12,7 +15,7 @@ export const ContextMenu = (items: { label: string; info?: any }[]) => {
             },
             {
                 click: (e: any, ls: any) => {
-                    state.onMenuItemClick(e, ls);
+                    item.onClick?.(e, ls);
                 },
             },
             { data: item }
@@ -45,10 +48,8 @@ export const ContextMenu = (items: { label: string; info?: any }[]) => {
         });
         e.stopPropagation();
     };
-    const setMenuClickHandler = (handler: (e: MouseEvent, ls: any) => void) => {
-        state.onMenuItemClick = handler;
-    };
-    let state = { onMenuItemClick, createMenuItem, setOptions };
+
+    let state = { createMenuItem, setOptions };
     const menu = Tools.div(
         {
             class: "w-24 fixed bg-white rounded-sm border border-gray-100 text-black flex flex-col gap-1 z-10 hidden",
@@ -56,11 +57,9 @@ export const ContextMenu = (items: { label: string; info?: any }[]) => {
         },
         {},
         {
-            onMenuItemClick,
             createMenuItem,
             setOptions,
             displayMenu,
-            setMenuClickHandler,
             state,
             insts: { docHandler },
         }

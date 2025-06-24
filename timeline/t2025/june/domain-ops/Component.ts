@@ -86,9 +86,6 @@ export const TabComponent = (ops: { label: string; info?: any }[]) => {
             {
                 click: (e: any, ls: any) => {
                     onTabClick(e, ls);
-                    if (ls.info) {
-                        console.log(ls.info);
-                    }
                 },
             },
             { info: op.info, label: op.label }
