@@ -40,6 +40,10 @@ export const NewDesign = () => {
             },
         }
     );
+    header.s.closePropertiesSideBarIcon.getElement().classList.add("hidden");
+    header.s.closePropertiesSideBarIcon
+        .getElement()
+        .classList.toggle("rotate-180");
     header.s.closePropertiesSideBarIcon.update(
         {},
         {
@@ -52,7 +56,16 @@ export const NewDesign = () => {
         }
     );
     const mainBody = MainBody();
-    console.log(mainBody);
+    mainBody.s.nav.s.comps.contextMenu.s.contextMenuOptions.push({
+        label: "Properties",
+        onClick: (e: any, ls: any) => {
+            header.s.closePropertiesSideBarIcon
+                .getElement()
+                .classList.remove("hidden");
+            header.s.closePropertiesSideBarIcon.handlers.click();
+        },
+    });
+    mainBody.s.properties.getElement().classList.toggle("hidden");
     return Tools.div({
         class: "h-screen flex flex-col",
         children: [header, mainBody],
@@ -89,15 +102,20 @@ export const Header = () => {
         { closeLeftSideBarIcon, closePropertiesSideBarIcon }
     );
 };
-export const Navigation = (props?: any) => {
-    let contextMenu = ContextMenu([
-        { label: "Edit" },
-        { label: "Delete" },
-        { label: "Copy" },
-        { label: "Paste" },
-        { label: "Cut" },
-        { label: "Select All" },
-    ]);
+export const OptionsManager = () => {
+    const state: any = { options: {} };
+    const addOption = (option: any) => {
+        state.options[option.id] = option;
+    };
+    const removeOption = (id: string) => {
+        delete state.options[id];
+    };
+    const clear = () => (state.options = {});
+
+    return { state, addOption, removeOption, clear };
+};
+export const Navigation = () => {
+    let contextMenu = ContextMenu([]);
     const createForm = DomainOpsForm();
     const onCreateNew = (e: any, ls: any) => {
         e.preventDefault();
@@ -144,61 +162,73 @@ export const Navigation = (props?: any) => {
             },
         }
     );
-    domCrud.s.state.onMenuOptionClick = (e: any, ls: any) => {
-        contextMenu.s.setOptions([
-            { label: "Edit", info: ls.s.data },
-            { label: "Delete", info: ls.s.data },
-        ]);
-        let curKey = tabComp.s.getCurrentKey();
-        contextMenu.s.state.onMenuItemClick = (e: any, ls: any) => {
-            let item = ls.s.data;
-            if (item.label === "Edit") {
-                console.log("Delete", item.info);
-                createForm.getElement().classList.remove("hidden");
-                createForm.s.setFormValues({ name: item.info.name });
-                createForm.update(
-                    {},
-                    {
-                        submit: onEdit,
-                    },
-                    {
-                        info: item.info,
-                    }
-                );
-            } else if (item.label === "Delete") {
-                curKey.s.info.delete(item.info.id, []);
-                updateNavItems();
+    const onEditContextMenuOptionClick = (e: any, ls: any) => {
+        let item = contextMenu.s.currentContext.s.data;
+        createForm.getElement().classList.remove("hidden");
+        createForm.s.setFormValues({ name: item.name });
+        createForm.update(
+            {},
+            {
+                submit: onEdit,
+            },
+            {
+                info: item,
             }
-        };
-        contextMenu.s.displayMenu(e, ls);
+        );
     };
+    const onDeleteContextMenuOptionClick = (e: any, ls: any) => {
+        let item = contextMenu.s.currentContext.s.data;
+        let curKey = tabComp.s.getCurrentKey();
+        curKey.s.info.delete(item.id, []);
+        updateNavItems();
+    };
+    contextMenu.s.contextMenuOptions = [
+        { label: "Edit", onClick: onEditContextMenuOptionClick },
+        { label: "Delete", onClick: onDeleteContextMenuOptionClick },
+    ];
+    const onMenuClicked = (e: any, ls: any) => {
+        contextMenu.s.setOptions(contextMenu.s.contextMenuOptions);
+        contextMenu.s.displayMenu(e, ls);
+        contextMenu.s.currentContext = ls;
+    };
+    domCrud.s.state.onMenuOptionClick = onMenuClicked;
     tabComp.s.setOnTabClick((e: any, ls: any) => {
         tabComp.s.onTabClick(e, ls);
         updateNavItems();
     });
-    return Tools.div({
-        class: "flex flex-col items-center min-w-[10rem] w-2/12 bg-[#1ABC9C] h-full",
+    return Tools.div(
+        {
+            class: "flex flex-col items-center min-w-[10rem] w-2/12 bg-[#1ABC9C] h-full",
 
-        key: "nav",
-        children: [
-            Tools.div({
-                class: "w-full flex justify-between flex-wrap",
-                children: [tabComp, domCrud, contextMenu],
-            }),
-        ],
-    });
+            key: "nav",
+            children: [
+                Tools.div({
+                    class: "w-full flex justify-between flex-wrap",
+                    children: [tabComp, domCrud, contextMenu],
+                }),
+            ],
+        },
+        {},
+        {
+            comps: { tabComp, domCrud, contextMenu, createForm },
+            handlers: { onMenuClicked, onCreateNew, onEdit, updateNavItems },
+        }
+    );
 };
 export const MainBody = () => {
     let modal = GlobalStates.getInstance().getState("modal");
     const properties = Properties();
+    const nav = Navigation();
+    const bodyContent = BodyContent();
+
     return Tools.div(
         {
             key: "body",
             class: "flex-1 flex items-center justify-center",
-            children: [Navigation(), BodyContent(), properties, modal],
+            children: [nav, bodyContent, properties, modal],
         },
         {},
-        { properties }
+        { properties, nav, bodyContent }
     );
 };
 export const BodyContent = () => {
