@@ -10,8 +10,6 @@ import { Properties } from "./Properties";
 import { SmallCRUDops } from "./SimpleCrudOps";
 import { GlobalStates } from "./GlobalStates";
 
-let model = new Model();
-
 export const CardComponentWrapper = (comp: GComponent) => {
     const lay = Tools.div({
         class: "w-fit bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col items-center text-center h-[fit-content]",
@@ -44,15 +42,18 @@ export const NewDesign = () => {
     );
     const propsStateActions: any = {
         open: () => {
-            mainBody.s.properties.getElement().classList.remove("hidden");
+            mainBody.s.properties.s.show();
+            if (mainBody.s.properties.s.isShowing()) {
             header.s.closePropertiesSideBarIcon
                 .getElement()
                 .classList.remove("hidden");
             header.s.closePropertiesSideBarIcon
                 .getElement()
                 .classList.add("rotate-180");
+            }
         },
         close: () => {
+            mainBody.s.properties.s.hide();
             mainBody.s.properties.getElement().classList.add("hidden");
             header.s.closePropertiesSideBarIcon
                 .getElement()
@@ -70,6 +71,7 @@ export const NewDesign = () => {
                 .classList.toggle("rotate-180");
         },
     };
+
     propsStateActions.hideBtn();
     propsStateActions.close();
     header.s.closePropertiesSideBarIcon.update(
@@ -78,9 +80,13 @@ export const NewDesign = () => {
             click: () => propsStateActions.toggle(),
         }
     );
-    mainBody.s.nav.s.comps.contextMenu.s.contextMenuOptions.push({
+    const contextMenu = mainBody.s.nav.s.comps.contextMenu;
+    contextMenu.s.contextMenuOptions.push({
         label: "Properties",
         onClick: (e: any, ls: any) => {
+            let curKey = mainBody.s.nav.s.comps.tabComp.s.getCurrentKey();
+            let item = contextMenu.s.currentContext.s.data;
+            states.currentSpace = [curKey.s.info.key, item.id];
             propsStateActions.open();
         },
     });
