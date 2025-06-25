@@ -239,13 +239,42 @@ export class LogStructure {
 
 export class Properties {
     model: LocalStorageJSONModel | null = null;
+    key = "properties";
     setModel(model: LocalStorageJSONModel) {
         this.model = model;
     }
-    create(loc: string[], name: string) {}
-    read(loc: string[]) {}
-    updateName(loc: string[], name: string) {}
-    delete(loc: string[]) {}
+    create(loc: string[], key: string, value: any) {
+        if (this.model?.exists([...loc, this.key, key])) {
+            throw new Error("Property already exists");
+        }
+        this.model?.addEntry([...loc, this.key, key], value);
+    }
+    read(loc: string[], key: string) {
+        return this.model?.readEntry([...loc, this.key, key]);
+    }
+    update(loc: string[], key: string, value: any) {
+        this.model?.updateEntry([...loc, this.key, key], value);
+    }
+    delete(loc: string[], key: string) {
+        this.model?.deleteEntry([...loc, this.key, key]);
+    }
+    readAll(loc: string[]) {
+        if (!this.model?.exists([...loc, this.key])) return [];
+
+        const res: {
+            key: string;
+            value: any;
+        }[] = [];
+
+        const vals = this.model.readEntry([...loc, this.key]);
+        for (let key in vals) {
+            res.push({
+                key: key,
+                value: vals[key],
+            });
+        }
+        return res;
+    }
 }
 
 export class SearchFilters {
