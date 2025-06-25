@@ -2,7 +2,7 @@ import { EllipsisVertical, LogIn, PencilLine, Trash, IconNode } from "lucide";
 import { Tools } from "../../april/tools";
 import { GComponent, IComponent } from "../../april/GComponent";
 import "./newdesign.css";
-import { DocumentHandler } from "../../april/Array";
+import { DocumentHandler, Atool } from "../../april/Array";
 
 export const SearchComp = () => {
     return Tools.comp("form", {
@@ -454,5 +454,71 @@ export const MultiSelectComponent = (options: any[], props?: any) => {
             clear,
         }
     );
+    return comp;
+};
+export const Breadcrumb = () => {
+    const comp = Tools.div({
+        class: "flex items-center gap-2 text-center items-center",
+    });
+    const niceClass = {
+        class: "hover:after:w-full relative hover:text-indigo-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-indigo-600 after:transition-all after:duration-300 after:ease-in-out",
+    };
+    const compCreator = (item: any) => {
+        return Tools.div(
+            {
+                ...niceClass,
+                child: Tools.comp("a", {
+                    href: item.href,
+                    textContent: item.name,
+                }),
+            },
+            {},
+            {
+                data: item,
+            }
+        );
+    };
+
+    const separator = () =>
+        Tools.comp("span", {
+            class: "mx-0 mb-1",
+            textContent: "›",
+        });
+    const lastComponent = (item: any) => {
+        return Tools.div({
+            class: "hover:after:w-full relative text-green-600 font-medium",
+            textContent: item.name,
+        });
+    };
+
+    const getChildren = (data: any[]) => {
+        let params = Atool.addInMiddle(
+            data.slice(0, -1).map(handlers.compCreator),
+            separator
+        );
+        let last = data[data.length - 1];
+        if (!last) {
+            return params;
+        }
+        const lastComp = lastComponent(last);
+        params.push(separator());
+        params.push(lastComp);
+        return params;
+    };
+
+    const setData = (data: any[]) => {
+        comp.update({
+            innerHTML: "",
+            children: getChildren(data),
+        });
+    };
+    let handlers: any = {
+        compCreator,
+        setData,
+        getChildren,
+        separator,
+        lastComponent,
+    };
+    comp.update({}, {}, { niceClass, handlers });
     return comp;
 };
