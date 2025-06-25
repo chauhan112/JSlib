@@ -1,15 +1,75 @@
 import { Tools } from "../../april/tools";
-import { SmallCRUDops } from "./SimpleCrudOps";
 import {
     Test,
-    AttributeForm,
     PropertySection,
 } from "../../april/DomainOps/PropertySection";
-import { Plus } from "lucide";
+import { IconNode, Pencil, Plus, Trash } from "lucide";
 import { GlobalStates } from "./GlobalStates";
-export const CreateForm = () => {};
+import { Model } from "./Model";
 
-export const Properties = () => {
+export const Table = (headers: string[], includeActions: boolean = true) => {
+    const comp = Tools.comp("table", {
+        class: "w-full text-left",
+    });
+    const createHeader = (headers: string[]) => {
+        const hrows = headers.map((col: any) =>
+            Tools.comp("th", { textContent: col })
+        );
+        if (includeActions) {
+            hrows.push(Tools.comp("th", { textContent: "Actions" }));
+        }
+        return Tools.comp("tr", {
+            key: "header",
+            class: "text-gray-500",
+            children: hrows,
+        });
+    };
+    const createRow = (keyId: string, data: string[]) => {
+        const rows = data.map((col: any) =>
+            Tools.comp("td", { textContent: col })
+        );
+        if (includeActions) {
+            rows.push(Tools.comp("td", { child: opsRows(keyId) }));
+        }
+        return Tools.comp("tr", { children: rows });
+    };
+    const addRows = (data: string[][]) => {
+        const rows = data.map((row: string[]) => createRow(row[0], row));
+        comp.update({ innerHTML: "", child: headerTh, children: rows });
+    };
+    const opsRows = (keyId: string) => {
+        const OpsIcon = (icon: IconNode, key: string) => {
+            return Tools.icon(
+                icon,
+                { class: "hover:cursor-pointer w-4 h-4" },
+                { click: (e: any, ls: any) => onHandlers.onIconClicked(e, ls) },
+                { data: key }
+            );
+        };
+        return Tools.div({
+            class: "flex gap-2",
+            children: [OpsIcon(Pencil, keyId), OpsIcon(Trash, keyId)],
+        });
+    };
+    const onIconClicked = (e: any, ls: any) => {};
+    const onHandlers = {
+        onIconClicked,
+    };
+    const headerTh = createHeader(headers);
+    comp.update(
+        { child: headerTh },
+        {},
+        {
+            createHeader,
+            createRow,
+            addRows,
+            onHandlers,
+        }
+    );
+    return comp;
+};
+
+export const Properties = (root?: any) => {
     const props = new PropertySection();
     props.getElement();
     const header = Header();

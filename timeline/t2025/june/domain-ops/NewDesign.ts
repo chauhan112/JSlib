@@ -44,12 +44,12 @@ export const NewDesign = () => {
         open: () => {
             mainBody.s.properties.s.show();
             if (mainBody.s.properties.s.isShowing()) {
-            header.s.closePropertiesSideBarIcon
-                .getElement()
-                .classList.remove("hidden");
-            header.s.closePropertiesSideBarIcon
-                .getElement()
-                .classList.add("rotate-180");
+                header.s.closePropertiesSideBarIcon
+                    .getElement()
+                    .classList.remove("hidden");
+                header.s.closePropertiesSideBarIcon
+                    .getElement()
+                    .classList.add("rotate-180");
             }
         },
         close: () => {
