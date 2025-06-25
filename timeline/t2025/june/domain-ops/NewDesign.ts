@@ -5,7 +5,12 @@ import { SearchComponent } from "../../may/FileSearch/Search";
 import { GComponent } from "../../april/GComponent";
 import { Model } from "./Model";
 import { ContextMenu } from "./ContextMenu";
-import { ActitivityForm, TabComponent, ActivityComponent } from "./Component";
+import {
+    ActitivityForm,
+    TabComponent,
+    ActivityComponent,
+    Breadcrumb,
+} from "./Component";
 import { Properties } from "./Properties";
 import { SmallCRUDops } from "./SimpleCrudOps";
 import { GlobalStates } from "./GlobalStates";
@@ -24,6 +29,25 @@ export const CardComponentWrapper = (comp: GComponent) => {
     lay.s.display = display;
     return lay;
 };
+
+export class BreadCrumbTools {
+    static getPath(path: string[], model: Model) {
+        const res: { name: string; loc: string[] }[] = [
+            { name: "/root", loc: [] },
+        ];
+        const curLoc = [];
+        for (let i = 0; i < path.length; i += 2) {
+            curLoc.push(path[i]);
+            curLoc.push(path[i + 1]);
+            res.push({
+                name: model.model.readEntry([...curLoc, "name"]),
+                loc: [...curLoc],
+            });
+        }
+        return res;
+    }
+}
+
 export const NewDesign = () => {
     let model = new Model();
     let states: any = { model };
@@ -407,6 +431,9 @@ export const BodyContent = (root?: any) => {
         modal.s.handlers.display(activityCreateForm);
         modal.s.handlers.show();
     };
+
+    const breadCrumb = Breadcrumb();
+
     return Tools.div(
         {
             class: "flex flex-col items-center flex-1 h-full ",
@@ -415,9 +442,7 @@ export const BodyContent = (root?: any) => {
                 Tools.div({
                     class: "w-full flex flex-col px-2 border-gray-300",
                     children: [
-                        Tools.comp("span", {
-                            textContent: "Properties/Domains/Operations",
-                        }),
+                        breadCrumb,
                         Tools.div({
                             class: "flex items-center justify-between gap-2 mt-2",
                             children: [
@@ -440,7 +465,7 @@ export const BodyContent = (root?: any) => {
         },
         {},
         {
-            comps: { activityCreateForm, listDisplayer },
+            comps: { activityCreateForm, listDisplayer, breadCrumb },
             handlers: {
                 renderActivities,
                 activityOps,
