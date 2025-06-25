@@ -8,7 +8,7 @@ export interface IComponent {
 export class GComponent implements IComponent {
     handlers: { [key: string]: (...args: any[]) => void } = {};
     s: { [key: string]: any } = {};
-    props: { [key: string]: string } = {};
+    props: { [key: string]: any } = {};
     typ: string = "div";
     private component: HTMLElement | null = null;
     protected updateProp(key: string, value: any) {
