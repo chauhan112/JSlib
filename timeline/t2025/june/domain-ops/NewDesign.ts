@@ -50,7 +50,19 @@ export class BreadCrumbTools {
 
 export const NewDesign = () => {
     let model = new Model();
-    let states: any = { model };
+    let states: any = { model, currentSpace: [], currentLocation: [] };
+    const getCurrentSpace = () => {
+        return [...states.currentLocation, ...states.currentSpace];
+    };
+    states.getCurrentSpace = getCurrentSpace;
+    const setCurrentLocation = (loc: any) => {
+        states.currentLocation = loc;
+        mainBody.s.nav.s.handlers.updateNavItems();
+        breadCrumb.s.handlers.setData(
+            BreadCrumbTools.getPath(states.currentLocation, model)
+        );
+    };
+    states.setCurrentLocation = setCurrentLocation;
     const header = Header();
     const mainBody = MainBody(states);
     header.s.closeLeftSideBarIcon.update(
@@ -95,7 +107,22 @@ export const NewDesign = () => {
                 .classList.toggle("rotate-180");
         },
     };
-
+    const breadCrumb = mainBody.s.bodyContent.s.comps.breadCrumb;
+    breadCrumb.s.handlers.compCreator = (item: any) => {
+        return Tools.div(
+            {
+                class: "cursor-pointer " + breadCrumb.s.niceClass.class,
+                textContent: item.name,
+            },
+            {
+                click: (e: any, ls: any) => {
+                    states.setCurrentLocation(item.loc);
+                },
+            },
+            { data: item }
+        );
+    };
+    console.log(breadCrumb);
     propsStateActions.hideBtn();
     propsStateActions.close();
     header.s.closePropertiesSideBarIcon.update(
@@ -114,6 +141,8 @@ export const NewDesign = () => {
             propsStateActions.open();
         },
     });
+
+    mainBody.s.nav.s.handlers.updateNavItems();
     return Tools.div({
         class: "h-screen flex flex-col",
         children: [header, mainBody],
@@ -171,7 +200,7 @@ export const Navigation = (root?: any) => {
         const formData = new FormData(e.target);
         const name = formData.get("name") as string;
         const curKey = tabComp.s.getCurrentKey();
-        curKey.s.info.create([], name);
+        curKey.s.info.create(root?.currentLocation || [], name);
         (createForm.getElement() as HTMLFormElement).reset();
         createForm.getElement().classList.add("hidden");
         updateNavItems();
@@ -181,7 +210,11 @@ export const Navigation = (root?: any) => {
         const formData = new FormData(e.target);
         const name = formData.get("name") as string;
         const curKey = tabComp.s.getCurrentKey();
-        curKey.s.info.updateName([], createForm.s.info.id, name);
+        curKey.s.info.updateName(
+            root?.currentLocation || [],
+            createForm.s.info.id,
+            name
+        );
         (createForm.getElement() as HTMLFormElement).reset();
         createForm.getElement().classList.add("hidden");
         updateNavItems();
@@ -192,10 +225,13 @@ export const Navigation = (root?: any) => {
     ]);
     const updateNavItems = () => {
         const curKey = tabComp.s.getCurrentKey();
-        domCrud.s.updateNavItems(curKey.s.info.readNameAndId([]));
+
+        domCrud.s.updateNavItems(
+            curKey.s.info.readNameAndId(root?.currentLocation)
+        );
     };
     const domCrud = SmallCRUDops([], createForm);
-    updateNavItems();
+
     domCrud.s.createBtn.update(
         {},
         {
@@ -245,6 +281,14 @@ export const Navigation = (root?: any) => {
         tabComp.s.onTabClick(e, ls);
         updateNavItems();
     });
+    domCrud.s.state.onMainBodyClick = (e: any, ls: any) => {
+        let curKey = tabComp.s.getCurrentKey();
+        root?.setCurrentLocation([
+            ...root?.currentLocation,
+            curKey.s.info.key,
+            ls.s.data.id,
+        ]);
+    };
     return Tools.div(
         {
             class: "flex flex-col items-center min-w-[10rem] w-2/12 bg-[#1ABC9C] h-full",
