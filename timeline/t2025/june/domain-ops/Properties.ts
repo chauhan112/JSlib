@@ -1,6 +1,6 @@
 import { Tools } from "../../april/tools";
 import {
-    Test,
+    AttributeForm,
     PropertySection,
 } from "../../april/DomainOps/PropertySection";
 import { IconNode, Pencil, Plus, Trash } from "lucide";
@@ -73,21 +73,41 @@ export const Properties = (root?: any) => {
     const props = new PropertySection();
     props.getElement();
     const header = Header();
-    const table = Tools.container({
+    const table = Table(["Key", "Value"]);
+    const tableWrapper = Tools.container({
         class: "p-2 w-full text-white",
-        child: Test.table(),
+        child: table,
     });
+
     const form = new AttributeForm();
     form.getElement();
-    let comp = Tools.div(
-        {
-            class: "flex flex-col items-center w-fit bg-[#1ABC9C] h-full",
-            children: [header, table],
-        },
-        {},
-        { header, table, form }
-    );
+    let comp = Tools.div({
+        class: "flex flex-col items-center w-fit bg-[#1ABC9C] h-full",
+        children: [header, tableWrapper],
+    });
     form.s.comps.closeBtn.getElement().classList.add("hidden");
+
+    const renderValues = (keysVals: { key: string; value: string }[]) => {
+        const data = keysVals.map((kv: { key: string; value: string }) => [
+            kv.key,
+            kv.value,
+        ]);
+        table.s.addRows(data);
+    };
+
+    const show = () => {
+        let model = root?.model;
+        const space = root?.currentSpace;
+        if (!space) return;
+        let vals = model.properties.readAll(space);
+        renderValues(vals);
+        comp.getElement().classList.remove("hidden");
+    };
+    const hide = () => {
+        comp.getElement().classList.add("hidden");
+    };
+
+    const isShowing = () => !comp.getElement().classList.contains("hidden");
 
     header.s.plus.update(
         {},
@@ -97,7 +117,33 @@ export const Properties = (root?: any) => {
                 modal.s.modalTitle.update({ textContent: "Create Attribute" });
                 modal.s.handlers.display(form);
                 modal.s.handlers.show();
+                form.s.comps.okBtn.update({}, { click: onCreateSubmit });
             },
+        }
+    );
+
+    const onCreateSubmit = (e: any, ls: any) => {
+        e.preventDefault();
+        let model: Model = root?.model;
+        const space = root?.currentSpace;
+        if (!space) return;
+        let vals = form.getValues();
+        if (vals.type == "json") vals.value = JSON.parse(vals.value);
+        model.properties.create(space, vals.key, vals.value);
+        form.clearValues();
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.handlers.close();
+    };
+
+    comp.update(
+        {},
+        {},
+        {
+            comps: { header, table, form, tableWrapper },
+            renderValues,
+            show,
+            hide,
+            isShowing,
         }
     );
 
