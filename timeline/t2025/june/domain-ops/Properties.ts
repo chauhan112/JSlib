@@ -38,7 +38,7 @@ export const Table = (headers: string[], includeActions: boolean = true) => {
         comp.update({ innerHTML: "", child: headerTh, children: rows });
     };
     const opsRows = (keyId: string) => {
-        const OpsIcon = (icon: IconNode, key: string) => {
+        const OpsIcon = (icon: IconNode, key: any) => {
             return Tools.icon(
                 icon,
                 { class: "hover:cursor-pointer w-4 h-4" },
@@ -48,10 +48,15 @@ export const Table = (headers: string[], includeActions: boolean = true) => {
         };
         return Tools.div({
             class: "flex gap-2",
-            children: [OpsIcon(Pencil, keyId), OpsIcon(Trash, keyId)],
+            children: [
+                OpsIcon(Pencil, { key: keyId, type: "edit" }),
+                OpsIcon(Trash, { key: keyId, type: "delete" }),
+            ],
         });
     };
-    const onIconClicked = (e: any, ls: any) => {};
+    const onIconClicked = (e: any, ls: any) => {
+        console.log(ls.s.data);
+    };
     const onHandlers = {
         onIconClicked,
     };
@@ -122,6 +127,65 @@ export const Properties = (root?: any) => {
         }
     );
 
+    const onEdit = (e: any, ls: any) => {
+        let item = ls.s.data;
+        let model = root?.model;
+        const space = root?.currentSpace;
+        if (!space) return;
+        let value = model.properties.read(space, item.key);
+        let type = "string";
+        if (typeof value != "string") {
+            type = "json";
+        }
+
+        form.setValues({
+            key: item.key,
+            type: type,
+            value: type == "string" ? value : JSON.stringify(value),
+        });
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.modalTitle.update({ textContent: "Update Attribute" });
+        modal.s.handlers.display(form);
+        modal.s.handlers.show();
+        form.s.comps.okBtn.update({}, { click: onEditSubmit });
+    };
+    const onDelete = (e: any, ls: any) => {
+        let item = ls.s.data;
+        let model = root?.model;
+        const space = root?.currentSpace;
+        if (!space) return;
+        if (
+            confirm(
+                "Are you sure you want to delete the attribute " +
+                    item.key +
+                    "?"
+            )
+        ) {
+            model.properties.delete(space, item.key);
+            renderValues(model.properties.readAll(space));
+        }
+    };
+    const onEditSubmit = (e: any, ls: any) => {
+        e.preventDefault();
+        let model: Model = root?.model;
+        const space = root?.currentSpace;
+        if (!space) return;
+        let vals = form.getValues();
+        if (vals.type == "json") vals.value = JSON.parse(vals.value);
+        model.properties.update(space, vals.key, vals.value);
+        form.clearValues();
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.handlers.close();
+        renderValues(model.properties.readAll(space));
+    };
+
+    const handlers: any = { edit: onEdit, delete: onDelete };
+
+    table.s.onHandlers.onIconClicked = (e: any, ls: any) => {
+        let item = ls.s.data;
+        handlers[item.type](e, ls);
+    };
+
     const onCreateSubmit = (e: any, ls: any) => {
         e.preventDefault();
         let model: Model = root?.model;
@@ -133,6 +197,7 @@ export const Properties = (root?: any) => {
         form.clearValues();
         let modal = GlobalStates.getInstance().getState("modal");
         modal.s.handlers.close();
+        renderValues(model.properties.readAll(space));
     };
 
     comp.update(
@@ -144,6 +209,7 @@ export const Properties = (root?: any) => {
             show,
             hide,
             isShowing,
+            handlers,
         }
     );
 
