@@ -102,7 +102,7 @@ export const Properties = (root?: any) => {
 
     const show = () => {
         let model = root?.model;
-        const space = root?.currentSpace;
+        const space = root?.getCurrentSpace();
         if (!space) return;
         let vals = model.properties.readAll(space);
         renderValues(vals);
@@ -123,6 +123,7 @@ export const Properties = (root?: any) => {
                 modal.s.handlers.display(form);
                 modal.s.handlers.show();
                 form.s.comps.okBtn.update({}, { click: onCreateSubmit });
+                form.clearValues();
             },
         }
     );
@@ -130,7 +131,7 @@ export const Properties = (root?: any) => {
     const onEdit = (e: any, ls: any) => {
         let item = ls.s.data;
         let model = root?.model;
-        const space = root?.currentSpace;
+        const space = root?.getCurrentSpace();
         if (!space) return;
         let value = model.properties.read(space, item.key);
         let type = "string";
@@ -152,7 +153,7 @@ export const Properties = (root?: any) => {
     const onDelete = (e: any, ls: any) => {
         let item = ls.s.data;
         let model = root?.model;
-        const space = root?.currentSpace;
+        const space = root?.getCurrentSpace();
         if (!space) return;
         if (
             confirm(
@@ -168,7 +169,7 @@ export const Properties = (root?: any) => {
     const onEditSubmit = (e: any, ls: any) => {
         e.preventDefault();
         let model: Model = root?.model;
-        const space = root?.currentSpace;
+        const space = root?.getCurrentSpace();
         if (!space) return;
         let vals = form.getValues();
         if (vals.type == "json") vals.value = JSON.parse(vals.value);
@@ -189,7 +190,7 @@ export const Properties = (root?: any) => {
     const onCreateSubmit = (e: any, ls: any) => {
         e.preventDefault();
         let model: Model = root?.model;
-        const space = root?.currentSpace;
+        const space = root?.getCurrentSpace();
         if (!space) return;
         let vals = form.getValues();
         if (vals.type == "json") vals.value = JSON.parse(vals.value);
