@@ -27,8 +27,10 @@ export const CardComponentWrapper = (comp: GComponent) => {
     return lay;
 };
 export const NewDesign = () => {
+    let model = new Model();
+    let states: any = { model };
     const header = Header();
-    const mainBody = MainBody();
+    const mainBody = MainBody(states);
     header.s.closeLeftSideBarIcon.update(
         {},
         {
@@ -130,7 +132,8 @@ export const OptionsManager = () => {
 
     return { state, addOption, removeOption, clear };
 };
-export const Navigation = () => {
+export const Navigation = (root?: any) => {
+    let model = root?.model;
     let contextMenu = ContextMenu([]);
     const createForm = DomainOpsForm();
     const onCreateNew = (e: any, ls: any) => {
@@ -231,11 +234,11 @@ export const Navigation = () => {
         }
     );
 };
-export const MainBody = () => {
+export const MainBody = (root?: any) => {
     let modal = GlobalStates.getInstance().getState("modal");
-    const properties = Properties();
-    const nav = Navigation();
-    const bodyContent = BodyContent();
+    const properties = Properties(root);
+    const nav = Navigation(root);
+    const bodyContent = BodyContent(root);
 
     return Tools.div(
         {
@@ -247,7 +250,8 @@ export const MainBody = () => {
         { properties, nav, bodyContent }
     );
 };
-export const BodyContent = () => {
+export const BodyContent = (root?: any) => {
+    let model = root?.model;
     let modal = GlobalStates.getInstance().getState("modal");
     const onActivityEdit = (e: any, ls: any) => {
         const info = ls.s.data.info;
