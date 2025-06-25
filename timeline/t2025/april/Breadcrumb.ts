@@ -28,6 +28,7 @@ export class Breadcrumb implements IComponent {
             children: this.getParams(this.data),
         });
     }
+
     private getParams(data: { name: string; href: string; more?: any }[]) {
         let params = Atool.addInMiddle(
             data.slice(0, -1).map((item) => {
@@ -68,9 +69,14 @@ export class Breadcrumb implements IComponent {
     }
 }
 
-let breadcrumb = new Breadcrumb();
-breadcrumb.setData([
-    { name: "Home", href: "#" },
-    { name: "Library", href: "#" },
-    { name: "Data", href: "#" },
-]);
+export class Test {
+    static simpleTest() {
+        let breadcrumb = new Breadcrumb();
+        breadcrumb.setData([
+            { name: "Home", href: "#" },
+            { name: "Library", href: "#" },
+            { name: "Data", href: "#" },
+        ]);
+        return breadcrumb;
+    }
+}
