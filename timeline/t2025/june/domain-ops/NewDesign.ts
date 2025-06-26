@@ -1,6 +1,6 @@
-import { ChevronLeft, Plus } from "lucide";
+import { Plus } from "lucide";
 import { Tools } from "../../april/tools";
-import { AppLogoSVG } from "./Logo";
+
 import { SearchComponent } from "../../may/FileSearch/Search";
 import { GComponent } from "../../april/GComponent";
 import { Model } from "./Model";
@@ -10,6 +10,7 @@ import {
     TabComponent,
     ActivityComponent,
     Breadcrumb,
+    Header,
 } from "./Component";
 import { Properties } from "./Properties";
 import { SmallCRUDops } from "./SimpleCrudOps";
@@ -68,14 +69,12 @@ export const NewDesign = () => {
     states.setCurrentLocation = setCurrentLocation;
     const header = Header();
     const mainBody = MainBody(states);
-    header.s.closeLeftSideBarIcon.update(
+    header.s.left.update(
         {},
         {
             click: () => {
                 mainBody.s.nav.getElement().classList.toggle("hidden");
-                header.s.closeLeftSideBarIcon
-                    .getElement()
-                    .classList.toggle("rotate-180");
+                header.s.left.getElement().classList.toggle("rotate-180");
             },
         }
     );
@@ -83,31 +82,21 @@ export const NewDesign = () => {
         open: () => {
             mainBody.s.properties.s.show();
             if (mainBody.s.properties.s.isShowing()) {
-                header.s.closePropertiesSideBarIcon
-                    .getElement()
-                    .classList.remove("hidden");
-                header.s.closePropertiesSideBarIcon
-                    .getElement()
-                    .classList.add("rotate-180");
+                header.s.right.getElement().classList.remove("hidden");
+                header.s.right.getElement().classList.add("rotate-180");
             }
         },
         close: () => {
             mainBody.s.properties.s.hide();
             mainBody.s.properties.getElement().classList.add("hidden");
-            header.s.closePropertiesSideBarIcon
-                .getElement()
-                .classList.remove("rotate-180");
+            header.s.right.getElement().classList.remove("rotate-180");
         },
         hideBtn: () => {
-            header.s.closePropertiesSideBarIcon
-                .getElement()
-                .classList.add("hidden");
+            header.s.right.getElement().classList.add("hidden");
         },
         toggle: () => {
             mainBody.s.properties.getElement().classList.toggle("hidden");
-            header.s.closePropertiesSideBarIcon
-                .getElement()
-                .classList.toggle("rotate-180");
+            header.s.right.getElement().classList.toggle("rotate-180");
         },
     };
     const breadCrumb = mainBody.s.bodyContent.s.comps.breadCrumb;
@@ -127,7 +116,7 @@ export const NewDesign = () => {
     };
     propsStateActions.hideBtn();
     propsStateActions.close();
-    header.s.closePropertiesSideBarIcon.update(
+    header.s.right.update(
         {},
         {
             click: () => propsStateActions.toggle(),
@@ -152,37 +141,6 @@ export const NewDesign = () => {
         class: "h-screen flex flex-col",
         children: [header, mainBody],
     });
-};
-export const Header = () => {
-    const { svg } = AppLogoSVG();
-    svg.update({ class: "w-[2.6rem] ml-4" });
-    const closeLeftSideBarIcon = Tools.icon(ChevronLeft, {
-        class: "w-8 h-8 absolute left-0 cursor-pointer",
-    });
-    const closePropertiesSideBarIcon = Tools.icon(ChevronLeft, {
-        class: "w-8 h-8 absolute right-0 rotate-180 cursor-pointer",
-    });
-    return Tools.div(
-        {
-            class: "flex items-center justify-between px-4 bg-[#F5C85F]",
-            children: [
-                Tools.div({
-                    class: "m-2 flex items-center gap-4 ",
-                    children: [closeLeftSideBarIcon, svg],
-                }),
-                Tools.div({
-                    class: "text-xl font-bold",
-                    textContent: "Domain Ops Logger",
-                }),
-                Tools.div({
-                    class: "m-2 flex items-center gap-4 pr-4",
-                    child: closePropertiesSideBarIcon,
-                }),
-            ],
-        },
-        {},
-        { closeLeftSideBarIcon, closePropertiesSideBarIcon }
-    );
 };
 export const OptionsManager = () => {
     const state: any = { options: {} };
