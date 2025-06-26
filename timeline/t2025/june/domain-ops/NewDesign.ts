@@ -125,7 +125,6 @@ export const NewDesign = () => {
             { data: item }
         );
     };
-    console.log(breadCrumb);
     propsStateActions.hideBtn();
     propsStateActions.close();
     header.s.closePropertiesSideBarIcon.update(
@@ -270,7 +269,7 @@ export const Navigation = (root?: any) => {
     const onDeleteContextMenuOptionClick = (e: any, ls: any) => {
         let item = contextMenu.s.currentContext.s.data;
         let curKey = tabComp.s.getCurrentKey();
-        curKey.s.info.delete(item.id, []);
+        curKey.s.info.delete(item.id, root?.currentLocation);
         updateNavItems();
     };
     contextMenu.s.contextMenuOptions = [
