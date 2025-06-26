@@ -221,11 +221,12 @@ export const Properties = (root?: any) => {
     return comp;
 };
 
-const Header = () => {
+export const Header = () => {
     return Tools.div({
         class: "flex bg-slate-700 gap-2 font-bold items-center w-80  border-white border-b",
         children: [
             Tools.div({
+                key: "title",
                 class: "bg-slate-700 py-2 text-xl font-bold w-full text-center text-white",
                 textContent: "Properties",
             }),
