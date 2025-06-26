@@ -1,9 +1,52 @@
-import { EllipsisVertical, LogIn, PencilLine, Trash, IconNode } from "lucide";
+import {
+    EllipsisVertical,
+    LogIn,
+    PencilLine,
+    ChevronLeft,
+    Trash,
+    IconNode,
+} from "lucide";
 import { Tools } from "../../april/tools";
 import { GComponent, IComponent } from "../../april/GComponent";
 import "./newdesign.css";
 import { DocumentHandler, Atool } from "../../april/Array";
-
+import { AppLogoSVG } from "./Logo";
+export const Header = () => {
+    const { svg } = AppLogoSVG();
+    svg.update({ class: "w-[2.6rem] ml-4" });
+    const left = Tools.comp("div", {
+        child: Tools.icon(ChevronLeft, {
+            class: "w-8 h-8 cursor-pointer",
+        }),
+    });
+    const right = Tools.comp("div", {
+        child: Tools.icon(ChevronLeft, {
+            class: "w-8 h-8  cursor-pointer",
+        }),
+    });
+    return Tools.div(
+        {
+            class: "flex items-center justify-between px-4 bg-[#F5C85F]",
+            children: [
+                Tools.div({
+                    class: "m-2 flex items-center gap-4 ",
+                    children: [left, svg],
+                }),
+                Tools.div({
+                    key: "title",
+                    class: "text-xl font-bold",
+                    textContent: "Domain Ops Logger",
+                }),
+                Tools.div({
+                    class: "m-2 flex items-center gap-4 pr-4",
+                    child: right,
+                }),
+            ],
+        },
+        {},
+        { left, right }
+    );
+};
 export const SearchComp = () => {
     return Tools.comp("form", {
         class: "w-full flex items-center justify-around",
