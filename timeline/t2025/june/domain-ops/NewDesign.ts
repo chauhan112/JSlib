@@ -61,6 +61,9 @@ export const NewDesign = () => {
         breadCrumb.s.handlers.setData(
             BreadCrumbTools.getPath(states.currentLocation, model)
         );
+        mainBody.s.bodyContent.s.handlers.renderActivities(
+            model.activity.readAll(states.currentLocation)
+        );
     };
     states.setCurrentLocation = setCurrentLocation;
     const header = Header();
@@ -143,6 +146,9 @@ export const NewDesign = () => {
     });
 
     mainBody.s.nav.s.handlers.updateNavItems();
+    mainBody.s.bodyContent.s.handlers.renderActivities(
+        model.activity.readAll(states.currentLocation)
+    );
     return Tools.div({
         class: "h-screen flex flex-col",
         children: [header, mainBody],
@@ -379,7 +385,6 @@ export const BodyContent = (root?: any) => {
         class: "flex flex-wrap gap-2 mt-2 bg-gray-200 p-2 rounded-lg h-full flex-1",
         textContent: "no activities yet",
     });
-    let res = model.activity.readAll([]);
     const renderActivities = (
         act: {
             domains: { name: string; id: string }[];
@@ -407,8 +412,6 @@ export const BodyContent = (root?: any) => {
             ),
         });
     };
-    renderActivities(res);
-
     const activityCreateForm = ActitivityForm();
 
     const onCreateSubmit = (e: any, ls: any) => {
