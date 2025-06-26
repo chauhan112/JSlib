@@ -16,12 +16,15 @@ export const Header = () => {
     svg.update({ class: "w-[2.6rem] ml-4" });
     const left = Tools.comp("div", {
         child: Tools.icon(ChevronLeft, {
+            key: "icon",
             class: "w-8 h-8 cursor-pointer",
         }),
     });
     const right = Tools.comp("div", {
+        class: "flex items-center px-2 rounded-full cursor-pointer ",
         child: Tools.icon(ChevronLeft, {
-            class: "w-8 h-8  cursor-pointer",
+            key: "icon",
+            class: "w-8 h-8 cursor-pointer",
         }),
     });
     return Tools.div(
@@ -37,10 +40,7 @@ export const Header = () => {
                     class: "text-xl font-bold",
                     textContent: "Domain Ops Logger",
                 }),
-                Tools.div({
-                    class: "m-2 flex items-center gap-4 pr-4",
-                    child: right,
-                }),
+                right,
             ],
         },
         {},
