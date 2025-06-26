@@ -79,7 +79,7 @@ export const Properties = (root?: any) => {
     props.getElement();
     const header = Header();
     const table = Table(["Key", "Value"]);
-    const tableWrapper = Tools.container({
+    const tableWrapper = Tools.div({
         class: "p-2 w-full text-white",
         child: table,
     });
@@ -166,18 +166,29 @@ export const Properties = (root?: any) => {
             renderValues(model.properties.readAll(space));
         }
     };
-    const onEditSubmit = (e: any, ls: any) => {
-        e.preventDefault();
+    const runChanges = (
+        func: (
+            model: Model,
+            space: string[],
+            vals: { key: string; value: any }
+        ) => void
+    ) => {
         let model: Model = root?.model;
         const space = root?.getCurrentSpace();
         if (!space) return;
         let vals = form.getValues();
         if (vals.type == "json") vals.value = JSON.parse(vals.value);
-        model.properties.update(space, vals.key, vals.value);
+        func(model, space, vals);
         form.clearValues();
         let modal = GlobalStates.getInstance().getState("modal");
         modal.s.handlers.close();
         renderValues(model.properties.readAll(space));
+    };
+    const onEditSubmit = (e: any, ls: any) => {
+        e.preventDefault();
+        runChanges((model, space, vals) =>
+            model.properties.update(space, vals.key, vals.value)
+        );
     };
 
     const handlers: any = { edit: onEdit, delete: onDelete };
@@ -189,16 +200,9 @@ export const Properties = (root?: any) => {
 
     const onCreateSubmit = (e: any, ls: any) => {
         e.preventDefault();
-        let model: Model = root?.model;
-        const space = root?.getCurrentSpace();
-        if (!space) return;
-        let vals = form.getValues();
-        if (vals.type == "json") vals.value = JSON.parse(vals.value);
-        model.properties.create(space, vals.key, vals.value);
-        form.clearValues();
-        let modal = GlobalStates.getInstance().getState("modal");
-        modal.s.handlers.close();
-        renderValues(model.properties.readAll(space));
+        runChanges((model, space, vals) =>
+            model.properties.create(space, vals.key, vals.value)
+        );
     };
 
     comp.update(
