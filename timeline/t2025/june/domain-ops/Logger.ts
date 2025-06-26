@@ -11,8 +11,11 @@ class LoggerMainController {
     constructor(states: any) {
         this.inst = states;
     }
-    onGoback() {
-        this.inst.modal.s.handlers.close();
+    toggleRightNav() {
+        this.inst.rightNav.getElement().classList.toggle("hidden");
+        this.inst.header.s.right.s.icon
+            .getElement()
+            .classList.toggle("rotate-180");
     }
 }
 class MainPageController {
@@ -39,16 +42,38 @@ export const LoggerMain = () => {
     header.s.left
         .getElement()
         .classList.add("hover:scale-110", "transition-all", "duration-300");
-    header.s.right.update({
-        class: "hidden",
-    });
-    const ctrl = new LoggerMainController({ prop, struc, header, searchComp });
+    header.s.right.s.icon.getElement().classList.add("rotate-180");
+    header.s.right.update(
+        {},
+        {
+            click: () => {
+                ctrl.toggleRightNav();
+            },
+        }
+    );
+    header.s.right.s.icon
+        .getElement()
+        .classList.add("transition-all", "duration-300");
     struc.s.header.s.title.update({ textContent: "Structure" });
     let modal = GlobalStates.getInstance().getState("modal");
 
     const logsList = Tools.div({ class: "w-full h-full", child: table });
     const plusIcon = Tools.icon(Plus, {
         class: "w-12 h-12 mx-4 cursor-pointer hover:scale-110 transition-all duration-300",
+    });
+    const rightNav = Tools.div({
+        class: "flex flex-col h-full",
+        children: [prop, struc],
+    });
+    const ctrl = new LoggerMainController({
+        prop,
+        struc,
+        header,
+        searchComp,
+        table,
+        logsList,
+        plusIcon,
+        rightNav,
     });
     return Tools.div(
         {
@@ -59,7 +84,7 @@ export const LoggerMain = () => {
                     class: "flex w-full h-full",
                     children: [
                         Tools.div({
-                            class: "w-10/12 flex flex-col",
+                            class: "w-full flex flex-col",
                             children: [
                                 Tools.div({
                                     class: "flex items-center justify-between",
@@ -68,10 +93,7 @@ export const LoggerMain = () => {
                                 logsList,
                             ],
                         }),
-                        Tools.div({
-                            class: "flex flex-col h-full",
-                            children: [prop, struc],
-                        }),
+                        rightNav,
                     ],
                 }),
                 modal,
@@ -100,5 +122,6 @@ export const MainPage = () => {
             click: () => ctrl.onGoback(),
         }
     );
+
     return comp;
 };
