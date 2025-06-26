@@ -82,21 +82,21 @@ export const NewDesign = () => {
         open: () => {
             mainBody.s.properties.s.show();
             if (mainBody.s.properties.s.isShowing()) {
-                header.s.right.getElement().classList.remove("hidden");
-                header.s.right.getElement().classList.add("rotate-180");
+                header.s.right.s.icon.getElement().classList.remove("hidden");
+                header.s.right.s.icon.getElement().classList.add("rotate-180");
             }
         },
         close: () => {
             mainBody.s.properties.s.hide();
             mainBody.s.properties.getElement().classList.add("hidden");
-            header.s.right.getElement().classList.remove("rotate-180");
+            header.s.right.s.icon.getElement().classList.remove("rotate-180");
         },
         hideBtn: () => {
-            header.s.right.getElement().classList.add("hidden");
+            header.s.right.s.icon.getElement().classList.add("hidden");
         },
         toggle: () => {
             mainBody.s.properties.getElement().classList.toggle("hidden");
-            header.s.right.getElement().classList.toggle("rotate-180");
+            header.s.right.s.icon.getElement().classList.toggle("rotate-180");
         },
     };
     const breadCrumb = mainBody.s.bodyContent.s.comps.breadCrumb;
