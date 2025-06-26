@@ -236,3 +236,20 @@ const Header = () => {
         ],
     });
 };
+
+export const Section = () => {
+    const header = Header();
+
+    const body = Tools.div({
+        class: "p-2 w-full text-white h-full",
+    });
+
+    return Tools.div(
+        {
+            class: "flex flex-col items-center w-fit bg-[#1ABC9C] h-full",
+            children: [header, body],
+        },
+        {},
+        { header, body }
+    );
+};
