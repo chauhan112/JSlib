@@ -74,6 +74,136 @@ export const Table = (headers: string[], includeActions: boolean = true) => {
     return comp;
 };
 
+export class PropertiesCtrl {
+    inst: any;
+    model!: Model;
+    constructor(states: any) {
+        this.inst = states;
+    }
+    setModel(model: Model) {
+        this.model = model;
+    }
+    renderValues(keysVals: { key: string; value: string }[]) {
+        let table = this.inst.table;
+
+        const data = keysVals.map((kv: { key: string; value: string }) => [
+            kv.key,
+            kv.value,
+        ]);
+        table.s.addRows(data);
+    }
+    show() {
+        const space = this.getCurrentSpace();
+        if (!space) return;
+        let vals = this.model.properties.readAll(space);
+        this.renderValues(vals);
+        this.inst.comp.getElement().classList.remove("hidden");
+    }
+    hide() {
+        this.inst.comp.getElement().classList.add("hidden");
+    }
+    getCurrentSpace() {
+        return this.inst.states.getCurrentSpace();
+    }
+    isShowing() {
+        return !this.inst.comp.getElement().classList.contains("hidden");
+    }
+    onPlusClicked(e: any, ls: any) {
+        let form = this.inst.form;
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.modalTitle.update({ textContent: "Create Attribute" });
+        modal.s.handlers.display(form);
+        modal.s.handlers.show();
+        form.s.comps.okBtn.update(
+            {},
+            { click: this.onCreateSubmit.bind(this) }
+        );
+        form.clearValues();
+    }
+    onCreateSubmit(e: any, ls: any) {
+        e.preventDefault();
+        this.runChanges((space, vals) =>
+            this.model.properties.create(space, vals.key, vals.value)
+        );
+    }
+    runChanges(
+        func: (space: string[], vals: { key: string; value: any }) => void
+    ) {
+        let model: Model = this.model;
+        let form = this.inst.form;
+        const space = this.getCurrentSpace();
+        if (!space) return;
+        let vals = form.getValues();
+        if (vals.type == "json") vals.value = JSON.parse(vals.value);
+        func(space, vals);
+        form.clearValues();
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.handlers.close();
+        this.renderValues(model.properties.readAll(space));
+    }
+    onEdit(e: any, ls: any) {
+        let form = this.inst.form;
+        let item = ls.s.data;
+        const space = this.getCurrentSpace();
+        if (!space) return;
+        let value = this.model.properties.read(space, item.key);
+        let type = "string";
+        if (typeof value != "string") {
+            type = "json";
+        }
+
+        form.setValues({
+            key: item.key,
+            type: type,
+            value: type == "string" ? value : JSON.stringify(value),
+        });
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.modalTitle.update({ textContent: "Update Attribute" });
+        modal.s.handlers.display(form);
+        modal.s.handlers.show();
+        form.s.comps.okBtn.update({}, { click: this.onEditSubmit.bind(this) });
+    }
+    onEditSubmit(e: any, ls: any) {
+        e.preventDefault();
+        this.runChanges((space, vals) =>
+            this.model.properties.update(space, vals.key, vals.value)
+        );
+    }
+    onDelete(e: any, ls: any) {
+        let item = ls.s.data;
+
+        const space = this.getCurrentSpace();
+        if (!space) return;
+        if (
+            confirm(
+                "Are you sure you want to delete the attribute " +
+                    item.key +
+                    "?"
+            )
+        ) {
+            this.model.properties.delete(space, item.key);
+            this.renderValues(this.model.properties.readAll(space));
+        }
+    }
+    setup() {
+        this.inst.header.s.plus.update(
+            {},
+            {
+                click: this.onPlusClicked.bind(this),
+            }
+        );
+
+        this.inst.handlers = {
+            edit: this.onEdit.bind(this),
+            delete: this.onDelete.bind(this),
+        };
+
+        this.inst.table.s.onHandlers.onIconClicked = (e: any, ls: any) => {
+            let item = ls.s.data;
+            this.inst.handlers[item.type](e, ls);
+        };
+    }
+}
 export const Properties = (root?: any) => {
     const props = new PropertySection();
     props.getElement();
@@ -92,129 +222,13 @@ export const Properties = (root?: any) => {
     });
     form.s.comps.closeBtn.getElement().classList.add("hidden");
 
-    const renderValues = (keysVals: { key: string; value: string }[]) => {
-        const data = keysVals.map((kv: { key: string; value: string }) => [
-            kv.key,
-            kv.value,
-        ]);
-        table.s.addRows(data);
-    };
-
-    const show = () => {
-        let model = root?.model;
-        const space = root?.getCurrentSpace();
-        if (!space) return;
-        let vals = model.properties.readAll(space);
-        renderValues(vals);
-        comp.getElement().classList.remove("hidden");
-    };
-    const hide = () => {
-        comp.getElement().classList.add("hidden");
-    };
-
-    const isShowing = () => !comp.getElement().classList.contains("hidden");
-
-    header.s.plus.update(
-        {},
-        {
-            click: (e: any, ls: any) => {
-                let modal = GlobalStates.getInstance().getState("modal");
-                modal.s.modalTitle.update({ textContent: "Create Attribute" });
-                modal.s.handlers.display(form);
-                modal.s.handlers.show();
-                form.s.comps.okBtn.update({}, { click: onCreateSubmit });
-                form.clearValues();
-            },
-        }
-    );
-
-    const onEdit = (e: any, ls: any) => {
-        let item = ls.s.data;
-        let model = root?.model;
-        const space = root?.getCurrentSpace();
-        if (!space) return;
-        let value = model.properties.read(space, item.key);
-        let type = "string";
-        if (typeof value != "string") {
-            type = "json";
-        }
-
-        form.setValues({
-            key: item.key,
-            type: type,
-            value: type == "string" ? value : JSON.stringify(value),
-        });
-        let modal = GlobalStates.getInstance().getState("modal");
-        modal.s.modalTitle.update({ textContent: "Update Attribute" });
-        modal.s.handlers.display(form);
-        modal.s.handlers.show();
-        form.s.comps.okBtn.update({}, { click: onEditSubmit });
-    };
-    const onDelete = (e: any, ls: any) => {
-        let item = ls.s.data;
-        let model = root?.model;
-        const space = root?.getCurrentSpace();
-        if (!space) return;
-        if (
-            confirm(
-                "Are you sure you want to delete the attribute " +
-                    item.key +
-                    "?"
-            )
-        ) {
-            model.properties.delete(space, item.key);
-            renderValues(model.properties.readAll(space));
-        }
-    };
-    const runChanges = (
-        func: (
-            model: Model,
-            space: string[],
-            vals: { key: string; value: any }
-        ) => void
-    ) => {
-        let model: Model = root?.model;
-        const space = root?.getCurrentSpace();
-        if (!space) return;
-        let vals = form.getValues();
-        if (vals.type == "json") vals.value = JSON.parse(vals.value);
-        func(model, space, vals);
-        form.clearValues();
-        let modal = GlobalStates.getInstance().getState("modal");
-        modal.s.handlers.close();
-        renderValues(model.properties.readAll(space));
-    };
-    const onEditSubmit = (e: any, ls: any) => {
-        e.preventDefault();
-        runChanges((model, space, vals) =>
-            model.properties.update(space, vals.key, vals.value)
-        );
-    };
-
-    const handlers: any = { edit: onEdit, delete: onDelete };
-
-    table.s.onHandlers.onIconClicked = (e: any, ls: any) => {
-        let item = ls.s.data;
-        handlers[item.type](e, ls);
-    };
-
-    const onCreateSubmit = (e: any, ls: any) => {
-        e.preventDefault();
-        runChanges((model, space, vals) =>
-            model.properties.create(space, vals.key, vals.value)
-        );
-    };
-
+    const ctrl = new PropertiesCtrl({ comp, table, form, header });
     comp.update(
         {},
         {},
         {
             comps: { header, table, form, tableWrapper },
-            renderValues,
-            show,
-            hide,
-            isShowing,
-            handlers,
+            ctrl,
         }
     );
 

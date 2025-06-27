@@ -1,6 +1,5 @@
 import { Plus } from "lucide";
 import { Tools } from "../../april/tools";
-
 import { SearchComponent } from "../../may/FileSearch/Search";
 import { GComponent } from "../../april/GComponent";
 import { Model } from "./Model";
@@ -30,7 +29,6 @@ export const CardComponentWrapper = (comp: GComponent) => {
     lay.s.display = display;
     return lay;
 };
-
 export class BreadCrumbTools {
     static getPath(path: string[], model: Model) {
         const res: { name: string; loc: string[] }[] = [
@@ -48,7 +46,6 @@ export class BreadCrumbTools {
         return res;
     }
 }
-
 export const NewDesign = () => {
     let model = new Model();
     let states: any = { model, currentSpace: [], currentLocation: [] };
@@ -80,14 +77,14 @@ export const NewDesign = () => {
     );
     const propsStateActions: any = {
         open: () => {
-            mainBody.s.properties.s.show();
-            if (mainBody.s.properties.s.isShowing()) {
+            mainBody.s.properties.s.ctrl.show();
+            if (mainBody.s.properties.s.ctrl.isShowing()) {
                 header.s.right.s.icon.getElement().classList.remove("hidden");
                 header.s.right.s.icon.getElement().classList.add("rotate-180");
             }
         },
         close: () => {
-            mainBody.s.properties.s.hide();
+            mainBody.s.properties.s.ctrl.hide();
             mainBody.s.properties.getElement().classList.add("hidden");
             header.s.right.s.icon.getElement().classList.remove("rotate-180");
         },
@@ -138,10 +135,13 @@ export const NewDesign = () => {
     mainBody.s.bodyContent.s.handlers.renderActivities(
         model.activity.readAll(states.currentLocation)
     );
+    mainBody.s.properties.s.ctrl.setModel(model);
+    mainBody.s.properties.s.ctrl.setup();
+    mainBody.s.properties.s.ctrl.inst.states = states;
     const comp = Tools.div(
         {
-        class: "h-screen flex flex-col",
-        children: [header, mainBody],
+            class: "h-screen flex flex-col",
+            children: [header, mainBody],
         },
         {},
         {
@@ -416,18 +416,20 @@ export const BodyContent = (root?: any) => {
         modal.s.handlers.hide();
     };
     const onPlusClicked = (e: any, ls: any) => {
-        const domains = model.domain.readNameAndId([]).map((item) => {
+        const domains = model.domain.readNameAndId([]).map((item: any) => {
             return {
                 textContent: item.name,
                 value: item.id,
             };
         });
-        const operations = model.operations.readNameAndId([]).map((item) => {
-            return {
-                textContent: item.name,
-                value: item.id,
-            };
-        });
+        const operations = model.operations
+            .readNameAndId([])
+            .map((item: any) => {
+                return {
+                    textContent: item.name,
+                    value: item.id,
+                };
+            });
         activityCreateForm.s.form.update(
             {},
             {
