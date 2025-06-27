@@ -204,7 +204,7 @@ export class PropertiesCtrl {
         };
     }
 }
-export const Properties = (root?: any) => {
+export const Properties = () => {
     const props = new PropertySection();
     props.getElement();
     const header = Header();

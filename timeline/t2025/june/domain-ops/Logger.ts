@@ -2,10 +2,12 @@ import { Tools } from "../../april/tools";
 import { Table } from "../../april/DomainOps/Home";
 import { Header } from "./Component";
 import { GlobalStates } from "./GlobalStates";
-import { Section } from "./Properties";
+import { Properties, PropertiesCtrl, Section } from "./Properties";
 import { SearchComponent } from "../../may/FileSearch/Search";
 import { NewDesign } from "./NewDesign";
 import { ArrowLeft, Plus } from "lucide";
+import { Atool } from "../../april/Array";
+
 class LoggerMainController {
     inst: any;
     constructor(states: any) {
@@ -31,7 +33,7 @@ export const LoggerMain = () => {
     const activityName = "Ops: domain1, domain2, domain3";
     const header = Header();
     header.s.title.update({ textContent: activityName });
-    const prop = Section();
+    const prop = Properties();
     const struc = Section();
     const searchComp = SearchComponent();
     const table = Table();
@@ -55,16 +57,16 @@ export const LoggerMain = () => {
         .getElement()
         .classList.add("transition-all", "duration-300");
     struc.s.header.s.title.update({ textContent: "Structure" });
-    let modal = GlobalStates.getInstance().getState("modal");
 
     const logsList = Tools.div({ class: "w-full h-full", child: table });
     const plusIcon = Tools.icon(Plus, {
         class: "w-12 h-12 mx-4 cursor-pointer hover:scale-110 transition-all duration-300",
     });
     const rightNav = Tools.div({
-        class: "flex flex-col h-full",
+        class: "flex flex-col min-h-full",
         children: [prop, struc],
     });
+
     const ctrl = new LoggerMainController({
         prop,
         struc,
@@ -96,7 +98,6 @@ export const LoggerMain = () => {
                         rightNav,
                     ],
                 }),
-                modal,
             ],
         },
         {},
@@ -113,9 +114,38 @@ export const LoggerMain = () => {
 export const MainPage = () => {
     let lm = LoggerMain();
     let nd = NewDesign();
-    let comp = Tools.div({ child: lm });
-    let ctrl = new MainPageController({ lm, nd, comp });
+    let root = nd.s.states;
+    const onActivityStepIn = (e: any, ls: any) => {
+        const info = ls.s.data.info;
+        let activityId = info.id;
+        let loc = [
+            ...root?.currentLocation,
+            root?.model.activity.key,
+            activityId,
+        ];
+        let ctrl: PropertiesCtrl = lm.s.prop.s.ctrl;
+        ctrl.setModel(root.model);
+        ctrl.setup();
+        ctrl.inst.states = nd.s.states;
+        ctrl.setup();
+        ctrl.getCurrentSpace = () => loc;
+        comp.update({ innerHTML: "", child: lm });
+        lm.s.ctrl.setTitle(
+            info.op.name +
+                ": " +
+                Atool.join(
+                    info.doms.map((x: any) => x.name),
+                    ", "
+                )
+        );
+        ctrl.show();
+    };
 
+    let comp = Tools.div({ child: nd });
+    let ctrl = new MainPageController({ lm, nd, comp });
+    nd.s.mainBody.s.bodyContent.s.handlers.activityOps["select"] =
+        onActivityStepIn;
+    console.log(nd.s.mainBody.s.bodyContent.s.handlers.activityOps);
     lm.s.header.s.left.update(
         {},
         {

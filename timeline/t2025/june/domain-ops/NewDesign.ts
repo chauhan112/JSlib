@@ -11,7 +11,7 @@ import {
     Breadcrumb,
     Header,
 } from "./Component";
-import { Properties } from "./Properties";
+import { Properties, PropertiesCtrl } from "./Properties";
 import { SmallCRUDops } from "./SimpleCrudOps";
 import { GlobalStates } from "./GlobalStates";
 
@@ -135,9 +135,10 @@ export const NewDesign = () => {
     mainBody.s.bodyContent.s.handlers.renderActivities(
         model.activity.readAll(states.currentLocation)
     );
-    mainBody.s.properties.s.ctrl.setModel(model);
-    mainBody.s.properties.s.ctrl.setup();
-    mainBody.s.properties.s.ctrl.inst.states = states;
+    const ctrl: PropertiesCtrl = mainBody.s.properties.s.ctrl;
+    ctrl.setModel(model);
+    ctrl.setup();
+    ctrl.inst.states = states;
     const comp = Tools.div(
         {
             class: "h-screen flex flex-col",
@@ -147,6 +148,7 @@ export const NewDesign = () => {
         {
             header,
             mainBody,
+            states,
         }
     );
     states.newdesign = comp;
@@ -282,7 +284,7 @@ export const Navigation = (root?: any) => {
     );
 };
 export const MainBody = (root?: any) => {
-    const properties = Properties(root);
+    const properties = Properties();
     const nav = Navigation(root);
     const bodyContent = BodyContent(root);
 
@@ -329,6 +331,7 @@ export const BodyContent = (root?: any) => {
             renderActivities(model.activity.readAll([]));
         }
     };
+
     const activityOps: any = {
         edit: onActivityEdit,
         delete: onActivityDelete,
