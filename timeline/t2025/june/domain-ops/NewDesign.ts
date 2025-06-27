@@ -120,8 +120,8 @@ export const NewDesign = () => {
             click: () => propsStateActions.toggle(),
         }
     );
-    const contextMenu = mainBody.s.nav.s.comps.contextMenu;
-    contextMenu.s.contextMenuOptions.push({
+    const contextMenu = GlobalStates.getInstance().getState("contextMenu");
+    mainBody.s.nav.s.contextMenuOptions.push({
         label: "Properties",
         onClick: (e: any, ls: any) => {
             let curKey = mainBody.s.nav.s.comps.tabComp.s.getCurrentKey();
@@ -168,7 +168,7 @@ export const OptionsManager = () => {
 };
 export const Navigation = (root?: any) => {
     let model = root?.model;
-    let contextMenu = ContextMenu([]);
+    let contextMenu = GlobalStates.getInstance().getState("contextMenu");
     const createForm = DomainOpsForm();
     const onCreateNew = (e: any, ls: any) => {
         e.preventDefault();
@@ -242,12 +242,12 @@ export const Navigation = (root?: any) => {
         curKey.s.info.delete(item.id, root?.currentLocation);
         updateNavItems();
     };
-    contextMenu.s.contextMenuOptions = [
+    let contextMenuOptions = [
         { label: "Edit", onClick: onEditContextMenuOptionClick },
         { label: "Delete", onClick: onDeleteContextMenuOptionClick },
     ];
     const onMenuClicked = (e: any, ls: any) => {
-        contextMenu.s.setOptions(contextMenu.s.contextMenuOptions);
+        contextMenu.s.setOptions(contextMenuOptions);
         contextMenu.s.displayMenu(e, ls);
         contextMenu.s.currentContext = ls;
     };
@@ -272,14 +272,15 @@ export const Navigation = (root?: any) => {
             children: [
                 Tools.div({
                     class: "w-full flex justify-between flex-wrap",
-                    children: [tabComp, domCrud, contextMenu],
+                    children: [tabComp, domCrud],
                 }),
             ],
         },
         {},
         {
-            comps: { tabComp, domCrud, contextMenu, createForm },
+            comps: { tabComp, domCrud, createForm },
             handlers: { onMenuClicked, onCreateNew, onEdit, updateNavItems },
+            contextMenuOptions,
         }
     );
 };

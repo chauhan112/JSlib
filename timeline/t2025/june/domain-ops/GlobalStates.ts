@@ -1,15 +1,18 @@
 import { GComponent } from "../../april/GComponent";
 import { Tools } from "../../april/tools";
 import { GenericModal } from "../../may/FileSearch/Modal";
+import { ContextMenu } from "./ContextMenu";
 export class GlobalStates {
-    static instance: GlobalStates;
-    private comp: GComponent;
+    static instance: GlobalStates | null = null;
+    private readonly comp: GComponent;
     private constructor() {
         this.states = {};
         let modal = GenericModal("");
+        let contextMenu = ContextMenu([]);
         this.addState("modal", modal);
+        this.addState("contextMenu", contextMenu);
         this.comp = Tools.div({
-            children: [modal],
+            children: [modal, contextMenu],
         });
         this.addToBody();
     }
