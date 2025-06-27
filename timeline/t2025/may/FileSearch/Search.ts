@@ -59,7 +59,7 @@ export const SearchComponent = () => {
     let settingComp = Tools.icon(
         Cog,
         {
-            class: "w-12 h-12 text-gray-500 cursor-pointer hover:text-gray-700",
+            class: "w-12 h-12 text-gray-500 cursor-pointer hover:rotate-360 transition-transform duration-500",
         },
         {
             click: (e: any, ls: any) => {
