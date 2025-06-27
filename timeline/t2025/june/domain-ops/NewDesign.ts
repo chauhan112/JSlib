@@ -114,6 +114,7 @@ export const NewDesign = () => {
             { data: item }
         );
     };
+
     propsStateActions.hideBtn();
     propsStateActions.close();
     header.s.right.update(
@@ -281,7 +282,6 @@ export const Navigation = (root?: any) => {
     );
 };
 export const MainBody = (root?: any) => {
-    let modal = GlobalStates.getInstance().getState("modal");
     const properties = Properties(root);
     const nav = Navigation(root);
     const bodyContent = BodyContent(root);
@@ -290,7 +290,7 @@ export const MainBody = (root?: any) => {
         {
             key: "body",
             class: "flex-1 flex items-center justify-center",
-            children: [nav, bodyContent, properties, modal],
+            children: [nav, bodyContent, properties],
         },
         {},
         { properties, nav, bodyContent }

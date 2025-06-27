@@ -2,7 +2,8 @@ import { Tools, MoreTools } from "../../april/tools";
 import { LabeledInput } from "./LabeledInput";
 // npm install lucide
 import { Cog, RotateCcw, Plus, X } from "lucide";
-import { GenericModal } from "./Modal";
+import { GlobalStates } from "../../june/domain-ops/GlobalStates";
+
 // npm install uuid
 import { v4 as uuidv4 } from "uuid";
 
@@ -63,13 +64,15 @@ export const SearchComponent = () => {
         },
         {
             click: (e: any, ls: any) => {
+                modal.s.modalTitle.update({ textContent: "Search Settings" });
                 modal.s.handlers.display(concSearch);
                 modal.s.handlers.show();
             },
         }
     );
     let simpleSearch = SimpleSearch();
-    let modal = GenericModal("Search Settings");
+    let modal = GlobalStates.getInstance().getState("modal");
+    modal.s.modalTitle.update({ textContent: "Search Settings" });
     modal.s.wrap.getElement().classList.add("h-full", "w-full");
     const getSearchParams = () => {
         const isActive = concSearch.s.handlers.isActive();
@@ -88,7 +91,7 @@ export const SearchComponent = () => {
     let lay = Tools.div(
         {
             class: "flex w-full items-center gap-2 rounded-md border border-gray-300 bg-white p-2 shadow-sm",
-            children: [settingComp, simpleSearch, modal],
+            children: [settingComp, simpleSearch],
         },
         {},
         {
