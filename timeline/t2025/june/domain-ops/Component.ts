@@ -537,14 +537,14 @@ export const Breadcrumb = () => {
     const getChildren = (data: any[]) => {
         let params = Atool.addInMiddle(
             data.slice(0, -1).map(handlers.compCreator),
-            separator
+            handlers.separator
         );
         let last = data[data.length - 1];
         if (!last) {
             return params;
         }
         const lastComp = lastComponent(last);
-        params.push(separator());
+        params.push(handlers.separator());
         params.push(lastComp);
         return params;
     };
