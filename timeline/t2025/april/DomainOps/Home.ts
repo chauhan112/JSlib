@@ -164,9 +164,15 @@ export const Ops = () => {
     return Tools.div({
         class: "flex justify-end space-x-3 text-[#4A8C71]",
         children: [
-            Tools.icon(Eye, { class: "hover:cursor-pointer" }),
-            Tools.icon(Pencil, { class: "hover:cursor-pointer" }),
-            Tools.icon(Trash, { class: "hover:cursor-pointer" }),
+            Tools.icon(Eye, {
+                class: "hover:cursor-pointer hover:scale-110 transition-all duration-300",
+            }),
+            Tools.icon(Pencil, {
+                class: "hover:cursor-pointer hover:scale-110 transition-all duration-300",
+            }),
+            Tools.icon(Trash, {
+                class: "hover:cursor-pointer hover:scale-110 transition-all duration-300",
+            }),
         ],
     });
 };
