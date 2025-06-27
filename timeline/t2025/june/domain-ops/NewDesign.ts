@@ -137,10 +137,19 @@ export const NewDesign = () => {
     mainBody.s.bodyContent.s.handlers.renderActivities(
         model.activity.readAll(states.currentLocation)
     );
-    return Tools.div({
+    const comp = Tools.div(
+        {
         class: "h-screen flex flex-col",
         children: [header, mainBody],
-    });
+        },
+        {},
+        {
+            header,
+            mainBody,
+        }
+    );
+    states.newdesign = comp;
+    return comp;
 };
 export const OptionsManager = () => {
     const state: any = { options: {} };
@@ -437,6 +446,7 @@ export const BodyContent = (root?: any) => {
     };
 
     const breadCrumb = Breadcrumb();
+    const searchComp = SearchComponent();
 
     return Tools.div(
         {
@@ -459,7 +469,7 @@ export const BodyContent = (root?: any) => {
                                         click: onPlusClicked,
                                     }
                                 ),
-                                SearchComponent(),
+                                searchComp,
                             ],
                         }),
                         listDisplayer,
@@ -469,7 +479,12 @@ export const BodyContent = (root?: any) => {
         },
         {},
         {
-            comps: { activityCreateForm, listDisplayer, breadCrumb },
+            comps: {
+                activityCreateForm,
+                listDisplayer,
+                breadCrumb,
+                searchComp,
+            },
             handlers: {
                 renderActivities,
                 activityOps,
