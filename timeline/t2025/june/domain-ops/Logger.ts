@@ -1,13 +1,12 @@
 import { Tools } from "../../april/tools";
 import { Table } from "../../april/DomainOps/Home";
 import { Header } from "./Component";
-import { GlobalStates } from "./GlobalStates";
 import { Properties, PropertiesCtrl, Section } from "./Properties";
 import { SearchComponent } from "../../may/FileSearch/Search";
 import { NewDesign } from "./NewDesign";
 import { ArrowLeft, Plus } from "lucide";
 import { Atool } from "../../april/Array";
-
+import { GenericForm, Params } from "./Form";
 class LoggerMainController {
     inst: any;
     constructor(states: any) {
@@ -18,6 +17,9 @@ class LoggerMainController {
         this.inst.header.s.right.s.icon
             .getElement()
             .classList.toggle("rotate-180");
+    }
+    setTitle(title: string) {
+        this.inst.header.s.title.update({ textContent: title });
     }
 }
 class MainPageController {
@@ -57,7 +59,15 @@ export const LoggerMain = () => {
         .getElement()
         .classList.add("transition-all", "duration-300");
     struc.s.header.s.title.update({ textContent: "Structure" });
-
+    struc.s.header.s.plus.update(
+        {},
+        {
+            click: () => {
+                struc.s.body.update({ innerHTML: "", child: sf });
+            },
+        }
+    );
+    const sf = StructureForm();
     const logsList = Tools.div({ class: "w-full h-full", child: table });
     const plusIcon = Tools.icon(Plus, {
         class: "w-12 h-12 mx-4 cursor-pointer hover:scale-110 transition-all duration-300",
@@ -77,6 +87,16 @@ export const LoggerMain = () => {
         plusIcon,
         rightNav,
     });
+    const mainBody = Tools.div({
+        class: "w-full flex flex-col",
+        children: [
+            Tools.div({
+                class: "flex items-center justify-between",
+                children: [plusIcon, searchComp],
+            }),
+            logsList,
+        ],
+    });
     return Tools.div(
         {
             class: "w-full flex flex-col h-[100vh]",
@@ -84,19 +104,7 @@ export const LoggerMain = () => {
                 header,
                 Tools.div({
                     class: "flex w-full h-full",
-                    children: [
-                        Tools.div({
-                            class: "w-full flex flex-col",
-                            children: [
-                                Tools.div({
-                                    class: "flex items-center justify-between",
-                                    children: [plusIcon, searchComp],
-                                }),
-                                logsList,
-                            ],
-                        }),
-                        rightNav,
-                    ],
+                    children: [mainBody, rightNav],
                 }),
             ],
         },
@@ -109,6 +117,32 @@ export const LoggerMain = () => {
             ctrl,
         }
     );
+};
+
+export const StructureForm = () => {
+    const form = GenericForm();
+    let comps: any[] = [
+        Params.inp("test", {
+            class: "w-full p-2 rounded-md bg-gray-100 text-black",
+            placeholder: "Enter awdd",
+        }),
+        Params.inp("name", {
+            class: "w-full p-2 rounded-md bg-gray-100 text-black",
+            placeholder: "Enter name",
+        }),
+        Params.multi("sle", [
+            ["1", "cool"],
+            ["2", "coolsd"],
+        ]),
+        Params.inpSubmit(),
+    ];
+    form.s.handlers.setComponents(comps);
+    form.s.handlers.submit = (e: any, ls: any) => {
+        e.preventDefault();
+        console.log(form.s.handlers.getValues());
+        form.s.handlers.clearValues();
+    };
+    return form;
 };
 
 export const MainPage = () => {
