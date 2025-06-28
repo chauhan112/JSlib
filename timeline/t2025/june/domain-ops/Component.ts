@@ -374,7 +374,7 @@ export const FormInputWrapper = (
         { labelComp, getValue, setValue, ...props }
     );
 };
-export const MultiSelectComponent = (options: any[], props?: any) => {
+export const MultiSelectComponent = (options: any[]) => {
     let optionsComp: { [key: string]: GComponent } = {};
 
     const makeOption = (option: any) => {
