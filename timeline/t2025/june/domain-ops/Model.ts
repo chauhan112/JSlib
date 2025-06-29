@@ -55,9 +55,14 @@ export class Domain {
         if (this.exists(name, loc)) {
             throw new Error("Domain already exists");
         }
+        const now = new Date().toISOString();
         let idd = uuidv4();
         let newLoc = [...loc, this.key, idd];
-        this.model?.addEntry(newLoc, { name: name });
+        this.model?.addEntry(newLoc, {
+            name: name,
+            created: now,
+            modified: now,
+        });
     }
     read(id: string, loc: string[]) {
         if (!this.model?.exists([...loc, this.key, id])) {
@@ -70,9 +75,13 @@ export class Domain {
         return this.model?.readEntry([...loc, this.key]);
     }
     updateName(loc: string[], id: string, name: string) {
-        let path = [...loc, this.key, id, "name"];
+        let path = [...loc, this.key, id];
         if (!this.model?.exists(path)) return;
-        this.model.updateEntry(path, name);
+        let val = this.model.readEntry(path);
+        val.name = name;
+        const now = new Date().toISOString();
+        val.modified = now;
+        this.model.updateEntry(path, val);
     }
     delete(id: string, loc: string[]) {
         if (!this.model?.exists([...loc, this.key, id])) {
@@ -119,11 +128,14 @@ export class Activity {
         }
 
         let idd = uuidv4();
+        let now = new Date().toISOString();
         let newLoc = [...loc, this.key, idd];
         this.model?.addEntry(newLoc, {
             name: name,
             [this.dom]: domains,
             [this.ops]: operation,
+            created: now,
+            modified: now,
             ...infos,
         });
     }
@@ -154,7 +166,8 @@ export class Activity {
         if (ops) {
             curActivity[this.ops] = ops;
         }
-        curActivity = { ...curActivity, ...infos };
+        let now = new Date().toISOString();
+        curActivity = { ...curActivity, ...infos, modified: now };
         this.model?.updateEntry(path, curActivity);
     }
     delete(loc: string[], id: string) {
@@ -216,13 +229,36 @@ export class Activity {
 
 export class Logger {
     model: LocalStorageJSONModel | null = null;
+    key = "logs";
+    logType: "unstructured" | "structured" = "unstructured";
     setModel(model: LocalStorageJSONModel) {
         this.model = model;
     }
-    create(loc: string[], name: string) {}
-    read(loc: string[]) {}
-    updateName(loc: string[], name: string) {}
-    delete(loc: string[]) {}
+    create(loc: string[], vals: any) {
+        let idd = uuidv4();
+        let now = new Date().toISOString();
+        this.model?.addEntry([...loc, this.key, this.logType, idd], {
+            ...vals,
+            created: now,
+            modified: now,
+        });
+    }
+    read(loc: string[], id: string) {
+        let vals = this.model?.readEntry([...loc, this.key, this.logType, id]);
+        return vals;
+    }
+    update(loc: string[], id: string, newVals: any) {
+        if (!this.model?.exists([...loc, this.key, this.logType, id])) return;
+        let now = new Date().toISOString();
+        this.model?.updateEntry([...loc, this.key, this.logType, id], {
+            ...newVals,
+            modified: now,
+        });
+    }
+    delete(loc: string[], id: string) {
+        if (!this.model?.exists([...loc, this.key, this.logType, id])) return;
+        this.model?.deleteEntry([...loc, this.key, this.logType, id]);
+    }
 }
 export type InputType =
     | "input"
