@@ -2,7 +2,6 @@ import { LocalStorageJSONModel } from "../../april/LocalStorage";
 import { v4 as uuidv4 } from "uuid";
 import { SetWrapper } from "../../april/Array";
 import { HashMapDataStructure } from "../HashMap";
-import { all } from "axios";
 
 export class Model {
     model = new LocalStorageJSONModel("dom-ops-logger");
@@ -225,16 +224,59 @@ export class Logger {
     updateName(loc: string[], name: string) {}
     delete(loc: string[]) {}
 }
+export type InputType =
+    | "input"
+    | "largeText"
+    | "file"
+    | "select"
+    | "date"
+    | "time"
+    | "number"
+    | "checkbox";
 
 export class LogStructure {
     model: LocalStorageJSONModel | null = null;
+    key = "structure";
     setModel(model: LocalStorageJSONModel) {
         this.model = model;
     }
-    create(loc: string[], name: string) {}
-    read(loc: string[]) {}
-    updateName(loc: string[], name: string) {}
-    delete(loc: string[]) {}
+    create(loc: string[], name: string, type: InputType, order: number) {
+        if (this.model?.exists([...loc, this.key, name])) {
+            throw new Error("Log already exists");
+        }
+        let idd = uuidv4();
+        let vals = this.model?.readEntry([...loc, this.key]);
+        vals[idd] = { name, type, order, id: idd };
+        this.sortValsAndReassignOrder(vals);
+        this.model?.addEntry([...loc, this.key], vals);
+        return idd;
+    }
+    sortValsAndReassignOrder(vals: any) {
+        let valsArr = Object.values(vals);
+        valsArr.sort((a: any, b: any) => a.order - b.order);
+        let n = 0;
+        for (let v of valsArr as any) {
+            vals[v.id]["order"] = n;
+            n += 2;
+        }
+        return vals;
+    }
+    read(loc: string[]) {
+        let vals = this.model?.readEntry([...loc, this.key]);
+        return Object.values(vals);
+    }
+    updateIds(loc: string[], id: string, newVal: any) {
+        let vals = this.model?.readEntry([...loc, this.key]);
+        vals[id] = { ...vals[id], ...newVal };
+        this.sortValsAndReassignOrder(vals);
+        this.model?.updateEntry([...loc, this.key], vals);
+    }
+    delete(loc: string[], id: string) {
+        let vals = this.model?.readEntry([...loc, this.key]);
+        delete vals[id];
+        this.sortValsAndReassignOrder(vals);
+        this.model?.updateEntry([...loc, this.key], vals);
+    }
 }
 
 export class Properties {
