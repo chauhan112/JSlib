@@ -235,8 +235,88 @@ export const Properties = () => {
     return comp;
 };
 
+export const FlexTable = (
+    headers: string[],
+    includeActions: boolean = true
+) => {
+    const handlers = { actions: (e: any, ls: any) => {} };
+    const createRow = (id: string, vals: string[]) => {
+        const children = vals.map((c: string) =>
+            Tools.comp(
+                "div",
+                { class: "flex-1 truncate", textContent: c },
+                {},
+                { id: id }
+            )
+        );
+        if (includeActions) {
+            children.push(action(id, [Pencil, Trash]));
+        }
+        return Tools.comp("div", {
+            class: "flex items-center gap-4 py-2",
+            children: children,
+        });
+    };
+    const action = (keyId: string, actions: IconNode[]) => {
+        return Tools.comp("div", {
+            class: "flex items-center justify-start w-20 gap-5",
+            children: actions.map((c: any) =>
+                Tools.icon(
+                    c,
+                    { class: "w-4 h-4" },
+                    {
+                        click: (e: any, ls: any) => handlers.actions(e, ls),
+                    },
+                    { id: keyId }
+                )
+            ),
+        });
+    };
+    const createHeader = (headers: string[]) => {
+        const hrows = headers.map((col: any) =>
+            Tools.comp("div", {
+                class: "flex-1",
+                textContent: col,
+            })
+        );
+        if (includeActions) {
+            hrows.push(
+                Tools.comp("div", {
+                    class: "w-20 text-left",
+                    textContent: "Actions",
+                })
+            );
+        }
+        return Tools.comp("tr", {
+            key: "header",
+            class: "text-gray-500",
+            children: hrows,
+        });
+    };
+    const setData = (data: { id: string; vals: string[] }[]) => {
+        dataSection.update({
+            innerHTML: "",
+            children: data.map((c: any) => createRow(c.id, c.vals)),
+        });
+    };
+    const dataSection = Tools.comp("div", {
+        class: "space-y-2 text-white",
+    });
+    const comp = Tools.comp(
+        "table",
+        {
+            class: "w-full text-left",
+            children: [createHeader(headers), dataSection],
+        },
+        {},
+        { dataSection, handlers, createRow, createHeader, setData, action }
+    );
+
+    return comp;
+};
+
 export const Header = () => {
-    return Tools.div({
+    return Tools.comp("header", {
         class: "flex bg-slate-700 gap-2 font-bold items-center w-80  border-white border-b",
         children: [
             Tools.div({
