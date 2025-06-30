@@ -1,6 +1,7 @@
 import { GComponent } from "../../april/GComponent";
 import { Tools } from "../../april/tools";
-import { MultiSelectComponent } from "./Component";
+import { MultiSelectComponent, SelectComponent } from "./Component";
+
 export const FormInputComponent = (props: [any?, any?, any?]) => {
     const comp = Tools.comp("input", ...props);
     const get = () => {
@@ -102,6 +103,7 @@ export const MultiSelect = (
             handlers: {
                 set: (values: string[]) => comp.s.setValue(values),
                 get: () => comp.s.getValue(),
+                clear: () => comp.s.setValue([]),
             },
         }
     );
@@ -109,9 +111,26 @@ export const MultiSelect = (
     return comp;
 };
 
+export const Select = (options: { value: string; textContent: string }[]) => {
+    const comp = SelectComponent(options);
+    comp.update(
+        {},
+        {},
+        {
+            handlers: {
+                set: (values: string[]) => comp.s.setValue(values),
+                get: () => comp.s.getValue(),
+                clear: () => {},
+            },
+        }
+    );
+    return comp;
+};
+
 export const FormComponents: any = {
     cinput: FormInputComponent,
     multiselect: MultiSelect,
+    select: Select,
 };
 export const Params = {
     inp: (key: string, ...args: any) => {
@@ -140,6 +159,16 @@ export const Params = {
             params: options.map((option) => ({
                 value: option[0],
                 textContent: option[1],
+            })),
+        };
+    },
+    select: (key: string, options: [string, string][]) => {
+        return {
+            key,
+            type: "select",
+            params: options.map((option) => ({
+                value: option[0],
+                label: option[1],
             })),
         };
     },
