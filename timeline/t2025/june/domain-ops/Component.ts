@@ -376,7 +376,7 @@ export const FormInputWrapper = (
 };
 export const MultiSelectComponent = (options: any[]) => {
     let optionsComp: { [key: string]: GComponent } = {};
-
+    let states = { placeholder: "Select options..." };
     const makeOption = (option: any) => {
         const comp = Tools.comp("label", {
             class: "flex items-center px-4 py-2 hover:border-l-2 hover:border-gray-600 cursor-pointer text-gray-700",
@@ -422,7 +422,7 @@ export const MultiSelectComponent = (options: any[]) => {
     const selectButton = Tools.comp(
         "button",
         {
-            textContent: "Select Options",
+            textContent: states.placeholder,
             class: "w-full px-4 py-2 text-left bg-white text-gray-800 border-b-2 border-gray-400 rounded-none focus:outline-none focus:border-black transition-colors",
         },
         {
@@ -446,7 +446,7 @@ export const MultiSelectComponent = (options: any[]) => {
         let btnText = "";
         const selected = selectedItems.map((item: any) => item.textContent);
         if (selected.length === 0) {
-            btnText = "Select options";
+            btnText = states.placeholder;
         } else if (selected.length <= 2) {
             btnText = selected.join(", ");
         } else {
@@ -465,6 +465,7 @@ export const MultiSelectComponent = (options: any[]) => {
     const getValue = () => {
         return selectedItems;
     };
+
     const setValue = (value: any[]) => {
         selectedItems.length = 0;
         for (const key in optionsComp) {
@@ -477,6 +478,12 @@ export const MultiSelectComponent = (options: any[]) => {
     };
     const clear = () => {
         setValue([]);
+    };
+    const setPlaceholder = (placeholder: string) => {
+        states.placeholder = placeholder;
+        selectButton.update({
+            textContent: placeholder,
+        });
     };
 
     let comp = Tools.div(
@@ -494,6 +501,8 @@ export const MultiSelectComponent = (options: any[]) => {
             setOptions,
             getValue,
             setValue,
+            setPlaceholder,
+            states,
             clear,
         }
     );
