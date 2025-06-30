@@ -7,6 +7,8 @@ import { NewDesign } from "./NewDesign";
 import { ArrowLeft, Plus } from "lucide";
 import { Atool } from "../../april/Array";
 import { GenericForm, Params } from "./Form";
+import { InputType } from "./Model";
+
 class LoggerMainController {
     inst: any;
     constructor(states: any) {
@@ -20,6 +22,14 @@ class LoggerMainController {
     }
     setTitle(title: string) {
         this.inst.header.s.title.update({ textContent: title });
+    }
+    setup() {
+        this.inst.header.s.right.update(
+            {},
+            {
+                click: this.toggleRightNav.bind(this),
+            }
+        );
     }
 }
 class MainPageController {
@@ -36,7 +46,7 @@ export const LoggerMain = () => {
     const header = Header();
     header.s.title.update({ textContent: activityName });
     const prop = Properties();
-    const struc = Section();
+    const struc = PropertiesFlex([]);
     const searchComp = SearchComponent();
     const table = Table();
     header.s.left.update({
@@ -47,26 +57,21 @@ export const LoggerMain = () => {
         .getElement()
         .classList.add("hover:scale-110", "transition-all", "duration-300");
     header.s.right.s.icon.getElement().classList.add("rotate-180");
-    header.s.right.update(
-        {},
-        {
-            click: () => {
-                ctrl.toggleRightNav();
-            },
-        }
-    );
     header.s.right.s.icon
         .getElement()
         .classList.add("transition-all", "duration-300");
-    struc.s.header.s.title.update({ textContent: "Structure" });
-    struc.s.header.s.plus.update(
-        {},
-        {
-            click: () => {
-                struc.s.body.update({ innerHTML: "", child: sf });
-            },
-        }
-    );
+    // struc.s.header.s.title.update({ textContent: "Structure" });
+    // struc.s.header.s.plus.update(
+    //     {},
+    //     {
+    //         click: () => {
+    //             let modal = GlobalStates.getInstance().getState("modal");
+    //             modal.s.handlers.display(sf);
+    //             modal.s.handlers.show();
+    //             // struc.s.body.update({ innerHTML: "", child: sf });
+    //         },
+    //     }
+    // );
     const sf = StructureForm();
     const logsList = Tools.div({ class: "w-full h-full", child: table });
     const plusIcon = Tools.icon(Plus, {
@@ -118,22 +123,23 @@ export const LoggerMain = () => {
         }
     );
 };
-
 export const StructureForm = () => {
     const form = GenericForm();
+    let options = Object.entries(InputType);
     let comps: any[] = [
-        Params.inp("test", {
+        Params.inp("key", {
             class: "w-full p-2 rounded-md bg-gray-100 text-black",
-            placeholder: "Enter awdd",
+            placeholder: "Enter the key",
         }),
-        Params.inp("name", {
+        Params.select(
+            "inputType",
+            options.map((op) => [op[1], op[0]])
+        ),
+        Params.inp("order", {
             class: "w-full p-2 rounded-md bg-gray-100 text-black",
-            placeholder: "Enter name",
+            placeholder: "give the order for sorting",
+            type: "number",
         }),
-        Params.multi("sle", [
-            ["1", "cool"],
-            ["2", "coolsd"],
-        ]),
         Params.inpSubmit(),
     ];
     form.s.handlers.setComponents(comps);
@@ -144,7 +150,6 @@ export const StructureForm = () => {
     };
     return form;
 };
-
 export const MainPage = () => {
     let lm = LoggerMain();
     let nd = NewDesign();
@@ -174,7 +179,6 @@ export const MainPage = () => {
         );
         ctrl.show();
     };
-
     let comp = Tools.div({ child: nd });
     let ctrl = new MainPageController({ lm, nd, comp });
     nd.s.mainBody.s.bodyContent.s.handlers.activityOps["select"] =
@@ -186,6 +190,5 @@ export const MainPage = () => {
             click: () => ctrl.onGoback(),
         }
     );
-
     return comp;
 };
