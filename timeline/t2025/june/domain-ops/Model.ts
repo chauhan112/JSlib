@@ -272,13 +272,14 @@ export class LogStructure {
     setModel(model: LocalStorageJSONModel) {
         this.model = model;
     }
-    create(loc: string[], name: string, type: InputType, order: number) {
-        if (this.model?.exists([...loc, this.key, name])) {
-            throw new Error("Log already exists");
-        }
+    create(
+        loc: string[],
+        val: { key: string; type: InputType; order: number }
+    ) {
+        let { key, type, order } = val;
         let idd = uuidv4();
         let vals = this.model?.readEntry([...loc, this.key]);
-        vals[idd] = { name, type, order, id: idd };
+        vals[idd] = { key, type, order, id: idd };
         this.sortValsAndReassignOrder(vals);
         this.model?.addEntry([...loc, this.key], vals);
         return idd;
