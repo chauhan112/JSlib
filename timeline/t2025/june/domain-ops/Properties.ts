@@ -287,9 +287,9 @@ export const FlexTable = (
                 })
             );
         }
-        return Tools.comp("tr", {
+        return Tools.comp("div", {
             key: "header",
-            class: "text-gray-500",
+            class: "text-gray-500 flex items-center gap-4 font-bold",
             children: hrows,
         });
     };
@@ -301,9 +301,10 @@ export const FlexTable = (
     };
     const dataSection = Tools.comp("div", {
         class: "space-y-2 text-white",
+        textContent: "No structure found",
     });
     const comp = Tools.comp(
-        "table",
+        "div",
         {
             class: "w-full text-left",
             children: [createHeader(headers), dataSection],
@@ -313,6 +314,10 @@ export const FlexTable = (
     );
 
     return comp;
+};
+
+export const PropertiesFlexTable = () => {
+    return FlexTable(["Key", "Value"]);
 };
 
 export const Header = () => {
