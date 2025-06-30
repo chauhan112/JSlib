@@ -24,7 +24,6 @@ export class Model {
         this.searchFilters.setModel(this.model);
     }
 }
-
 export class Tools {
     static exists(
         name: string,
@@ -44,7 +43,6 @@ export class Tools {
         return false;
     }
 }
-
 export class Domain {
     model: LocalStorageJSONModel | null = null;
     key: string = "domains";
@@ -102,11 +100,9 @@ export class Domain {
         return result;
     }
 }
-
 export class Operations extends Domain {
     key: string = "operations";
 }
-
 export class Activity {
     key: string = "activity";
     dom: string = "domains";
@@ -226,7 +222,6 @@ export class Activity {
         return result;
     }
 }
-
 export class Logger {
     model: LocalStorageJSONModel | null = null;
     key = "logs";
@@ -260,15 +255,16 @@ export class Logger {
         this.model?.deleteEntry([...loc, this.key, this.logType, id]);
     }
 }
-export type InputType =
-    | "input"
-    | "largeText"
-    | "file"
-    | "select"
-    | "date"
-    | "time"
-    | "number"
-    | "checkbox";
+export enum InputType {
+    Input = "input",
+    LargeText = "largeText",
+    File = "file",
+    Select = "select",
+    Date = "date",
+    Time = "time",
+    Number = "number",
+    Checkbox = "checkbox",
+}
 
 export class LogStructure {
     model: LocalStorageJSONModel | null = null;
@@ -314,7 +310,6 @@ export class LogStructure {
         this.model?.updateEntry([...loc, this.key], vals);
     }
 }
-
 export class Properties {
     model: LocalStorageJSONModel | null = null;
     key = "properties";
@@ -354,7 +349,6 @@ export class Properties {
         return res;
     }
 }
-
 export class SearchFilters {
     model: LocalStorageJSONModel | null = null;
     setModel(model: LocalStorageJSONModel) {
