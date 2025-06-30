@@ -1,13 +1,14 @@
 import { Tools } from "../../april/tools";
 import { Table } from "../../april/DomainOps/Home";
 import { Header } from "./Component";
-import { Properties, PropertiesCtrl, Section } from "./Properties";
+import { FlexTable, Properties, PropertiesCtrl, Section } from "./Properties";
 import { SearchComponent } from "../../may/FileSearch/Search";
 import { NewDesign } from "./NewDesign";
 import { ArrowLeft, Plus } from "lucide";
 import { Atool } from "../../april/Array";
 import { GenericForm, Params } from "./Form";
-import { InputType } from "./Model";
+import { InputType, Model } from "./Model";
+import { GlobalStates } from "./GlobalStates";
 
 class LoggerMainController {
     inst: any;
@@ -30,6 +31,50 @@ class LoggerMainController {
                 click: this.toggleRightNav.bind(this),
             }
         );
+        let form = this.inst.struc.s.form;
+        form.s.handlers.submit = this.onCreate.bind(this);
+    }
+    onCreate(e: any, ls: any) {
+        let form = this.inst.struc.s.form;
+        e.preventDefault();
+        let vals = form.s.handlers.getValues();
+        let valsCopy = { ...vals, order: parseInt(vals.order) };
+        form.s.handlers.clearValues();
+        let model: Model = this.inst.model;
+        model.logStructure.create(this.getCurrentSpace(), valsCopy);
+    }
+    getCurrentSpace() {
+        return [
+            ...this.inst.root?.currentLocation,
+            this.inst.root?.model.activity.key,
+        ];
+    }
+
+    activityStepIn(e: any, ls: any) {
+        let root = this.inst.root;
+        const info = ls.s.data.info;
+        let activityId = info.id;
+        let loc = [
+            ...root?.currentLocation,
+            root?.model.activity.key,
+            activityId,
+        ];
+        let ctrl: PropertiesCtrl = lm.s.prop.s.ctrl;
+        ctrl.setModel(root.model);
+        ctrl.setup();
+        ctrl.inst.states = nd.s.states;
+        ctrl.setup();
+        ctrl.getCurrentSpace = () => loc;
+        comp.update({ innerHTML: "", child: lm });
+        lm.s.ctrl.setTitle(
+            info.op.name +
+                ": " +
+                Atool.join(
+                    info.doms.map((x: any) => x.name),
+                    ", "
+                )
+        );
+        ctrl.show();
     }
 }
 class MainPageController {
@@ -46,7 +91,7 @@ export const LoggerMain = () => {
     const header = Header();
     header.s.title.update({ textContent: activityName });
     const prop = Properties();
-    const struc = PropertiesFlex([]);
+    const struc = StructureSection();
     const searchComp = SearchComponent();
     const table = Table();
     header.s.left.update({
@@ -60,19 +105,6 @@ export const LoggerMain = () => {
     header.s.right.s.icon
         .getElement()
         .classList.add("transition-all", "duration-300");
-    // struc.s.header.s.title.update({ textContent: "Structure" });
-    // struc.s.header.s.plus.update(
-    //     {},
-    //     {
-    //         click: () => {
-    //             let modal = GlobalStates.getInstance().getState("modal");
-    //             modal.s.handlers.display(sf);
-    //             modal.s.handlers.show();
-    //             // struc.s.body.update({ innerHTML: "", child: sf });
-    //         },
-    //     }
-    // );
-    const sf = StructureForm();
     const logsList = Tools.div({ class: "w-full h-full", child: table });
     const plusIcon = Tools.icon(Plus, {
         class: "w-12 h-12 mx-4 cursor-pointer hover:scale-110 transition-all duration-300",
@@ -102,7 +134,7 @@ export const LoggerMain = () => {
             logsList,
         ],
     });
-    return Tools.div(
+    let comp = Tools.div(
         {
             class: "w-full flex flex-col h-[100vh]",
             children: [
@@ -122,6 +154,8 @@ export const LoggerMain = () => {
             ctrl,
         }
     );
+    ctrl.inst.comp = comp;
+    return comp;
 };
 export const StructureForm = () => {
     const form = GenericForm();
@@ -139,56 +173,51 @@ export const StructureForm = () => {
             class: "w-full p-2 rounded-md bg-gray-100 text-black",
             placeholder: "give the order for sorting",
             type: "number",
+            value: 0,
         }),
         Params.inpSubmit(),
     ];
     form.s.handlers.setComponents(comps);
-    form.s.handlers.submit = (e: any, ls: any) => {
-        e.preventDefault();
-        console.log(form.s.handlers.getValues());
-        form.s.handlers.clearValues();
-    };
     return form;
+};
+
+export const StructureSection = () => {
+    const section = Section();
+    const sf = StructureForm();
+    const table = FlexTable(["key", "inputType", "order"]);
+    section.s.body.update({ child: table });
+    section.s.header.s.title.update({ textContent: "Structure" });
+    section.s.header.s.plus.update(
+        {},
+        {
+            click: () => {
+                let modal = GlobalStates.getInstance().getState("modal");
+                modal.s.handlers.display(sf);
+                modal.s.handlers.show();
+            },
+        }
+    );
+
+    section.update({}, {}, { table, form: sf });
+
+    return section;
 };
 export const MainPage = () => {
     let lm = LoggerMain();
     let nd = NewDesign();
     let root = nd.s.states;
-    const onActivityStepIn = (e: any, ls: any) => {
-        const info = ls.s.data.info;
-        let activityId = info.id;
-        let loc = [
-            ...root?.currentLocation,
-            root?.model.activity.key,
-            activityId,
-        ];
-        let ctrl: PropertiesCtrl = lm.s.prop.s.ctrl;
-        ctrl.setModel(root.model);
-        ctrl.setup();
-        ctrl.inst.states = nd.s.states;
-        ctrl.setup();
-        ctrl.getCurrentSpace = () => loc;
-        comp.update({ innerHTML: "", child: lm });
-        lm.s.ctrl.setTitle(
-            info.op.name +
-                ": " +
-                Atool.join(
-                    info.doms.map((x: any) => x.name),
-                    ", "
-                )
-        );
-        ctrl.show();
-    };
-    let comp = Tools.div({ child: nd });
+    const onActivityStepIn = (e: any, ls: any) => {};
+    let comp = Tools.div({ child: nd }, {}, { newDesign: nd, loggerMain: lm });
     let ctrl = new MainPageController({ lm, nd, comp });
     nd.s.mainBody.s.bodyContent.s.handlers.activityOps["select"] =
         onActivityStepIn;
-    console.log(nd.s.mainBody.s.bodyContent.s.handlers.activityOps);
     lm.s.header.s.left.update(
         {},
         {
             click: () => ctrl.onGoback(),
         }
     );
+    lm.s.ctrl.inst.root = root;
+    lm.s.ctrl.setup();
     return comp;
 };
