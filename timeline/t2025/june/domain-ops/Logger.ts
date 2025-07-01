@@ -4,24 +4,11 @@ import { NewDesign } from "./NewDesign";
 import { Atool } from "../../april/Array";
 import { LoggerMainController } from "./ActivityLogger/Main";
 
-export const MainPage = () => {
+export const MainPageController = () => {
     let newDesign = NewDesign();
     let root = newDesign.s.states;
     let lmCtrl = LoggerMainController(root);
-
-    let comp = Tools.div(
-        { child: newDesign },
-        {},
-        { newDesign, loggerMainCtrl: lmCtrl }
-    );
-    return comp;
-};
-
-export const MainPageController = () => {
-    let nd = NewDesign();
-    let root = nd.s.states;
-    let lmCtrl = LoggerMainController(root);
-    let comp = MainPage();
+    let comp = Tools.div({ child: newDesign });
 
     const onActivityStepIn = (e: any, ls: any) => {
         const info = ls.s.data.info;
@@ -35,7 +22,7 @@ export const MainPageController = () => {
         let ctrl: PropertiesCtrl = lmCtrl.comp.s.prop.s.ctrl;
         ctrl.setModel(root.model);
         ctrl.setup();
-        ctrl.inst.states = nd.s.states;
+        ctrl.inst.states = newDesign.s.states;
         ctrl.setup();
         ctrl.getCurrentSpace = () => loc;
         comp.update({ innerHTML: "", child: lmCtrl.comp });
@@ -52,9 +39,9 @@ export const MainPageController = () => {
     };
 
     const onGoback = () => {
-        comp.update({ innerHTML: "", child: nd });
+        comp.update({ innerHTML: "", child: newDesign });
     };
-    comp.s.newDesign.s.mainBody.s.bodyContent.s.handlers.activityOps["select"] =
+    newDesign.s.mainBody.s.bodyContent.s.handlers.activityOps["select"] =
         onActivityStepIn;
     lmCtrl.comp.s.header.s.left.update(
         {},
@@ -65,7 +52,7 @@ export const MainPageController = () => {
 
     lmCtrl.funcs.setup();
 
-    let res = { comp, lmCtrl, newDesign: nd };
+    let res = { comp, lmCtrl, newDesign: newDesign };
 
     return res;
 };

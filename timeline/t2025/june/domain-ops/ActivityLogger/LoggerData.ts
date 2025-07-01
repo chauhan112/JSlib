@@ -30,7 +30,7 @@ export const Controller = (root: any) => {
         modal.s.handlers.display(comp);
         modal.s.handlers.show();
     };
-
+    console.log(root);
     const renderAll = () => {};
     const onEdit = (id: string) => {};
     const onView = (id: string) => {};
