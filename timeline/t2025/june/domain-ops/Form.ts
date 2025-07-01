@@ -18,7 +18,6 @@ export const FormInputComponent = (props: [any?, any?, any?]) => {
     comp.update({}, {}, { handlers: { get, set, clear } });
     return comp;
 };
-
 export const GenericForm = () => {
     const formElements: { [key: string]: any } = {};
 
@@ -91,7 +90,6 @@ export const GenericForm = () => {
 
     return comp;
 };
-
 export const MultiSelect = (
     options: { value: string; textContent: string }[]
 ) => {
@@ -110,7 +108,6 @@ export const MultiSelect = (
     comp.s.setOptions(options);
     return comp;
 };
-
 export const Select = (options: { value: string; textContent: string }[]) => {
     const comp = SelectComponent(options);
     comp.update(
@@ -146,6 +143,7 @@ export const FormComponents: any = {
     cinput: FormInputComponent,
     multiselect: MultiSelect,
     select: Select,
+    textarea: Textarea,
 };
 export const Params = {
     inp: (key: string, ...args: any) => {
@@ -161,6 +159,7 @@ export const Params = {
             params: [
                 {
                     type: "submit",
+                    class: "cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded w-fit self-end",
                     ...params,
                 },
                 ...args,
@@ -185,6 +184,48 @@ export const Params = {
                 value: option[0],
                 label: option[1],
             })),
+        };
+    },
+    textArea: (key: string, ...args: any) => {
+        return {
+            key,
+            type: "textarea",
+            params: [...args],
+        };
+    },
+    date: (key: string, ...args: any) => {
+        return {
+            key,
+            type: "cinput",
+            params: [...args, { type: "date" }],
+        };
+    },
+    time: (key: string, ...args: any) => {
+        return {
+            key,
+            type: "cinput",
+            params: [...args, { type: "time" }],
+        };
+    },
+    file: (key: string, ...args: any) => {
+        return {
+            key,
+            type: "cinput",
+            params: [...args, { type: "file" }],
+        };
+    },
+    datetime: (key: string, ...args: any) => {
+        return {
+            key,
+            type: "cinput",
+            params: [...args, { type: "datetime" }],
+        };
+    },
+    checkbox: (key: string, ...args: any) => {
+        return {
+            key,
+            type: "cinput",
+            params: [...args, { type: "checkbox" }],
         };
     },
 };
