@@ -2,7 +2,6 @@ import { Tools } from "../../april/tools";
 import { PropertiesCtrl } from "./Properties";
 import { NewDesign } from "./NewDesign";
 import { Atool } from "../../april/Array";
-import { GlobalStates } from "./GlobalStates";
 import { LoggerMainController } from "./ActivityLogger/Main";
 
 export const MainPage = () => {
@@ -64,15 +63,9 @@ export const MainPageController = () => {
         }
     );
 
-    lmCtrl.comp.s.plusIcon.update(
-        {},
-        {
-            click: () => {
-                let modal = GlobalStates.getInstance().getState("modal");
-                modal.s.handlers.display(logUnStrucForm);
-                modal.s.handlers.show();
-            },
-        }
-    );
-    return { comp };
+    lmCtrl.funcs.setup();
+
+    let res = { comp, lmCtrl, newDesign: nd };
+
+    return res;
 };
