@@ -153,6 +153,7 @@ export const NewDesign = () => {
     states.newdesign = comp;
     return comp;
 };
+
 export const OptionsManager = () => {
     const state: any = { options: {} };
     const addOption = (option: any) => {

@@ -244,7 +244,7 @@ export const FlexTable = (
         const children = vals.map((c: string) =>
             Tools.comp(
                 "div",
-                { class: "flex-1 truncate", textContent: c, title: c },
+                { class: "truncate", textContent: c, title: c },
                 {},
                 { id: id }
             )
@@ -257,10 +257,12 @@ export const FlexTable = (
                 ])
             );
         }
-        return Tools.comp("div", {
-            class: "flex items-center gap-4",
+        let comp = Tools.comp("div", {
+            class: TableColumns.four_cols.class,
             children: children,
         });
+
+        return comp;
     };
     const action = (
         keyId: string,
@@ -271,7 +273,9 @@ export const FlexTable = (
             children: actions.map((c: any) =>
                 Tools.icon(
                     c.icon,
-                    { class: "w-4 h-4 cursor-pointer" },
+                    {
+                        class: "w-4 h-4 hover:cursor-pointer hover:scale-110 transition-all duration-300",
+                    },
                     {
                         click: (e: any, ls: any) =>
                             handlers.onOpsClicked(e, ls),
@@ -283,24 +287,26 @@ export const FlexTable = (
     };
     const createHeader = (headers: string[]) => {
         const hrows = headers.map((col: any) =>
-            Tools.comp("div", {
+            Tools.comp("span", {
                 class: "flex-1",
                 textContent: col,
             })
         );
         if (includeActions) {
             hrows.push(
-                Tools.comp("div", {
+                Tools.comp("span", {
                     class: "w-20 text-left",
                     textContent: "Actions",
                 })
             );
         }
-        return Tools.comp("div", {
+        let comp = Tools.comp("div", {
             key: "header",
-            class: "text-gray-500 flex items-center gap-4 font-bold",
             children: hrows,
+            class: TableColumns.four_cols.class,
         });
+        comp.getElement().classList.add("text-gray-500", "font-bold");
+        return comp;
     };
     const setData = (data: { id: string; vals: string[] }[]) => {
         dataSection.update({
@@ -312,11 +318,12 @@ export const FlexTable = (
         class: "space-y-2 text-white",
         textContent: "No structure found",
     });
+    const header = createHeader(headers);
     const comp = Tools.comp(
         "div",
         {
             class: "w-full text-left",
-            children: [createHeader(headers), dataSection],
+            children: [header, dataSection],
         },
         {},
         { dataSection, handlers, createRow, createHeader, setData, action }
@@ -325,7 +332,14 @@ export const FlexTable = (
     return comp;
 };
 
-export const GridTable = () => {};
+export const TableColumns = {
+    three_cols: {
+        class: "grid grid-cols-[1fr_2fr_1fr] gap-4",
+    },
+    four_cols: {
+        class: "grid grid-cols-[1fr_1.5fr_.5fr_1fr] gap-4 ",
+    },
+};
 
 export const PropertiesFlexTable = () => {
     return FlexTable(["Key", "Value"]);
