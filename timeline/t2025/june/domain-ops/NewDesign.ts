@@ -46,57 +46,81 @@ export class BreadCrumbTools {
     }
 }
 export const NewDesign = () => {
-    let model = new Model();
-    let states: any = { model, currentSpace: [], currentLocation: [] };
+    const header = Header();
+    const mainBody = MainBody();
+    const comp = Tools.div(
+        {
+            class: "h-screen flex flex-col",
+            children: [header, mainBody],
+        },
+        {},
+        {
+            header,
+            mainBody,
+        }
+    );
+    return comp;
+};
+export const NewDesignCtrl = (root: any) => {
+    let model = root.model;
+    let navCtrl = NavController(root);
+    let actCtrl = ActivityCtrl(root);
+    let states: any = { currentSpace: [], currentLocation: [] };
+    let comp = NewDesign();
     const getCurrentSpace = () => {
         return [...states.currentLocation, ...states.currentSpace];
     };
-    states.getCurrentSpace = getCurrentSpace;
     const setCurrentLocation = (loc: any) => {
+        const breadCrumb = comp.s.mainBody.s.bodyContent.s.breadCrumb;
         states.currentLocation = loc;
-        mainBody.s.nav.s.handlers.updateNavItems();
+        navCtrl.funcs.updateNavItems();
         breadCrumb.s.handlers.setData(
             BreadCrumbTools.getPath(states.currentLocation, model)
         );
-        mainBody.s.bodyContent.s.handlers.renderActivities(
+        actCtrl.funcs.renderActivities(
             model.activity.readAll(states.currentLocation)
         );
     };
-    states.setCurrentLocation = setCurrentLocation;
-    const header = Header();
-    const mainBody = MainBody(states);
-    header.s.left.update(
-        {},
-        {
-            click: () => {
-                mainBody.s.nav.getElement().classList.toggle("hidden");
-                header.s.left.getElement().classList.toggle("rotate-180");
-            },
-        }
-    );
+
+    const onNavToggle = () => {
+        comp.s.mainBody.s.nav.getElement().classList.toggle("hidden");
+        comp.s.header.s.left.getElement().classList.toggle("rotate-180");
+    };
+
     const propsStateActions: any = {
         open: () => {
-            mainBody.s.properties.s.ctrl.show();
-            if (mainBody.s.properties.s.ctrl.isShowing()) {
-                header.s.right.s.icon.getElement().classList.remove("hidden");
-                header.s.right.s.icon.getElement().classList.add("rotate-180");
+            comp.s.mainBody.s.properties.s.ctrl.show();
+            if (comp.s.mainBody.s.properties.s.ctrl.isShowing()) {
+                comp.s.header.s.right.s.icon
+                    .getElement()
+                    .classList.remove("hidden");
+                comp.s.header.s.right.s.icon
+                    .getElement()
+                    .classList.add("rotate-180");
             }
         },
         close: () => {
-            mainBody.s.properties.s.ctrl.hide();
-            mainBody.s.properties.getElement().classList.add("hidden");
-            header.s.right.s.icon.getElement().classList.remove("rotate-180");
+            comp.s.mainBody.s.properties.s.ctrl.hide();
+            comp.s.mainBody.s.properties.getElement().classList.add("hidden");
+            comp.s.header.s.right.s.icon
+                .getElement()
+                .classList.remove("rotate-180");
         },
         hideBtn: () => {
-            header.s.right.s.icon.getElement().classList.add("hidden");
+            comp.s.header.s.right.s.icon.getElement().classList.add("hidden");
         },
         toggle: () => {
-            mainBody.s.properties.getElement().classList.toggle("hidden");
-            header.s.right.s.icon.getElement().classList.toggle("rotate-180");
+            comp.s.mainBody.s.properties
+                .getElement()
+                .classList.toggle("hidden");
+            comp.s.header.s.right.s.icon
+                .getElement()
+                .classList.toggle("rotate-180");
         },
     };
-    const breadCrumb = mainBody.s.bodyContent.s.comps.breadCrumb;
-    breadCrumb.s.handlers.compCreator = (item: any) => {
+
+    const breadCrumbItem = (item: any) => {
+        const breadCrumb = comp.s.mainBody.s.bodyContent.s.breadCrumb;
         return Tools.div(
             {
                 class: "cursor-pointer " + breadCrumb.s.niceClass.class,
@@ -111,49 +135,67 @@ export const NewDesign = () => {
         );
     };
 
-    propsStateActions.hideBtn();
-    propsStateActions.close();
-    header.s.right.update(
-        {},
-        {
-            click: () => propsStateActions.toggle(),
-        }
-    );
-    const contextMenu = GlobalStates.getInstance().getState("contextMenu");
-    mainBody.s.nav.s.contextMenuOptions.push({
-        label: "Properties",
-        onClick: (e: any, ls: any) => {
-            let curKey = mainBody.s.nav.s.comps.tabComp.s.getCurrentKey();
-            let item = contextMenu.s.currentContext.s.data;
-            states.currentSpace = [curKey.s.info.key, item.id];
-            propsStateActions.open();
-        },
-    });
+    const setup = () => {
+        states.getCurrentSpace = getCurrentSpace;
+        states.setCurrentLocation = setCurrentLocation;
+        comp.s.header.s.left.update(
+            {},
+            {
+                click: onNavToggle,
+            }
+        );
+        comp.s.header.s.right.update(
+            {},
+            {
+                click: () => propsStateActions.toggle(),
+            }
+        );
+        const ctrl: PropertiesCtrl = comp.s.mainBody.s.properties.s.ctrl;
+        ctrl.setModel(model);
+        ctrl.setup();
+        ctrl.inst.states = states;
+        const breadCrumb = comp.s.mainBody.s.bodyContent.s.breadCrumb;
+        breadCrumb.s.handlers.compCreator = breadCrumbItem;
+        propsStateActions.hideBtn();
+        propsStateActions.close();
+        const contextMenu = GlobalStates.getInstance().getState("contextMenu");
+        navCtrl.contextMenuOptions.push({
+            label: "Properties",
+            onClick: (e: any, ls: any) => {
+                let curKey = comp.s.mainBody.s.nav.s.tabComp.s.getCurrentKey();
+                let item = contextMenu.s.currentContext.s.data;
+                states.currentSpace = [
+                    navCtrl.funcs.getInstance(curKey.s.info).key,
+                    item.id,
+                ];
+                propsStateActions.open();
+            },
+        });
+        navCtrl.states.comp = comp.s.mainBody.s.nav;
+        navCtrl.funcs.setup();
+        navCtrl.funcs.updateNavItems();
+        actCtrl.states.comp = comp.s.mainBody.s.bodyContent;
+        actCtrl.funcs.setup();
+        actCtrl.funcs.renderActivities(
+            model.activity.readAll(states.currentLocation)
+        );
+    };
 
-    mainBody.s.nav.s.handlers.updateNavItems();
-    mainBody.s.bodyContent.s.handlers.renderActivities(
-        model.activity.readAll(states.currentLocation)
-    );
-    const ctrl: PropertiesCtrl = mainBody.s.properties.s.ctrl;
-    ctrl.setModel(model);
-    ctrl.setup();
-    ctrl.inst.states = states;
-    const comp = Tools.div(
-        {
-            class: "h-screen flex flex-col",
-            children: [header, mainBody],
+    return {
+        comp,
+        states,
+        propsStateActions,
+        actCtrl,
+        navCtrl,
+        funcs: {
+            setup,
+            onNavToggle,
+            getCurrentSpace,
+            setCurrentLocation,
+            breadCrumbItem,
         },
-        {},
-        {
-            header,
-            mainBody,
-            states,
-        }
-    );
-    states.newdesign = comp;
-    return comp;
+    };
 };
-
 export const OptionsManager = () => {
     const state: any = { options: {} };
     const addOption = (option: any) => {
@@ -166,104 +208,14 @@ export const OptionsManager = () => {
 
     return { state, addOption, removeOption, clear };
 };
-export const Navigation = (root?: any) => {
-    let model = root?.model;
-    let contextMenu = GlobalStates.getInstance().getState("contextMenu");
-    const createForm = DomainOpsForm();
-    const onCreateNew = (e: any, ls: any) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const name = formData.get("name") as string;
-        const curKey = tabComp.s.getCurrentKey();
-        curKey.s.info.create(root?.currentLocation || [], name);
-        (createForm.getElement() as HTMLFormElement).reset();
-        createForm.getElement().classList.add("hidden");
-        updateNavItems();
-    };
-    const onEdit = (e: any, ls: any) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const name = formData.get("name") as string;
-        const curKey = tabComp.s.getCurrentKey();
-        curKey.s.info.updateName(
-            root?.currentLocation || [],
-            createForm.s.info.id,
-            name
-        );
-        (createForm.getElement() as HTMLFormElement).reset();
-        createForm.getElement().classList.add("hidden");
-        updateNavItems();
-    };
+export const Navigation = () => {
     const tabComp = TabComponent([
-        { label: "Domains", info: model.domain },
-        { label: "Operations", info: model.operations },
+        { label: "Domains", info: "domains" },
+        { label: "Operations", info: "operations" },
     ]);
-    const updateNavItems = () => {
-        const curKey = tabComp.s.getCurrentKey();
-
-        domCrud.s.updateNavItems(
-            curKey.s.info.readNameAndId(root?.currentLocation)
-        );
-    };
+    const createForm = DomainOpsForm();
     const domCrud = SmallCRUDops([], createForm);
 
-    domCrud.s.createBtn.update(
-        {},
-        {
-            click: (e: any, ls: any) => {
-                createForm.getElement().classList.toggle("hidden");
-                createForm.update(
-                    {},
-                    {
-                        submit: onCreateNew,
-                    }
-                );
-                (createForm.getElement() as HTMLFormElement).reset();
-            },
-        }
-    );
-    const onEditContextMenuOptionClick = (e: any, ls: any) => {
-        let item = contextMenu.s.currentContext.s.data;
-        createForm.getElement().classList.remove("hidden");
-        createForm.s.setFormValues({ name: item.name });
-        createForm.update(
-            {},
-            {
-                submit: onEdit,
-            },
-            {
-                info: item,
-            }
-        );
-    };
-    const onDeleteContextMenuOptionClick = (e: any, ls: any) => {
-        let item = contextMenu.s.currentContext.s.data;
-        let curKey = tabComp.s.getCurrentKey();
-        curKey.s.info.delete(item.id, root?.currentLocation);
-        updateNavItems();
-    };
-    let contextMenuOptions = [
-        { label: "Edit", onClick: onEditContextMenuOptionClick },
-        { label: "Delete", onClick: onDeleteContextMenuOptionClick },
-    ];
-    const onMenuClicked = (e: any, ls: any) => {
-        contextMenu.s.setOptions(contextMenuOptions);
-        contextMenu.s.displayMenu(e, ls);
-        contextMenu.s.currentContext = ls;
-    };
-    domCrud.s.state.onMenuOptionClick = onMenuClicked;
-    tabComp.s.setOnTabClick((e: any, ls: any) => {
-        tabComp.s.onTabClick(e, ls);
-        updateNavItems();
-    });
-    domCrud.s.state.onMainBodyClick = (e: any, ls: any) => {
-        let curKey = tabComp.s.getCurrentKey();
-        root?.setCurrentLocation([
-            ...root?.currentLocation,
-            curKey.s.info.key,
-            ls.s.data.id,
-        ]);
-    };
     return Tools.div(
         {
             class: "flex flex-col items-center min-w-[10rem] w-2/12 bg-[#1ABC9C] h-full",
@@ -278,16 +230,140 @@ export const Navigation = (root?: any) => {
         },
         {},
         {
-            comps: { tabComp, domCrud, createForm },
-            handlers: { onMenuClicked, onCreateNew, onEdit, updateNavItems },
-            contextMenuOptions,
+            tabComp,
+            domCrud,
+            createForm,
         }
     );
 };
-export const MainBody = (root?: any) => {
+export const NavController = (root: any) => {
+    let contextMenu = GlobalStates.getInstance().getState("contextMenu");
+    let states: any = {
+        comp: null,
+        domains: root.model.domain,
+        operations: root.model.operations,
+    };
+    console.log("nv", root);
+    const getInstance = (key: string) => states[key];
+    const onCreateNew = (e: any, ls: any) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const name = formData.get("name") as string;
+        const curKey = states.comp.s.tabComp.s.getCurrentKey();
+        getInstance(curKey.s.info).create(
+            root.newDesignCtrl.states.currentLocation,
+            name
+        );
+        (states.comp.s.createForm.getElement() as HTMLFormElement).reset();
+        states.comp.s.createForm.getElement().classList.add("hidden");
+        updateNavItems();
+    };
+    const onEdit = (e: any, ls: any) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const name = formData.get("name") as string;
+        const curKey = states.comp.s.tabComp.s.getCurrentKey();
+        getInstance(curKey.s.info).updateName(
+            root?.currentLocation || [],
+            states.comp.s.createForm.s.info.id,
+            name
+        );
+        (states.comp.s.createForm.getElement() as HTMLFormElement).reset();
+        states.comp.s.createForm.getElement().classList.add("hidden");
+        updateNavItems();
+    };
+    const updateNavItems = () => {
+        const curKey = states.comp.s.tabComp.s.getCurrentKey();
+        states.comp.s.domCrud.s.updateNavItems(
+            getInstance(curKey.s.info).readNameAndId(
+                root.newDesignCtrl.states.currentLocation
+            )
+        );
+    };
+    const onEditContextMenuOptionClick = (e: any, ls: any) => {
+        let item = contextMenu.s.currentContext.s.data;
+        states.comp.s.createForm.getElement().classList.remove("hidden");
+        states.comp.s.createForm.s.setFormValues({ name: item.name });
+        states.comp.s.createForm.update(
+            {},
+            {
+                submit: onEdit,
+            },
+            {
+                info: item,
+            }
+        );
+    };
+    const onDeleteContextMenuOptionClick = (e: any, ls: any) => {
+        let item = contextMenu.s.currentContext.s.data;
+        let curKey = states.comp.s.tabComp.s.getCurrentKey();
+        getInstance(curKey.s.info).delete(item.id, root?.currentLocation);
+        updateNavItems();
+    };
+    let contextMenuOptions = [
+        { label: "Edit", onClick: onEditContextMenuOptionClick },
+        { label: "Delete", onClick: onDeleteContextMenuOptionClick },
+    ];
+    const onMenuClicked = (e: any, ls: any) => {
+        contextMenu.s.setOptions(contextMenuOptions);
+        contextMenu.s.displayMenu(e, ls);
+        contextMenu.s.currentContext = ls;
+    };
+    const onTabChanged = (e: any, ls: any) => {
+        states.comp.s.tabComp.s.onTabClick(e, ls);
+        updateNavItems();
+    };
+    const onMainBodyClick = (e: any, ls: any) => {
+        let curKey = states.comp.s.tabComp.s.getCurrentKey();
+        root.newDesignCtrl.states.setCurrentLocation([
+            ...root.newDesignCtrl.states.currentLocation,
+            getInstance(curKey.s.info).key,
+            ls.s.data.id,
+        ]);
+    };
+    const onCreateBtnClicked = (e: any, ls: any) => {
+        states.comp.s.createForm.getElement().classList.toggle("hidden");
+        states.comp.s.createForm.update(
+            {},
+            {
+                submit: onCreateNew,
+            }
+        );
+        (states.comp.s.createForm.getElement() as HTMLFormElement).reset();
+    };
+    const setup = () => {
+        states.comp.s.domCrud.s.createBtn.update(
+            {},
+            {
+                click: onCreateBtnClicked,
+            }
+        );
+        states.comp.s.domCrud.s.state.onMenuOptionClick = onMenuClicked;
+        states.comp.s.tabComp.s.setOnTabClick(onTabChanged);
+        states.comp.s.domCrud.s.state.onMainBodyClick = onMainBodyClick;
+    };
+    return {
+        contextMenuOptions,
+        states,
+        funcs: {
+            setup,
+            onEdit,
+            onCreateNew,
+            onEditContextMenuOptionClick,
+            onDeleteContextMenuOptionClick,
+            onMenuClicked,
+            onTabChanged,
+            onMainBodyClick,
+            onCreateBtnClicked,
+            updateNavItems,
+            getInstance,
+        },
+    };
+};
+export const MainBody = () => {
     const properties = Properties();
-    const nav = Navigation(root);
-    const bodyContent = BodyContent(root);
+    const nav = Navigation();
+    const bodyContent = BodyContent();
 
     return Tools.div(
         {
@@ -299,9 +375,49 @@ export const MainBody = (root?: any) => {
         { properties, nav, bodyContent }
     );
 };
-export const BodyContent = (root?: any) => {
-    let model = root?.model;
+export const BodyContent = () => {
+    let listDisplayer = Tools.div({
+        class: "flex flex-wrap gap-2 mt-2 bg-gray-200 p-2 rounded-lg h-full flex-1",
+        textContent: "no activities yet",
+    });
+
+    const breadCrumb = Breadcrumb();
+    const searchComp = SearchComponent();
+    const plusBtn = Tools.icon(Plus, {
+        class: "w-12 h-12 cursor-pointer hover:bg-gray-200",
+    });
+    return Tools.div(
+        {
+            class: "flex flex-col items-center flex-1 h-full ",
+            key: "contentArea",
+            children: [
+                Tools.div({
+                    class: "w-full flex flex-col px-2 border-gray-300",
+                    children: [
+                        breadCrumb,
+                        Tools.div({
+                            class: "flex items-center justify-between gap-2 mt-2",
+                            children: [plusBtn, searchComp],
+                        }),
+                        listDisplayer,
+                    ],
+                }),
+            ],
+        },
+        {},
+        {
+            listDisplayer,
+            breadCrumb,
+            searchComp,
+            plusBtn,
+        }
+    );
+};
+export const ActivityCtrl = (root: any) => {
+    let model = root.model;
     let modal = GlobalStates.getInstance().getState("modal");
+    let states: any = { comp: null };
+    const activityCreateForm = ActitivityForm();
     const onActivityEdit = (e: any, ls: any) => {
         const info = ls.s.data.info;
         let activityId = info.id;
@@ -351,10 +467,6 @@ export const BodyContent = (root?: any) => {
             ActivityComponent({ op, doms, id, name }, onOpsClicked)
         );
     };
-    let listDisplayer = Tools.div({
-        class: "flex flex-wrap gap-2 mt-2 bg-gray-200 p-2 rounded-lg h-full flex-1",
-        textContent: "no activities yet",
-    });
     const renderActivities = (
         act: {
             domains: { name: string; id: string }[];
@@ -364,13 +476,13 @@ export const BodyContent = (root?: any) => {
         }[]
     ) => {
         if (act.length === 0) {
-            listDisplayer.update({
+            states.comp.s.listDisplayer.update({
                 innerHTML: "",
                 textContent: "no activities yet",
             });
             return;
         }
-        listDisplayer.update({
+        states.comp.s.listDisplayer.update({
             innerHTML: "",
             children: act.map((item) =>
                 getActivityComponent(
@@ -382,8 +494,6 @@ export const BodyContent = (root?: any) => {
             ),
         });
     };
-    const activityCreateForm = ActitivityForm();
-
     const onCreateSubmit = (e: any, ls: any) => {
         e.preventDefault();
         let values = activityCreateForm.s.getValue();
@@ -450,58 +560,30 @@ export const BodyContent = (root?: any) => {
         modal.s.handlers.display(activityCreateForm);
         modal.s.handlers.show();
     };
-
-    const breadCrumb = Breadcrumb();
-    const searchComp = SearchComponent();
-
-    return Tools.div(
-        {
-            class: "flex flex-col items-center flex-1 h-full ",
-            key: "contentArea",
-            children: [
-                Tools.div({
-                    class: "w-full flex flex-col px-2 border-gray-300",
-                    children: [
-                        breadCrumb,
-                        Tools.div({
-                            class: "flex items-center justify-between gap-2 mt-2",
-                            children: [
-                                Tools.icon(
-                                    Plus,
-                                    {
-                                        class: "w-12 h-12 cursor-pointer hover:bg-gray-200",
-                                    },
-                                    {
-                                        click: onPlusClicked,
-                                    }
-                                ),
-                                searchComp,
-                            ],
-                        }),
-                        listDisplayer,
-                    ],
-                }),
-            ],
+    const setup = () => {
+        states.comp.s.plusBtn.update(
+            {},
+            {
+                click: onPlusClicked,
+            }
+        );
+    };
+    return {
+        states,
+        activityOps,
+        funcs: {
+            renderActivities,
+            setup,
+            onPlusClicked,
+            onOpsClicked,
+            onActivityEdit,
+            onActivityDelete,
+            onEditSubmit,
+            onCreateSubmit,
+            getActivityComponent,
         },
-        {},
-        {
-            comps: {
-                activityCreateForm,
-                listDisplayer,
-                breadCrumb,
-                searchComp,
-            },
-            handlers: {
-                renderActivities,
-                activityOps,
-                onOpsClicked,
-                getActivityComponent,
-                onCreateSubmit,
-                onEditSubmit,
-                onPlusClicked,
-            },
-        }
-    );
+        createForm: activityCreateForm,
+    };
 };
 export const DomainOpsForm = () => {
     let form = Tools.comp("form", {
