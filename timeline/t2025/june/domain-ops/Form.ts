@@ -30,7 +30,7 @@ export const GenericForm = () => {
         return values;
     };
     const setValues = (values: { [key: string]: string }) => {
-        for (const key in values) {
+        for (const key in formElements) {
             formElements[key].s.handlers.set(values[key]);
         }
     };
