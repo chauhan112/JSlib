@@ -126,7 +126,22 @@ export const Select = (options: { value: string; textContent: string }[]) => {
     );
     return comp;
 };
-
+export const Textarea = (props: [any?, any?, any?]) => {
+    let comp = Tools.comp("textarea", ...props);
+    const get = () => {
+        const input = comp.getElement() as HTMLTextAreaElement;
+        return input.value;
+    };
+    const set = (value: any): void => {
+        const input = comp.getElement() as HTMLTextAreaElement;
+        input.value = value;
+    };
+    const clear = () => {
+        set("");
+    };
+    comp.update({}, {}, { handlers: { get, set, clear } });
+    return comp;
+};
 export const FormComponents: any = {
     cinput: FormInputComponent,
     multiselect: MultiSelect,
