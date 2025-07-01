@@ -239,35 +239,44 @@ export const FlexTable = (
     headers: string[],
     includeActions: boolean = true
 ) => {
-    const handlers = { actions: (e: any, ls: any) => {} };
+    const handlers: any = { onOpsClicked: (e: any, ls: any) => {} };
     const createRow = (id: string, vals: string[]) => {
         const children = vals.map((c: string) =>
             Tools.comp(
                 "div",
-                { class: "flex-1 truncate", textContent: c },
+                { class: "flex-1 truncate", textContent: c, title: c },
                 {},
                 { id: id }
             )
         );
         if (includeActions) {
-            children.push(action(id, [Pencil, Trash]));
+            children.push(
+                action(id, [
+                    { type: "edit", icon: Pencil },
+                    { type: "delete", icon: Trash },
+                ])
+            );
         }
         return Tools.comp("div", {
-            class: "flex items-center gap-4 py-2",
+            class: "flex items-center gap-4",
             children: children,
         });
     };
-    const action = (keyId: string, actions: IconNode[]) => {
+    const action = (
+        keyId: string,
+        actions: { type: string; icon: IconNode }[]
+    ) => {
         return Tools.comp("div", {
             class: "flex items-center justify-start w-20 gap-5",
             children: actions.map((c: any) =>
                 Tools.icon(
-                    c,
-                    { class: "w-4 h-4" },
+                    c.icon,
+                    { class: "w-4 h-4 cursor-pointer" },
                     {
-                        click: (e: any, ls: any) => handlers.actions(e, ls),
+                        click: (e: any, ls: any) =>
+                            handlers.onOpsClicked(e, ls),
                     },
-                    { id: keyId }
+                    { id: keyId, data: c }
                 )
             ),
         });
@@ -315,6 +324,8 @@ export const FlexTable = (
 
     return comp;
 };
+
+export const GridTable = () => {};
 
 export const PropertiesFlexTable = () => {
     return FlexTable(["Key", "Value"]);
