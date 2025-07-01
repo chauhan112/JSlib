@@ -278,10 +278,12 @@ export class LogStructure {
     ) {
         let { key, type, order } = val;
         let idd = uuidv4();
-        let vals = this.model?.readEntry([...loc, this.key]);
+        let vals: any = {};
+        if (this.model?.exists([...loc, this.key]))
+            vals = this.model.readEntry([...loc, this.key]);
         vals[idd] = { key, type, order, id: idd };
         this.sortValsAndReassignOrder(vals);
-        this.model?.addEntry([...loc, this.key], vals);
+        this.model?.updateEntry([...loc, this.key], vals);
         return idd;
     }
     sortValsAndReassignOrder(vals: any) {
@@ -296,9 +298,11 @@ export class LogStructure {
     }
     read(loc: string[]) {
         let vals = this.model?.readEntry([...loc, this.key]);
-        return Object.values(vals);
+        let valsArr = Object.values(vals);
+        valsArr.sort((a: any, b: any) => a.order - b.order);
+        return valsArr;
     }
-    updateIds(loc: string[], id: string, newVal: any) {
+    update(loc: string[], id: string, newVal: any) {
         let vals = this.model?.readEntry([...loc, this.key]);
         vals[id] = { ...vals[id], ...newVal };
         this.sortValsAndReassignOrder(vals);
