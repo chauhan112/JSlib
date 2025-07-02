@@ -245,10 +245,26 @@ export class Logger {
     update(loc: string[], id: string, newVals: any) {
         if (!this.model?.exists([...loc, this.key, this.logType, id])) return;
         let now = new Date().toISOString();
+        let prevVal = this.model?.readEntry([
+            ...loc,
+            this.key,
+            this.logType,
+            id,
+        ]);
         this.model?.updateEntry([...loc, this.key, this.logType, id], {
+            ...prevVal,
             ...newVals,
             modified: now,
         });
+    }
+    readAll(loc: string[]) {
+        if (!this.model?.exists([...loc, this.key, this.logType])) return [];
+        let vals = this.model.readEntry([...loc, this.key, this.logType]);
+        let result: any[] = [];
+        for (let id in vals) {
+            result.push({ ...vals[id], id });
+        }
+        return result;
     }
     delete(loc: string[], id: string) {
         if (!this.model?.exists([...loc, this.key, this.logType, id])) return;
