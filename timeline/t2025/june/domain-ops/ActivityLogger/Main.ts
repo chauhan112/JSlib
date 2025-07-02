@@ -26,7 +26,8 @@ export const LoggerMain = () => {
     header.s.right.s.icon
         .getElement()
         .classList.add("transition-all", "duration-300");
-    const logsList = Tools.div({ class: "w-full h-full", child: table });
+    const logsList = Tools.div({ class: "w-full h-full px-4", child: table });
+    // const logsList = Tools.div({ class: "w-full h-full px-4" });
     const plusIcon = Tools.icon(Plus, {
         class: "w-12 h-12 mx-4 cursor-pointer hover:scale-110 transition-all duration-300",
     });
@@ -57,14 +58,7 @@ export const LoggerMain = () => {
             ],
         },
         {},
-        {
-            header,
-            prop,
-            struc,
-            searchComp,
-            plusIcon,
-            rightNav,
-        }
+        { logsList, header, prop, struc, searchComp, plusIcon, rightNav }
     );
     return comp;
 };
@@ -83,7 +77,10 @@ export const LoggerMainController = (root: any) => {
     let loggerDataCtrl = LoggerDataController(root);
     let currentSpaceForLogger: any = {};
     const getCurrentSpace = () => currentSpaceForLogger.val;
-    const setCurrentSpace = (space: any) => (currentSpaceForLogger.val = space);
+    const setCurrentSpace = (space: any) => {
+        currentSpaceForLogger.val = space;
+        loggerDataCtrl.funcs.renderAll();
+    };
     const setup = () => {
         strucCtrl.states.comp = comp.s.struc;
         strucCtrl.states.getCurrentSpace = getCurrentSpace;
@@ -94,12 +91,7 @@ export const LoggerMainController = (root: any) => {
                 click: toggleRightNav,
             }
         );
-        comp.s.plusIcon.update(
-            {},
-            {
-                click: loggerDataCtrl.onPlusClicked,
-            }
-        );
+        loggerDataCtrl.funcs.setup();
     };
     return {
         comp,
