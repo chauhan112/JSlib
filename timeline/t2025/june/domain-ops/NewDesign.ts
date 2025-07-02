@@ -251,7 +251,7 @@ export const NavController = (root: any) => {
         const name = formData.get("name") as string;
         const curKey = states.comp.s.tabComp.s.getCurrentKey();
         getInstance(curKey.s.info).updateName(
-            root?.currentLocation || [],
+            root.newDesignCtrl.states.currentLocation || [],
             states.comp.s.createForm.s.info.id,
             name
         );
@@ -282,10 +282,15 @@ export const NavController = (root: any) => {
         );
     };
     const onDeleteContextMenuOptionClick = (e: any, ls: any) => {
-        let item = contextMenu.s.currentContext.s.data;
-        let curKey = states.comp.s.tabComp.s.getCurrentKey();
-        getInstance(curKey.s.info).delete(item.id, root?.currentLocation);
-        updateNavItems();
+        if (confirm("Are you sure?")) {
+            let item = contextMenu.s.currentContext.s.data;
+            let curKey = states.comp.s.tabComp.s.getCurrentKey();
+            getInstance(curKey.s.info).delete(
+                item.id,
+                root.newDesignCtrl.states.currentLocation
+            );
+            updateNavItems();
+        }
     };
     let contextMenuOptions = [
         { label: "Edit", onClick: onEditContextMenuOptionClick },
