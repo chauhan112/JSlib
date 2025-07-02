@@ -1,7 +1,8 @@
 import { GenericForm, Params } from "../Form";
 import { GlobalStates } from "../GlobalStates";
-// import { Tools } from "../../../april/tools";
-// import { IconNode, Pencil, Trash, Eye } from "lucide";
+import { Model } from "../Model";
+import { FlexTable } from "../Properties";
+
 export const Unstructured = () => {
     const form = GenericForm();
     let comps: any[] = [
@@ -39,17 +40,92 @@ export const ColsSizes = {
 
 export const Controller = (root: any) => {
     const comp = Unstructured();
+    const table = FlexTable(["#", "did", "next", "created", "modified"]);
+    table.s.states.dataWrapper.class = ColsSizes.did_next_cols_data.class;
+    table.s.states.actionIcon.class = ColsSizes.action.class;
+    table.s.states.actionsWrapper.class = ColsSizes.actionWrapper.class;
+    table.s.header.update({ class: ColsSizes.did_next_cols_header.class });
+    let model: Model = root.model;
     const onPlusClicked = (e: any, ls: any) => {
         let modal = GlobalStates.getInstance().getState("modal");
         modal.s.handlers.display(comp);
         modal.s.handlers.show();
+        comp.s.handlers.submit = onCreateSubmit;
+        comp.s.handlers.clearValues();
     };
-    console.log(root);
-    const renderAll = () => {};
-    const onEdit = (id: string) => {};
-    const onView = (id: string) => {};
-    const onDelete = (id: string) => {};
-    const onEditSubmit = (e: any, ls: any) => {};
+    const renderAll = () => {
+        root.lmCtrl.comp.s.logsList.update({ innerHTML: "", child: table });
+        let curActivity = root.lmCtrl.funcs.getCurrentSpace();
+        let logs = model.logger.readAll(curActivity);
+        let logsOrderd = logs.map((log: any, i: number) => {
+            return {
+                id: log.id,
+                vals: [i + 1, log.did, log.next, log.created, log.modified],
+            };
+        });
+        table.s.setData(logsOrderd);
+    };
+    const onEdit = (id: string) => {
+        onPlusClicked(null, null);
+        let curActivity = root.lmCtrl.funcs.getCurrentSpace();
+        comp.s.handlers.setValues(model.logger.read(curActivity, id));
+        comp.s.handlers.submit = onEditSubmit;
+        comp.update({}, {}, { id: id });
+    };
 
-    return { comp, onPlusClicked };
+    const onDelete = (id: string) => {
+        console.log(id);
+        if (!confirm("Are you sure?")) return;
+        let curActivity = root.lmCtrl.funcs.getCurrentSpace();
+        model.logger.delete(curActivity, id);
+        renderAll();
+    };
+    const onEditSubmit = (e: any, ls: any) => {
+        e.preventDefault();
+        let curActivity = root.lmCtrl.funcs.getCurrentSpace();
+        let vals = ls.s.handlers.getValues();
+        model.logger.update(curActivity, comp.s.id, vals);
+        ls.s.handlers.clearValues();
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.handlers.hide();
+        renderAll();
+    };
+    const actions: any = {
+        edit: onEdit,
+        delete: onDelete,
+    };
+    table.s.handlers.onOpsClicked = (e: any, ls: any) => {
+        let id = ls.s.id;
+        let type = ls.s.data.type;
+        actions[type](id);
+    };
+    const onCreateSubmit = (e: any, ls: any) => {
+        e.preventDefault();
+        let curActivity = root.lmCtrl.funcs.getCurrentSpace();
+        let vals = ls.s.handlers.getValues();
+        model.logger.create(curActivity, vals);
+        ls.s.handlers.clearValues();
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.handlers.hide();
+        renderAll();
+    };
+    const setup = () => {
+        root.lmCtrl.comp.s.plusIcon.update(
+            {},
+            {
+                click: onPlusClicked,
+            }
+        );
+    };
+    return {
+        comp,
+        funcs: {
+            onPlusClicked,
+            renderAll,
+            onEdit,
+            onDelete,
+            onEditSubmit,
+            setup,
+        },
+    };
 };
