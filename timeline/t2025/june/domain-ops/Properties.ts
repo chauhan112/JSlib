@@ -240,42 +240,45 @@ export const FlexTable = (
     includeActions: boolean = true
 ) => {
     const handlers: any = { onOpsClicked: (e: any, ls: any) => {} };
+    const states = {
+        actionsWrapper: {
+            class: "flex items-center justify-start w-20 gap-5",
+        },
+        actionIcon: {
+            class: "w-4 h-4 hover:cursor-pointer hover:scale-110 transition-all duration-300",
+        },
+        actions: [
+            { type: "edit", icon: Pencil },
+            { type: "delete", icon: Trash },
+        ],
+        dataProps: { class: "truncate" },
+        dataWrapper: { class: TableColumns.four_cols.class },
+    };
     const createRow = (id: string, vals: string[]) => {
         const children = vals.map((c: string) =>
             Tools.comp(
                 "div",
-                { class: "truncate", textContent: c, title: c },
+                { textContent: c, title: c, ...states.dataProps },
                 {},
                 { id: id }
             )
         );
         if (includeActions) {
-            children.push(
-                action(id, [
-                    { type: "edit", icon: Pencil },
-                    { type: "delete", icon: Trash },
-                ])
-            );
+            children.push(handlers.action(id, states.actions));
         }
         let comp = Tools.comp("div", {
-            class: TableColumns.four_cols.class,
+            ...states.dataWrapper,
             children: children,
         });
 
         return comp;
     };
-    const action = (
-        keyId: string,
-        actions: { type: string; icon: IconNode }[]
-    ) => {
+    const action = (keyId: string, actions: any[]) => {
         return Tools.comp("div", {
-            class: "flex items-center justify-start w-20 gap-5",
             children: actions.map((c: any) =>
                 Tools.icon(
                     c.icon,
-                    {
-                        class: "w-4 h-4 hover:cursor-pointer hover:scale-110 transition-all duration-300",
-                    },
+                    states.actionIcon,
                     {
                         click: (e: any, ls: any) =>
                             handlers.onOpsClicked(e, ls),
@@ -283,6 +286,7 @@ export const FlexTable = (
                     { id: keyId, data: c }
                 )
             ),
+            ...states.actionsWrapper,
         });
     };
     const createHeader = (headers: string[]) => {
@@ -319,6 +323,7 @@ export const FlexTable = (
         textContent: "No structure found",
     });
     const header = createHeader(headers);
+    handlers.action = action;
     const comp = Tools.comp(
         "div",
         {
@@ -326,7 +331,15 @@ export const FlexTable = (
             children: [header, dataSection],
         },
         {},
-        { dataSection, handlers, createRow, createHeader, setData, action }
+        {
+            header,
+            dataSection,
+            handlers,
+            createRow,
+            createHeader,
+            setData,
+            states,
+        }
     );
 
     return comp;
@@ -339,10 +352,6 @@ export const TableColumns = {
     four_cols: {
         class: "grid grid-cols-[1fr_1.5fr_.5fr_1fr] gap-4 ",
     },
-};
-
-export const PropertiesFlexTable = () => {
-    return FlexTable(["Key", "Value"]);
 };
 
 export const Header = () => {
