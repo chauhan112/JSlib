@@ -15,7 +15,6 @@ export const MainPageController = () => {
     const onActivityStepIn = (e: any, ls: any) => {
         const info = ls.s.data.info;
         let activityId = info.id;
-        console.log(root);
         let loc = [
             ...root.newDesignCtrl.states.currentLocation,
             root.model.activity.key,
@@ -44,7 +43,6 @@ export const MainPageController = () => {
     const onGoback = () => {
         comp.update({ innerHTML: "", child: newDesignCtrl.comp });
     };
-    console.log(newDesignCtrl);
     newDesignCtrl.actCtrl.activityOps["select"] = onActivityStepIn;
     lmCtrl.comp.s.header.s.left.update(
         {},
@@ -53,12 +51,11 @@ export const MainPageController = () => {
         }
     );
 
-    lmCtrl.funcs.setup();
-
     root.comp = comp;
     root.newDesignCtrl = newDesignCtrl;
     root.lmCtrl = lmCtrl;
 
     newDesignCtrl.funcs.setup();
+    lmCtrl.funcs.setup();
     return root;
 };
