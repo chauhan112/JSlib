@@ -196,18 +196,6 @@ export const NewDesignCtrl = (root: any) => {
         },
     };
 };
-export const OptionsManager = () => {
-    const state: any = { options: {} };
-    const addOption = (option: any) => {
-        state.options[option.id] = option;
-    };
-    const removeOption = (id: string) => {
-        delete state.options[id];
-    };
-    const clear = () => (state.options = {});
-
-    return { state, addOption, removeOption, clear };
-};
 export const Navigation = () => {
     const tabComp = TabComponent([
         { label: "Domains", info: "domains" },
@@ -243,7 +231,6 @@ export const NavController = (root: any) => {
         domains: root.model.domain,
         operations: root.model.operations,
     };
-    console.log("nv", root);
     const getInstance = (key: string) => states[key];
     const onCreateNew = (e: any, ls: any) => {
         e.preventDefault();
