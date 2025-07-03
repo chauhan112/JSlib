@@ -305,7 +305,6 @@ export const FlexTable = (
             );
         }
         let comp = Tools.comp("div", {
-            key: "header",
             children: hrows,
             class: TableColumns.four_cols.class,
         });
@@ -322,6 +321,14 @@ export const FlexTable = (
         class: "space-y-2 text-white",
         textContent: "No structure found",
     });
+
+    const setHeaders = (headers: string[]) => {
+        header.update({
+            innerHTML: "",
+            child: createHeader(headers),
+            class: "",
+        });
+    };
     const header = createHeader(headers);
     handlers.action = action;
     const comp = Tools.comp(
@@ -333,6 +340,7 @@ export const FlexTable = (
         {},
         {
             header,
+            setHeaders,
             dataSection,
             handlers,
             createRow,
