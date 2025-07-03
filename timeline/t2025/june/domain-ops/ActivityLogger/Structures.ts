@@ -13,13 +13,18 @@ export const StructureForm = () => {
         }),
         Params.select(
             "type",
-            options.map((op) => [op[1], op[0]])
+            options.map((op) => ({ value: op[1], label: op[0] }))
         ),
         Params.inp("order", {
             class: "w-full p-2 rounded-md bg-gray-100 text-black",
             placeholder: "give the order for sorting",
             type: "number",
             value: 0,
+        }),
+        Params.json("params", {
+            class: "w-full p-2 rounded-md bg-gray-100 text-black flex-1",
+            placeholder:
+                "pass the params as json for example: options for select component",
         }),
         Params.inpSubmit(),
     ];

@@ -27,7 +27,6 @@ export const LoggerMain = () => {
         .getElement()
         .classList.add("transition-all", "duration-300");
     const logsList = Tools.div({ class: "w-full h-full px-4", child: table });
-    // const logsList = Tools.div({ class: "w-full h-full px-4" });
     const plusIcon = Tools.icon(Plus, {
         class: "w-12 h-12 mx-4 cursor-pointer hover:scale-110 transition-all duration-300",
     });
