@@ -72,6 +72,7 @@ export const StructureSectionController = (root: any) => {
         states.comp.s.form.s.handlers.submit = onEditSubmit;
         sf.s.handlers.setValues(val);
         modal.s.handlers.show();
+        modal.s.modalTitle.update({ textContent: "update Structure: " + id });
         sf.update({}, {}, { data: val });
     };
     const onEditSubmit = (e: any, ls: any) => {
@@ -112,6 +113,7 @@ export const StructureSectionController = (root: any) => {
         modal.s.handlers.display(states.comp.s.form);
         modal.s.handlers.show();
         states.comp.s.form.s.handlers.submit = onCreate;
+        modal.s.modalTitle.update({ textContent: "Create Structure" });
     };
     const setup = () => {
         states.comp.s.header.s.plus.update(

@@ -52,6 +52,8 @@ export const Controller = (root: any) => {
         modal.s.handlers.show();
         comp.s.handlers.submit = onCreateSubmit;
         comp.s.handlers.clearValues();
+
+        modal.s.modalTitle.update({ textContent: "Create Log" });
     };
     const renderAll = () => {
         root.lmCtrl.comp.s.logsList.update({ innerHTML: "", child: table });
@@ -71,6 +73,8 @@ export const Controller = (root: any) => {
         comp.s.handlers.setValues(model.logger.read(curActivity, id));
         comp.s.handlers.submit = onEditSubmit;
         comp.update({}, {}, { id: id });
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.modalTitle.update({ textContent: "Update Log: " + id });
     };
 
     const onDelete = (id: string) => {
