@@ -413,7 +413,10 @@ export const ActivityCtrl = (root: any) => {
     const onActivityEdit = (e: any, ls: any) => {
         const info = ls.s.data.info;
         let activityId = info.id;
-        let activity = model.activity.read([], activityId);
+        let activity = model.activity.read(
+            root.newDesignCtrl.states.currentLocation,
+            activityId
+        );
         onPlusClicked(e, ls);
         try {
             activityCreateForm.s.setValue(activity);
@@ -436,8 +439,15 @@ export const ActivityCtrl = (root: any) => {
         const info = ls.s.data.info;
         let activityId = info.id;
         if (confirm("Are you sure you want to delete this activity?")) {
-            model.activity.delete([], activityId);
-            renderActivities(model.activity.readAll([]));
+            model.activity.delete(
+                root.newDesignCtrl.states.currentLocation,
+                activityId
+            );
+            renderActivities(
+                model.activity.readAll(
+                    root.newDesignCtrl.states.currentLocation
+                )
+            );
         }
     };
 
@@ -492,7 +502,7 @@ export const ActivityCtrl = (root: any) => {
         if (values.domains.length > 0 && values.operation) {
             activityCreateForm.s.resetForm();
             model.activity.create(
-                [],
+                root.newDesignCtrl.states.currentLocation,
                 values.name,
                 values.operation,
                 values.domains
@@ -500,7 +510,9 @@ export const ActivityCtrl = (root: any) => {
         } else {
             throw new Error("Please select a domain and an operation");
         }
-        renderActivities(model.activity.readAll([]));
+        renderActivities(
+            model.activity.readAll(root.newDesignCtrl.states.currentLocation)
+        );
         modal.s.handlers.hide();
     };
     const onEditSubmit = (e: any, ls: any) => {
@@ -509,7 +521,7 @@ export const ActivityCtrl = (root: any) => {
         if (values.domains.length > 0 && values.operation) {
             activityCreateForm.s.resetForm();
             model.activity.update(
-                [],
+                root.newDesignCtrl.states.currentLocation,
                 activityCreateForm.s.curId,
                 values.domains,
                 values.operation,
@@ -518,18 +530,22 @@ export const ActivityCtrl = (root: any) => {
         } else {
             throw new Error("Please select a domain and an operation");
         }
-        renderActivities(model.activity.readAll([]));
+        renderActivities(
+            model.activity.readAll(root.newDesignCtrl.states.currentLocation)
+        );
         modal.s.handlers.hide();
     };
     const onPlusClicked = (e: any, ls: any) => {
-        const domains = model.domain.readNameAndId([]).map((item: any) => {
-            return {
-                textContent: item.name,
-                value: item.id,
-            };
-        });
+        const domains = model.domain
+            .readNameAndId(root.newDesignCtrl.states.currentLocation)
+            .map((item: any) => {
+                return {
+                    textContent: item.name,
+                    value: item.id,
+                };
+            });
         const operations = model.operations
-            .readNameAndId([])
+            .readNameAndId(root.newDesignCtrl.states.currentLocation)
             .map((item: any) => {
                 return {
                     textContent: item.name,
