@@ -251,7 +251,7 @@ export const ActivityComponent = (
         );
     };
     const opsContainer = Tools.div({
-        class: "flex flex-col hidden w-full absolute bottom-0 right-0 flex items-center gap-2 z-10 bg-gray-200 transparent h-2/3 items-center justify-around",
+        class: "opsContainer flex flex-col hidden w-full absolute bottom-0 right-0 flex items-center gap-2 z-10 bg-gray-200 transparent h-2/3 items-center justify-around",
         children: [
             UIComp(LogIn, { type: "select", info: value }),
             Tools.div({
@@ -270,34 +270,23 @@ export const ActivityComponent = (
             class: "font-bold text-sm text-blue-500 ",
         });
     };
-    return Tools.div(
-        {
-            class: "flex flex-col gap-2 relative min-h-32 w-32",
-            children: [
-                Tools.comp("p", {
-                    textContent: value.op.name,
-                    class: "font-bold text-sm text-green-500 flex ",
-                }), // tag
-                Tools.comp("ul", {
-                    class: "flex flex-wrap gap-2",
-                    children: value.doms.map(DomElement),
-                }),
-                Tools.comp("h3", {
-                    textContent: value.name,
-                }),
-
-                opsContainer,
-            ],
-        },
-        {
-            mouseenter: () => {
-                opsContainer.getElement().classList.remove("hidden");
-            },
-            mouseleave: () => {
-                opsContainer.getElement().classList.add("hidden");
-            },
-        }
-    );
+    return Tools.div({
+        class: "onHoverElement flex flex-col gap-2 relative min-h-32 w-32",
+        children: [
+            Tools.comp("p", {
+                textContent: value.op.name,
+                class: "font-bold text-sm text-green-500 flex ",
+            }), // tag
+            Tools.comp("ul", {
+                class: "flex flex-wrap gap-2",
+                children: value.doms.map(DomElement),
+            }),
+            Tools.comp("h3", {
+                textContent: value.name,
+            }),
+            opsContainer,
+        ],
+    });
 };
 export const NavChild = ({
     name,
