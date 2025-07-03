@@ -1,3 +1,4 @@
+import { DynamicFormController } from "../../../july/DynamicForm";
 import { GenericForm, Params } from "../Form";
 import { GlobalStates } from "../GlobalStates";
 import { Model } from "../Model";
@@ -40,6 +41,8 @@ export const ColsSizes = {
 
 export const Controller = (root: any) => {
     const comp = Unstructured();
+    const structuredForm = DynamicFormController();
+
     const table = FlexTable(["#", "did", "next", "created", "modified"]);
     table.s.states.dataWrapper.class = ColsSizes.did_next_cols_data.class;
     table.s.states.actionIcon.class = ColsSizes.action.class;
@@ -48,12 +51,19 @@ export const Controller = (root: any) => {
     let model: Model = root.model;
     const onPlusClicked = (e: any, ls: any) => {
         let modal = GlobalStates.getInstance().getState("modal");
-        modal.s.handlers.display(comp);
-        modal.s.handlers.show();
-        comp.s.handlers.submit = onCreateSubmit;
-        comp.s.handlers.clearValues();
-
         modal.s.modalTitle.update({ textContent: "Create Log" });
+        let structures = root.lmCtrl.strucCtrl.states.structures;
+        if (structures.length == 0) {
+            modal.s.handlers.display(comp);
+            comp.s.handlers.submit = onCreateSubmit;
+            comp.s.handlers.clearValues();
+        } else {
+            modal.s.handlers.display(structuredForm.comp);
+            structuredForm.setFields(structures);
+            structuredForm.comp.s.handlers.submit = onCreateSubmit;
+            structuredForm.comp.s.handlers.clearValues();
+        }
+        modal.s.handlers.show();
     };
     const renderAll = () => {
         root.lmCtrl.comp.s.logsList.update({ innerHTML: "", child: table });
@@ -69,16 +79,23 @@ export const Controller = (root: any) => {
     };
     const onEdit = (id: string) => {
         onPlusClicked(null, null);
+        let structures = root.lmCtrl.strucCtrl.states.structures;
         let curActivity = root.lmCtrl.funcs.getCurrentSpace();
-        comp.s.handlers.setValues(model.logger.read(curActivity, id));
-        comp.s.handlers.submit = onEditSubmit;
-        comp.update({}, {}, { id: id });
+        if (structures.length == 0) {
+            comp.s.handlers.setValues(model.logger.read(curActivity, id));
+            comp.s.handlers.submit = onEditSubmit;
+            comp.update({}, {}, { id: id });
+        } else {
+            structuredForm.comp.s.handlers.setValues(
+                model.logger.read(curActivity, id)
+            );
+            structuredForm.comp.s.handlers.submit = onEditSubmit;
+            structuredForm.comp.update({}, {}, { id: id });
+        }
         let modal = GlobalStates.getInstance().getState("modal");
         modal.s.modalTitle.update({ textContent: "Update Log: " + id });
     };
-
     const onDelete = (id: string) => {
-        console.log(id);
         if (!confirm("Are you sure?")) return;
         let curActivity = root.lmCtrl.funcs.getCurrentSpace();
         model.logger.delete(curActivity, id);
@@ -88,7 +105,7 @@ export const Controller = (root: any) => {
         e.preventDefault();
         let curActivity = root.lmCtrl.funcs.getCurrentSpace();
         let vals = ls.s.handlers.getValues();
-        model.logger.update(curActivity, comp.s.id, vals);
+        model.logger.update(curActivity, ls.s.id, vals);
         ls.s.handlers.clearValues();
         let modal = GlobalStates.getInstance().getState("modal");
         modal.s.handlers.hide();
@@ -123,6 +140,7 @@ export const Controller = (root: any) => {
     };
     return {
         comp,
+        structuredForm,
         funcs: {
             onPlusClicked,
             renderAll,
