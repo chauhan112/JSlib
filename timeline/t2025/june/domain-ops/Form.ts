@@ -139,11 +139,28 @@ export const Textarea = (props: [any?, any?, any?]) => {
     comp.update({}, {}, { handlers: { get, set, clear } });
     return comp;
 };
+export const JSONComponent = (props: [any?, any?, any?]) => {
+    let comp = Tools.comp("textarea", ...props);
+    const get = () => {
+        const input = comp.getElement() as HTMLTextAreaElement;
+        return JSON.parse(input.value);
+    };
+    const set = (value: any): void => {
+        const input = comp.getElement() as HTMLTextAreaElement;
+        input.value = JSON.stringify(value, null, 2);
+    };
+    const clear = () => {
+        set("");
+    };
+    comp.update({}, {}, { handlers: { get, set, clear } });
+    return comp;
+};
 export const FormComponents: any = {
     cinput: FormInputComponent,
     multiselect: MultiSelect,
     select: Select,
     textarea: Textarea,
+    json: JSONComponent,
 };
 export const Params = {
     inp: (key: string, ...args: any) => {
@@ -166,24 +183,21 @@ export const Params = {
             ],
         };
     },
-    multi: (key: string, options: [string, string][]) => {
+    multi: (key: string, options: { value: string; label: string }[]) => {
         return {
             key,
             type: "multiselect",
             params: options.map((option) => ({
-                value: option[0],
-                textContent: option[1],
+                value: option.value,
+                textContent: option.label,
             })),
         };
     },
-    select: (key: string, options: [string, string][]) => {
+    select: (key: string, options: { value: string; label: string }[]) => {
         return {
             key,
             type: "select",
-            params: options.map((option) => ({
-                value: option[0],
-                label: option[1],
-            })),
+            params: options,
         };
     },
     textArea: (key: string, ...args: any) => {
@@ -226,6 +240,13 @@ export const Params = {
             key,
             type: "cinput",
             params: [...args, { type: "checkbox" }],
+        };
+    },
+    json: (key: string, ...args: any) => {
+        return {
+            key,
+            type: "json",
+            params: [...args],
         };
     },
 };
