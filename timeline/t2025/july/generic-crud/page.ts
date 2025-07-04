@@ -1,4 +1,4 @@
-import { Plus, Search } from "lucide";
+import { ChevronLeft, ChevronRight, Plus, Search } from "lucide";
 import { Tools } from "../../april/tools";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 export const SearchSystem = () => {
@@ -18,7 +18,6 @@ export const SearchSystem = () => {
         ],
     });
 };
-
 export const GenericCRUD = () => {
     const searchSystem = SearchSystem();
     const searchIcon = Tools.icon(Search, {
@@ -31,15 +30,16 @@ export const GenericCRUD = () => {
         class: "absolute left-0 top-0 flex flex-col gap-2 z-10",
         children: [
             Tools.div({
-                class: "flex flex-col gap-2 items-center justify-between p-2",
+                class: "flex gap-2 items-center justify-between p-2",
                 children: [searchIcon, plusIcon],
             }),
         ],
     });
+    const lister = Lister();
     return Tools.div(
         {
-            class: "h-screen flex",
-            children: [ops],
+            class: "h-screen flex flex-col",
+            children: [ops, lister],
         },
         {},
         {
@@ -50,7 +50,6 @@ export const GenericCRUD = () => {
         }
     );
 };
-
 export const GenericCRUDCtrl = () => {
     const comp = GenericCRUD();
     const onPlusClicked = (e: any, ls: any) => {};
@@ -80,7 +79,43 @@ export const GenericCRUDCtrl = () => {
         funcs: { onPlusClicked, onSearchClicked, setup },
     };
 };
+export const Lister = () => {
+    let comp = Tools.div({
+        class: "grid grid-flow-row auto-rows-auto gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+        children: [CardComp(), CardComp(), CardComp(), CardComp(), CardComp()],
+    });
+    let pagination = Pagination();
 
-export const Lister = () => {};
-
-export const CardComp = (x: any) => {};
+    return Tools.div({
+        class: "flex flex-col flex-1 overflow-y-auto gap-4",
+        children: [pagination, comp],
+    });
+};
+export const Pagination = () => {
+    return Tools.comp("div", {
+        class: "flex justify-center items-center space-x-4",
+        children: [
+            Tools.comp("button", {
+                key: "prev",
+                class: "text-gray-600 hover:text-gray-900 cursor-pointer",
+                children: [Tools.icon(ChevronLeft, { class: "w-6 h-6" })],
+            }),
+            Tools.comp("div", {
+                key: "page",
+                class: "flex space-x-2",
+                textContent: "1/10",
+            }),
+            Tools.comp("button", {
+                key: "next",
+                class: "text-gray-600 hover:text-gray-900 cursor-pointer",
+                children: [Tools.icon(ChevronRight, { class: "w-6 h-6" })],
+            }),
+        ],
+    });
+};
+export const CardComp = () => {
+    return Tools.comp("div", {
+        class: "bg-gray-100 p-5 rounded-lg text-center shadow-md",
+        textContent: "Comp",
+    });
+};
