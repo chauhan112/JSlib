@@ -54,6 +54,13 @@ export const GenericMultiLayerModal = (title: string) => {
     return wid;
 };
 
+export type MultiLayerModel = {
+    modal: IComponent;
+    addLayer: (layer: IComponent, title: string) => void;
+    closeLayer: () => void;
+    showLayer: (layer: IComponent, title: string) => void;
+};
+
 export const MultiLayerModalCtrl = () => {
     let modal = GenericMultiLayerModal("");
     let stack: { comp: IComponent; title: string }[] = [];
