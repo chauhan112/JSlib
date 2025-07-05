@@ -1,10 +1,17 @@
 //  npm install lucide
-import { ChevronLeft, ChevronRight, Cog, Plus, Search } from "lucide";
+import {
+    ChevronLeft,
+    ChevronRight,
+    Cog,
+    EllipsisVertical,
+    Plus,
+    Search,
+} from "lucide";
 import { Tools } from "../../april/tools";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 import { StructureSection } from "../../june/domain-ops/ActivityLogger/Structures";
 import { MultiLayerModel } from "./multiLayerModal";
-import { FormModel, ModelType } from "./model";
+import { FormModel, ModelType, GenericCRUDModel } from "./model";
 import { DynamicFormController } from "../../july/DynamicForm";
 
 export const SearchSystem = () => {
@@ -265,22 +272,94 @@ export const FormStructureCtrl = () => {
         model,
     };
 };
-export const GenericCRUDCtrl = () => {
-    const comp = GenericCRUD();
+export const DataCrudCtrl = () => {
+    const states: any = {
+        formLoaded: false,
+        fields: [],
+        refresh: () => {},
+    };
+    let model = new GenericCRUDModel();
     const dataFormCtrl = DynamicFormController();
     const onPlusClicked = async (e: any, ls: any) => {
         let modal = GlobalStates.getInstance().getState("modal");
-        if (!states.formLoaded) {
-            dataFormCtrl.setFields(await formCtrl.model.funcs.readAll());
-            states.formLoaded = true;
-        }
+        renderForm();
         modal.s.handlers.display(dataFormCtrl.comp);
         modal.s.handlers.show();
         modal.s.modalTitle.update({ textContent: "Create" });
+        dataFormCtrl.comp.s.handlers.submit = onCreateSubmit;
+        dataFormCtrl.comp.s.handlers.clearValues();
     };
-    const states = {
-        formLoaded: false,
+    const renderForm = () => {
+        if (!states.formLoaded) {
+            dataFormCtrl.setFields(states.fields);
+            states.formLoaded = true;
+        }
     };
+    const onCreateSubmit = (e: any, ls: any) => {
+        e.preventDefault();
+        let vals = dataFormCtrl.comp.s.handlers.getValues();
+        model.create(vals).then(() => {
+            states.refresh();
+            let modal = GlobalStates.getInstance().getState("modal");
+            modal.s.handlers.hide();
+        });
+    };
+    const onEditSubmit = (e: any, ls: any) => {
+        e.preventDefault();
+        let prevVal = dataFormCtrl.comp.s.data;
+        let curVal = dataFormCtrl.comp.s.handlers.getValues();
+        model.update(prevVal.id, curVal).then(() => {
+            states.refresh();
+            let modal = GlobalStates.getInstance().getState("modal");
+            modal.s.handlers.hide();
+        });
+    };
+    const onEdit = (e: any, ls: any) => {
+        let info = ls.s.data.info;
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.handlers.display(dataFormCtrl.comp);
+        modal.s.handlers.show();
+        renderForm();
+        modal.s.modalTitle.update({ textContent: "Update" });
+        dataFormCtrl.comp.s.handlers.setValues(info);
+        dataFormCtrl.comp.s.handlers.submit = onEditSubmit;
+        dataFormCtrl.comp.update({}, {}, { data: info });
+    };
+    const onDelete = (e: any, ls: any) => {
+        if (!confirm("Are you sure?")) return;
+        model.delete(ls.s.data.info.id).then(() => {
+            states.refresh();
+        });
+    };
+    const onOpsClicked = (e: any, ls: any) => {
+        let cm = GlobalStates.getInstance().getState("contextMenu");
+        let options = [
+            {
+                label: "Edit",
+                info: ls.s.data,
+                onClick: onEdit,
+            },
+            {
+                label: "Delete",
+                info: ls.s.data,
+                onClick: onDelete,
+            },
+        ];
+        cm.s.setOptions(options);
+        cm.s.displayMenu(e, ls);
+    };
+    states.onDataClicked = onOpsClicked;
+    return {
+        onPlusClicked,
+        dataFormCtrl,
+        states,
+        renderForm,
+        model,
+    };
+};
+export const GenericCRUDCtrl = () => {
+    const comp = GenericCRUD();
+    const dataCrudCtrl = DataCrudCtrl();
     const paginationCtrl = PaginationCtrl(100);
     const formCtrl = FormStructureCtrl();
     const onSearchClicked = (e: any, ls: any) => {
@@ -290,27 +369,25 @@ export const GenericCRUDCtrl = () => {
         modal.s.handlers.show();
         modal.s.modalTitle.update({ textContent: "Search" });
     };
+
     const onRender = (data: any[]) => {
         comp.s.lister.s.comp.update({
             innerHTML: "",
             children: data.map((x: any) => {
-                let c = CardComp();
-                c.update({ textContent: x.title }, {}, { data: x });
-                return c;
+                return CardComp(x.title, x, dataCrudCtrl.states.onDataClicked);
             }),
         });
     };
-    formCtrl.setStructures([
-        {
-            key: "title",
-            type: "input",
-            order: 0,
-        },
-    ]);
+    dataCrudCtrl.states.refresh = async () => {
+        paginationCtrl.states.render(await dataCrudCtrl.model.readAll());
+    };
 
     formCtrl.model.states.onChange = () => {
         formCtrl.model.onChange();
-        states.formLoaded = false;
+        dataCrudCtrl.states.formLoaded = false;
+        formCtrl.model.funcs.readAll().then((data) => {
+            dataCrudCtrl.states.fields = data;
+        });
     };
     paginationCtrl.states.render = onRender;
     const setData = (
@@ -322,7 +399,7 @@ export const GenericCRUDCtrl = () => {
         comp.s.plusIcon.update(
             {},
             {
-                click: onPlusClicked,
+                click: dataCrudCtrl.onPlusClicked,
             }
         );
         comp.s.searchIcon.update(
@@ -337,24 +414,25 @@ export const GenericCRUDCtrl = () => {
                 click: formCtrl.onOpen,
             }
         );
-        const dummyData: any = [];
-        for (let i = 0; i < 100; i++) {
-            dummyData.push({ title: `Item ${i + 1}`, id: `id-${i + 1}` });
-        }
+        // const dummyData: any = [];
+        // for (let i = 0; i < 5; i++) {
+        //     dummyData.push({ title: `Item ${i + 1}`, id: `id-${i + 1}` });
+        // }
         paginationCtrl.states.comp = comp.s.lister.s.pagination;
         paginationCtrl.setup();
-        setData(dummyData);
+        dataCrudCtrl.model.readAll().then(setData);
+        formCtrl.setStructures([
+            {
+                key: "title",
+                type: "input",
+                order: 0,
+            },
+        ]);
     };
 
-    comp.s.plusIcon.update(
-        {},
-        {
-            click: onPlusClicked,
-        }
-    );
     return {
         comp,
-        funcs: { onPlusClicked, onSearchClicked, setup, setData, onRender },
+        funcs: { onSearchClicked, setup, setData, onRender, dataCrudCtrl },
     };
 };
 export const Lister = () => {
@@ -395,9 +473,51 @@ export const Pagination = () => {
         ],
     });
 };
-export const CardComp = () => {
-    return Tools.comp("div", {
-        class: "bg-gray-100 p-5 rounded-lg text-center shadow-md",
-        textContent: "Comp",
+export const CardComp = (
+    title: string = "Title",
+    data: any = {},
+    onOpsClicked?: (e: any, ls: any) => void
+) => {
+    let titleComp = Tools.comp("div", { textContent: "Title" });
+    let opsComp = Tools.comp("div", {
+        class: "flex gap-2",
+        children: [
+            Tools.icon(
+                EllipsisVertical,
+                {
+                    key: "edit",
+                    class: "w-6 h-6 text-gray-500 hover:scale-110 transform cursor-pointer",
+                },
+                {
+                    click: (e: any, ls: any) => {
+                        onOpsClicked?.(e, ls);
+                    },
+                },
+                {
+                    type: "edit",
+                }
+            ),
+        ],
     });
+    let comp = Tools.comp(
+        "div",
+        {
+            class: "bg-gray-100 p-5 rounded-lg text-center shadow-md flex  justify-between",
+            children: [titleComp, opsComp],
+        },
+        {},
+        { titleComp, opsComp }
+    );
+    const setTitle = (title: string) => {
+        titleComp.update({ textContent: title });
+    };
+    const setData = (data: any) => {
+        opsComp.s.edit.update({}, {}, { data });
+        comp.update({}, {}, { data });
+    };
+    setTitle(title);
+    setData(data);
+
+    comp.update({}, {}, { setTitle, setData });
+    return comp;
 };
