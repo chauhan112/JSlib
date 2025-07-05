@@ -1,7 +1,12 @@
+//  npm install lucide
 import { ChevronLeft, ChevronRight, Cog, Plus, Search } from "lucide";
 import { Tools } from "../../april/tools";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 import { StructureSection } from "../../june/domain-ops/ActivityLogger/Structures";
+import { MultiLayerModel } from "./multiLayerModal";
+import { FormModel, ModelType } from "./model";
+import { DynamicFormController } from "../../july/DynamicForm";
+
 export const SearchSystem = () => {
     return Tools.comp("form", {
         class: "flex w-full",
@@ -52,13 +57,14 @@ export const GenericCRUD = () => {
             searchIcon,
             plusIcon,
             lister,
+            formIcon,
         }
     );
 };
-export const PaginationCtrl = () => {
+export const PaginationCtrl = (pageSize?: number) => {
     const states: any = {
         comp: null,
-        pageSize: 20,
+        pageSize: pageSize ?? 20,
         data: [],
         currentPage: 1,
     };
@@ -104,6 +110,9 @@ export const PaginationCtrl = () => {
         pageInfo.update({
             textContent: `${states.currentPage}/${states.maxPage}`,
         });
+        if (states.maxPage == 1)
+            states.comp.getElement().classList.add("hidden");
+        else states.comp.getElement().classList.remove("hidden");
     };
     states.render = render;
     const setup = () => {
@@ -144,21 +153,139 @@ export const PaginationCtrl = () => {
         render,
     };
 };
+export const StructureSectionCtrl = (model: ModelType) => {
+    const states: any = { comp: null };
+    let modal: MultiLayerModel =
+        GlobalStates.getInstance().getState("multiModal");
+    const renderAll = () => {
+        model.readAll().then((res: any) => {
+            states.structures = res;
+            states.comp.s.setInfos(states.structures);
+        });
+    };
+    const onDelete = (id: string) => {
+        if (!confirm("Are you sure?")) return;
+        model.delete(id).then(() => renderAll());
+    };
+    const onEdit = (id: string) => {
+        let val = states.structures.find((x: any) => x.id == id);
+        let sf = states.comp.s.form;
+        modal.addLayer(sf, "Update Structure: " + id);
+        states.comp.s.form.s.handlers.submit = onEditSubmit;
+        sf.s.handlers.setValues(val);
+        sf.update({}, {}, { data: val });
+    };
+    const onEditSubmit = (e: any, ls: any) => {
+        e.preventDefault();
+        let prevVal = ls.s.data;
+        let newVal = ls.s.handlers.getValues();
+        model.update(prevVal.id, newVal).then(() => {
+            modal.closeLayer();
+            renderAll();
+        });
+    };
+    const onActions = (e: any, ls: any) => {
+        let opType = ls.s.data.type;
+        if (opType == "delete") {
+            onDelete(ls.s.id);
+        } else if (opType == "edit") {
+            onEdit(ls.s.id);
+        }
+    };
+    const onCreate = (e: any, ls: any) => {
+        let form = states.comp.s.form;
+        e.preventDefault();
+        let vals = form.s.handlers.getValues();
+        let valsCopy = { ...vals, order: parseInt(vals.order) };
+        form.s.handlers.clearValues();
+        model.create(valsCopy).then(() => {
+            modal.closeLayer();
+            renderAll();
+        });
+    };
+    const onPlusClicked = (e: any, ls: any) => {
+        modal.addLayer(states.comp.s.form, "Create Structure");
+        states.comp.s.form.s.handlers.submit = onCreate;
+        states.comp.s.form.s.handlers.clearValues();
+    };
+    const setup = () => {
+        states.comp.s.table.s.handlers.onOpsClicked = onActions;
+    };
+    return {
+        states,
+        renderAll,
+        onCreate,
+        onActions,
+        onEdit,
+        onDelete,
+        onPlusClicked,
+        setup,
+    };
+};
 export const FormStructureCtrl = () => {
-    let comp = StructureSection();
-    const onOpen = (e: any, ls: any) => {};
-    const onCreate = (e: any, ls: any) => {};
-    const onUpdate = (e: any, ls: any) => {};
-    const onCancel = (e: any, ls: any) => {};
-    const setup = () => {};
-    return { onCreate, onCancel, onUpdate, setup };
+    let section = StructureSection();
+    section.s.body.getElement().classList.remove("text-white");
+    section.s.table.s.dataSection.getElement().classList.remove("text-white");
+    const plusBtn = Tools.icon(Plus, {
+        class: "w-6 h-6 text-gray-500 hover:rotate-90 duration-300 ease-in-out hover:scale-110 transform cursor-pointer",
+    });
+    let model = FormModel();
+    const sectCtrl = StructureSectionCtrl(model.funcs);
+    const setStructures = async (
+        data: { key: string; order: number; type: string }[]
+    ) => {
+        for (let d of data) {
+            await model.funcs.create(d);
+        }
+        sectCtrl.renderAll();
+    };
+    sectCtrl.states.comp = section;
+    sectCtrl.setup();
+    let comp = Tools.div({
+        class: "flex flex-col gap-2 w-full",
+        children: [plusBtn, section.s.table],
+    });
+    const onOpen = (e: any, ls: any) => {
+        let modal = GlobalStates.getInstance().getState("multiModal");
+        modal.addLayer(comp, "Structure");
+    };
+
+    plusBtn.update(
+        {},
+        {
+            click: sectCtrl.onPlusClicked,
+        }
+    );
+    return {
+        comp,
+        sectCtrl,
+        plusBtn,
+        setStructures,
+        onOpen,
+        model,
+    };
 };
 export const GenericCRUDCtrl = () => {
     const comp = GenericCRUD();
-    const onPlusClicked = (e: any, ls: any) => {};
-    const paginationCtrl = PaginationCtrl();
+    const dataFormCtrl = DynamicFormController();
+    const onPlusClicked = async (e: any, ls: any) => {
+        let modal = GlobalStates.getInstance().getState("modal");
+        if (!states.formLoaded) {
+            dataFormCtrl.setFields(await formCtrl.model.funcs.readAll());
+            states.formLoaded = true;
+        }
+        modal.s.handlers.display(dataFormCtrl.comp);
+        modal.s.handlers.show();
+        modal.s.modalTitle.update({ textContent: "Create" });
+    };
+    const states = {
+        formLoaded: false,
+    };
+    const paginationCtrl = PaginationCtrl(100);
+    const formCtrl = FormStructureCtrl();
     const onSearchClicked = (e: any, ls: any) => {
         let modal = GlobalStates.getInstance().getState("modal");
+
         modal.s.handlers.display(comp.s.searchSystem);
         modal.s.handlers.show();
         modal.s.modalTitle.update({ textContent: "Search" });
@@ -172,6 +299,18 @@ export const GenericCRUDCtrl = () => {
                 return c;
             }),
         });
+    };
+    formCtrl.setStructures([
+        {
+            key: "title",
+            type: "input",
+            order: 0,
+        },
+    ]);
+
+    formCtrl.model.states.onChange = () => {
+        formCtrl.model.onChange();
+        states.formLoaded = false;
     };
     paginationCtrl.states.render = onRender;
     const setData = (
@@ -192,7 +331,12 @@ export const GenericCRUDCtrl = () => {
                 click: onSearchClicked,
             }
         );
-
+        comp.s.formIcon.update(
+            {},
+            {
+                click: formCtrl.onOpen,
+            }
+        );
         const dummyData: any = [];
         for (let i = 0; i < 100; i++) {
             dummyData.push({ title: `Item ${i + 1}`, id: `id-${i + 1}` });
@@ -201,6 +345,13 @@ export const GenericCRUDCtrl = () => {
         paginationCtrl.setup();
         setData(dummyData);
     };
+
+    comp.s.plusIcon.update(
+        {},
+        {
+            click: onPlusClicked,
+        }
+    );
     return {
         comp,
         funcs: { onPlusClicked, onSearchClicked, setup, setData, onRender },
