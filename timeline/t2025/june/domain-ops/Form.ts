@@ -46,7 +46,7 @@ export const GenericForm = () => {
         components: {
             type: string;
             key: string;
-            params: any;
+            params?: any;
         }[]
     ) => {
         let children: GComponent[] = [];
