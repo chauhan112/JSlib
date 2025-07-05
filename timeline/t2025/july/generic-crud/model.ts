@@ -19,14 +19,23 @@ export class GenericCRUDModel {
         this.currentLoc = loc;
     }
     async create(vals: any) {
-        this.model?.addEntry(this.currentLoc, vals);
+        let id = uuidv4();
+        let createdOn = new Date().toISOString();
+        this.model?.addEntry([...this.currentLoc, id], {
+            createdOn: createdOn,
+            modifiedOn: createdOn,
+            vals: { ...vals, id: id },
+        });
         this.onChange();
     }
     async read(id: string) {
         return this.model?.readEntry([...this.currentLoc, id]);
     }
     async update(id: string, vals: any) {
-        this.model?.updateEntry([...this.currentLoc, id], vals);
+        let prevVal = this.model?.readEntry([...this.currentLoc, id]);
+        prevVal.vals = { ...prevVal.vals, ...vals };
+        prevVal.modifiedOn = new Date().toISOString();
+        this.model?.updateEntry([...this.currentLoc, id], prevVal);
         this.onChange();
     }
     async delete(id: string) {
@@ -37,7 +46,16 @@ export class GenericCRUDModel {
         return this.model?.exists([...this.currentLoc, id]);
     }
     async readAll() {
-        return this.model?.readEntry(this.currentLoc);
+        if (!this.model?.exists(this.currentLoc)) return [];
+        return Object.values(this.model?.readEntry(this.currentLoc)).map(
+            (v: any) => {
+                return {
+                    createdOn: v.createdOn,
+                    modifiedOn: v.modifiedOn,
+                    ...v.vals,
+                };
+            }
+        );
     }
 }
 export const FormModel = () => {
