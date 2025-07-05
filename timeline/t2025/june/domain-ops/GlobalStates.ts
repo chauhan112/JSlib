@@ -2,17 +2,21 @@ import { GComponent } from "../../april/GComponent";
 import { Tools } from "../../april/tools";
 import { GenericModal } from "../../may/FileSearch/Modal";
 import { ContextMenu } from "./ContextMenu";
+import { MultiLayerModalCtrl } from "../../july/generic-crud/multiLayerModal";
+
 export class GlobalStates {
     static instance: GlobalStates | null = null;
     private readonly comp: GComponent;
     private constructor() {
         this.states = {};
         let modal = GenericModal("");
+        let mModalCtrl = MultiLayerModalCtrl();
         let contextMenu = ContextMenu([]);
         this.addState("modal", modal);
         this.addState("contextMenu", contextMenu);
+        this.addState("multiModal", mModalCtrl);
         this.comp = Tools.div({
-            children: [modal, contextMenu],
+            children: [modal, contextMenu, mModalCtrl.modal],
         });
         this.addToBody();
     }
