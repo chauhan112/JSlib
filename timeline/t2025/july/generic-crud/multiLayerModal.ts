@@ -93,6 +93,12 @@ export const MultiLayerModalCtrl = () => {
         { click: (e: any, ls: any) => closeLayer() }
     );
 
+    modal.s.contentArea.update(
+        {},
+        { click: (e: any, ls: any) => e.stopPropagation() }
+    );
+    modal.update({}, { click: (e: any, ls: any) => closeLayer() });
+
     return {
         modal,
         addLayer,
