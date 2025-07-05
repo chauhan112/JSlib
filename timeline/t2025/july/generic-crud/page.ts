@@ -47,18 +47,126 @@ export const GenericCRUD = () => {
             searchSystem,
             searchIcon,
             plusIcon,
+            lister,
         }
     );
+};
+export const PaginationCtrl = () => {
+    const states: any = {
+        comp: null,
+        pageSize: 20,
+        data: [],
+        currentPage: 1,
+    };
+    const nextPage = () => {
+        if (states.currentPage < states.maxPage) states.currentPage++;
+        return getCurrentPageData();
+    };
+    const prevPage = () => {
+        if (states.currentPage > 1) states.currentPage--;
+        return getCurrentPageData();
+    };
+    const getCurrentPageData = () => {
+        return states.data.slice(
+            (states.currentPage - 1) * states.pageSize,
+            states.currentPage * states.pageSize
+        );
+    };
+    const goToPage = (page: number) => {
+        states.currentPage = page;
+        return getCurrentPageData();
+    };
+    const getMaxPage = () => {
+        return Math.ceil(states.data.length / states.pageSize);
+    };
+
+    const setData = (
+        data: { title: string; id: string; [key: string]: any }[]
+    ) => {
+        states.data = data;
+        states.currentPage = 1;
+        states.maxPage = getMaxPage();
+        update();
+    };
+    const setPageSize = (size: number) => {
+        states.pageSize = size;
+        states.currentPage = 1;
+        states.maxPage = getMaxPage();
+    };
+    const render = (data: any[]) => {};
+    const update = () => {
+        let pageInfo = states.comp.s.page;
+        states.render(getCurrentPageData());
+        pageInfo.update({
+            textContent: `${states.currentPage}/${states.maxPage}`,
+        });
+    };
+    states.render = render;
+    const setup = () => {
+        let next = states.comp.s.next;
+        let prev = states.comp.s.prev;
+
+        next.update(
+            {},
+            {
+                click: (e: any) => {
+                    e.preventDefault();
+                    nextPage();
+                    update();
+                },
+            }
+        );
+        prev.update(
+            {},
+            {
+                click: (e: any) => {
+                    e.preventDefault();
+                    prevPage();
+                    update();
+                },
+            }
+        );
+    };
+
+    return {
+        states,
+        nextPage,
+        prevPage,
+        goToPage,
+        setData,
+        setPageSize,
+        setup,
+        getCurrentPageData,
+        render,
+    };
 };
 export const GenericCRUDCtrl = () => {
     const comp = GenericCRUD();
     const onPlusClicked = (e: any, ls: any) => {};
-
+    const paginationCtrl = PaginationCtrl();
     const onSearchClicked = (e: any, ls: any) => {
         let modal = GlobalStates.getInstance().getState("modal");
         modal.s.handlers.display(comp.s.searchSystem);
         modal.s.handlers.show();
         modal.s.modalTitle.update({ textContent: "Search" });
+    };
+
+    const onRender = (data: any[]) => {
+        comp.s.lister.s.comp.update({
+            innerHTML: "",
+            children: data.map((x: any) => {
+                let c = CardComp();
+                c.update({ textContent: x.title }, {}, { data: x });
+                return c;
+            }),
+        });
+    };
+    paginationCtrl.states.render = onRender;
+
+    const setData = (
+        data: { title: string; id: string; [key: string]: any }[]
+    ) => {
+        paginationCtrl.setData(data);
     };
     const setup = () => {
         comp.s.plusIcon.update(
@@ -73,6 +181,14 @@ export const GenericCRUDCtrl = () => {
                 click: onSearchClicked,
             }
         );
+
+        const dummyData: any = [];
+        for (let i = 0; i < 100; i++) {
+            dummyData.push({ title: `Item ${i + 1}`, id: `id-${i + 1}` });
+        }
+        paginationCtrl.states.comp = comp.s.lister.s.pagination;
+        paginationCtrl.setup();
+        setData(dummyData);
     };
     return {
         comp,
@@ -86,10 +202,14 @@ export const Lister = () => {
     });
     let pagination = Pagination();
 
-    return Tools.div({
-        class: "flex flex-col flex-1 overflow-y-auto gap-4",
-        children: [pagination, comp],
-    });
+    return Tools.div(
+        {
+            class: "flex flex-col flex-1 overflow-y-auto gap-4",
+            children: [pagination, comp],
+        },
+        {},
+        { pagination, comp }
+    );
 };
 export const Pagination = () => {
     return Tools.comp("div", {
