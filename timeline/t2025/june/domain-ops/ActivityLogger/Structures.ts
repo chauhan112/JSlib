@@ -1,6 +1,6 @@
 import { GenericForm, Params } from "../Form";
 import { InputType, Model } from "../Model";
-import { FlexTable, Section } from "../Properties";
+import { FlexTable, Section } from "../FlexTable";
 import { GlobalStates } from "../GlobalStates";
 
 export const StructureForm = () => {
