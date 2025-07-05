@@ -1,6 +1,7 @@
-import { ChevronLeft, ChevronRight, Plus, Search } from "lucide";
+import { ChevronLeft, ChevronRight, Cog, Plus, Search } from "lucide";
 import { Tools } from "../../april/tools";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
+import { StructureSection } from "../../june/domain-ops/ActivityLogger/Structures";
 export const SearchSystem = () => {
     return Tools.comp("form", {
         class: "flex w-full",
@@ -26,12 +27,15 @@ export const GenericCRUD = () => {
     const plusIcon = Tools.icon(Plus, {
         class: "w-6 h-6 text-gray-500 hover:rotate-90 duration-300 ease-in-out hover:scale-110 transform cursor-pointer",
     });
+    const formIcon = Tools.icon(Cog, {
+        class: "w-6 h-6 text-gray-500 hover:rotate-90 duration-300 ease-in-out hover:scale-110 transform cursor-pointer",
+    });
     const ops = Tools.div({
         class: "absolute left-0 top-0 flex flex-col gap-2 z-10",
         children: [
             Tools.div({
                 class: "flex gap-2 items-center justify-between p-2",
-                children: [searchIcon, plusIcon],
+                children: [searchIcon, plusIcon, formIcon],
             }),
         ],
     });
@@ -140,6 +144,15 @@ export const PaginationCtrl = () => {
         render,
     };
 };
+export const FormStructureCtrl = () => {
+    let comp = StructureSection();
+    const onOpen = (e: any, ls: any) => {};
+    const onCreate = (e: any, ls: any) => {};
+    const onUpdate = (e: any, ls: any) => {};
+    const onCancel = (e: any, ls: any) => {};
+    const setup = () => {};
+    return { onCreate, onCancel, onUpdate, setup };
+};
 export const GenericCRUDCtrl = () => {
     const comp = GenericCRUD();
     const onPlusClicked = (e: any, ls: any) => {};
@@ -150,7 +163,6 @@ export const GenericCRUDCtrl = () => {
         modal.s.handlers.show();
         modal.s.modalTitle.update({ textContent: "Search" });
     };
-
     const onRender = (data: any[]) => {
         comp.s.lister.s.comp.update({
             innerHTML: "",
@@ -162,7 +174,6 @@ export const GenericCRUDCtrl = () => {
         });
     };
     paginationCtrl.states.render = onRender;
-
     const setData = (
         data: { title: string; id: string; [key: string]: any }[]
     ) => {
@@ -192,7 +203,7 @@ export const GenericCRUDCtrl = () => {
     };
     return {
         comp,
-        funcs: { onPlusClicked, onSearchClicked, setup },
+        funcs: { onPlusClicked, onSearchClicked, setup, setData, onRender },
     };
 };
 export const Lister = () => {
