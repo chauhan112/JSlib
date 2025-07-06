@@ -12,6 +12,7 @@ export enum ComparerType {
     nin = "nin",
     regex = "regex",
     word = "word",
+    caseless = "caseless",
 }
 export class Comparer {
     static compare(a: any, b: any, type: ComparerType) {
@@ -25,6 +26,8 @@ export class Comparer {
         if (type === "nin") return !a.includes(b);
         if (type === "regex") return new RegExp(b).test(a);
         if (type === "word") return new RegExp(b).test("\b" + a + "\b");
+        if (type === "caseless")
+            return b.toLowerCase().includes(a.toLowerCase());
     }
     static locExists(obj: any, loc: string[]) {}
     static isObj(obj: any) {
@@ -37,10 +40,10 @@ export class Comparer {
 
 class DataSetter {
     data: any[] = [];
-    constructor(data: any[]) {
+    constructor(data: any[] = []) {
         this.data = data;
     }
-    setData(data: any[]) {
+    setData(data: any) {
         this.data = data;
     }
 }
@@ -48,6 +51,35 @@ export class DicSearchSystem extends DataSetter {
     siftSearch(params: any) {
         let vals = Object.values(this.data);
         return vals.filter(sift(params));
+    }
+    stringSearch(
+        text: string,
+        caseSensitive: boolean = false,
+        reg: boolean = false
+    ) {
+        let vals = Object.values(this.data);
+        if (text === "") return vals;
+        return vals.filter((val: any) => {
+            let value = JSON.stringify(val);
+            if (caseSensitive)
+                return Comparer.compare(text, value, ComparerType.in);
+            if (reg) Comparer.compare(text, value, ComparerType.regex);
+            return Comparer.compare(text, value, ComparerType.caseless);
+        });
+    }
+    keyValSearch(
+        text: string,
+        caseSensitive: boolean = false,
+        reg: boolean = false
+    ) {
+        let vals = Object.entries(this.data);
+        return vals.filter((val: any) => {
+            let value = JSON.stringify(val);
+            if (caseSensitive)
+                return Comparer.compare(text, value, ComparerType.in);
+            if (reg) Comparer.compare(text, value, ComparerType.regex);
+            return Comparer.compare(text, value, ComparerType.caseless);
+        });
     }
 }
 export class ArraySearch extends DataSetter {
