@@ -152,7 +152,7 @@ export const PaginationCtrl = (pageSize?: number) => {
         pageInfo.update({
             textContent: `${states.currentPage}/${states.maxPage}`,
         });
-        if (states.maxPage == 1)
+        if (states.maxPage <= 1)
             states.comp.getElement().classList.add("hidden");
         else states.comp.getElement().classList.remove("hidden");
     };
