@@ -7,21 +7,56 @@ import {
     Plus,
     Search,
 } from "lucide";
+
 import { Tools } from "../../april/tools";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 import { StructureSection } from "../../june/domain-ops/ActivityLogger/Structures";
 import { MultiLayerModel } from "./multiLayerModal";
 import { FormModel, ModelType, GenericCRUDModel } from "./model";
 import { DynamicFormController } from "../../july/DynamicForm";
+import { DicSearchSystem } from "./SearchSystem";
 
-export const SearchSystem = () => {
+export const SimpleSearchUI = () => {
     return Tools.comp("form", {
-        class: "flex w-full",
+        class: "flex w-full gap-2 md:gap-4 flex-wrap items-center",
         children: [
             Tools.comp("input", {
+                key: "search",
                 class: "bg-gray-200 py-2 px-4 focus:outline-none flex-1",
                 name: "search",
                 placeholder: "Search...",
+            }),
+            Tools.div({
+                class: "flex items-center gap-1 h-full",
+                children: [
+                    Tools.comp("label", {
+                        class: "text-xl cursor-pointer",
+                        textContent: "case",
+                        for: "caseSensitive",
+                    }),
+                    Tools.comp("input", {
+                        type: "checkbox",
+                        class: "bg-gray-200 focus:outline-none flex-1 w-6 h-6 cursor-pointer",
+                        name: "caseSensitive",
+                        id: "caseSensitive",
+                    }),
+                ],
+            }),
+            Tools.div({
+                class: "flex items-center gap-1 h-full",
+                children: [
+                    Tools.comp("label", {
+                        class: "text-xl cursor-pointer",
+                        textContent: "regex",
+                        for: "regex",
+                    }),
+                    Tools.comp("input", {
+                        type: "checkbox",
+                        class: "bg-gray-200 focus:outline-none flex-1 w-6 h-6 cursor-pointer",
+                        name: "regex",
+                        id: "regex",
+                    }),
+                ],
             }),
             Tools.comp("button", {
                 class: "bg-blue-500  py-2 px-4 focus:outline-none",
