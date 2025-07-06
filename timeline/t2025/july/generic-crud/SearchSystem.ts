@@ -29,7 +29,6 @@ export class Comparer {
         if (type === "caseless")
             return b.toLowerCase().includes(a.toLowerCase());
     }
-    static locExists(obj: any, loc: string[]) {}
     static isObj(obj: any) {
         return typeof obj === "object";
     }
@@ -46,16 +45,6 @@ export class Comparer {
             return Comparer.compare(wordToSearch, text, ComparerType.in);
         if (reg) Comparer.compare(wordToSearch, text, ComparerType.regex);
         return Comparer.compare(wordToSearch, text, ComparerType.caseless);
-    }
-}
-
-class DataSetter {
-    data: any[] = [];
-    constructor(data: any[] = []) {
-        this.data = data;
-    }
-    setData(data: any) {
-        this.data = data;
     }
 }
 
@@ -82,7 +71,11 @@ export class DicOperation {
     }
 }
 
-export class DicSearchSystem extends DataSetter {
+export class DicSearchSystem {
+    data: any[] = [];
+    constructor(data: any[] = []) {
+        this.data = data;
+    }
     siftSearch(params: any) {
         return ArraySearch.siftSearch(params, this.data);
     }
@@ -93,7 +86,6 @@ export class DicSearchSystem extends DataSetter {
     ) {
         return ArraySearch.stringSearch(this.data, text, caseSensitive, reg);
     }
-
     keyValSearch(
         text: string,
         caseSensitive: boolean = false,
@@ -108,7 +100,8 @@ export class DicSearchSystem extends DataSetter {
     }
     locSearch(
         loc: string[],
-        params: { word: string; case: boolean; reg: boolean }
+        params: { word: string; case: boolean; reg: boolean },
+        returnKeys: boolean = false
     ) {
         let res = [];
         for (const key in this.data) {
@@ -121,7 +114,7 @@ export class DicSearchSystem extends DataSetter {
                         params.case
                     )
                 ) {
-                    res.push(this.data[key]);
+                    res.push(key);
                 }
             } else if (DicOperation.exists(loc, this.data[key])) {
                 let val = DicOperation.readEntry(loc, this.data[key]);
@@ -133,10 +126,12 @@ export class DicSearchSystem extends DataSetter {
                         params.case
                     )
                 ) {
-                    res.push(this.data[key]);
+                    res.push(key);
                 }
             }
         }
+        if (!returnKeys)
+            return res.map((key) => this.data[key as keyof typeof this.data]);
         return res;
     }
 }
@@ -158,15 +153,25 @@ export class ArraySearch {
     }
     sequenceSearch(params: any) {}
 }
-export class Sorter extends DataSetter {
-    sort(params: any) {}
-}
-export class Reader extends DataSetter {
-    readAt(index: number) {
-        return this.data[index];
+export class Sorter {
+    static valSortAsString(data: any[]) {
+        return data.map((val) => JSON.stringify(val)).sort();
+    }
+    static locSort(data: any[], loc: string[], defaultValue: any = null) {
+        return data
+            .map((val: any) => {
+                if (DicOperation.exists(loc, val)) return val;
+                return defaultValue;
+            })
+            .sort();
     }
 }
-export class Mapper extends DataSetter {
+export class Reader {
+    static readAt(index: number, data: any[]) {
+        return data[index];
+    }
+}
+export class Mapper {
     stringify() {}
     lengthCalc() {}
 }
