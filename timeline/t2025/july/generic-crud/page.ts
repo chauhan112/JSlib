@@ -67,7 +67,6 @@ export const SimpleSearchUI = () => {
     });
 };
 export const GenericCRUD = () => {
-    const searchSystem = SearchSystem();
     const searchIcon = Tools.icon(Search, {
         class: "w-6 h-6 text-gray-500 hover:rotate-90 duration-300 ease-in-out hover:scale-110 transform cursor-pointer",
     });
@@ -95,7 +94,6 @@ export const GenericCRUD = () => {
         {},
         {
             ops,
-            searchSystem,
             searchIcon,
             plusIcon,
             lister,
@@ -392,19 +390,49 @@ export const DataCrudCtrl = () => {
         model,
     };
 };
+export const SearchCtrl = () => {
+    const comp = SimpleSearchUI();
+    const searcher = new DicSearchSystem();
+    const states = {
+        setResult: (res: any) => {},
+        getData: () => {
+            return {};
+        },
+    };
+    const onSearch = (e: any, ls: any) => {
+        e.preventDefault();
+        let values: any = Object.fromEntries(new FormData(e.target));
+        if (values.regex) values.regex = true;
+        if (values.caseSensitive) values.caseSensitive = true;
+
+        searcher.setData(states.getData());
+        let res = searcher.stringSearch(
+            values.search,
+            values.caseSensitive,
+            values.regex
+        );
+        states.setResult(res);
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.handlers.hide();
+    };
+
+    comp.update({}, { submit: onSearch }, {});
+
+    return { comp, states, onSearch };
+};
 export const GenericCRUDCtrl = () => {
     const comp = GenericCRUD();
     const dataCrudCtrl = DataCrudCtrl();
     const paginationCtrl = PaginationCtrl(100);
     const formCtrl = FormStructureCtrl();
+    const searchCtrl = SearchCtrl();
     const onSearchClicked = (e: any, ls: any) => {
         let modal = GlobalStates.getInstance().getState("modal");
-
-        modal.s.handlers.display(comp.s.searchSystem);
+        modal.s.handlers.display(searchCtrl.comp);
         modal.s.handlers.show();
         modal.s.modalTitle.update({ textContent: "Search" });
+        searchCtrl.comp.s.search.getElement().focus();
     };
-
     const onRender = (data: any[]) => {
         comp.s.lister.s.comp.update({
             innerHTML: "",
@@ -413,8 +441,11 @@ export const GenericCRUDCtrl = () => {
             }),
         });
     };
+    const states: any = {
+        data: [],
+    };
     dataCrudCtrl.states.refresh = async () => {
-        paginationCtrl.states.render(await dataCrudCtrl.model.readAll());
+        setData(await dataCrudCtrl.model.readAll());
     };
 
     formCtrl.model.states.onChange = () => {
@@ -428,7 +459,12 @@ export const GenericCRUDCtrl = () => {
     const setData = (
         data: { title: string; id: string; [key: string]: any }[]
     ) => {
+        states.data = data;
         paginationCtrl.setData(data);
+        searchCtrl.states.getData = () => states.data;
+        searchCtrl.states.setResult = (res: any) => {
+            paginationCtrl.setData(res);
+        };
     };
     const setup = () => {
         comp.s.plusIcon.update(
@@ -449,10 +485,6 @@ export const GenericCRUDCtrl = () => {
                 click: formCtrl.onOpen,
             }
         );
-        // const dummyData: any = [];
-        // for (let i = 0; i < 5; i++) {
-        //     dummyData.push({ title: `Item ${i + 1}`, id: `id-${i + 1}` });
-        // }
         paginationCtrl.states.comp = comp.s.lister.s.pagination;
         paginationCtrl.setup();
         dataCrudCtrl.model.readAll().then(setData);
@@ -467,6 +499,11 @@ export const GenericCRUDCtrl = () => {
 
     return {
         comp,
+        states,
+        dataCrudCtrl,
+        paginationCtrl,
+        formCtrl,
+        searchCtrl,
         funcs: { onSearchClicked, setup, setData, onRender, dataCrudCtrl },
     };
 };
