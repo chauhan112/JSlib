@@ -72,8 +72,8 @@ export class DicOperation {
 }
 
 export class DicSearchSystem {
-    data: any[] = [];
-    constructor(data: any[] = []) {
+    data: any = {};
+    setData(data: any) {
         this.data = data;
     }
     siftSearch(params: any) {
