@@ -30,7 +30,7 @@ export const GenericModal = (title: string) => {
         }
     );
     const contentArea = Tools.div(
-        { class: "flex flex-col overflow-auto w-full p-2 md:p-4" },
+        { class: "flex flex-col overflow-auto w-full p-2 md:p-4 items-center" },
         {
             click: (e: any, ls: any) => {
                 e.stopPropagation();
