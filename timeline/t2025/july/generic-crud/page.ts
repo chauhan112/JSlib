@@ -15,112 +15,7 @@ import { MultiLayerModel } from "./multiLayerModal";
 import { FormModel, ModelType, GenericCRUDModel } from "./model";
 import { DynamicFormController } from "../../july/DynamicForm";
 import { DicSearchSystem } from "./SearchSystem";
-
-export const SimpleSearchUI = () => {
-    let comp = Tools.comp("form", {
-        class: "flex w-full gap-2 md:gap-4 flex-wrap items-center",
-        children: [
-            Tools.comp("input", {
-                key: "search",
-                class: "bg-gray-200 py-2 px-4 focus:outline-none flex-1",
-                name: "search",
-                placeholder: "Search...",
-            }),
-            Tools.div({
-                class: "flex items-center gap-1 h-full",
-                children: [
-                    Tools.comp("label", {
-                        class: "text-xl cursor-pointer",
-                        textContent: "case",
-                        for: "caseSensitive",
-                    }),
-                    Tools.comp("input", {
-                        type: "checkbox",
-                        class: "bg-gray-200 focus:outline-none flex-1 w-6 h-6 cursor-pointer",
-                        name: "caseSensitive",
-                        id: "caseSensitive",
-                    }),
-                ],
-            }),
-            Tools.div({
-                class: "flex items-center gap-1 h-full",
-                children: [
-                    Tools.comp("label", {
-                        class: "text-xl cursor-pointer",
-                        textContent: "regex",
-                        for: "regex",
-                    }),
-                    Tools.comp("input", {
-                        type: "checkbox",
-                        class: "bg-gray-200 focus:outline-none flex-1 w-6 h-6 cursor-pointer",
-                        name: "regex",
-                        id: "regex",
-                    }),
-                ],
-            }),
-            Tools.comp("button", {
-                class: "bg-blue-500  py-2 px-4 focus:outline-none",
-                type: "submit",
-                textContent: "Search",
-            }),
-        ],
-    });
-
-    const focus = () => comp.s.search.getElement().focus();
-    comp.update({}, {}, { focus });
-    return comp;
-};
-
-export const LocSearchUI = () => {};
-export const KeyValSearchUI = () => {};
-export const SiftSearchUI = () => {};
-export const FilterUI = () => {
-    const typeOfOp = Tools.comp(
-        "select",
-        {
-            class: "bg-gray-200 py-2 px-4 focus:outline-none",
-            name: "typeOfOp",
-            children: [
-                Tools.comp("option", {
-                    value: "ValStringSearch",
-                    textContent: "ValStringSearch",
-                }),
-                Tools.comp("option", {
-                    value: "Sift",
-                    textContent: "Sift",
-                }),
-                Tools.comp("option", {
-                    value: "LocSearch",
-                    textContent: "LocSearch",
-                }),
-                Tools.comp("option", {
-                    value: "KeyValSearch",
-                    textContent: "KeyValSearch",
-                }),
-                Tools.comp("option", {
-                    value: "Sort",
-                    textContent: "Sort",
-                }),
-            ],
-        },
-        {
-            change: (e: any, ls: any) => {
-                console.log(e.target.value);
-            },
-        }
-    );
-
-    const focus = () => {};
-
-    return Tools.div(
-        {
-            class: "flex flex-col gap-2 w-128",
-            children: [typeOfOp],
-        },
-        {},
-        { typeOfOp, focus }
-    );
-};
+import { FilterUI } from "./searchUI";
 
 export const GenericCRUD = () => {
     const searchIcon = Tools.icon(Search, {
@@ -502,7 +397,7 @@ export const SearchCtrl = () => {
 export const GenericCRUDCtrl = () => {
     const comp = GenericCRUD();
     const dataCrudCtrl = DataCrudCtrl();
-    const paginationCtrl = PaginationCtrl(100);
+    const paginationCtrl = PaginationCtrl(10);
     const formCtrl = FormStructureCtrl();
     const searchCtrl = SearchCtrl();
     const onSearchClicked = (e: any, ls: any) => {
