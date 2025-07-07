@@ -17,7 +17,7 @@ import { DynamicFormController } from "../../july/DynamicForm";
 import { DicSearchSystem } from "./SearchSystem";
 
 export const SimpleSearchUI = () => {
-    return Tools.comp("form", {
+    let comp = Tools.comp("form", {
         class: "flex w-full gap-2 md:gap-4 flex-wrap items-center",
         children: [
             Tools.comp("input", {
@@ -65,7 +65,63 @@ export const SimpleSearchUI = () => {
             }),
         ],
     });
+
+    const focus = () => comp.s.search.getElement().focus();
+    comp.update({}, {}, { focus });
+    return comp;
 };
+
+export const LocSearchUI = () => {};
+export const KeyValSearchUI = () => {};
+export const SiftSearchUI = () => {};
+export const FilterUI = () => {
+    const typeOfOp = Tools.comp(
+        "select",
+        {
+            class: "bg-gray-200 py-2 px-4 focus:outline-none",
+            name: "typeOfOp",
+            children: [
+                Tools.comp("option", {
+                    value: "ValStringSearch",
+                    textContent: "ValStringSearch",
+                }),
+                Tools.comp("option", {
+                    value: "Sift",
+                    textContent: "Sift",
+                }),
+                Tools.comp("option", {
+                    value: "LocSearch",
+                    textContent: "LocSearch",
+                }),
+                Tools.comp("option", {
+                    value: "KeyValSearch",
+                    textContent: "KeyValSearch",
+                }),
+                Tools.comp("option", {
+                    value: "Sort",
+                    textContent: "Sort",
+                }),
+            ],
+        },
+        {
+            change: (e: any, ls: any) => {
+                console.log(e.target.value);
+            },
+        }
+    );
+
+    const focus = () => {};
+
+    return Tools.div(
+        {
+            class: "flex flex-col gap-2 w-128",
+            children: [typeOfOp],
+        },
+        {},
+        { typeOfOp, focus }
+    );
+};
+
 export const GenericCRUD = () => {
     const searchIcon = Tools.icon(Search, {
         class: "w-6 h-6 text-gray-500 hover:rotate-90 duration-300 ease-in-out hover:scale-110 transform cursor-pointer",
@@ -413,7 +469,7 @@ export const DataCrudCtrl = () => {
     };
 };
 export const SearchCtrl = () => {
-    const comp = SimpleSearchUI();
+    const comp = FilterUI();
     const searcher = new DicSearchSystem();
     const states = {
         setResult: (res: any) => {},
@@ -428,17 +484,18 @@ export const SearchCtrl = () => {
         if (values.caseSensitive) values.caseSensitive = true;
 
         searcher.setData(states.getData());
-        let res = searcher.stringSearch(
-            values.search,
-            values.caseSensitive,
-            values.regex
-        );
+        // let res = searcher.stringSearch(
+        //     values.search,
+        //     values.caseSensitive,
+        //     values.regex
+        // );
+        let res = searcher.siftSearch(JSON.parse(values.search));
         states.setResult(res);
         let modal = GlobalStates.getInstance().getState("modal");
         modal.s.handlers.hide();
     };
 
-    comp.update({}, { submit: onSearch }, {});
+    // comp.update({}, { submit: onSearch }, {});
 
     return { comp, states, onSearch };
 };
@@ -453,7 +510,7 @@ export const GenericCRUDCtrl = () => {
         modal.s.handlers.display(searchCtrl.comp);
         modal.s.handlers.show();
         modal.s.modalTitle.update({ textContent: "Search" });
-        searchCtrl.comp.s.search.getElement().focus();
+        searchCtrl.comp.s.focus();
     };
     const onRender = (data: any[]) => {
         comp.s.lister.s.comp.update({
