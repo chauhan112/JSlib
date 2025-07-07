@@ -311,6 +311,11 @@ export const DataCrudCtrl = () => {
         fields: [],
         refresh: () => {},
     };
+    const textArea = Tools.comp("textarea", {
+        placeholder: "content goes here",
+        class: "h-64 w-full border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm",
+        disabled: true,
+    });
     let model = new GenericCRUDModel();
     const dataFormCtrl = DynamicFormController();
     const onPlusClicked = async (e: any, ls: any) => {
@@ -364,6 +369,18 @@ export const DataCrudCtrl = () => {
             states.refresh();
         });
     };
+    const onView = (e: any, ls: any) => {
+        let info = ls.s.data.info;
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.handlers.display(textArea);
+        modal.s.handlers.show();
+        (textArea.getElement() as HTMLTextAreaElement).value = JSON.stringify(
+            info,
+            null,
+            2
+        );
+        modal.s.modalTitle.update({ textContent: "Content View" });
+    };
     const onOpsClicked = (e: any, ls: any) => {
         let cm = GlobalStates.getInstance().getState("contextMenu");
         let options = [
@@ -376,6 +393,11 @@ export const DataCrudCtrl = () => {
                 label: "Delete",
                 info: ls.s.data,
                 onClick: onDelete,
+            },
+            {
+                label: "View",
+                info: ls.s.data,
+                onClick: onView,
             },
         ];
         cm.s.setOptions(options);
