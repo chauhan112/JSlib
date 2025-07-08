@@ -259,5 +259,39 @@ export class Mapper {
 }
 
 export class Filter {
-    static filter(params: { type: string; params: any }[], data: any[]) {}
+    static ArrayConcatSearch(
+        params: { type: SearchType; params: any }[],
+        data: any[]
+    ) {
+        let res = data;
+        for (const searchParam of params) {
+            switch (searchParam.type) {
+                case SearchType.ValStringSearch:
+                    res = ArraySearch.stringSearch(
+                        res,
+                        searchParam.params.word,
+                        searchParam.params.case,
+                        searchParam.params.reg
+                    );
+                    break;
+                case SearchType.KeyValSearch:
+                    res = ArraySearch.keyValSearch(res, searchParam.params);
+                    break;
+                case SearchType.LocSearch:
+                    res = ArraySearch.locSearch(
+                        res,
+                        searchParam.params.loc,
+                        searchParam.params.params
+                    );
+                    break;
+                case SearchType.Mongo:
+                    res = ArraySearch.siftSearch(searchParam.params, res);
+                    break;
+                case SearchType.Sort:
+                    res = Sorter.locSort(res, searchParam.params);
+                    break;
+            }
+        }
+        return res;
+    }
 }
