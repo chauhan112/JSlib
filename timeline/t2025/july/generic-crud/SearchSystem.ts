@@ -53,7 +53,6 @@ export class Comparer {
         return Comparer.compare(wordToSearch, text, ComparerType.caseless);
     }
 }
-
 export class DicOperation {
     static readEntry(location: string[], data: any) {
         let x = data;
@@ -76,7 +75,6 @@ export class DicOperation {
         return true;
     }
 }
-
 export class DicSearchSystem {
     data: any = {};
     setData(data: any) {
@@ -139,9 +137,30 @@ export class DicSearchSystem {
                 }
             }
         }
-        if (!returnKeys)
-            return res.map((key) => this.data[key as keyof typeof this.data]);
         return res;
+    }
+    static search(params: { type: SearchType; params: any }, data: any) {
+        let searcher = new DicSearchSystem();
+        searcher.setData(data);
+        switch (params.type) {
+            case SearchType.Mongo:
+                return searcher.siftSearch(params.params);
+            case SearchType.ValStringSearch:
+                return searcher.stringSearch(
+                    params.params.word,
+                    params.params.case,
+                    params.params.reg
+                );
+            case SearchType.KeyValSearch:
+                return searcher.keyValSearch(
+                    params.params.word,
+                    params.params.case,
+                    params.params.reg
+                );
+            case SearchType.LocSearch:
+                return searcher.locSearch(params.params.loc, params.params);
+        }
+        return [];
     }
 }
 export class ArraySearch {
