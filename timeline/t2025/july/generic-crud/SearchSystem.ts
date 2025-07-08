@@ -83,7 +83,11 @@ export class DicSearchSystem {
         this.data = data;
     }
     siftSearch(params: any) {
-        return ArraySearch.siftSearch(params, this.data);
+        let res = ArraySearch.siftSearch(
+            params,
+            Object.entries(this.data).map(([key, value]) => ({ key, value }))
+        );
+        return res.map((el: { key: string; value: any }) => el.key);
     }
     stringSearch(
         text: string,
@@ -106,8 +110,7 @@ export class DicSearchSystem {
     }
     locSearch(
         loc: string[],
-        params: { word: string; case: boolean; reg: boolean },
-        returnKeys: boolean = false
+        params: { word: string; case: boolean; reg: boolean }
     ) {
         let res = [];
         for (const key in this.data) {
