@@ -179,7 +179,50 @@ export class ArraySearch {
             return Comparer.caseRegexCompare(text, value, reg, caseSensitive);
         });
     }
+    static keyValSearch(
+        data: any[],
+
+        params: { key: string; word: string; case: boolean; reg: boolean }
+    ) {
+        return data.filter((val: any) => {
+            return Comparer.caseRegexCompare(
+                params.word,
+                val[params.key],
+                params.reg,
+                params.case
+            );
+        });
+    }
     sequenceSearch(params: any) {}
+    static locSearch(
+        data: any[],
+        loc: string[],
+        params: { word: string; case: boolean; reg: boolean }
+    ) {
+        return data.filter((val: any) => {
+            return (
+                DicOperation.exists(loc, val) &&
+                Comparer.caseRegexCompare(
+                    params.word,
+                    DicOperation.readEntry(loc, val),
+                    params.reg,
+                    params.case
+                )
+            );
+        });
+    }
+    static anyLocSearch(
+        data: any[],
+        loc: string[],
+        params: { word: any; type: ComparerType }
+    ) {
+        return data.filter((val: any) => {
+            return (
+                DicOperation.exists(loc, val) &&
+                Comparer.compare(params.word, val, params.type)
+            );
+        });
+    }
 }
 export class Sorter {
     static valSortAsString(data: any[]) {
