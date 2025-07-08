@@ -14,8 +14,8 @@ import { StructureSection } from "../../june/domain-ops/ActivityLogger/Structure
 import { MultiLayerModel } from "./multiLayerModal";
 import { FormModel, ModelType, GenericCRUDModel } from "./model";
 import { DynamicFormController } from "../../july/DynamicForm";
-import { DicSearchSystem } from "./SearchSystem";
-import { FilterUI } from "./searchUI";
+import { Filter, SearchType } from "./SearchSystem";
+import { FilterUICtrl } from "./searchUI";
 
 export const GenericCRUD = () => {
     const searchIcon = Tools.icon(Search, {
@@ -362,6 +362,27 @@ export const DataCrudCtrl = () => {
         renderForm,
         model,
     };
+};
+export const UiParamsMap = (params: { type: SearchType; params: any }[]) => {
+    let res: any = [];
+    for (const sfilter of params) {
+        if (sfilter.type === SearchType.ValStringSearch) {
+            sfilter.params = {
+                ...sfilter.params,
+                word: sfilter.params.search,
+            };
+        } else if (sfilter.type === SearchType.LocSearch) {
+            sfilter.params.params.word = sfilter.params.params.search;
+        } else if (sfilter.type === SearchType.KeyValSearch) {
+            sfilter.params = {
+                ...sfilter.params.params,
+                key: sfilter.params.key,
+            };
+            sfilter.params.word = sfilter.params.search;
+        }
+        res.push(sfilter);
+    }
+    return res;
 };
 export const SearchCtrl = () => {
     const comp = FilterUI();
