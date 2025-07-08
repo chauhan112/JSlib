@@ -25,14 +25,6 @@ export const SimpleSearchUI2 = () => {
     return form;
 };
 
-export enum SearchType {
-    Simple = "simple",
-    Loc = "loc",
-    KeyVal = "keyVal",
-    Sift = "sift",
-    Sort = "sort",
-}
-
 export const LocSearchUI = () => {
     let locComp = FormInputComponent([
         {

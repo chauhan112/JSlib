@@ -1,6 +1,12 @@
 // npm install sift
 import sift from "sift";
-
+export enum SearchType {
+    ValStringSearch = "ValStringSearch",
+    Mongo = "Mongo",
+    LocSearch = "LocSearch",
+    KeyValSearch = "KeyValSearch",
+    Sort = "Sort",
+}
 export enum ComparerType {
     lt = "lt",
     gt = "gt",
