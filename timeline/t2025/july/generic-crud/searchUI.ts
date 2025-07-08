@@ -249,9 +249,64 @@ export const FilterUI = () => {
     const filterCon = Tools.div({
         class: "w-full flex flex-col items-center gap-2",
     });
+
+    const addBtn = Tools.comp("button", {
+        key: "addBtn",
+        class: "px-3 py-1 bg-green-500 text-white text-sm font-semibold rounded-lg hover:bg-green-600 cursor-pointer",
+        textContent: "Add Filter Layer",
+    });
+    const submitBtn = Tools.comp("button", {
+        key: "submitBtn",
+        class: "px-3 py-1 bg-blue-500 text-white text-sm font-semibold rounded-lg hover:bg-blue-600 cursor-pointer",
+        textContent: "search",
+    });
+    const clearAll = Tools.comp("button", {
+        class: "px-3 py-1 bg-red-500 text-white text-sm font-semibold rounded-lg hover:bg-red-600 cursor-pointer",
+        child: Tools.icon(Trash, { class: "w-4 h-4" }),
+    });
+
+    const saveFilter = Tools.comp("button", {
+        key: "addBtn",
+        class: "px-3 py-1 bg-blue-500 text-white text-sm font-semibold rounded-lg hover:bg-blue-600 cursor-pointer",
+        textContent: "save filter",
+    });
+    let comp = Tools.comp(
+        "div",
+        {
+            class: "flex flex-col gap-2 w-full items-center",
+            children: [
+                Tools.div({
+                    class: "flex w-full px-2 gap-2 items-center justify-between sticky top-0 z-10",
+                    children: [
+                        Tools.div({
+                            class: "flex w-full px-2 gap-2 items-center ",
+                            children: [addBtn, clearAll, saveFilter],
+                        }),
+                        submitBtn,
+                    ],
+                }),
+                filterCon,
+            ],
+        },
+        {},
+        {
+            filterCon,
+            addBtn,
+            clearAll,
+            saveFilter,
+            submitBtn,
+        }
+    );
+    return comp;
+};
+export const FilterUICtrl = () => {
+    let comp = FilterUI();
     let states: any = {
-        onSearch: (params: any[]) => {},
+        onSearch: (params: any[]) => {
+            console.log(params);
+        },
         comps: {},
+        onSaveFilter: () => {},
     };
     const addFilter = () => {
         let fil = SingleFilterUI();
@@ -280,67 +335,24 @@ export const FilterUI = () => {
             children: [el, rem],
         });
         states.comps[timestamp] = fil;
-        filterCon.update({
+        comp.s.filterCon.update({
             child: wrap,
         });
     };
-    const addBtn = Tools.comp(
-        "button",
-        {
-            key: "addBtn",
-            class: "px-3 py-1 bg-green-500 text-white text-sm font-semibold rounded-lg hover:bg-green-600 cursor-pointer",
-            textContent: "Add Filter",
-        },
-        { click: addFilter }
-    );
-    const submitBtn = Tools.comp(
-        "button",
-        {
-            key: "submitBtn",
-            class: "px-3 py-1 bg-blue-500 text-white text-sm font-semibold rounded-lg hover:bg-blue-600 cursor-pointer",
-            textContent: "search",
-        },
-        {
-            click: () => {
-                states.onSearch();
-            },
-        }
-    );
-    const clearAll = Tools.comp(
-        "button",
-        {
-            class: "px-3 py-1 bg-red-500 text-white text-sm font-semibold rounded-lg hover:bg-red-600 cursor-pointer",
-            child: Tools.icon(Trash, { class: "w-4 h-4" }),
-        },
-        {
-            click: () => {
+    const onSearch = (e: any, ls: any) => {
+        let params = Object.values(states.comps).map((el: any) =>
+            el.s.handlers.get()
+        );
+        states.onSearch(params);
+    };
+    const onClearAll = () => {
                 states.comps = {};
-                filterCon.update({ innerHTML: "" });
-            },
-        }
-    );
-    let comp = Tools.comp(
-        "div",
-        {
-            class: "flex flex-col gap-2 w-full items-center",
-            children: [
-                Tools.div({
-                    class: "flex w-full px-2 gap-2 items-center justify-between sticky top-0 z-10",
-                    children: [
-                        Tools.div({
-                            class: "flex w-full px-2 gap-2 items-center ",
-                            children: [addBtn, clearAll],
-                        }),
-                        submitBtn,
-                    ],
-                }),
-                filterCon,
-            ],
-        },
-        {},
-        {
-            focus: () => {},
-        }
-    );
-    return comp;
+        comp.s.filterCon.update({ innerHTML: "" });
+    };
+    const setup = () => {
+        comp.s.submitBtn.update({}, { click: onSearch });
+        comp.s.addBtn.update({}, { click: addFilter });
+        comp.s.clearAll.update({}, { click: onClearAll });
+    };
+    return { states, setup, onSearch, addFilter, comp };
 };
