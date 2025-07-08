@@ -36,13 +36,19 @@ export const LocSearchUI = () => {
     ]);
     let textComp = SimpleSearchUI();
     const focus = () => locComp.getElement().focus();
-    const get = () => ({ loc: locComp.s.get(), ...textComp.s.handlers.get() });
-    const set = (val: { loc: string; text: any }) => {
-        locComp.s.set(val.loc);
-        textComp.s.handlers.set(val.text);
+    const get = () => {
+        let loc = locComp.s.handlers.get();
+        let par = textComp.s.handlers.get();
+        if (loc === "") loc = [];
+        else loc = JSON.parse(loc);
+        return { loc, params: par };
+    };
+    const set = (val: { loc: any; params: any }) => {
+        locComp.s.handlers.set(JSON.stringify(val.loc));
+        textComp.s.handlers.set(val.params);
     };
     const clear = () => {
-        locComp.s.set("");
+        locComp.s.handlers.set("");
         textComp.s.handlers.set({});
     };
     return Tools.comp(
@@ -56,23 +62,39 @@ export const LocSearchUI = () => {
     );
 };
 export const KeyValSearchUI = () => {
-    let comp = LocSearchUI();
-    comp.s.locComp.update({ placeholder: "enter key" });
-    let prevHandlers = { ...comp.s.handlers };
-    const set = (val: { key: string; text: any }) => {
-        comp.s.handlers.set({ loc: val.key, text: val.text });
-    };
+    let keyComp = FormInputComponent([
+        {
+            key: "key",
+            class: "bg-gray-200 py-2 px-4 focus:outline-none flex-1",
+            name: "key",
+            placeholder: `enter key`,
+        },
+    ]);
+    let textComp = SimpleSearchUI();
+
+    const focus = () => keyComp.getElement().focus();
     const get = () => {
-        let val = prevHandlers.get();
-        let locVal = val.loc;
-        delete val.loc;
-        return { key: locVal, ...val };
+        let key = keyComp.s.handlers.get();
+        let par = textComp.s.handlers.get();
+        return { key, params: par };
+    };
+    const set = (val: { key: string; params: any }) => {
+        keyComp.s.handlers.set(val.key);
+        textComp.s.handlers.set(val.params);
     };
     const clear = () => {
-        set({ key: "", text: {} });
+        keyComp.s.handlers.set("");
+        textComp.s.handlers.set({});
     };
-    comp.update({}, {}, { handlers: { get, set, clear } });
-    return comp;
+    return Tools.comp(
+        "div",
+        {
+            class: "flex w-full gap-1 flex-wrap items-center",
+            children: [keyComp, textComp],
+        },
+        {},
+        { focus, keyComp, textComp, handlers: { get, set, clear } }
+    );
 };
 export const SiftUI = () => {
     let comp = Textarea([
@@ -88,6 +110,16 @@ export const SiftUI = () => {
                 }),
         },
     ]);
+    const prevHandlers = { ...comp.s.handlers };
+
+    const get = () => {
+        let val = prevHandlers.get();
+        if (val === "") return {};
+        return JSON.parse(val);
+    };
+    const set = (val: any) => prevHandlers.set(JSON.stringify(val));
+    const clear = () => prevHandlers.set("");
+    comp.update({}, {}, { handlers: { get, set, clear } });
 
     return comp;
 };
@@ -111,14 +143,24 @@ export const SortUI = () => {
     let descComp = Checkbox("desc");
 
     const focus = () => locComp.getElement().focus();
-    const get = () => ({});
-    const set = (val: { loc: string; defValue?: any; asc?: boolean }) => {
-        locComp.s.set(val.loc);
-        if (val.defValue) defValueComp.s.set(val.defValue);
-        descComp.s.set(val.asc);
+    const get = () => {
+        let loc = locComp.s.handlers.get();
+        if (loc === "") loc = [];
+        else loc = JSON.parse(loc);
+        let defValue = defValueComp.s.handlers.get();
+        if (defValue === "") defValue = "";
+        else defValue = JSON.parse(defValue);
+        let desc = descComp.s.handlers.get();
+        return { loc, defValue, desc };
+    };
+    const set = (val: { loc: any; defValue?: any; asc?: boolean }) => {
+        locComp.s.handlers.set(JSON.stringify(val.loc));
+        if (val.defValue)
+            defValueComp.s.handlers.set(JSON.stringify(val.defValue));
+        descComp.s.handlers.set(val.asc);
     };
     const clear = () => {
-        set({ loc: "", defValue: "", asc: false });
+        set({ loc: [], defValue: "", asc: false });
     };
 
     return Tools.comp(
@@ -173,12 +215,13 @@ export const SingleFilterUI = () => {
     const get = () => {
         let val = (typeOfOp.getElement() as HTMLSelectElement).value;
         let ui = uis[val];
-        return ui.s.handlers.get();
+        return { type: val, params: ui.s.handlers.get() };
     };
-    const set = (val: any) => {
+    const set = (val: { type: string; params: any }) => {
+        setTyp(val.type);
         let key = (typeOfOp.getElement() as HTMLSelectElement).value;
         let ui = uis[key];
-        ui.s.handlers.set(val);
+        ui.s.handlers.set(val.params);
     };
     const clear = () => {
         let key = (typeOfOp.getElement() as HTMLSelectElement).value;
@@ -205,7 +248,7 @@ export const SingleFilterUI = () => {
             children: [typeOfOp, wraper],
         },
         {},
-        { focus }
+        { focus, handlers: { get, set, clear, setTyp } }
     );
 };
 export const SimpleSearchUI = () => {
@@ -226,25 +269,24 @@ export const SimpleSearchUI = () => {
 
     const focus = () => searchComp.getElement().focus();
     const get = () => ({
-        search: searchComp.s.get(),
-        case: caseSensitive.s.get(),
-        reg: reg.s.get(),
+        search: searchComp.s.handlers.get(),
+        case: caseSensitive.s.handlers.get(),
+        reg: reg.s.handlers.get(),
     });
     const set = (value: any) => {
-        searchComp.s.set(value.search);
-        caseSensitive.s.set(value.case);
-        reg.s.set(value.reg);
+        searchComp.s.handlers.set(value.search);
+        caseSensitive.s.handlers.set(value.case);
+        reg.s.handlers.set(value.reg);
     };
     const clear = () => {
-        searchComp.s.clear();
-        caseSensitive.s.clear();
-        reg.s.clear();
+        searchComp.s.handlers.clear();
+        caseSensitive.s.handlers.clear();
+        reg.s.handlers.clear();
     };
 
     comp.update({}, {}, { focus, handlers: { get, set, clear } });
     return comp;
 };
-
 export const FilterUI = () => {
     const filterCon = Tools.div({
         class: "w-full flex flex-col items-center gap-2",
@@ -346,7 +388,7 @@ export const FilterUICtrl = () => {
         states.onSearch(params);
     };
     const onClearAll = () => {
-                states.comps = {};
+        states.comps = {};
         comp.s.filterCon.update({ innerHTML: "" });
     };
     const setup = () => {
