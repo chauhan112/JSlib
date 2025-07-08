@@ -1,4 +1,4 @@
-import { Trash } from "lucide";
+import { Trash, X } from "lucide";
 import { Tools } from "../../april/tools";
 import {
     GenericForm,
@@ -116,7 +116,7 @@ export const SortUI = () => {
             placeholder: `enter value json parsable`,
         },
     ]);
-    let descComp = Checkbox("asc");
+    let descComp = Checkbox("desc");
 
     const focus = () => locComp.getElement().focus();
     const get = () => ({});
@@ -254,28 +254,65 @@ export const SimpleSearchUI = () => {
 };
 
 export const FilterUI = () => {
-    let filters: any = [];
     const filterCon = Tools.div({
         class: "w-full flex flex-col items-center gap-2",
     });
-
+    let states: any = {
+        onSearch: (params: any[]) => {},
+        comps: {},
+    };
     const addFilter = () => {
         let fil = SingleFilterUI();
-        filters.push(fil);
+        let timestamp = new Date().getTime().toString();
+
+        let el = Tools.div({
+            class: "flex items-center p-2 w-full rounded-md border",
+            children: [fil],
+        });
+        let rem = Tools.icon(
+            X,
+            {
+                class: "w-6 h-6 text-red-500 cursor-pointer hover:text-red-700",
+            },
+            {
+                click: (e: any, ls: any) => {
+                    let idx = ls.s.id;
+                    delete states.comps[idx];
+                    wrap.getElement().classList.add("hidden");
+                },
+            },
+            { id: timestamp }
+        );
+        let wrap = Tools.div({
+            class: "flex items-center gap-2 w-full",
+            children: [el, rem],
+        });
+        states.comps[timestamp] = fil;
         filterCon.update({
-            child: Tools.div({
-                class: "flex flex-col items-center p-2 w-full rounded-md border",
-                child: fil,
-            }),
+            child: wrap,
         });
     };
     const addBtn = Tools.comp(
         "button",
         {
+            key: "addBtn",
             class: "px-3 py-1 bg-green-500 text-white text-sm font-semibold rounded-lg hover:bg-green-600 cursor-pointer",
             textContent: "Add Filter",
         },
         { click: addFilter }
+    );
+    const submitBtn = Tools.comp(
+        "button",
+        {
+            key: "submitBtn",
+            class: "px-3 py-1 bg-blue-500 text-white text-sm font-semibold rounded-lg hover:bg-blue-600 cursor-pointer",
+            textContent: "search",
+        },
+        {
+            click: () => {
+                states.onSearch();
+            },
+        }
     );
     const clearAll = Tools.comp(
         "button",
@@ -285,7 +322,7 @@ export const FilterUI = () => {
         },
         {
             click: () => {
-                filters.length = 0;
+                states.comps = {};
                 filterCon.update({ innerHTML: "" });
             },
         }
@@ -296,17 +333,21 @@ export const FilterUI = () => {
             class: "flex flex-col gap-2 w-full items-center",
             children: [
                 Tools.div({
-                    class: "flex w-full px-2 gap-2 items-center ",
-                    children: [addBtn, clearAll],
+                    class: "flex w-full px-2 gap-2 items-center justify-between sticky top-0 z-10",
+                    children: [
+                        Tools.div({
+                            class: "flex w-full px-2 gap-2 items-center ",
+                            children: [addBtn, clearAll],
+                        }),
+                        submitBtn,
+                    ],
                 }),
                 filterCon,
             ],
         },
         {},
         {
-            focus: () => {
-                filters[0]?.s.focus();
-            },
+            focus: () => {},
         }
     );
     return comp;
