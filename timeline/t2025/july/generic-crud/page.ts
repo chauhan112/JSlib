@@ -385,35 +385,30 @@ export const UiParamsMap = (params: { type: SearchType; params: any }[]) => {
     return res;
 };
 export const SearchCtrl = () => {
-    const comp = FilterUI();
-    const searcher = new DicSearchSystem();
+    const filterCtrl = FilterUICtrl();
+
     const states = {
         setResult: (res: any) => {},
         getData: () => {
             return {};
         },
     };
-    const onSearch = (e: any, ls: any) => {
-        e.preventDefault();
-        let values: any = Object.fromEntries(new FormData(e.target));
-        if (values.regex) values.regex = true;
-        if (values.caseSensitive) values.caseSensitive = true;
-
-        searcher.setData(states.getData());
-        // let res = searcher.stringSearch(
-        //     values.search,
-        //     values.caseSensitive,
-        //     values.regex
-        // );
-        let res = searcher.siftSearch(JSON.parse(values.search));
-        states.setResult(res);
+    const searchIt = (params: { type: SearchType; params: any }[]) => {
+        let res = Filter.ArrayConcatSearch(
+            UiParamsMap(params),
+            states.getData() as any
+        );
         let modal = GlobalStates.getInstance().getState("modal");
         modal.s.handlers.hide();
+        states.setResult(res);
     };
 
-    // comp.update({}, { submit: onSearch }, {});
+    const setup = () => {
+        filterCtrl.setup();
+        filterCtrl.states.onSearch = searchIt;
+    };
 
-    return { comp, states, onSearch };
+    return { states, filterCtrl, setup, searchIt };
 };
 export const GenericCRUDCtrl = () => {
     const comp = GenericCRUD();
@@ -423,10 +418,9 @@ export const GenericCRUDCtrl = () => {
     const searchCtrl = SearchCtrl();
     const onSearchClicked = (e: any, ls: any) => {
         let modal = GlobalStates.getInstance().getState("modal");
-        modal.s.handlers.display(searchCtrl.comp);
+        modal.s.handlers.display(searchCtrl.filterCtrl.comp);
         modal.s.handlers.show();
         modal.s.modalTitle.update({ textContent: "Search" });
-        searchCtrl.comp.s.focus();
     };
     const onRender = (data: any[]) => {
         comp.s.lister.s.comp.update({
@@ -490,6 +484,7 @@ export const GenericCRUDCtrl = () => {
                 order: 0,
             },
         ]);
+        searchCtrl.setup();
     };
 
     return {
