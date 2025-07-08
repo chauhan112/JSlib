@@ -228,13 +228,24 @@ export class Sorter {
     static valSortAsString(data: any[]) {
         return data.map((val) => JSON.stringify(val)).sort();
     }
-    static locSort(data: any[], loc: string[], defaultValue: any = null) {
-        return data
-            .map((val: any) => {
-                if (DicOperation.exists(loc, val)) return val;
-                return defaultValue;
-            })
-            .sort();
+    static locSort(
+        data: any[],
+        params: { loc: string[]; defaultValue: any; desc: boolean }
+    ) {
+        const getVal = (val: any, loc: string[]) => {
+            if (DicOperation.exists(loc, val))
+                return DicOperation.readEntry(loc, val);
+            return params.defaultValue;
+        };
+        let res = [...data].sort((a: any, b: any) => {
+            let valA = getVal(a, params.loc);
+            let valB = getVal(b, params.loc);
+            if (valA < valB) return -1;
+            if (valA > valB) return 1;
+            return 0;
+        });
+        if (params.desc) res.reverse();
+        return res;
     }
 }
 export class Reader {
