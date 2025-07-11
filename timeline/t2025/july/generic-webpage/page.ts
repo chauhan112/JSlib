@@ -74,12 +74,11 @@ export const Nav = () => {
 
 export const Page = () => {
     const header = NewHeader();
-    const nav = Nav();
     let sidebar = Sidebar();
     return Tools.div(
         { class: "w-full h-full text-white", children: [header, sidebar] },
         {},
-        { header, nav, sidebar }
+        { header, sidebar }
     );
 };
 
@@ -87,17 +86,13 @@ export const PageCtrl = () => {
     let comp = Page();
     comp.s.sidebar.update({}, { click: (e: any) => e.stopPropagation() });
     const onSidebarToggle = (e: any) => {
-        comp.s.sidebar.getElement().classList.toggle("-translate-x-full");
         e.stopPropagation();
-        DocumentHandler.getInstance().undoer.undo = () => {
+        comp.s.sidebar.getElement().classList.toggle("-translate-x-full");
+        DocumentHandler.getInstance().undoer.add(() => {
             comp.s.sidebar.getElement().classList.toggle("-translate-x-full");
-        };
-    };
-    const onCloseModal = () => {
-        comp.s.nav.s.sidebar.getElement().classList.add("hidden");
+        });
     };
 
-    comp.s.nav.s.closeBtn.update({}, { click: onCloseModal });
-    // comp.s.header.s.btn.update({}, { click: onSidebarToggle });
+    comp.s.header.s.hamburger_btn.update({}, { click: onSidebarToggle });
     return { comp };
 };

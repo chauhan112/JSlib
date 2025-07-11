@@ -202,7 +202,7 @@ export const Sidebar = () => {
 };
 
 export const Header = () => {
-    const var_hamburger_btn = Tools.comp("button", {
+    const hamburger_btn = Tools.comp("button", {
         class: "block rounded-lg border border-gray-300 dark:border-gray-600 p-1.5 lg:hidden",
         children: [
             Tools.icon(Menu, {
@@ -211,7 +211,7 @@ export const Header = () => {
         ],
     });
 
-    const var_depth_1 = Tools.comp("div", {
+    const selectModel = Tools.comp("div", {
         class: "relative",
         children: [
             Tools.comp("select", {
@@ -247,19 +247,28 @@ export const Header = () => {
         ],
     });
 
-    return Tools.comp("header", {
-        class: "sticky top-0 flex w-full bg-gray-100 dark:bg-[#131314] drop-shadow-sm border-b border-gray-200 dark:border-gray-700",
-        children: [
-            Tools.comp("div", {
-                class: "flex flex-grow items-center justify-between px-4 py-2 shadow-sm md:px-6 2xl:px-8",
-                children: [
-                    Tools.comp("div", {
-                        class: "flex items-center gap-2 sm:gap-4",
-                        children: [var_hamburger_btn, var_depth_1],
-                    }),
-                    opsComp,
-                ],
-            }),
-        ],
-    });
+    return Tools.comp(
+        "header",
+        {
+            class: "sticky top-0 flex w-full bg-gray-100 dark:bg-[#131314] drop-shadow-sm border-b border-gray-200 dark:border-gray-700",
+            children: [
+                Tools.comp("div", {
+                    class: "flex flex-grow items-center justify-between px-4 py-2 shadow-sm md:px-6 2xl:px-8",
+                    children: [
+                        Tools.comp("div", {
+                            class: "flex items-center gap-2 sm:gap-4",
+                            children: [hamburger_btn, selectModel],
+                        }),
+                        opsComp,
+                    ],
+                }),
+            ],
+        },
+        {},
+        {
+            hamburger_btn,
+            selectModel,
+            opsComp,
+        }
+    );
 };
