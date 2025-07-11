@@ -1,9 +1,11 @@
 import { Tools } from "../../april/tools";
 import { Sidebar } from "./Component";
+import { DocumentHandler } from "../../april/Array";
 
+import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 export const Header = () => {
     return Tools.comp("header", {
-        class: "fixed top-0 w-full z-20 lg:hidden bg-red-600 text-white p-4 text-2xl flex items-center",
+        class: "fixed top-0 w-full lg:hidden bg-red-600 text-white p-4 text-2xl flex items-center",
         children: [
             Tools.comp("button", {
                 key: "btn",
@@ -72,36 +74,44 @@ export const Nav = () => {
 };
 
 export const Modal = () => {
-    let comp = Tools.div({
-        class: "fixed inset-0 bg-black bg-opacity-50 z-20 hidden lg:hidden cursor-pointer",
-    });
+    let childWrap = Tools.div();
+    let comp = Tools.div(
+        {
+            class: "fixed inset-0 bg-gray-900 bg-opacity-50 hidden lg:hidden cursor-pointer",
+            child: childWrap,
+        },
+        {},
+        { childWrap }
+    );
     return comp;
 };
 
 export const Page = () => {
     const header = Header();
     const nav = Nav();
-    let modal = Modal();
     let sidebar = Sidebar();
     return Tools.div(
-        { class: "w-full h-full", children: [sidebar, header, nav, modal] },
+        { class: "w-full h-full", children: [header, sidebar] },
         {},
-        { header, nav, modal, sidebar }
+        { header, nav, sidebar }
     );
 };
 
 export const PageCtrl = () => {
     let comp = Page();
-    const onOpenModal = () => {
-        comp.s.modal.getElement().classList.remove("hidden");
-        comp.s.nav.s.sidebar.getElement().classList.remove("hidden");
+    comp.s.sidebar.update({}, { click: (e: any) => e.stopPropagation() });
+    const onSidebarToggle = (e: any) => {
+        comp.s.sidebar.getElement().classList.toggle("-translate-x-full");
+        e.stopPropagation();
+        DocumentHandler.getInstance().undoer.undo = () => {
+            comp.s.sidebar.getElement().classList.toggle("-translate-x-full");
+        };
     };
     const onCloseModal = () => {
-        comp.s.modal.getElement().classList.add("hidden");
         comp.s.nav.s.sidebar.getElement().classList.add("hidden");
     };
-    comp.s.modal.update({}, { click: onCloseModal });
+
     comp.s.nav.s.closeBtn.update({}, { click: onCloseModal });
-    comp.s.header.s.btn.update({}, { click: onOpenModal });
+    comp.s.header.s.btn.update({}, { click: onSidebarToggle });
     return { comp };
 };
