@@ -1,0 +1,3 @@
+.GridCell:hover .GridCellValue {
+    display: block;
+}
