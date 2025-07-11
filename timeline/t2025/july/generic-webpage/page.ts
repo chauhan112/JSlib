@@ -2,7 +2,6 @@ import { Tools } from "../../april/tools";
 import { Sidebar } from "./Component";
 import { DocumentHandler } from "../../april/Array";
 
-import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 export const Header = () => {
     return Tools.comp("header", {
         class: "fixed top-0 w-full lg:hidden bg-red-600 text-white p-4 text-2xl flex items-center",
