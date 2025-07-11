@@ -1,5 +1,5 @@
 import { Tools } from "../../april/tools";
-import { Sidebar } from "./Component";
+import { Sidebar, Header as NewHeader } from "./Component";
 import { DocumentHandler } from "../../april/Array";
 
 export const Header = () => {
@@ -72,25 +72,12 @@ export const Nav = () => {
     );
 };
 
-export const Modal = () => {
-    let childWrap = Tools.div();
-    let comp = Tools.div(
-        {
-            class: "fixed inset-0 bg-gray-900 bg-opacity-50 hidden lg:hidden cursor-pointer",
-            child: childWrap,
-        },
-        {},
-        { childWrap }
-    );
-    return comp;
-};
-
 export const Page = () => {
-    const header = Header();
+    const header = NewHeader();
     const nav = Nav();
     let sidebar = Sidebar();
     return Tools.div(
-        { class: "w-full h-full", children: [header, sidebar] },
+        { class: "w-full h-full text-white", children: [header, sidebar] },
         {},
         { header, nav, sidebar }
     );
@@ -111,6 +98,6 @@ export const PageCtrl = () => {
     };
 
     comp.s.nav.s.closeBtn.update({}, { click: onCloseModal });
-    comp.s.header.s.btn.update({}, { click: onSidebarToggle });
+    // comp.s.header.s.btn.update({}, { click: onSidebarToggle });
     return { comp };
 };

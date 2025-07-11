@@ -2,12 +2,15 @@ import {
     AudioLines,
     BarChart,
     ChevronDown,
+    Cog,
     History,
     IconNode,
     Key,
+    Menu,
     MessageSquareDot,
     MessageSquareMore,
     PanelLeftClose,
+    SlidersHorizontal,
 } from "lucide";
 import { Tools } from "../../april/tools";
 import { GComponent } from "../../april/GComponent";
@@ -192,6 +195,69 @@ export const Sidebar = () => {
                             }),
                         ],
                     }),
+                ],
+            }),
+        ],
+    });
+};
+
+export const Header = () => {
+    const var_hamburger_btn = Tools.comp("button", {
+        class: "block rounded-lg border border-gray-300 dark:border-gray-600 p-1.5 lg:hidden",
+        children: [
+            Tools.icon(Menu, {
+                class: "h-6 w-6",
+            }),
+        ],
+    });
+
+    const var_depth_1 = Tools.comp("div", {
+        class: "relative",
+        children: [
+            Tools.comp("select", {
+                class: "w-full rounded-lg border border-gray-300 bg-gray-200 dark:bg-gray-800 py-2 px-4 text-sm font-medium transition focus:border-blue-500 active:border-blue-500",
+                children: [
+                    Tools.comp("option", { textContent: "Gemini 1.5 Flash" }),
+                    Tools.comp("option", { textContent: "Gemini 1.5 Pro" }),
+                ],
+            }),
+        ],
+    });
+    const opsComp = Tools.comp("div", {
+        class: "flex items-center gap-2",
+        children: [
+            Tools.comp("button", {
+                class: "hidden sm:flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700",
+                textContent: "Get API key",
+                children: [Tools.icon(Key, { class: "w-6 h-6" })],
+            }),
+            Tools.comp("button", {
+                class: "p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700",
+                children: [Tools.icon(SlidersHorizontal, { class: "w-6 h-6" })],
+            }),
+            Tools.comp("button", {
+                class: "p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700",
+                children: [Tools.icon(Cog, { class: "w-6 h-6" })],
+            }),
+            Tools.comp("img", {
+                class: "h-6 w-6 rounded-full",
+                alt: "Profile",
+                src: "https://lh3.googleusercontent.com/a/ACg8ocIrAAIi2TgWjsyclT42OwOqtnlT_YplxXi0ad5gk1zlX2EPJg=s64-cc",
+            }),
+        ],
+    });
+
+    return Tools.comp("header", {
+        class: "sticky top-0 flex w-full bg-gray-100 dark:bg-[#131314] drop-shadow-sm border-b border-gray-200 dark:border-gray-700",
+        children: [
+            Tools.comp("div", {
+                class: "flex flex-grow items-center justify-between px-4 py-2 shadow-sm md:px-6 2xl:px-8",
+                children: [
+                    Tools.comp("div", {
+                        class: "flex items-center gap-2 sm:gap-4",
+                        children: [var_hamburger_btn, var_depth_1],
+                    }),
+                    opsComp,
                 ],
             }),
         ],
