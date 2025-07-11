@@ -1,4 +1,5 @@
 import { Tools } from "../../april/tools";
+import { Sidebar } from "./Component";
 
 export const Header = () => {
     return Tools.comp("header", {
@@ -81,10 +82,11 @@ export const Page = () => {
     const header = Header();
     const nav = Nav();
     let modal = Modal();
+    let sidebar = Sidebar();
     return Tools.div(
-        { class: "w-full h-full", children: [header, nav, modal] },
+        { class: "w-full h-full", children: [sidebar, header, nav, modal] },
         {},
-        { header, nav, modal }
+        { header, nav, modal, sidebar }
     );
 };
 
