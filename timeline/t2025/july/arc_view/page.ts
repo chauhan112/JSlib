@@ -1,7 +1,26 @@
 import { Tools } from "../../april/tools";
 import { LocalStorageJSONModel } from "../../april/LocalStorage";
 import "./style.css";
-export const Page = () => {
+import { Sidebar } from "../generic-webpage/Component";
+import { View } from "lucide";
+import { Router } from "../../may/ToolsHomepage/Router";
+
+const HomePage = () => {
+    const inpArea = Tools.comp("textarea", {
+        class: "w-full h-48 border-2 border-black shadow-lg p-2",
+        placeholder: "set question here pass as json parsable",
+    });
+    const btn = Tools.comp("button", {
+        class: "bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded cursor-pointer",
+        textContent: "load question",
+    });
+    return Tools.comp("div", {
+        class: "flex flex-col gap-2 w-full",
+        children: [inpArea, btn],
+    });
+};
+
+export const ArrayDisplayForm = () => {
     const inpArea = Tools.comp("textarea", {
         class: "w-full h-48 border-2 border-black shadow-lg p-2",
         placeholder: "Input area",
@@ -34,9 +53,53 @@ export const Page = () => {
         }
     );
 };
+export const Page = () => {
+    const nav = Sidebar();
+    nav.getElement().classList.remove("fixed", "left-0", "z-10", "inset-0");
+    nav.s.body.update({ innerHTML: "" });
+    nav.s.footer.update({ innerHTML: "" });
+    nav.s.header.s.wrap.s.title.update({ textContent: "Arc Viewer" });
+    nav.s.header.s.close.update({ class: "hidden" });
 
+    let option = nav.s.handlers.getNavElement(View, "Array View", true);
+    option.update({
+        href: "#/array-view",
+    });
+    nav.s.body.update({
+        innerHTML: "",
+        child: option,
+    });
+    const mainBody = Tools.comp("div", {
+        textContent: "Main Body",
+        class: "p-4 w-full",
+    });
+    return Tools.div(
+        {
+            class: "w-full h-full flex",
+            children: [nav, mainBody],
+        },
+        {},
+        { nav, mainBody }
+    );
+};
 export const PageCtrl = () => {
     let comp = Page();
+    let router = Router.getInstance();
+    let arrDispl = ArrayDisplayCtrl();
+
+    router.addRoute("/", () => {
+        comp.s.mainBody.update({ innerHTML: "", child: HomePage() });
+    });
+    router.addRoute("/array-view", () => {
+        comp.s.mainBody.update({ innerHTML: "", child: arrDispl.comp });
+        arrDispl.onLoad();
+    });
+    router.addRoute("/arc-view", () => {});
+    router.route();
+    return { comp };
+};
+export const ArrayDisplayCtrl = () => {
+    let comp = ArrayDisplayForm();
     let model = new LocalStorageJSONModel("arc-view");
     const colorMap: any = {
         0: "bg-black",
@@ -50,12 +113,16 @@ export const PageCtrl = () => {
         8: "bg-[#87D8F1]",
         9: "bg-[#921231]",
     };
+    const getCellSize = (nr: number, nc: number) => {
+        if (window.innerWidth > window.innerHeight) {
+            return `${Math.round((window.innerHeight - 100) / nc)}px`;
+        }
+        return `${Math.round((window.innerWidth - 100) / nr)}px`;
+    };
     function drawGrid(gridData: number[][]) {
         const numRows = gridData.length;
         const numCols = gridData[0] ? gridData[0].length : 0;
-
-        let screenHeight = window.innerHeight - 100;
-        const cellSize = `${Math.round(screenHeight / numRows)}px`;
+        const cellSize = getCellSize(numRows, numCols);
 
         let children: any = [];
         gridData.forEach((row: number[]) => {
@@ -103,23 +170,25 @@ export const PageCtrl = () => {
             comp.s.inpArea.getElement().value = gridData;
             model.addEntry(["gridData"], gridData);
         }
+        updateGrid();
     };
-    onLoad();
+    const updateGrid = () => {
+        console.log("hello");
+        let val = comp.s.inpArea.getElement().value;
+        const gridData = JSON.parse(val || "[]");
+        const container = drawGrid(gridData);
+        comp.s.viewContainer.update({
+            innerHTML: "",
+            child: container,
+        });
+        model.updateEntry(["gridData"], val);
+    };
     comp.s.btn.update(
         {},
         {
-            click: () => {
-                let val = comp.s.inpArea.getElement().value;
-                const gridData = JSON.parse(val || "[]");
-                const container = drawGrid(gridData);
-                comp.s.viewContainer.update({
-                    innerHTML: "",
-                    child: container,
-                });
-                model.updateEntry(["gridData"], val);
-            },
+            click: updateGrid,
         }
     );
 
-    return { comp, colorMap, drawGrid };
+    return { comp, colorMap, drawGrid, getCellSize, onLoad, updateGrid };
 };
