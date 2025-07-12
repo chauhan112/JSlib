@@ -11,6 +11,7 @@ import {
     MessageSquareMore,
     PanelLeftClose,
     SlidersHorizontal,
+    Sun,
 } from "lucide";
 import { Tools } from "../../april/tools";
 import { GComponent } from "../../april/GComponent";
@@ -67,10 +68,14 @@ export const Accordion = () => {
 };
 
 export const Sidebar = () => {
-    const panelClose = Tools.comp("button", {
-        class: "lg:block p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 right-0 bottom-0 hidden",
-        children: [Tools.icon(PanelLeftClose, { class: "w-6 h-6" })],
-    });
+    let states: any = {
+        selectedBtn: {
+            class: "flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium bg-[#dde3ea] dark:bg-[#282a2c] text-blue-600 dark:text-blue-400 hover:bg-[#d5dce6] dark:hover:bg-[#3c3f43]",
+        },
+        unSelectedBtn: {
+            class: "flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium hover:bg-[#dde3ea] dark:hover:bg-[#282a2c]",
+        },
+    };
     const getAccordionBody = (items: { label: string; icon: IconNode }[]) => {
         return Tools.comp("div", {
             class: "pt-1 pl-5 hidden",
@@ -98,10 +103,10 @@ export const Sidebar = () => {
         return acc;
     };
 
-    const var_theme_toggle = Tools.comp("button", {
-        class: "flex w-full items-center gap-3 rounded-full px-3 py-2 text-sm font-medium hover:bg-[#dde3ea] dark:hover:bg-[#282a2c]",
+    const theme = Tools.comp("button", {
+        class: "flex w-full items-center gap-3 rounded-full px-3 py-2 text-sm font-medium hover:bg-[#dde3ea] dark:hover:bg-[#282a2c] cursor-pointer",
         children: [
-            Tools.comp("span", { class: "material-symbols-outlined" }),
+            Tools.icon(Sun, { class: "w-6 h-6" }),
             Tools.comp("span", {
                 textContent: "Toggle Theme",
             }),
@@ -121,7 +126,7 @@ export const Sidebar = () => {
     ) => {
         let comp = Tools.comp("a", {
             href: "#",
-            class: "flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium hover:bg-[#dde3ea] dark:hover:bg-[#282a2c]",
+            class: states.unSelectedBtn.class,
             children: [
                 Tools.icon(icon, { class: "w-6 h-6" }),
                 Tools.comp("span", {
@@ -129,76 +134,92 @@ export const Sidebar = () => {
                 }),
             ],
         });
-        if (selected)
-            comp.update({
-                class: "flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium bg-[#dde3ea] dark:bg-[#282a2c] text-blue-600 dark:text-blue-400 hover:bg-[#d5dce6] dark:hover:bg-[#3c3f43]",
-            });
+        if (selected) comp.update({ class: states.selectedBtn.class });
         return comp;
     };
 
-    return Tools.comp("aside", {
-        class: "fixed text-white left-0 z-10 inset-0 flex h-screen flex-col overflow-y-auto dark:bg-[#1e1f20] bg-[#f3f6fc] transition-all duration-300 ease-in-out -translate-x-full lg:translate-x-0 w-64",
+    let footer = Tools.comp("div", {
+        class: "pb-4 px-2",
         children: [
-            Tools.comp("div", {
-                class: "flex items-center justify-between gap-2 px-4 py-5",
-                children: [
-                    Tools.comp("a", {
-                        href: "#",
-                        class: "flex items-center gap-2",
-                        children: [
-                            Tools.comp("h1", {
-                                class: "text-xl font-semibold ",
-                                textContent: "Company Icon",
-                            }),
-                        ],
-                    }),
-                    panelClose,
-                ],
+            Tools.comp("hr", {
+                class: "my-2 border-gray-300 dark:border-gray-600",
             }),
-            Tools.comp("div", {
-                class: "flex flex-1 flex-col justify-between px-2",
+            theme,
+            Tools.comp("a", {
+                href: "#",
+                class: "flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium mt-1 hover:bg-[#dde3ea] dark:hover:bg-[#282a2c]",
                 children: [
-                    Tools.comp("nav", {
-                        class: "flex flex-col gap-1",
-                        children: [
-                            getNavElement(MessageSquareMore, "New Chat", true),
-                            getNavElement(History, "History"),
-                            Tools.comp("hr", {
-                                class: "my-2 border-gray-300 dark:border-gray-600",
-                            }),
-                            getAccordion("Studio", [
-                                { label: "Chat", icon: MessageSquareDot },
-                                { label: "Stream", icon: AudioLines },
-                            ]),
-                            getAccordion("Dashboard", [
-                                { label: "API Keys", icon: Key },
-                                { label: "Usage", icon: BarChart },
-                            ]),
-                        ],
-                    }),
-                    Tools.comp("div", {
-                        class: "pb-4 px-2",
-                        children: [
-                            Tools.comp("hr", {
-                                class: "my-2 border-gray-300 dark:border-gray-600",
-                            }),
-                            var_theme_toggle,
-                            Tools.comp("a", {
-                                href: "#",
-                                class: "flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium mt-1 hover:bg-[#dde3ea] dark:hover:bg-[#282a2c]",
-                                children: [
-                                    userSetting,
-                                    Tools.comp("span", {
-                                        textContent: "My Account",
-                                    }),
-                                ],
-                            }),
-                        ],
+                    userSetting,
+                    Tools.comp("span", {
+                        textContent: "My Account",
                     }),
                 ],
             }),
         ],
     });
+    let header = Tools.comp("div", {
+        class: "flex items-center justify-between gap-2 px-4 py-5",
+        children: [
+            Tools.comp("a", {
+                key: "wrap",
+                href: "#",
+                class: "flex items-center gap-2",
+                child: Tools.comp("h1", {
+                    key: "title",
+                    class: "text-xl font-semibold ",
+                    textContent: "Company Icon",
+                }),
+            }),
+            Tools.comp("button", {
+                key: "close",
+                class: "lg:block p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 right-0 bottom-0 hidden",
+                children: [Tools.icon(PanelLeftClose, { class: "w-6 h-6" })],
+            }),
+        ],
+    });
+    let body = Tools.comp("nav", {
+        class: "flex flex-col gap-1",
+        children: [
+            getNavElement(MessageSquareMore, "New Chat", true),
+            getNavElement(History, "History"),
+            Tools.comp("hr", {
+                class: "my-2 border-gray-300 dark:border-gray-600",
+            }),
+            getAccordion("Studio", [
+                { label: "Chat", icon: MessageSquareDot },
+                { label: "Stream", icon: AudioLines },
+            ]),
+            getAccordion("Dashboard", [
+                { label: "API Keys", icon: Key },
+                { label: "Usage", icon: BarChart },
+            ]),
+        ],
+    });
+    return Tools.comp(
+        "aside",
+        {
+            class: "fixed text-white left-0 z-10 inset-0 flex h-screen flex-col overflow-y-auto dark:bg-[#1e1f20] bg-[#f3f6fc] transition-all duration-300 ease-in-out -translate-x-full lg:translate-x-0 w-64",
+            children: [
+                header,
+                Tools.comp("div", {
+                    class: "flex flex-1 flex-col justify-between px-2",
+                    children: [body, footer],
+                }),
+            ],
+        },
+        {},
+        {
+            header,
+            body,
+            footer,
+            states,
+            handlers: {
+                getAccordion,
+                getAccordionBody,
+                getNavElement,
+            },
+        }
+    );
 };
 
 export const Header = () => {
