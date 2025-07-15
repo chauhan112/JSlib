@@ -19,7 +19,6 @@ const HomePage = () => {
         children: [inpArea, btn],
     });
 };
-
 export const ArrayDisplayForm = () => {
     const inpArea = Tools.comp("textarea", {
         class: "w-full h-48 border-2 border-black shadow-lg p-2",
@@ -114,10 +113,7 @@ export const ArrayDisplayCtrl = () => {
         9: "bg-[#921231]",
     };
     const getCellSize = (nr: number, nc: number) => {
-        if (window.innerWidth > window.innerHeight) {
-            return `${Math.round((window.innerHeight - 100) / nc)}px`;
-        }
-        return `${Math.round((window.innerWidth - 100) / nr)}px`;
+        return `${Math.round((window.innerHeight - 100) / nr)}px`;
     };
     function drawGrid(gridData: number[][]) {
         const numRows = gridData.length;
@@ -173,7 +169,6 @@ export const ArrayDisplayCtrl = () => {
         updateGrid();
     };
     const updateGrid = () => {
-        console.log("hello");
         let val = comp.s.inpArea.getElement().value;
         const gridData = JSON.parse(val || "[]");
         const container = drawGrid(gridData);

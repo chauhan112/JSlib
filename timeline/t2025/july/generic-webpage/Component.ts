@@ -198,7 +198,7 @@ export const Sidebar = () => {
     return Tools.comp(
         "aside",
         {
-            class: "fixed text-white left-0 z-10 inset-0 flex h-screen flex-col overflow-y-auto dark:bg-[#1e1f20] bg-[#f3f6fc] transition-all duration-300 ease-in-out -translate-x-full lg:translate-x-0 w-64",
+            class: "fixed text-white left-0 z-10 inset-0 flex h-screen flex-col overflow-y-auto dark:bg-[#1e1f20] bg-[#f3f6fc] transition-all duration-300 ease-in-out hidden w-64 lg:flex",
             children: [
                 header,
                 Tools.comp("div", {
