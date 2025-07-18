@@ -121,14 +121,15 @@ export const ArrayDisplayCtrl = () => {
         const cellSize = getCellSize(numRows, numCols);
 
         let children: any = [];
-        gridData.forEach((row: number[]) => {
-            row.forEach((cellValue: number) => {
+        gridData.forEach((row: number[], i: number) => {
+            row.forEach((cellValue: number, j: number) => {
                 const cell = Tools.div({
                     class: "GridCell border border-gray-700 flex items-center justify-center text-white",
                     child: Tools.comp("span", {
                         textContent: cellValue.toString(),
                         class: "hidden GridCellValue",
                     }),
+                    title: `Row: ${i}, Col: ${j}, Value: ${cellValue}`,
                 });
                 const colorClass = colorMap[cellValue];
                 if (colorClass) {
