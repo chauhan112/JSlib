@@ -218,6 +218,8 @@ export const InfoCompCollection = () => {
     });
 };
 
+export const FirebaseInit = () => {};
+
 export const Page = () => {
     const addCollectionBtn = Tools.comp(
         "button",

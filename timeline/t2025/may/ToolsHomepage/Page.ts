@@ -120,19 +120,63 @@ export const Page = () => {
         });
         router.addRoute(link, app.routeFunc);
     };
+
+    const addExternalApp = (app: {
+        title: string;
+        description: string;
+        link: string;
+    }) => {
+        const { title, description, link } = app;
+        const card = CardComponent(title, description, CircleCheck, "");
+        card.s.link.update({
+            target: "_blank",
+            rel: "noopener noreferrer",
+            href: link,
+        });
+        homeBody.update({
+            child: card,
+        });
+    };
     const getElement = () => {
         return layout.getElement();
     };
-    let state = { s, layout, getElement, homeBody, mainBody, router, addApp };
+    let state = {
+        s,
+        layout,
+        getElement,
+        homeBody,
+        mainBody,
+        router,
+        addApp,
+        addExternalApp,
+    };
     return state;
 };
 
 export const Grid = (comps: any[]) => {
     return Tools.div({
-        class: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8",
+        class: "flex flex-wrap gap-8",
         children: comps,
     });
 };
+
+export const ExternalAppList = [
+    {
+        title: "ARC Viewer",
+        description: "Visualize ARC problems and solutions",
+        link: "https://chauhan112.github.io/arc-viewer/",
+    },
+    {
+        title: "Generic CRUD",
+        description: "Simple generic CRUD template",
+        link: "https://chauhan112.github.io/generic-crud/",
+    },
+    {
+        title: "Domain Ops Logger",
+        description: "First version of domain ops logger",
+        link: "https://chauhan112.github.io/DomainOpsLogger/",
+    },
+];
 
 export const MainPage = () => {
     const page = Page();
@@ -142,7 +186,7 @@ export const MainPage = () => {
     page.addApp({
         title: "Content Searching",
         description: "Search in your git repo files content",
-        link: "task-manager/",
+        link: "file-search/",
         routeFunc: () => {
             const fspage = FileSearchPage();
             page.mainBody.clear();
@@ -181,6 +225,9 @@ export const MainPage = () => {
         },
         icon: CircleCheck,
     });
+    for (const app of ExternalAppList) {
+        page.addExternalApp(app);
+    }
     page.router.route();
     return page;
 };
