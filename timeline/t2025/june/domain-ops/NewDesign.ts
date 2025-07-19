@@ -8,8 +8,8 @@ import {
     TabComponent,
     ActivityComponent,
     Breadcrumb,
-    Header,
 } from "./Component";
+import { Header } from "./Header";
 import { Properties, PropertiesCtrl } from "./Properties";
 import { SmallCRUDops } from "./SimpleCrudOps";
 import { GlobalStates } from "./GlobalStates";

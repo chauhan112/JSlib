@@ -2,7 +2,7 @@ import { DynamicFormController } from "../../../july/DynamicForm";
 import { GenericForm, Params } from "../Form";
 import { GlobalStates } from "../GlobalStates";
 import { Model } from "../Model";
-import { FlexTable } from "../Properties";
+import { FlexTable } from "../FlexTable";
 
 export const Unstructured = () => {
     const form = GenericForm();

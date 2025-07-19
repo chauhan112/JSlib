@@ -1,6 +1,6 @@
 import { GenericForm, Params } from "../Form";
 import { InputType, Model } from "../Model";
-import { FlexTable, Section } from "../Properties";
+import { FlexTable, Section } from "../FlexTable";
 import { GlobalStates } from "../GlobalStates";
 
 export const StructureForm = () => {
@@ -106,9 +106,7 @@ export const StructureSectionController = (root: any) => {
         let valsCopy = { ...vals, order: parseInt(vals.order) };
         form.s.handlers.clearValues();
         let model: Model = root.model;
-        console.log(valsCopy);
         model.logStructure.create(states.getCurrentSpace(), valsCopy);
-        console.log(model);
         let modal = GlobalStates.getInstance().getState("modal");
         modal.s.handlers.hide();
         renderAll();

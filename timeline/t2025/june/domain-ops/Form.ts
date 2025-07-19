@@ -46,7 +46,7 @@ export const GenericForm = () => {
         components: {
             type: string;
             key: string;
-            params: any;
+            params?: any;
         }[]
     ) => {
         let children: GComponent[] = [];
@@ -62,7 +62,6 @@ export const GenericForm = () => {
     };
     const submit = (e: any, ls: any) => {
         e.preventDefault();
-        console.log(ls.s.handlers.getValues());
     };
     const handlers: any = {
         getValues,
@@ -155,12 +154,56 @@ export const JSONComponent = (props: [any?, any?, any?]) => {
     comp.update({}, {}, { handlers: { get, set, clear } });
     return comp;
 };
+export const Checkbox = (
+    name: string,
+    params?: { container?: any; label?: any; inp?: any },
+    label?: string
+) => {
+    const currentTimestamp = new Date().getTime().toString();
+    let tlabel = label ?? name;
+    let forVal = name + currentTimestamp;
+    let comp = Tools.div({
+        class: "flex items-center gap-1 h-full",
+        children: [
+            Tools.comp("label", {
+                key: "label",
+                class: "text-xl cursor-pointer",
+                textContent: tlabel,
+                for: forVal,
+                ...params?.label,
+            }),
+            Tools.comp("input", {
+                key: "inp",
+                type: "checkbox",
+                class: "bg-gray-200 focus:outline-none flex-1 w-6 h-6 cursor-pointer",
+                name: name,
+                id: forVal,
+                ...params?.inp,
+            }),
+        ],
+        ...params?.container,
+    });
+    const get = () => {
+        const input = comp.s.inp.getElement() as HTMLInputElement;
+        return input.checked;
+    };
+    const set = (value: any): void => {
+        const input = comp.s.inp.getElement() as HTMLInputElement;
+        input.checked = value;
+    };
+    const clear = () => {
+        set(false);
+    };
+    comp.update({}, {}, { handlers: { get, set, clear } });
+    return comp;
+};
 export const FormComponents: any = {
     cinput: FormInputComponent,
     multiselect: MultiSelect,
     select: Select,
     textarea: Textarea,
     json: JSONComponent,
+    checkbox: Checkbox,
 };
 export const Params = {
     inp: (key: string, ...args: any) => {
@@ -238,8 +281,8 @@ export const Params = {
     checkbox: (key: string, ...args: any) => {
         return {
             key,
-            type: "cinput",
-            params: [...args, { type: "checkbox" }],
+            type: "checkbox",
+            params: [key, ...args],
         };
     },
     json: (key: string, ...args: any) => {

@@ -76,3 +76,5 @@ export class LocalStorageJSONModel extends Model {
         localStorage.setItem(this.key, JSON.stringify(this.data));
     }
 }
+
+export const DicModel = Model;
