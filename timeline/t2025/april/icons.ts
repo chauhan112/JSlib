@@ -1,6 +1,6 @@
 import { createElement, Github, ArrowDown, IconNode } from "lucide";
 import { IComponent } from "./GComponent";
-
+// npm install lucide
 export class Icon implements IComponent {
     handlers: { [key: string]: (...args: any[]) => void } = {};
 
