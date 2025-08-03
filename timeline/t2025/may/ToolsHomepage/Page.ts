@@ -4,7 +4,7 @@ import { Logo, GoBackOrHome, DEF_TITLE } from "./Components";
 import { Router } from "./Router";
 import { Page as FileSearchPage } from "../FileSearch/Components";
 import { Page as HtmlToMyLib } from "../HtmlToMyLib/index";
-import { Page as LinksOpener } from "../LinksOpener/Page";
+import { Controller as LinksController } from "../LinksOpener/Controller";
 
 export const CardComponent = (
     title: string = "Task Manager",
@@ -202,7 +202,8 @@ export const MainPage = () => {
         description: "Search in your git repo files content",
         link: "links-opener/",
         routeFunc: () => {
-            const fspage = LinksOpener();
+            const ctrl = LinksController();
+            const fspage = ctrl.comp;
             page.mainBody.clear();
             page.mainBody.display(fspage);
             page.layout.s.wrapper.s.header.s.updateTitle(
