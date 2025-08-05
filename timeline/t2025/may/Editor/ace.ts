@@ -97,7 +97,7 @@ export const AceEditor = () => {
 
     return Tools.div(
         {
-            class: "flex flex-col overflow-auto w-full",
+            class: "flex flex-col overflow-auto w-full h-full",
             children: [editorContainer],
         },
         {},
