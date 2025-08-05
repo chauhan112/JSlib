@@ -109,83 +109,88 @@ export const SearchSortTools = () => {
     );
 };
 export const JobAddForm = () => {
-    const var_depth_8 = Tools.comp("label", {
-        class: "block text-gray-700 font-semibold mb-2",
-        textContent: "Job Title",
-    });
-
-    const var_job_title = Tools.comp("input", {
+    const titleInp = Tools.comp("input", {
         type: "text",
         required: "",
         class: "w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600",
     });
-
-    const var_depth_9 = Tools.comp("label", {
-        class: "block text-gray-700 font-semibold mb-2",
-        textContent: "Description",
-    });
-
-    const var_job_description = Tools.comp("textarea", {
+    const desInp = Tools.comp("textarea", {
         required: "",
         class: "w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600",
     });
 
-    const var_depth_10 = Tools.comp("label", {
-        class: "block text-gray-700 font-semibold mb-2",
-        textContent: "Job Link (Optional)",
-    });
-
-    const var_job_link = Tools.comp("input", {
+    const linkInp = Tools.comp("input", {
         type: "url",
         class: "w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600",
     });
 
-    const var_depth_11 = Tools.comp("button", {
-        type: "button",
-        class: "px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition",
-        textContent: "Cancel",
-    });
-
-    const var_depth_12 = Tools.comp("button", {
+    const submitBtn = Tools.comp("button", {
         type: "submit",
         class: "px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition",
         textContent: "Save Job",
     });
 
-    return Tools.comp("div", {
-        class: "fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50",
-        children: [
-            Tools.comp("div", {
-                class: "bg-white rounded-xl p-8 max-w-md w-full mx-4 slide-in",
-                children: [
-                    Tools.comp("h3", {
-                        class: "text-2xl font-bold mb-6",
-                        textContent: "Add New Job",
-                    }),
-                    Tools.comp("form", {
+    const get_values = () => {
+        return {
+            title: (titleInp.getElement() as HTMLInputElement).value,
+            description: (desInp.getElement() as HTMLTextAreaElement).value,
+            link: (linkInp.getElement() as HTMLInputElement).value,
+        };
+    };
+    const set_values = (
+        title: string,
+        description: string,
+        link: string = ""
+    ) => {
+        (titleInp.getElement() as HTMLInputElement).value = title;
+        (desInp.getElement() as HTMLTextAreaElement).value = description;
+        (linkInp.getElement() as HTMLInputElement).value = link;
+    };
+
+    return Tools.comp(
+        "form",
+        {
+            class: "flex flex-col w-full",
                         children: [
                             Tools.comp("div", {
                                 class: "mb-4",
-                                children: [var_depth_8, var_job_title],
+                    children: [
+                        Tools.comp("label", {
+                            class: "block text-gray-700 font-semibold mb-2",
+                            textContent: "Job Title",
+                        }),
+                        titleInp,
+                    ],
                             }),
                             Tools.comp("div", {
                                 class: "mb-4",
-                                children: [var_depth_9, var_job_description],
+                    children: [
+                        Tools.comp("label", {
+                            class: "block text-gray-700 font-semibold mb-2",
+                            textContent: "Description",
+                        }),
+                        desInp,
+                    ],
                             }),
                             Tools.comp("div", {
                                 class: "mb-6",
-                                children: [var_depth_10, var_job_link],
+                    children: [
+                        Tools.comp("label", {
+                            class: "block text-gray-700 font-semibold mb-2",
+                            textContent: "Job Link (Optional)",
+                        }),
+                        linkInp,
+                    ],
                             }),
                             Tools.comp("div", {
                                 class: "flex justify-end space-x-3",
-                                children: [var_depth_11, var_depth_12],
+                    children: [submitBtn],
                             }),
                         ],
-                    }),
-                ],
-            }),
-        ],
-    });
+        },
+        {},
+        { submitBtn, get_values, set_values }
+    );
 };
 export const ShowJobDetails = () => {
     const var_job_details_title = Tools.comp("h3", {
