@@ -151,9 +151,9 @@ export const JobAddForm = () => {
         "form",
         {
             class: "flex flex-col w-full",
-                        children: [
-                            Tools.comp("div", {
-                                class: "mb-4",
+            children: [
+                Tools.comp("div", {
+                    class: "mb-4",
                     children: [
                         Tools.comp("label", {
                             class: "block text-gray-700 font-semibold mb-2",
@@ -161,9 +161,9 @@ export const JobAddForm = () => {
                         }),
                         titleInp,
                     ],
-                            }),
-                            Tools.comp("div", {
-                                class: "mb-4",
+                }),
+                Tools.comp("div", {
+                    class: "mb-4",
                     children: [
                         Tools.comp("label", {
                             class: "block text-gray-700 font-semibold mb-2",
@@ -171,9 +171,9 @@ export const JobAddForm = () => {
                         }),
                         desInp,
                     ],
-                            }),
-                            Tools.comp("div", {
-                                class: "mb-6",
+                }),
+                Tools.comp("div", {
+                    class: "mb-6",
                     children: [
                         Tools.comp("label", {
                             class: "block text-gray-700 font-semibold mb-2",
@@ -181,12 +181,12 @@ export const JobAddForm = () => {
                         }),
                         linkInp,
                     ],
-                            }),
-                            Tools.comp("div", {
-                                class: "flex justify-end space-x-3",
+                }),
+                Tools.comp("div", {
+                    class: "flex justify-end space-x-3",
                     children: [submitBtn],
-                            }),
-                        ],
+                }),
+            ],
         },
         {},
         { submitBtn, get_values, set_values }
@@ -219,7 +219,7 @@ export const ShowJobDetails = () => {
         ];
         if (job.link) {
             children.push(
-                    Tools.comp("div", {
+                Tools.comp("div", {
                     children: [
                         Tools.comp("h4", {
                             class: "font-semibold text-gray-700 mb-2",
@@ -229,13 +229,13 @@ export const ShowJobDetails = () => {
                             href: job.link,
                             class: "text-purple-600 hover:underline",
                             textContent: "View Job",
-                        children: [
+                            children: [
                                 Tools.comp("i", {
                                     class: "fas fa-external-link-alt mr-2",
                                 }),
                             ],
-                            }),
-                        ],
+                        }),
+                    ],
                 })
             );
         }
@@ -267,24 +267,24 @@ export const ShowJobDetails = () => {
             class: "bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto slide-in",
             children: [
                 details,
-                    Tools.comp("div", {
-                        class: "flex flex-wrap gap-3",
-                        children: [
-                            Tools.comp("button", {
-                                class: "flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition hover-lift",
-                                textContent: "Generate CV",
-                            }),
-                            Tools.comp("button", {
-                                class: "flex-1 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition hover-lift",
-                                textContent: "Generate Motivation",
-                            }),
-                            Tools.comp("button", {
-                                class: "flex-1 bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition hover-lift",
-                                textContent: "Generate Summary",
-                            }),
-                        ],
-                    }),
-                ],
+                Tools.comp("div", {
+                    class: "flex flex-wrap gap-3",
+                    children: [
+                        Tools.comp("button", {
+                            class: "flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition hover-lift",
+                            textContent: "Generate CV",
+                        }),
+                        Tools.comp("button", {
+                            class: "flex-1 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition hover-lift",
+                            textContent: "Generate Motivation",
+                        }),
+                        Tools.comp("button", {
+                            class: "flex-1 bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition hover-lift",
+                            textContent: "Generate Summary",
+                        }),
+                    ],
+                }),
+            ],
         },
         {},
         { setJob, details }
@@ -450,16 +450,64 @@ export const Page = () => {
         "div",
         {
             class: "flex flex-col min-h-screen w-full",
-        children: [
-            Header(),
-            Tools.comp("main", {
+            children: [
+                Header(),
+                Tools.comp("main", {
                     class: "flex flex-col flex-1 overflow-y-auto px-6 py-8",
-                child: jobs_section,
-            }),
-        ],
+                    child: jobs_section,
+                }),
+            ],
         },
         {},
         { jobs_section, jobList, searchTools }
+    );
+};
+export const JobCard = (job: {
+    title: string;
+    description: string;
+    created_on: number;
+}) => {
+    const deleteIcon = Tools.icon(Trash, {
+        class: "w-6 h-6 text-red-500 hover:text-red-700 top-2 right-2 absolute",
+    });
+    return Tools.comp(
+        "div",
+        {
+            children: [
+                Tools.comp("div", {
+                    class: "bg-white rounded-xl shadow-md p-6 hover-lift cursor-pointer relative",
+                    children: [
+                        Tools.comp("div", {
+                            class: "flex justify-between items-start mb-3",
+                            children: [
+                                Tools.comp("h3", {
+                                    class: "text-xl font-semibold text-gray-800",
+                                    textContent: job.title,
+                                }),
+                                deleteIcon,
+                            ],
+                        }),
+                        Tools.comp("p", {
+                            class: "text-gray-600 mb-4 line-clamp-3",
+                            textContent: job.description,
+                        }),
+                        Tools.comp("div", {
+                            class: "flex items-center text-sm text-gray-500",
+                            children: [
+                                Tools.icon(Calendar, { class: "w-4 h-4 mr-2" }),
+                                Tools.comp("span", {
+                                    textContent: new Date(
+                                        job.created_on
+                                    ).toLocaleDateString(),
+                                }),
+                            ],
+                        }),
+                    ],
+                }),
+            ],
+        },
+        {},
+        { deleteIcon }
     );
 };
 
