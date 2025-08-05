@@ -437,24 +437,30 @@ export const ShowResult = () => {
     });
 };
 export const Page = () => {
-    const job_list = Tools.comp("div", {
+    const jobList = Tools.comp("div", {
         class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
     });
-
+    const searchTools = SearchSortTools();
     const jobs_section = Tools.comp("section", {
         class: "fade-in",
-        children: [SearchSortTools(), job_list],
+        children: [searchTools, jobList],
     });
 
-    return Tools.comp("div", {
+    return Tools.comp(
+        "div",
+        {
+            class: "flex flex-col min-h-screen w-full",
         children: [
             Header(),
             Tools.comp("main", {
-                class: "container mx-auto px-6 py-8",
+                    class: "flex flex-col flex-1 overflow-y-auto px-6 py-8",
                 child: jobs_section,
             }),
         ],
-    });
+        },
+        {},
+        { jobs_section, jobList, searchTools }
+    );
 };
 
 // const var_process_list = Tools.comp("div", { class: "space-y-4" });
