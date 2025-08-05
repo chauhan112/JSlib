@@ -95,7 +95,7 @@ export const SearchSortTools = () => {
             children: [
                 Tools.comp("h2", {
                     key: "title",
-                    class: "text-3xl font-bold text-gray-800",
+                    class: "text-xl font-bold text-gray-800 md:text-2xl lg:text-3xl",
                     textContent: "Job Listings",
                 }),
                 Tools.comp("div", {
@@ -193,60 +193,102 @@ export const JobAddForm = () => {
     );
 };
 export const ShowJobDetails = () => {
-    const var_job_details_title = Tools.comp("h3", {
-        class: "text-2xl font-bold",
+    const details = Tools.comp("div", {
+        class: "mb-6",
     });
 
-    const var_depth_13 = Tools.comp("i", { class: "fas fa-times text-xl" });
-
-    const var_job_details_content = Tools.comp("div", { class: "mb-6" });
-
-    const var_depth_14 = Tools.comp("i", { class: "fas fa-file-pdf mr-2" });
-
-    const var_depth_15 = Tools.comp("i", { class: "fas fa-heart mr-2" });
-
-    const var_depth_16 = Tools.comp("i", { class: "fas fa-list mr-2" });
-    return Tools.comp("div", {
-        class: "fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50",
-        children: [
+    const setJob = (job: {
+        title: string;
+        description: string;
+        created_on: number;
+        link?: string;
+    }) => {
+        let children = [
             Tools.comp("div", {
-                class: "bg-white rounded-xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto slide-in",
                 children: [
+                    Tools.comp("h4", {
+                        class: "font-semibold text-gray-700 mb-2",
+                        textContent: "Description",
+                    }),
+                    Tools.comp("p", {
+                        class: "text-gray-600",
+                        textContent: job.description,
+                    }),
+                ],
+            }),
+        ];
+        if (job.link) {
+            children.push(
                     Tools.comp("div", {
-                        class: "flex justify-between items-start mb-6",
+                    children: [
+                        Tools.comp("h4", {
+                            class: "font-semibold text-gray-700 mb-2",
+                            textContent: "Job Link",
+                        }),
+                        Tools.comp("a", {
+                            href: job.link,
+                            class: "text-purple-600 hover:underline",
+                            textContent: "View Job",
                         children: [
-                            var_job_details_title,
-                            Tools.comp("button", {
-                                class: "text-gray-500 hover:text-gray-700",
-                                children: [var_depth_13],
+                                Tools.comp("i", {
+                                    class: "fas fa-external-link-alt mr-2",
+                                }),
+                            ],
                             }),
                         ],
+                })
+            );
+        }
+        children.push(
+            Tools.comp("div", {
+                children: [
+                    Tools.comp("h4", {
+                        class: "font-semibold text-gray-700 mb-2",
+                        textContent: "Created",
                     }),
-                    var_job_details_content,
+                    Tools.comp("p", {
+                        class: "text-gray-600",
+                        textContent: new Date(job.created_on).toLocaleString(),
+                    }),
+                ],
+            })
+        );
+        details.update({
+            innerHTML: "",
+            child: Tools.comp("div", {
+                class: "space-y-4",
+                children,
+            }),
+        });
+    };
+    return Tools.comp(
+        "div",
+        {
+            class: "bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto slide-in",
+            children: [
+                details,
                     Tools.comp("div", {
                         class: "flex flex-wrap gap-3",
                         children: [
                             Tools.comp("button", {
                                 class: "flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition hover-lift",
                                 textContent: "Generate CV",
-                                children: [var_depth_14],
                             }),
                             Tools.comp("button", {
                                 class: "flex-1 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition hover-lift",
                                 textContent: "Generate Motivation",
-                                children: [var_depth_15],
                             }),
                             Tools.comp("button", {
                                 class: "flex-1 bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition hover-lift",
                                 textContent: "Generate Summary",
-                                children: [var_depth_16],
                             }),
                         ],
                     }),
                 ],
-            }),
-        ],
-    });
+        },
+        {},
+        { setJob, details }
+    );
 };
 export const GenerateModal = () => {
     const var_generate_title = Tools.comp("h3", {
