@@ -1,18 +1,17 @@
-import { Brain, Briefcase, File, List, Plus, Search } from "lucide";
+import { Brain, Calendar, Cog, List, Plus, Search, Trash } from "lucide";
 import { Tools } from "../../april/tools";
 import "./style.css";
 
 export const Header = () => {
     const logo = Tools.icon(Brain, { class: "w-8 h-8" });
     const title = Tools.comp("h1", {
-        class: "text-2xl font-bold md:text-3xl lg:text-4xl",
+        class: "text-xl font-bold md:text-2xl lg:text-4xl",
         textContent: "CV Generator",
     });
 
     const options = [
-        { icon: Briefcase, label: "Jobs" },
         { icon: List, label: "Processes" },
-        { icon: File, label: "Results" },
+        { icon: Cog, label: "Settings" },
     ];
     const rightOps = Tools.comp("div", {
         class: "flex items-center space-x-4",
@@ -27,13 +26,13 @@ export const Header = () => {
         }),
     });
     return Tools.comp("header", {
-        class: "gradient-bg text-white shadow-lg",
+        class: "gradient-bg text-white shadow-lg sticky top-0 z-50",
         children: [
             Tools.comp("div", {
-                class: "container mx-auto px-6 py-4",
+                class: "flex py-4 w-full",
                 children: [
                     Tools.comp("div", {
-                        class: "flex items-center justify-between",
+                        class: "flex items-center justify-between w-full px-4",
                         children: [
                             Tools.div({
                                 class: "flex items-center space-x-3",
