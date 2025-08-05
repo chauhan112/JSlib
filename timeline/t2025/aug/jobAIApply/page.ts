@@ -19,8 +19,13 @@ export const Header = () => {
             return Tools.comp("button", {
                 class: "hover:text-purple-200 transition cursor-pointer flex gap-1 items-center",
                 children: [
-                    Tools.icon(x.icon, { class: "w-6 h-6" }),
-                    Tools.comp("span", { textContent: x.label }),
+                    Tools.icon(x.icon, {
+                        class: "w-6 h-6",
+                    }),
+                    Tools.comp("span", {
+                        textContent: x.label,
+                        class: "hidden md:inline",
+                    }),
                 ],
             });
         }),
@@ -51,14 +56,14 @@ export const SimpleSearchComp = () => {
         key: "inp",
         type: "text",
         placeholder: "Search jobs...",
-        class: "w-full sm:w-64 pr-4 py-2 focus:outline-none focus:none ",
+        class: "w-full sm:w-64 pr-4 focus:outline-none focus:none ",
     });
     const icon = Tools.icon(Search, {
         key: "icon",
         class: "w-6 h-6 text-gray-400",
     });
     return Tools.comp("div", {
-        class: "flex items-center gap-2 border border-gray-400 rounded-lg px-4 py-2",
+        class: "flex items-center gap-2 border border-gray-400 rounded-lg py-2 pl-2",
         children: [icon, inp],
     });
 };
