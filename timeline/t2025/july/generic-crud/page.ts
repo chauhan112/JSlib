@@ -11,7 +11,7 @@ import {
 import { Tools } from "../../april/tools";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 import { StructureSection } from "../../june/domain-ops/ActivityLogger/Structures";
-import { MultiLayerModel } from "./multiLayerModal";
+import { MultiLayerModalStructure } from "./multiLayerModal";
 import { FormModel, ModelType, GenericCRUDModel } from "./model";
 import { DynamicFormController } from "../../july/DynamicForm";
 import { Filter, SearchType } from "./SearchSystem";
@@ -31,6 +31,7 @@ export const GenericCRUD = () => {
         class: "absolute left-0 top-0 flex flex-col gap-2 z-10",
         children: [
             Tools.div({
+                key: "inner",
                 class: "flex gap-2 items-center justify-between p-2",
                 children: [searchIcon, plusIcon, formIcon],
             }),
@@ -146,7 +147,7 @@ export const PaginationCtrl = (pageSize?: number) => {
 };
 export const StructureSectionCtrl = (model: ModelType) => {
     const states: any = { comp: null };
-    let modal: MultiLayerModel =
+    let modal: MultiLayerModalStructure =
         GlobalStates.getInstance().getState("multiModal");
     const renderAll = () => {
         model.readAll().then((res: any) => {
@@ -225,6 +226,8 @@ export const FormStructureCtrl = () => {
     const setStructures = async (
         data: { key: string; order: number; type: string }[]
     ) => {
+        await model.funcs.deleteAll();
+
         for (let d of data) {
             await model.funcs.create(d);
         }
@@ -261,13 +264,14 @@ export const DataCrudCtrl = () => {
         formLoaded: false,
         fields: [],
         refresh: () => {},
+        model: new GenericCRUDModel(),
     };
     const textArea = Tools.comp("textarea", {
         placeholder: "content goes here",
         class: "h-64 w-full border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm",
         disabled: true,
     });
-    let model = new GenericCRUDModel();
+
     const dataFormCtrl = DynamicFormController();
     const onPlusClicked = async (e: any, ls: any) => {
         let modal = GlobalStates.getInstance().getState("modal");
@@ -287,7 +291,7 @@ export const DataCrudCtrl = () => {
     const onCreateSubmit = (e: any, ls: any) => {
         e.preventDefault();
         let vals = dataFormCtrl.comp.s.handlers.getValues();
-        model.create(vals).then(() => {
+        states.model.create(vals).then(() => {
             states.refresh();
             let modal = GlobalStates.getInstance().getState("modal");
             modal.s.handlers.hide();
@@ -297,7 +301,7 @@ export const DataCrudCtrl = () => {
         e.preventDefault();
         let prevVal = dataFormCtrl.comp.s.data;
         let curVal = dataFormCtrl.comp.s.handlers.getValues();
-        model.update(prevVal.id, curVal).then(() => {
+        states.model.update(prevVal.id, curVal).then(() => {
             states.refresh();
             let modal = GlobalStates.getInstance().getState("modal");
             modal.s.handlers.hide();
@@ -316,7 +320,7 @@ export const DataCrudCtrl = () => {
     };
     const onDelete = (e: any, ls: any) => {
         if (!confirm("Are you sure?")) return;
-        model.delete(ls.s.data.info.id).then(() => {
+        states.model.delete(ls.s.data.info.id).then(() => {
             states.refresh();
         });
     };
@@ -360,7 +364,7 @@ export const DataCrudCtrl = () => {
         dataFormCtrl,
         states,
         renderForm,
-        model,
+        model: states.model,
     };
 };
 export const UiParamsMap = (params: { type: SearchType; params: any }[]) => {
@@ -416,17 +420,20 @@ export const GenericCRUDCtrl = () => {
     const paginationCtrl = PaginationCtrl(10);
     const formCtrl = FormStructureCtrl();
     const searchCtrl = SearchCtrl();
-    const onSearchClicked = (e: any, ls: any) => {
+    const funcs: any = {};
+    funcs.onSearchClicked = (e: any, ls: any) => {
         let modal = GlobalStates.getInstance().getState("modal");
         modal.s.handlers.display(searchCtrl.filterCtrl.comp);
         modal.s.handlers.show();
         modal.s.modalTitle.update({ textContent: "Search" });
     };
-    const onRender = (data: any[]) => {
+    funcs.getCardComp = (x: any) =>
+        CardComp(x.title, x, dataCrudCtrl.states.onDataClicked);
+    funcs.onRender = (data: any[]) => {
         comp.s.lister.s.comp.update({
             innerHTML: "",
             children: data.map((x: any) => {
-                return CardComp(x.title, x, dataCrudCtrl.states.onDataClicked);
+                return funcs.getCardComp(x);
             }),
         });
     };
@@ -434,7 +441,7 @@ export const GenericCRUDCtrl = () => {
         data: [],
     };
     dataCrudCtrl.states.refresh = async () => {
-        setData(await dataCrudCtrl.model.readAll());
+        funcs.setData(await dataCrudCtrl.model.readAll());
     };
 
     formCtrl.model.states.onChange = () => {
@@ -444,18 +451,18 @@ export const GenericCRUDCtrl = () => {
             dataCrudCtrl.states.fields = data;
         });
     };
-    paginationCtrl.states.render = onRender;
-    const setData = (
+    paginationCtrl.states.render = funcs.onRender;
+    funcs.setData = (
         data: { title: string; id: string; [key: string]: any }[]
     ) => {
         states.data = data;
-        paginationCtrl.setData(data);
         searchCtrl.states.getData = () => states.data;
         searchCtrl.states.setResult = (res: any) => {
             paginationCtrl.setData(res);
         };
+        searchCtrl.states.setResult(states.data);
     };
-    const setup = () => {
+    funcs.setup = async () => {
         comp.s.plusIcon.update(
             {},
             {
@@ -465,7 +472,7 @@ export const GenericCRUDCtrl = () => {
         comp.s.searchIcon.update(
             {},
             {
-                click: onSearchClicked,
+                click: (e: any, ls: any) => funcs.onSearchClicked(e, ls),
             }
         );
         comp.s.formIcon.update(
@@ -476,8 +483,8 @@ export const GenericCRUDCtrl = () => {
         );
         paginationCtrl.states.comp = comp.s.lister.s.pagination;
         paginationCtrl.setup();
-        dataCrudCtrl.model.readAll().then(setData);
-        formCtrl.setStructures([
+        dataCrudCtrl.model.readAll().then(funcs.setData);
+        await formCtrl.setStructures([
             {
                 key: "title",
                 type: "input",
@@ -494,7 +501,7 @@ export const GenericCRUDCtrl = () => {
         paginationCtrl,
         formCtrl,
         searchCtrl,
-        funcs: { onSearchClicked, setup, setData, onRender, dataCrudCtrl },
+        funcs,
     };
 };
 export const Lister = () => {
