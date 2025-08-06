@@ -1,5 +1,6 @@
 import { LocalStorageJSONModel } from "../../april/LocalStorage";
 import { v4 as uuidv4 } from "uuid";
+// npm install uuid
 import { SetWrapper } from "../../april/Array";
 import { HashMapDataStructure } from "../HashMap";
 

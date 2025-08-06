@@ -8,6 +8,7 @@ import {
 import { CollectionCard } from "./collectionCard";
 import { GComponent } from "../../april/GComponent";
 import { LocalStorageJSONModel } from "../../april/LocalStorage";
+// npm install uuid
 import { v4 as uuidv4 } from "uuid";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 
