@@ -26,7 +26,9 @@ export const DynamicFormController = () => {
             if (!field.key) {
                 continue;
             }
+
             let params = { ...field.params };
+
             if (field.type == InputType.Input) {
                 applyIfNotExists(params, "class", defValues.inp.class);
                 applyIfNotExists(params, "placeholder", "Enter " + field.key);

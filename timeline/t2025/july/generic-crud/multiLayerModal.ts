@@ -54,7 +54,7 @@ export const GenericMultiLayerModal = (title: string) => {
     return wid;
 };
 
-export type MultiLayerModel = {
+export type MultiLayerModalStructure = {
     modal: IComponent;
     addLayer: (layer: IComponent, title: string) => void;
     closeLayer: () => void;

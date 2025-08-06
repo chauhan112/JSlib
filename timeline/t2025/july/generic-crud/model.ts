@@ -1,6 +1,7 @@
 import { LocalStorageJSONModel } from "../../april/LocalStorage";
 import { Atool } from "../../april/Array";
 import { v4 as uuidv4 } from "uuid";
+// npm install uuid
 export type ModelType = {
     readAll: () => Promise<any>;
     read: (id: any) => Promise<any>;
@@ -110,6 +111,10 @@ export const FormModel = () => {
     const onChange = () => {
         states.structures = sortValsAndReassignOrder(states.structures);
     };
+    const deleteAll = async () => {
+        states.structures = {};
+        states.onChange();
+    };
     states.onChange = onChange;
     return {
         funcs: {
@@ -118,6 +123,7 @@ export const FormModel = () => {
             create,
             update,
             delete: onDelete,
+            deleteAll,
         },
         sortValsAndReassignOrder,
         states,
