@@ -453,7 +453,8 @@ export const Page = () => {
             children: [
                 Header(),
                 Tools.comp("main", {
-                    class: "flex flex-col flex-1 overflow-y-auto px-6 py-8",
+                    key: "main",
+                    class: "flex flex-col flex-1 overflow-y-auto px-4 ",
                     child: jobs_section,
                 }),
             ],
