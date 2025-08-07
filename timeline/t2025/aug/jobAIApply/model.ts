@@ -1,3 +1,5 @@
+const URL = "http://127.0.0.1:8000/run/";
+
 const makePostRequest = (url: string, data: any) => {
     return fetch(url, {
         method: "POST",
@@ -17,7 +19,7 @@ export type ModelType = {
 
 export const Model = () => {
     const state: any = {
-        url: "http://127.0.0.1:8000/run/",
+        url: URL,
     };
     const setUrl = (url: string) => {
         state.url = url;
@@ -60,4 +62,33 @@ export const Model = () => {
     };
 
     return { addJob, readAllJobs, setUrl, deleteJob, updateJob };
+};
+
+export const LLMCommands = () => {
+    const state: any = {
+        url: URL,
+    };
+    const setUrl = (url: string) => {
+        state.url = url;
+    };
+    const generateCV = async (jobId: any) => {
+        return makePostRequest(state.url, {
+            name: "generateCV",
+            params: [jobId],
+        });
+    };
+
+    const generateMotivation = async (jobId: any) => {
+        return makePostRequest(state.url, {
+            name: "generateMotivation",
+            params: [jobId],
+        });
+    };
+    const generateSummary = async (jobId: any) => {
+        return makePostRequest(state.url, {
+            name: "generateSummary",
+            params: [jobId],
+        });
+    };
+    return { generateCV, generateMotivation, generateSummary, setUrl, state };
 };
