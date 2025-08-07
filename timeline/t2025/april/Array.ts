@@ -20,6 +20,11 @@ export class Atool {
     static sorted(array: any[], compareFn?: (a: any, b: any) => number) {
         return array.slice().sort(compareFn);
     }
+
+    static sortedBasedOnKey(array: any[], keyFunc?: (a: any) => any) {
+        if (!keyFunc) return array.slice().sort();
+        return array.slice().sort((a: any, b: any) => keyFunc(a) - keyFunc(b));
+    }
 }
 
 export class SetWrapper {
