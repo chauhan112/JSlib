@@ -1,15 +1,42 @@
 import { Page, JobAddForm, JobCard, ShowJobDetails } from "./page";
 import { Tools } from "../../april/tools";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
-import { Model } from "./model";
-import { GenericCRUDCtrl, CardComp } from "../../july/generic-crud/page";
-import { InputType } from "../../june/domain-ops/Model";
+import { Model, ModelType } from "./model";
+import { GenericCRUDCtrl } from "../../july/generic-crud/page";
+
+export const JobCRUDWrapper = () => {
+    let states: any = {};
+
+    const create = async (vals: any) => {
+        let model: ModelType = states.model;
+        await model.addJob(vals.title, vals.description, vals.url);
+    };
+    const read = async (id: any) => {
+        let model: ModelType = states.model;
+        return await model.readJob(id);
+    };
+    const update = async (id: string, vals: any) => {
+        let model: ModelType = states.model;
+        await model.updateJob(id, vals);
+    };
+    const deleteIt = async (id: any) => {
+        let model: ModelType = states.model;
+        await model.deleteJob(id);
+    };
+    const readAll = async () => {
+        let model: ModelType = states.model;
+        return await model.readAllJobs();
+    };
+    return { states, create, read, update, delete: deleteIt, readAll };
+};
+
 export const PageCtrl = () => {
     let comp = Page();
     let addForm = JobAddForm();
     let model = Model();
     let jobDetails = ShowJobDetails();
     let crudCtrl = GenericCRUDCtrl();
+    let jobCCrudModel = JobCRUDWrapper();
     const onJobFormSubmit = (e: any, ls: any) => {
         e.preventDefault();
         let vals = addForm.s.get_values();
@@ -54,10 +81,9 @@ export const PageCtrl = () => {
         ],
     };
     const onJobAdd = (e: any, ls: any) => {
-        let modal = GlobalStates.getInstance().getState("compactModal");
-        modal.setTitle("Add New Job");
-        modal.display(addForm);
-        modal.show();
+        states.prevOnPlusClick(e, ls);
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.modalTitle.update({ textContent: "Add New Job" });
     };
     const onJobShow = (e: any, ls: any) => {
         let job = ls.s.job;
@@ -72,7 +98,7 @@ export const PageCtrl = () => {
             model.deleteJob(job.id).then(onJobListRender);
     };
     const onJobListRender = async () => {
-        let jobs = await model.readAllJobs();
+        let jobs = await jobCCrudModel.readAll();
         crudCtrl.funcs.setData(jobs);
     };
     const mergeTheLayout = () => {
@@ -128,21 +154,30 @@ export const PageCtrl = () => {
             "shadow-md"
         );
         jc.getElement().classList.remove("bg-gray-100", "p-5");
-        // jc.s.deleteIcon.update({}, { click: onJobDelete }, { job: x });
         return jc;
     };
+
     const onSetup = async () => {
         addForm.s.submitBtn.update({}, { click: onJobFormSubmit });
-        onJobListRender();
         await crudCtrl.funcs.setup();
         mergeTheLayout();
         crudCtrl.paginationCtrl.setPageSize(100);
         states.previourCardComp = crudCtrl.funcs.getCardComp;
+        states.prevOnPlusClick = crudCtrl.dataCrudCtrl.onPlusClicked;
+        crudCtrl.comp.s.plusIcon.update(
+            {},
+            {
+                click: onJobAdd,
+            }
+        );
         crudCtrl.funcs.getCardComp = getCardComp;
         let formCtrl = crudCtrl.formCtrl;
         formCtrl.model.states.onChange = () => {};
         crudCtrl.dataCrudCtrl.states.fields = states.formStruc;
         comp.s.main.update({ innerHTML: "", child: crudCtrl.comp });
+        crudCtrl.dataCrudCtrl.states.model = jobCCrudModel;
+        jobCCrudModel.states.model = model;
+        onJobListRender();
     };
     onSetup();
 
