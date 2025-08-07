@@ -336,8 +336,7 @@ export const DataCrudCtrl = () => {
         );
         modal.s.modalTitle.update({ textContent: "Content View" });
     };
-    const onOpsClicked = (e: any, ls: any) => {
-        let cm = GlobalStates.getInstance().getState("contextMenu");
+    const getOptions = (ls: any) => {
         let options = [
             {
                 label: "Edit",
@@ -355,6 +354,12 @@ export const DataCrudCtrl = () => {
                 onClick: onView,
             },
         ];
+        return options;
+    };
+    states.getOptions = getOptions;
+    const onOpsClicked = (e: any, ls: any) => {
+        let cm = GlobalStates.getInstance().getState("contextMenu");
+        let options = states.getOptions(ls);
         cm.s.setOptions(options);
         cm.s.displayMenu(e, ls);
     };
@@ -365,6 +370,7 @@ export const DataCrudCtrl = () => {
         states,
         renderForm,
         model: states.model,
+        textArea,
     };
 };
 export const UiParamsMap = (params: { type: SearchType; params: any }[]) => {
