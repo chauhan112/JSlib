@@ -441,7 +441,7 @@ export const GenericCRUDCtrl = () => {
         data: [],
     };
     dataCrudCtrl.states.refresh = async () => {
-        funcs.setData(await dataCrudCtrl.model.readAll());
+        funcs.setData(await dataCrudCtrl.states.model.readAll());
     };
 
     formCtrl.model.states.onChange = () => {
