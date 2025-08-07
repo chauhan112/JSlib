@@ -30,26 +30,31 @@ export const Header = () => {
             });
         }),
     });
-    return Tools.comp("header", {
-        class: "gradient-bg text-white shadow-lg sticky top-0 z-50",
-        children: [
-            Tools.comp("div", {
-                class: "flex py-4 w-full",
-                children: [
-                    Tools.comp("div", {
-                        class: "flex items-center justify-between w-full px-4",
-                        children: [
-                            Tools.div({
-                                class: "flex items-center space-x-3",
-                                children: [logo, title],
-                            }),
-                            rightOps,
-                        ],
-                    }),
-                ],
-            }),
-        ],
-    });
+    return Tools.comp(
+        "header",
+        {
+            class: "gradient-bg text-white shadow-lg sticky top-0 z-50",
+            children: [
+                Tools.comp("div", {
+                    class: "flex py-4 w-full",
+                    children: [
+                        Tools.comp("div", {
+                            class: "flex items-center justify-between w-full px-4",
+                            children: [
+                                Tools.div({
+                                    class: "flex items-center space-x-3",
+                                    children: [logo, title],
+                                }),
+                                rightOps,
+                            ],
+                        }),
+                    ],
+                }),
+            ],
+        },
+        {},
+        { logo, title, rightOps }
+    );
 };
 export const SimpleSearchComp = () => {
     const inp = Tools.comp("input", {
