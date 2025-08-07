@@ -27,7 +27,27 @@ export const JobCRUDWrapper = () => {
         let model: ModelType = states.model;
         return await model.readAllJobs();
     };
-    return { states, create, read, update, delete: deleteIt, readAll };
+
+    const getMotivation = async (id: any) => {
+        return "Some raddkaskds";
+    };
+    const getCV = async (id: any) => {
+        return null;
+    };
+    const getSummary = async (id: any) => {
+        return null;
+    };
+    return {
+        states,
+        create,
+        read,
+        update,
+        delete: deleteIt,
+        readAll,
+        getMotivation,
+        getCV,
+        getSummary,
+    };
 };
 
 export const PageCtrl = () => {
@@ -37,6 +57,11 @@ export const PageCtrl = () => {
     let jobDetails = ShowJobDetails();
     let crudCtrl = GenericCRUDCtrl();
     let jobCCrudModel = JobCRUDWrapper();
+    const textArea = Tools.comp("textarea", {
+        placeholder: "content goes here",
+        class: "h-64 w-full border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm",
+        disabled: true,
+    });
     const onJobFormSubmit = (e: any, ls: any) => {
         e.preventDefault();
         let vals = addForm.s.get_values();
@@ -141,8 +166,10 @@ export const PageCtrl = () => {
             innerHTML: "",
             child: crudCtrl.comp.s.lister.s.comp,
         });
-    };
 
+        let contextMenu = GlobalStates.getInstance().getState("contextMenu");
+        contextMenu.getElement().classList.remove("w-24");
+    };
     const getCardComp = (x: any) => {
         let jc = states.previourCardComp(x);
         jc.update({}, { click: onJobShow }, { job: x });
@@ -156,6 +183,58 @@ export const PageCtrl = () => {
         jc.getElement().classList.remove("bg-gray-100", "p-5");
         return jc;
     };
+    const showContent = (content: string, title: string) => {
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.handlers.display(textArea);
+        modal.s.handlers.show();
+        (textArea.getElement() as HTMLTextAreaElement).value = content;
+        modal.s.modalTitle.update({ textContent: title });
+    };
+    const onShowMenu = (e: any, ls: any) => {
+        let typ = ls.s.data.info[1];
+        let info = ls.s.data.info[0];
+        console.log(typ, info);
+
+        if (typ === "description") showContent(info.description, "show " + typ);
+        let funcs: any = {
+            motivation: jobCCrudModel.getMotivation,
+            cv: jobCCrudModel.getCV,
+            summary: jobCCrudModel.getSummary,
+        };
+        if (Object.keys(funcs).includes(typ)) {
+            funcs[typ](info.id).then((res: any) => {
+                if (res) {
+                    showContent(res, "show " + typ);
+                } else {
+                    alert(`generating ${typ}. check process log`); // make a info popup
+                }
+            });
+        }
+    };
+    const getOptions = (ls: any) => {
+        let options = states.prevGetOptions(ls);
+        options.push({
+            label: "Show Motivation",
+            onClick: onShowMenu,
+            info: [ls.s.data, "motivation"],
+        });
+        options.push({
+            label: "Show Job Summary",
+            onClick: onShowMenu,
+            info: [ls.s.data, "summary"],
+        });
+        options.push({
+            label: "Show CV",
+            onClick: onShowMenu,
+            info: [ls.s.data, "cv"],
+        });
+        options.push({
+            label: "Show description",
+            onClick: onShowMenu,
+            info: [ls.s.data, "description"],
+        });
+        return options;
+    };
 
     const onSetup = async () => {
         addForm.s.submitBtn.update({}, { click: onJobFormSubmit });
@@ -164,12 +243,14 @@ export const PageCtrl = () => {
         crudCtrl.paginationCtrl.setPageSize(100);
         states.previourCardComp = crudCtrl.funcs.getCardComp;
         states.prevOnPlusClick = crudCtrl.dataCrudCtrl.onPlusClicked;
+        states.prevGetOptions = crudCtrl.dataCrudCtrl.states.getOptions;
         crudCtrl.comp.s.plusIcon.update(
             {},
             {
                 click: onJobAdd,
             }
         );
+        crudCtrl.dataCrudCtrl.states.getOptions = getOptions;
         crudCtrl.funcs.getCardComp = getCardComp;
         let formCtrl = crudCtrl.formCtrl;
         formCtrl.model.states.onChange = () => {};
