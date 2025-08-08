@@ -1,10 +1,4 @@
-import {
-    NewPage,
-    LinkOpenerTools,
-    InfoCompCollection,
-    LinkForm,
-    CollectionForm,
-} from "./Page";
+import { NewPage, InfoCompCollection, LinkForm, CollectionForm } from "./Page";
 import { CollectionCard } from "./collectionCard";
 import { GComponent } from "../../april/GComponent";
 import { LocalStorageJSONModel } from "../../april/LocalStorage";
@@ -12,30 +6,38 @@ import { LocalStorageJSONModel } from "../../april/LocalStorage";
 import { v4 as uuidv4 } from "uuid";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 
-export const LinksCrud = () => {
-    let state: any = {};
-    const create = async (title: string, url: string, collectionId: any) => {
+export const CRUDs = () => {
+    const STORE_KEY = "linkCollectionsApp";
+    let state: any = {
+        model: new LocalStorageJSONModel(STORE_KEY),
+        collectionKey: "collections",
+        linkKey: "links",
+    };
+    const readCollection = async (collections: any[], id: any) => {
+        return collections.find((c: any) => c.id === id);
+    };
+    const createLink = async (
+        title: string,
+        url: string,
+        collectionId: any
+    ) => {
         const newLink = {
             id: uuidv4(),
             title: title,
             url: url,
         };
-        const collection = await state.parent.collection.read(collectionId);
+        let collections = await readAllCollections();
+        const collection = await readCollection(collections, collectionId);
         collection.links.push(newLink);
-        state.model.updateEntry(
-            ["collections"],
-            state.parent.collection.state.collections
-        );
+        state.model.updateEntry([state.collectionKey], collections);
     };
     const deleteLink = async (collectionId: any, id: any) => {
-        const collection = await state.parent.collection.read(collectionId);
+        let collections = await readAllCollections();
+        const collection = await readCollection(collections, collectionId);
         collection.links = collection.links.filter((l: any) => l.id !== id);
-        state.model.updateEntry(
-            ["collections"],
-            state.parent.collection.state.collections
-        );
+        state.model.updateEntry([state.collectionKey], collections);
     };
-    const update = async (
+    const updateLink = async (
         collectionId: any,
         params: {
             title: string;
@@ -44,66 +46,79 @@ export const LinksCrud = () => {
         }
     ) => {
         const { title, url, id } = params;
-        const link = await read(collectionId, id);
+        const collections = await readAllCollections();
+        const collection = await readCollection(collections, collectionId);
+        const link = collection.links.find((l: any) => l.id === id);
         if (link) {
             link.title = title;
             link.url = url;
         }
-        state.model.updateEntry(["collections"], state.parent.collections);
+        state.model.updateEntry([state.collectionKey], collections);
     };
-    const read = async (collectionId: any, linkId: any) => {
-        return state.parent.collections
+    const readLink = async (collectionId: any, linkId: any) => {
+        let collections = await readAllCollections();
+        return collections
             .find((c: any) => c.id === collectionId)
             .links.find((l: any) => l.id === linkId);
     };
-    return { create, deleteLink, update, read, state };
-};
-
-export const CollectionsCrud = () => {
-    let state: any = {};
-    const create = async (name: string) => {
+    const readAllLinks = async (collectionId: any) => {
+        let collections = await readAllCollections();
+        const collection = await readCollection(collections, collectionId);
+        return collection.links;
+    };
+    const createCollection = async (name: string) => {
         const newCollection = {
             id: uuidv4(),
             name: name,
             links: [],
         };
-        state.collections.push(newCollection);
-        state.model.updateEntry(["collections"], state.collections);
+        const collections = await readAllCollections();
+        collections.push(newCollection);
+        state.model.updateEntry([state.collectionKey], collections);
     };
     const deleteCollection = async (id: any) => {
-        state.collections = state.collections.filter((c: any) => c.id !== id);
-        state.model.updateEntry(["collections"], state.collections);
+        let collections = await readAllCollections();
+        collections = collections.filter((c: any) => c.id !== id);
+        state.model.updateEntry([state.collectionKey], collections);
     };
-    const update = async (params: { name: string; id: any }) => {
+    const updateCollection = async (params: { name: string; id: any }) => {
         const { name, id } = params;
-        const collection = state.collections.find((c: any) => c.id === id);
+        let collections = await readAllCollections();
+        let collection = await readCollection(collections, id);
         if (collection) {
             collection.name = name;
         }
-        state.model.updateEntry(["collections"], state.collections);
+        state.model.updateEntry([state.collectionKey], collections);
     };
-    const readAll = async () => {
-        let loc = ["collections"];
+    const readAllCollections = async () => {
+        let loc = [state.collectionKey];
         if (!state.model.exists(loc)) {
             state.model.addEntry(loc, []);
         }
         return state.model.readEntry(loc);
     };
-    return { create, deleteCollection, update, readAll, state };
+    return {
+        createCollection,
+        deleteCollection,
+        updateCollection,
+        readAllCollections,
+        createLink,
+        deleteLink,
+        updateLink,
+        readLink,
+        readAllLinks,
+
+        state,
+    };
 };
 const getAsInput = (comp: GComponent) => comp.getElement() as HTMLInputElement;
+
 export const CollectionsHandler = () => {
-    const STORE_KEY = "linkCollectionsApp";
-    let model = new LocalStorageJSONModel(STORE_KEY);
     let state: any = {
-        getHandler: () => LinksHandler(),
         form: CollectionForm(),
-        linkForm: LinkForm(),
     };
-    let cruds = {
-        collection: CollectionsCrud(),
-        link: LinksCrud(),
-    };
+    let linksHandler = LinksHandler();
+    let cruds = CRUDs();
 
     const onAddClick = (e: any, ls: any) => {
         let modal = GlobalStates.getInstance().getState("compactModal");
@@ -124,52 +139,44 @@ export const CollectionsHandler = () => {
     };
     const onDeleteCollection = (e: any, ls: any) => {
         if (confirm("Are you sure?"))
-            cruds.collection.deleteCollection(ls.s.id).then(renderCollections);
+            cruds.deleteCollection(ls.s.id).then(renderCollections);
     };
-    const renderCollections = () => {
-        cruds.collection
-            .readAll()
-            .then((collections: { name: string; id: any }[]) => {
-                console.log(collections);
-                state.container.update({ innerHTML: "rendering" });
-                if (collections.length === 0) {
-                    state.container.update({
-                        innerHTML: "",
-                        child: InfoCompCollection(),
-                    });
-                    return;
-                }
-                state.container.update({
-                    innerHTML: "",
-                    children: collections.map((collection: any) => {
-                        const cc = CollectionCard({
-                            title: collection.name,
-                            id: collection.id,
-                            links: collection.links,
-                        });
-                        cc.s.editBtn.update(
-                            {},
-                            {
-                                click: onEditCollection,
-                            },
-                            { collection }
-                        );
-                        cc.s.deleteBtn.update(
-                            {},
-                            {
-                                click: onDeleteCollection,
-                            },
-                            { collection }
-                        );
-                        let linksHandler = state.getHandler();
-                        linksHandler.setup(cc, state.linkForm, cruds.link);
-                        cc.update({}, {}, { linksHandler });
-                        return cc;
-                    }),
-                });
+    const renderCollections = (collections: any) => {
+        if (collections.length === 0) {
+            state.container.update({
+                innerHTML: "",
+                child: InfoCompCollection(),
             });
+            return;
+        }
+        state.container.update({
+            innerHTML: "",
+            children: collections.map((collection: any) => {
+                const cc = CollectionCard({
+                    title: collection.name,
+                    id: collection.id,
+                    links: collection.links,
+                });
+                cc.s.editBtn.update(
+                    {},
+                    {
+                        click: onEditCollection,
+                    },
+                    { collection }
+                );
+                cc.s.deleteBtn.update(
+                    {},
+                    {
+                        click: onDeleteCollection,
+                    },
+                    { collection }
+                );
+
+                return cc;
+            }),
+        });
     };
-    const onSubmit = (e: any, ls: any) => {
+    const onSubmit = async (e: any, ls: any) => {
         e.preventDefault();
         const id = state.form.s.collection?.id;
         const title = getAsInput(state.form.s.title).value.trim();
@@ -179,12 +186,11 @@ export const CollectionsHandler = () => {
         }
 
         if (id) {
-            cruds.collection
-                .update({ name: title, id: id })
-                .then(renderCollections);
+            await cruds.updateCollection({ name: title, id: id });
         } else {
-            cruds.collection.create(title).then(renderCollections);
+            await cruds.createCollection(title);
         }
+        renderCollections(await cruds.readAllCollections());
         let modal = GlobalStates.getInstance().getState("compactModal");
         modal.hide();
     };
@@ -192,18 +198,13 @@ export const CollectionsHandler = () => {
         addBtn.update({}, { click: onAddClick });
         state.container = container;
         state.form.update({}, { submit: onSubmit });
-        cruds.collection.state.model = model;
-        cruds.link.state.model = model;
-        cruds.link.state.parent = cruds;
-        cruds.collection.state.collections = model.readEntry(["collections"]);
-        renderCollections();
+        cruds.readAllCollections().then(renderCollections);
     };
     return {
         setup,
         onAddClick,
         cruds,
         state,
-        model,
         renderCollections,
         onSubmit,
         onEditCollection,
@@ -212,14 +213,15 @@ export const CollectionsHandler = () => {
 };
 
 export const LinksHandler = () => {
+    let form = LinkForm();
     let state: any = {};
     const populateLinkForm = (collectionId: any, link: any = null) => {
-        state.form.s.collectionId = collectionId;
+        form.s.collectionId = collectionId;
         let modal = GlobalStates.getInstance().getState("compactModal");
-        modal.display(state.form);
+        modal.display(form);
         modal.show();
 
-        (state.form.getElement() as HTMLFormElement).reset();
+        (form.getElement() as HTMLFormElement).reset();
         if (link) {
             // this.instances.linkModalTitle.update({ textContent: "Edit Link" });
             // this.instances.linkTitleInput.getElement().value = link.title;
@@ -228,17 +230,17 @@ export const LinksHandler = () => {
         } else {
             modal.setTitle("Add Link to Collection");
         }
-        state.form.s.title.getElement().focus();
+        form.s.title.getElement().focus();
     };
     const onAddLink = (e: any, ls: any) => {
         populateLinkForm(ls.s.id);
     };
     const onSubmit = (e: any, ls: any) => {
         e.preventDefault();
-        const collectionId = state.form.s.collectionId;
-        const linkId = state.form.s.linkId;
-        const title = getAsInput(state.form.s.title).value.trim();
-        const url = getAsInput(state.form.s.url).value.trim();
+        const collectionId = form.s.collectionId;
+        const linkId = form.s.linkId;
+        const title = getAsInput(form.s.title).value.trim();
+        const url = getAsInput(form.s.url).value.trim();
         if (!title || !url) {
             alert("Link title and URL cannot be empty.");
             return;
@@ -260,25 +262,8 @@ export const LinksHandler = () => {
     const onEditLink = (e: any, ls: any) => {};
     const onDeleteLink = (e: any, ls: any) => {};
     const onOpenAllLinks = (e: any, ls: any) => {};
-    const setup = (card: any, form: any, crud: any) => {
-        card.s.addLinkBtn.update(
-            {},
-            {
-                click: onAddLink,
-            }
-        );
-        card.s.openAllLinksBtn.update(
-            {},
-            {
-                click: onOpenAllLinks,
-            }
-        );
-        card.s.callbacks.onEdit = onEditLink;
-        card.s.callbacks.onDelete = onDeleteLink;
-        state.form = form;
-        state.crud = crud;
-    };
-    return { onAddLink, onEditLink, onDeleteLink, onOpenAllLinks, setup };
+
+    return { onAddLink, onEditLink, onDeleteLink, onOpenAllLinks };
 };
 
 export const Controller = () => {
