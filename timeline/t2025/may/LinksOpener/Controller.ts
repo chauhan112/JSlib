@@ -17,14 +17,16 @@ export const CRUDs = () => {
         return collections.find((c: any) => c.id === id);
     };
     const createLink = async (
-        title: string,
-        url: string,
-        collectionId: any
+        collectionId: any,
+        link: {
+            title: string;
+            url: string;
+        }
     ) => {
         const newLink = {
             id: uuidv4(),
-            title: title,
-            url: url,
+            title: link.title,
+            url: link.url,
         };
         let collections = await readAllCollections();
         const collection = await readCollection(collections, collectionId);
@@ -118,6 +120,7 @@ export const CollectionsHandler = () => {
         form: CollectionForm(),
     };
     let linksHandler = LinksHandler();
+
     let cruds = CRUDs();
 
     const onAddClick = (e: any, ls: any) => {
@@ -171,7 +174,17 @@ export const CollectionsHandler = () => {
                     },
                     { collection }
                 );
-
+                cc.s.addLinkBtn.update(
+                    {},
+                    {
+                        click: (e: any, ls: any) => {
+                            linksHandler.onAddLink(e, ls);
+                        },
+                    }
+                );
+                cc.s.callbacks.onDelete = linksHandler.onDeleteLink;
+                cc.s.callbacks.onEdit = linksHandler.onEditLink;
+                cc.s.setLinks(collection.links);
                 return cc;
             }),
         });
@@ -190,7 +203,9 @@ export const CollectionsHandler = () => {
         } else {
             await cruds.createCollection(title);
         }
-        renderCollections(await cruds.readAllCollections());
+        let collections = await cruds.readAllCollections();
+
+        renderCollections(collections);
         let modal = GlobalStates.getInstance().getState("compactModal");
         modal.hide();
     };
@@ -198,7 +213,25 @@ export const CollectionsHandler = () => {
         addBtn.update({}, { click: onAddClick });
         state.container = container;
         state.form.update({}, { submit: onSubmit });
-        cruds.readAllCollections().then(renderCollections);
+
+        cruds.readAllCollections().then((collections) => {
+            console.log(collections);
+            renderCollections(collections);
+        });
+        linksHandler.state.crud = {
+            create: cruds.createLink,
+            delete: cruds.deleteLink,
+            update: cruds.updateLink,
+            read: cruds.readLink,
+            readAll: cruds.readAllLinks,
+        };
+        linksHandler.state.parent = {
+            renderCollections: async () => {
+                let collections = await cruds.readAllCollections();
+                renderCollections(collections);
+            },
+        };
+        linksHandler.form.update({}, { submit: linksHandler.onSubmit });
     };
     return {
         setup,
@@ -215,19 +248,21 @@ export const CollectionsHandler = () => {
 export const LinksHandler = () => {
     let form = LinkForm();
     let state: any = {};
-    const populateLinkForm = (collectionId: any, link: any = null) => {
+    const populateLinkForm = (collectionId: string, link: any = null) => {
         form.s.collectionId = collectionId;
+
         let modal = GlobalStates.getInstance().getState("compactModal");
         modal.display(form);
         modal.show();
 
         (form.getElement() as HTMLFormElement).reset();
         if (link) {
-            // this.instances.linkModalTitle.update({ textContent: "Edit Link" });
-            // this.instances.linkTitleInput.getElement().value = link.title;
-            // this.instances.linkUrlInput.getElement().value = link.url;
-            // this.instances.linkForm.s.linkId = link.id;
+            modal.setTitle("Edit Link");
+            form.s.title.getElement().value = link.title;
+            form.s.url.getElement().value = link.url;
+            form.s.linkId = link.id;
         } else {
+            form.s.linkId = null;
             modal.setTitle("Add Link to Collection");
         }
         form.s.title.getElement().focus();
@@ -246,6 +281,7 @@ export const LinksHandler = () => {
             return;
         }
         new URL(url);
+        console.log("submitting");
 
         if (linkId) {
             state.crud
@@ -259,11 +295,17 @@ export const LinksHandler = () => {
         let modal = GlobalStates.getInstance().getState("compactModal");
         modal.hide();
     };
-    const onEditLink = (e: any, ls: any) => {};
-    const onDeleteLink = (e: any, ls: any) => {};
-    const onOpenAllLinks = (e: any, ls: any) => {};
+    const onEditLink = (e: any, ls: any) => {
+        populateLinkForm(ls.s.collectionId, ls.s.link);
+    };
+    const onDeleteLink = (e: any, ls: any) => {
+        if (confirm("Are you sure?"))
+            state.crud
+                .delete(ls.s.collectionId, ls.s.link.id)
+                .then(state.parent.renderCollections);
+    };
 
-    return { onAddLink, onEditLink, onDeleteLink, onOpenAllLinks };
+    return { onAddLink, onEditLink, onDeleteLink, onSubmit, state, form };
 };
 
 export const Controller = () => {

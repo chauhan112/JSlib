@@ -160,6 +160,7 @@ export const CollectionCard = (collection: {
                         },
                         {
                             collectionId: collection.id,
+                            link: link,
                         }
                     );
                     slc.s.editBtn.update(
@@ -169,6 +170,7 @@ export const CollectionCard = (collection: {
                         },
                         {
                             collectionId: collection.id,
+                            link: link,
                         }
                     );
                     return slc;
