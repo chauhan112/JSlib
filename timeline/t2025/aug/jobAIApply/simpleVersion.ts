@@ -168,7 +168,15 @@ export const Page = () => {
             ],
         },
         {},
-        { personalDetails, jobDetails, modelSelect, cvBtn, motBtn, output }
+        {
+            personalDetails,
+            jobDetails,
+            modelSelect,
+            cvBtn,
+            motBtn,
+            output,
+            header,
+        }
     );
 };
 
