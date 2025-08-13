@@ -100,7 +100,7 @@ export const CRUDs = () => {
         }
         return state.model.readEntry(loc);
     };
-    return {
+    let res: CRUDsTypeForController = {
         createCollection,
         deleteCollection,
         updateCollection,
@@ -129,8 +129,10 @@ export const CollectionsHandler = () => {
     };
     let linksHandler = LinksHandler();
 
-    let cruds = CRUDs();
-
+    const readAndRender = async () => {
+        let collections = await state.cruds.readAllCollections();
+        renderCollections(collections);
+    };
     const onAddClick = (e: any, ls: any) => {
         let modal = GlobalStates.getInstance().getState("compactModal");
         modal.display(state.form);
@@ -158,13 +160,13 @@ export const CollectionsHandler = () => {
     };
     const renderCollections = (collections: any) => {
         if (collections.length === 0) {
-            state.container.update({
+            state.container!.update({
                 innerHTML: "",
                 child: InfoCompCollection(),
             });
             return;
         }
-        state.container.update({
+        state.container!.update({
             innerHTML: "",
             children: collections.map((collection: any) => {
                 const cc = CollectionCard({
@@ -215,9 +217,7 @@ export const CollectionsHandler = () => {
         } else {
             await cruds.createCollection(title);
         }
-        let collections = await cruds.readAllCollections();
-
-        renderCollections(collections);
+        await readAndRender();
         let modal = GlobalStates.getInstance().getState("compactModal");
         modal.hide();
     };
