@@ -29,35 +29,8 @@ export type CRUDsTypeForController = {
     createLink: any;
     deleteLink: any;
     updateLink: any;
-    readLink: any;
-    readAllLinks: any;
-
-    state?: any;
-};
-export async function isUrlAvailable(url: string) {
-    try {
-        const response = await fetch(url, { method: "GET" });
-        if (response.ok) return true;
-
-        // Treat Method Not Allowed as available
-        if (response.status === 405) return true;
-
-        return false;
-    } catch (error: any) {
-        return false; // Network error or unreachable
-    }
-}
-
-export type CRUDsTypeForController = {
-    createCollection: any;
-    deleteCollection: any;
-    updateCollection: any;
-    readAllCollections: any;
-    createLink: any;
-    deleteLink: any;
-    updateLink: any;
-    readLink: any;
-    readAllLinks: any;
+    readLink?: any;
+    readAllLinks?: any;
 
     state?: any;
 };
@@ -305,9 +278,9 @@ export const CollectionsHandler = () => {
         onSubmit,
         onEditCollection,
         onDeleteCollection,
+        setCruds,
     };
 };
-
 export const LinksHandler = () => {
     let form = LinkForm();
     let state: { parent?: { renderCollections?: any }; crud?: any } = {};
@@ -369,15 +342,60 @@ export const LinksHandler = () => {
 
     return { onAddLink, onEditLink, onDeleteLink, onSubmit, state, form };
 };
-
 export const Controller = () => {
     let comp = NewPage();
     let collections = CollectionsHandler();
     let links = LinksHandler();
-    collections.setup(
-        comp.s.collectionModal,
-        comp.s.addCollectionBtn,
-        comp.s.collectionsContainer
-    );
+
+    isUrlAvailable(APILoc).then((isAvailable: boolean) => {
+        if (isAvailable) {
+            collections.setCruds({
+                createCollection: (name: string) =>
+                    GraphApiCalls.createCollection(name),
+                updateCollection: (params: { name: string; id: any }) =>
+                    GraphApiCalls.updateCollection(params.id, params.name),
+                deleteCollection: (id: any) =>
+                    GraphApiCalls.deleteCollection(id),
+                readAllCollections: GraphApiCalls.readAllCollections,
+                createLink: (
+                    collectionId: any,
+                    params: { title: string; url: string }
+                ) =>
+                    GraphApiCalls.createLink(
+                        collectionId,
+                        params.title,
+                        params.url
+                    ),
+                updateLink: (
+                    collectionId: any,
+                    params: {
+                        title: string;
+                        url: string;
+                        id: any;
+                    }
+                ) => {
+                    console.log(params, collectionId);
+                    return GraphApiCalls.updateLink(
+                        params.id,
+                        params.title,
+                        params.url
+                    );
+                },
+                deleteLink: (collectionId: any, id: any) =>
+                    GraphApiCalls.deleteLink(id),
+            });
+        }
+        collections.state.cruds
+            .readAllCollections()
+            .then((collections: any) => {
+                console.log(collections);
+            });
+        collections.setup(
+            comp.s.collectionModal,
+            comp.s.addCollectionBtn,
+            comp.s.collectionsContainer
+        );
+    });
+
     return { comp, collections, links };
 };
