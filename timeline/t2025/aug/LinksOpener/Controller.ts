@@ -1,11 +1,39 @@
-import { NewPage, InfoCompCollection, LinkForm, CollectionForm } from "./Page";
-import { CollectionCard } from "./collectionCard";
+import { NewPage, LinkForm, CollectionForm } from "./Page";
+import { CollectionCard } from "../../may/LinksOpener/collectionCard";
 import { GComponent } from "../../april/GComponent";
 import { LocalStorageJSONModel } from "../../april/LocalStorage";
 // npm install uuid
 import { v4 as uuidv4 } from "uuid";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
+import { InfoCompCollection } from "../../may/LinksOpener/Page";
+import { GraphApiCalls, APILoc } from "./graphql_api";
+export async function isUrlAvailable(url: string) {
+    try {
+        const response = await fetch(url, { method: "GET" });
+        if (response.ok) return true;
 
+        // Treat Method Not Allowed as available
+        if (response.status === 405) return true;
+
+        return false;
+    } catch (error: any) {
+        return false; // Network error or unreachable
+    }
+}
+
+export type CRUDsTypeForController = {
+    createCollection: any;
+    deleteCollection: any;
+    updateCollection: any;
+    readAllCollections: any;
+    createLink: any;
+    deleteLink: any;
+    updateLink: any;
+    readLink?: any;
+    readAllLinks?: any;
+
+    state?: any;
+};
 export const CRUDs = () => {
     const STORE_KEY = "linkCollectionsApp";
     let state: any = {
@@ -99,7 +127,7 @@ export const CRUDs = () => {
         }
         return state.model.readEntry(loc);
     };
-    return {
+    let res: CRUDsTypeForController = {
         createCollection,
         deleteCollection,
         updateCollection,
@@ -112,17 +140,26 @@ export const CRUDs = () => {
 
         state,
     };
+    return res;
 };
 const getAsInput = (comp: GComponent) => comp.getElement() as HTMLInputElement;
 
+export type StateTypeCollectionsHandler = {
+    form: any;
+    container?: GComponent;
+    cruds: CRUDsTypeForController;
+};
 export const CollectionsHandler = () => {
-    let state: any = {
+    let state: StateTypeCollectionsHandler = {
         form: CollectionForm(),
+        cruds: CRUDs(),
     };
     let linksHandler = LinksHandler();
 
-    let cruds = CRUDs();
-
+    const readAndRender = async () => {
+        let collections = await state.cruds.readAllCollections();
+        renderCollections(collections);
+    };
     const onAddClick = (e: any, ls: any) => {
         let modal = GlobalStates.getInstance().getState("compactModal");
         modal.display(state.form);
@@ -142,17 +179,17 @@ export const CollectionsHandler = () => {
     };
     const onDeleteCollection = (e: any, ls: any) => {
         if (confirm("Are you sure?"))
-            cruds.deleteCollection(ls.s.id).then(renderCollections);
+            state.cruds.deleteCollection(ls.s.id).then(readAndRender);
     };
     const renderCollections = (collections: any) => {
         if (collections.length === 0) {
-            state.container.update({
+            state.container!.update({
                 innerHTML: "",
                 child: InfoCompCollection(),
             });
             return;
         }
-        state.container.update({
+        state.container!.update({
             innerHTML: "",
             children: collections.map((collection: any) => {
                 const cc = CollectionCard({
@@ -199,55 +236,54 @@ export const CollectionsHandler = () => {
         }
 
         if (id) {
-            await cruds.updateCollection({ name: title, id: id });
+            await state.cruds.updateCollection({ name: title, id: id });
         } else {
-            await cruds.createCollection(title);
+            await state.cruds.createCollection(title);
         }
-        let collections = await cruds.readAllCollections();
-
-        renderCollections(collections);
+        await readAndRender();
         let modal = GlobalStates.getInstance().getState("compactModal");
         modal.hide();
     };
+
+    const setCruds = (c: CRUDsTypeForController) => {
+        state.cruds = c;
+        linksHandler.state.crud = {
+            create: c.createLink,
+            delete: c.deleteLink,
+            update: c.updateLink,
+            read: c.readLink,
+            readAll: c.readAllLinks,
+        };
+    };
+
     const setup = (c: any, addBtn: any, container: any) => {
         addBtn.update({}, { click: onAddClick });
         state.container = container;
         state.form.update({}, { submit: onSubmit });
 
-        cruds.readAllCollections().then((collections) => {
-            console.log(collections);
-            renderCollections(collections);
-        });
-        linksHandler.state.crud = {
-            create: cruds.createLink,
-            delete: cruds.deleteLink,
-            update: cruds.updateLink,
-            read: cruds.readLink,
-            readAll: cruds.readAllLinks,
-        };
+        readAndRender();
+
+        setCruds(state.cruds);
+
         linksHandler.state.parent = {
-            renderCollections: async () => {
-                let collections = await cruds.readAllCollections();
-                renderCollections(collections);
-            },
+            renderCollections: readAndRender,
         };
         linksHandler.form.update({}, { submit: linksHandler.onSubmit });
     };
     return {
         setup,
         onAddClick,
-        cruds,
         state,
         renderCollections,
         onSubmit,
         onEditCollection,
         onDeleteCollection,
+        setCruds,
     };
 };
-
 export const LinksHandler = () => {
     let form = LinkForm();
-    let state: any = {};
+    let state: { parent?: { renderCollections?: any }; crud?: any } = {};
     const populateLinkForm = (collectionId: string, link: any = null) => {
         form.s.collectionId = collectionId;
 
@@ -281,16 +317,15 @@ export const LinksHandler = () => {
             return;
         }
         new URL(url);
-        console.log("submitting");
 
         if (linkId) {
             state.crud
                 .update(collectionId, { title, url, id: linkId })
-                .then(state.parent.renderCollections);
+                .then(state.parent!.renderCollections);
         } else {
             state.crud
                 .create(collectionId, { title, url })
-                .then(state.parent.renderCollections);
+                .then(state.parent!.renderCollections);
         }
         let modal = GlobalStates.getInstance().getState("compactModal");
         modal.hide();
@@ -302,20 +337,65 @@ export const LinksHandler = () => {
         if (confirm("Are you sure?"))
             state.crud
                 .delete(ls.s.collectionId, ls.s.link.id)
-                .then(state.parent.renderCollections);
+                .then(state.parent!.renderCollections);
     };
 
     return { onAddLink, onEditLink, onDeleteLink, onSubmit, state, form };
 };
-
 export const Controller = () => {
     let comp = NewPage();
     let collections = CollectionsHandler();
     let links = LinksHandler();
-    collections.setup(
-        comp.s.collectionModal,
-        comp.s.addCollectionBtn,
-        comp.s.collectionsContainer
-    );
+
+    isUrlAvailable(APILoc).then((isAvailable: boolean) => {
+        if (isAvailable) {
+            collections.setCruds({
+                createCollection: (name: string) =>
+                    GraphApiCalls.createCollection(name),
+                updateCollection: (params: { name: string; id: any }) =>
+                    GraphApiCalls.updateCollection(params.id, params.name),
+                deleteCollection: (id: any) =>
+                    GraphApiCalls.deleteCollection(id),
+                readAllCollections: GraphApiCalls.readAllCollections,
+                createLink: (
+                    collectionId: any,
+                    params: { title: string; url: string }
+                ) =>
+                    GraphApiCalls.createLink(
+                        collectionId,
+                        params.title,
+                        params.url
+                    ),
+                updateLink: (
+                    collectionId: any,
+                    params: {
+                        title: string;
+                        url: string;
+                        id: any;
+                    }
+                ) => {
+                    console.log(params, collectionId);
+                    return GraphApiCalls.updateLink(
+                        params.id,
+                        params.title,
+                        params.url
+                    );
+                },
+                deleteLink: (collectionId: any, id: any) =>
+                    GraphApiCalls.deleteLink(id),
+            });
+        }
+        collections.state.cruds
+            .readAllCollections()
+            .then((collections: any) => {
+                console.log(collections);
+            });
+        collections.setup(
+            comp.s.collectionModal,
+            comp.s.addCollectionBtn,
+            comp.s.collectionsContainer
+        );
+    });
+
     return { comp, collections, links };
 };

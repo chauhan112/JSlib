@@ -1,6 +1,6 @@
 const URL = "http://127.0.0.1:8000/run/";
 
-const makePostRequest = (url: string, data: any) => {
+export const makePostRequest = (url: string, data: any) => {
     return fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
