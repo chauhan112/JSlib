@@ -113,12 +113,19 @@ export const CRUDs = () => {
 
         state,
     };
+    return res;
 };
 const getAsInput = (comp: GComponent) => comp.getElement() as HTMLInputElement;
 
+export type StateTypeCollectionsHandler = {
+    form: any;
+    container?: GComponent;
+    cruds: CRUDsTypeForController;
+};
 export const CollectionsHandler = () => {
-    let state: any = {
+    let state: StateTypeCollectionsHandler = {
         form: CollectionForm(),
+        cruds: CRUDs(),
     };
     let linksHandler = LinksHandler();
 
