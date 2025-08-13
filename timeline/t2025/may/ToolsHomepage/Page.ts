@@ -5,6 +5,7 @@ import { Router } from "./Router";
 import { Page as FileSearchPage } from "../FileSearch/Components";
 import { Page as HtmlToMyLib } from "../HtmlToMyLib/index";
 import { Controller as LinksController } from "../../aug/LinksOpener/Controller";
+import { PageCtrl } from "../../aug/jobAIApply/simpleVersion";
 
 export const CardComponent = (
     title: string = "Task Manager",
@@ -222,6 +223,22 @@ export const MainPage = () => {
             page.mainBody.display(fspage);
             page.layout.s.wrapper.s.header.s.updateTitle(
                 DEF_TITLE + " - " + "HTML to my lib"
+            );
+        },
+        icon: CircleCheck,
+    });
+    page.addApp({
+        title: "job ai apply",
+        description: "generate ai cv and motivation",
+        link: "cv-generator/",
+        routeFunc: () => {
+            const fspage = PageCtrl();
+            fspage.setup();
+            fspage.comp.s.header.getElement().classList.add("hidden");
+            page.mainBody.clear();
+            page.mainBody.display(fspage.comp);
+            page.layout.s.wrapper.s.header.s.updateTitle(
+                DEF_TITLE + " - " + "job ai apply"
             );
         },
         icon: CircleCheck,
