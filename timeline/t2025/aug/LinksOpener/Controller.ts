@@ -152,11 +152,7 @@ export const CollectionsHandler = () => {
     };
     const onDeleteCollection = (e: any, ls: any) => {
         if (confirm("Are you sure?"))
-            cruds.deleteCollection(ls.s.id).then(() => {
-                cruds.readAllCollections().then((collections) => {
-                    renderCollections(collections);
-                });
-            });
+            state.cruds.deleteCollection(ls.s.id).then(readAndRender);
     };
     const renderCollections = (collections: any) => {
         if (collections.length === 0) {
@@ -213,34 +209,37 @@ export const CollectionsHandler = () => {
         }
 
         if (id) {
-            await cruds.updateCollection({ name: title, id: id });
+            await state.cruds.updateCollection({ name: title, id: id });
         } else {
-            await cruds.createCollection(title);
+            await state.cruds.createCollection(title);
         }
         await readAndRender();
         let modal = GlobalStates.getInstance().getState("compactModal");
         modal.hide();
     };
+
+    const setCruds = (c: CRUDsTypeForController) => {
+        state.cruds = c;
+        linksHandler.state.crud = {
+            create: c.createLink,
+            delete: c.deleteLink,
+            update: c.updateLink,
+            read: c.readLink,
+            readAll: c.readAllLinks,
+        };
+    };
+
     const setup = (c: any, addBtn: any, container: any) => {
         addBtn.update({}, { click: onAddClick });
         state.container = container;
         state.form.update({}, { submit: onSubmit });
 
-        cruds.readAllCollections().then((collections) => {
-            renderCollections(collections);
-        });
-        linksHandler.state.crud = {
-            create: cruds.createLink,
-            delete: cruds.deleteLink,
-            update: cruds.updateLink,
-            read: cruds.readLink,
-            readAll: cruds.readAllLinks,
-        };
+        readAndRender();
+
+        setCruds(state.cruds);
+
         linksHandler.state.parent = {
-            renderCollections: async () => {
-                let collections = await cruds.readAllCollections();
-                renderCollections(collections);
-            },
+            renderCollections: readAndRender,
         };
         linksHandler.form.update({}, { submit: linksHandler.onSubmit });
     };
@@ -258,7 +257,7 @@ export const CollectionsHandler = () => {
 
 export const LinksHandler = () => {
     let form = LinkForm();
-    let state: any = {};
+    let state: { parent?: { renderCollections?: any }; crud?: any } = {};
     const populateLinkForm = (collectionId: string, link: any = null) => {
         form.s.collectionId = collectionId;
 
