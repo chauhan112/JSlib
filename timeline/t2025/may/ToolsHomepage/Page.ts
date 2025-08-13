@@ -4,7 +4,7 @@ import { Logo, GoBackOrHome, DEF_TITLE } from "./Components";
 import { Router } from "./Router";
 import { Page as FileSearchPage } from "../FileSearch/Components";
 import { Page as HtmlToMyLib } from "../HtmlToMyLib/index";
-import { Controller as LinksController } from "../LinksOpener/Controller";
+import { Controller as LinksController } from "../../aug/LinksOpener/Controller";
 
 export const CardComponent = (
     title: string = "Task Manager",

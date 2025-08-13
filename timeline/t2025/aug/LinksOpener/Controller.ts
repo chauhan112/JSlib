@@ -1,10 +1,11 @@
-import { NewPage, InfoCompCollection, LinkForm, CollectionForm } from "./Page";
-import { CollectionCard } from "./collectionCard";
+import { NewPage, LinkForm, CollectionForm } from "./Page";
+import { CollectionCard } from "../../may/LinksOpener/collectionCard";
 import { GComponent } from "../../april/GComponent";
 import { LocalStorageJSONModel } from "../../april/LocalStorage";
 // npm install uuid
 import { v4 as uuidv4 } from "uuid";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
+import { InfoCompCollection } from "../../may/LinksOpener/Page";
 
 export const CRUDs = () => {
     const STORE_KEY = "linkCollectionsApp";
