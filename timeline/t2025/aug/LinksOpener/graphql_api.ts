@@ -1,24 +1,16 @@
 export let APILoc = "http://127.0.0.1:8000/graphql";
 
-export const makePostRequest = (url: string, data: any) => {
-    return fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    }).then((resp) => resp.json());
-};
+import { makePostRequest } from "../jobAIApply/model";
 
 export class GraphApiCalls {
     static async updateCollection(id: string, title: string) {
         const query = `
-            mutation UpdateCollection($id: ID!, $name: String!) {
-                updateCollection(
+            mutation {updateCollection(
                   collectionInput: {
-                    id: $id
-                    name: $name
+                    id: ${id}
+                    name: "${title}"
                   }
-                )
-            }
+                ){id name}}
         `;
         const resp = await makePostRequest(APILoc, {
             query,
@@ -30,23 +22,13 @@ export class GraphApiCalls {
         return resp;
     }
     static async readAllCollections() {
-        const query = "{ allCollections {id name}}";
+        const query = "{ allCollections {id name links {id title url}} }";
         const resp = await makePostRequest(APILoc, {
             query,
         });
-        return resp;
+        return resp.data.allCollections;
     }
     static async createCollection(name: string) {
-        // const query = `
-        //     mutation addCollection($name: String!) {
-        //         updateCollection(
-        //           collectionInput: {
-        //             id: $id
-        //             name: $name
-        //           }
-        //         )
-        //     }
-        // `;
         const query = `mutation{addCollection(collectionInput: {name:"${name}"}){id}}`;
         const resp = await makePostRequest(APILoc, {
             query,
@@ -70,7 +52,9 @@ export class GraphApiCalls {
     }
 
     static async updateLink(id: any, title: string, url: string) {
-        const query = `mutation{deleteLink(id:${id}, title:"${title}", url:"${url}")}`;
+        const query = `mutation {
+            updateLink(linkInput: {id: ${id}, title:"${title}", url:"${url}"}){id}
+        }`;
         const resp = await makePostRequest(APILoc, {
             query,
         });
