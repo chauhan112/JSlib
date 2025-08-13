@@ -6,7 +6,61 @@ import { LocalStorageJSONModel } from "../../april/LocalStorage";
 import { v4 as uuidv4 } from "uuid";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 import { InfoCompCollection } from "../../may/LinksOpener/Page";
+import { GraphApiCalls, APILoc } from "./graphql_api";
+export async function isUrlAvailable(url: string) {
+    try {
+        const response = await fetch(url, { method: "GET" });
+        if (response.ok) return true;
 
+        // Treat Method Not Allowed as available
+        if (response.status === 405) return true;
+
+        return false;
+    } catch (error: any) {
+        return false; // Network error or unreachable
+    }
+}
+
+export type CRUDsTypeForController = {
+    createCollection: any;
+    deleteCollection: any;
+    updateCollection: any;
+    readAllCollections: any;
+    createLink: any;
+    deleteLink: any;
+    updateLink: any;
+    readLink: any;
+    readAllLinks: any;
+
+    state?: any;
+};
+export async function isUrlAvailable(url: string) {
+    try {
+        const response = await fetch(url, { method: "GET" });
+        if (response.ok) return true;
+
+        // Treat Method Not Allowed as available
+        if (response.status === 405) return true;
+
+        return false;
+    } catch (error: any) {
+        return false; // Network error or unreachable
+    }
+}
+
+export type CRUDsTypeForController = {
+    createCollection: any;
+    deleteCollection: any;
+    updateCollection: any;
+    readAllCollections: any;
+    createLink: any;
+    deleteLink: any;
+    updateLink: any;
+    readLink: any;
+    readAllLinks: any;
+
+    state?: any;
+};
 export const CRUDs = () => {
     const STORE_KEY = "linkCollectionsApp";
     let state: any = {
@@ -246,7 +300,6 @@ export const CollectionsHandler = () => {
     return {
         setup,
         onAddClick,
-        cruds,
         state,
         renderCollections,
         onSubmit,
@@ -295,11 +348,11 @@ export const LinksHandler = () => {
         if (linkId) {
             state.crud
                 .update(collectionId, { title, url, id: linkId })
-                .then(state.parent.renderCollections);
+                .then(state.parent!.renderCollections);
         } else {
             state.crud
                 .create(collectionId, { title, url })
-                .then(state.parent.renderCollections);
+                .then(state.parent!.renderCollections);
         }
         let modal = GlobalStates.getInstance().getState("compactModal");
         modal.hide();
@@ -311,7 +364,7 @@ export const LinksHandler = () => {
         if (confirm("Are you sure?"))
             state.crud
                 .delete(ls.s.collectionId, ls.s.link.id)
-                .then(state.parent.renderCollections);
+                .then(state.parent!.renderCollections);
     };
 
     return { onAddLink, onEditLink, onDeleteLink, onSubmit, state, form };
