@@ -142,7 +142,11 @@ export const CollectionsHandler = () => {
     };
     const onDeleteCollection = (e: any, ls: any) => {
         if (confirm("Are you sure?"))
-            cruds.deleteCollection(ls.s.id).then(renderCollections);
+            cruds.deleteCollection(ls.s.id).then(() => {
+                cruds.readAllCollections().then((collections) => {
+                    renderCollections(collections);
+                });
+            });
     };
     const renderCollections = (collections: any) => {
         if (collections.length === 0) {
@@ -215,7 +219,6 @@ export const CollectionsHandler = () => {
         state.form.update({}, { submit: onSubmit });
 
         cruds.readAllCollections().then((collections) => {
-            console.log(collections);
             renderCollections(collections);
         });
         linksHandler.state.crud = {
@@ -281,7 +284,6 @@ export const LinksHandler = () => {
             return;
         }
         new URL(url);
-        console.log("submitting");
 
         if (linkId) {
             state.crud
