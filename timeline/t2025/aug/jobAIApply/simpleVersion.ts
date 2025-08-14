@@ -179,13 +179,13 @@ export const Page = () => {
         }
     );
 };
-
+const OLLAMA_BASE_URL = "http://localhost:8000/ollama";
 export const PageCtrl = () => {
     let comp = Page();
     const model = new LocalStorageJSONModel("jobAIApplyModel");
     const runningProcesses = {};
     async function callOllamaAPI(prompt: string, model: string) {
-        const response = await fetch("http://localhost:11434/api/generate", {
+        const response = await fetch(OLLAMA_BASE_URL + "/api/generate", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -217,7 +217,7 @@ export const PageCtrl = () => {
         return `${Math.round(size / 1e9)} GB`;
     };
     const getModelList = async () => {
-        let response = await fetch("http://localhost:11434/api/tags");
+        let response = await fetch(OLLAMA_BASE_URL + "/api/tags");
         let data = await response.json();
         console.log(data);
         comp.s.modelSelect.setOptions(
