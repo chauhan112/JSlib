@@ -437,7 +437,9 @@ export const Page = () => {
 
                 if (linkId) {
                     // Editing existing link
-                    const link = collection.links.find((l) => l.id === linkId);
+                    const link = collection.links.find(
+                        (l: any) => l.id === linkId
+                    );
                     if (link) {
                         link.title = title;
                         link.url = url;
