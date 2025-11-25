@@ -13,9 +13,6 @@ export const SearchComp = () => {
                 name: "search",
                 placeholder: "Search...",
             }),
-            // Tools.icon(Search, {
-            //     class: "w-6 h-6 text-gray-500 absolute left-8",
-            // }),
             SearchSettingBtn(),
         ],
     });

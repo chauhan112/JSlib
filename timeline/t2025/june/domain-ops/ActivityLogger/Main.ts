@@ -7,7 +7,7 @@ import { StructureSection, StructureSectionController } from "./Structures";
 import { Properties } from "../Properties";
 import { Controller as LoggerDataController } from "./LoggerData";
 
-export const LoggerMain = () => {
+export const ActivityMain = () => {
     const activityName = "Ops: domain1, domain2, domain3";
     const header = Header();
     header.s.title.update({ textContent: activityName });
@@ -61,8 +61,8 @@ export const LoggerMain = () => {
     );
     return comp;
 };
-export const LoggerMainController = (root: any) => {
-    let comp = LoggerMain();
+export const ActivityMainController = (root: any) => {
+    let comp = ActivityMain();
     const toggleRightNav = () => {
         comp.s.rightNav.getElement().classList.toggle("hidden");
         comp.s.header.s.right.s.icon

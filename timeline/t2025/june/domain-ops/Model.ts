@@ -282,7 +282,6 @@ export enum InputType {
     Number = "number",
     Checkbox = "checkbox",
 }
-
 export class LogStructure {
     model: LocalStorageJSONModel | null = null;
     key = "structure";
