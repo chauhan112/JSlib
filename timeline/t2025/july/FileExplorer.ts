@@ -105,8 +105,9 @@ export const FileExplorer = () => {
 
 export const LocalExpController = () => {
     let comp = FileExplorer();
-    let url = "http://localhost:8000/run/";
-
+    //  load from .env
+    let url = import.meta.env.VITE_API_URL as string;
+    console.log(url);
     const load = async () => {
         axios
             .post(url, {
