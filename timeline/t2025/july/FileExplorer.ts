@@ -67,7 +67,7 @@ export const FileExplorer = () => {
         comp.getElement().classList.add("cursor-pointer");
         return comp;
     };
-    const curLoc = ["."];
+    const curLoc = [import.meta.env.VITE_DEFAULT_LOCATION as string || "."];
     breadCrumb.s.handlers.setData(
         curLoc.map((name, index) => ({ name, href: "#", index }))
     );
@@ -107,7 +107,6 @@ export const LocalExpController = () => {
     let comp = FileExplorer();
     //  load from .env
     let url = import.meta.env.VITE_API_URL as string;
-    console.log(url);
     const load = async () => {
         axios
             .post(url, {
