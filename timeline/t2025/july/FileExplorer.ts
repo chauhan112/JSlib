@@ -1,4 +1,4 @@
-import { File, Folder } from "lucide";
+
 import { Tools } from "../april/tools";
 import { Breadcrumb } from "../june/domain-ops/Component";
 import axios from "axios";
@@ -185,9 +185,9 @@ export const FileExplorer = () => {
         comp.getElement().classList.add("cursor-pointer");
         return comp;
     };
-    const curLoc = [localStorage.getItem("VITE_DEFAULT_LOCATION") as string || import.meta.env.VITE_DEFAULT_LOCATION as string || "."];
+    const curLoc = ["."];
     breadCrumb.s.handlers.setData(
-        curLoc.map((name, index) => ({ name, href: "#", index }))
+        curLoc.map((name: string, index: number) => ({ name, href: "#", index }))
     );
 
     const fileOrFolderContainer = Tools.div({ class: "flex flex-wrap gap-4" });
@@ -205,6 +205,8 @@ export const FileExplorer = () => {
         ["folder1", "folder2", "folder3", "folder4", "folder5"]
     );
 
+
+
     return Tools.div(
         {
             children: [breadCrumb, fileOrFolderContainer],
@@ -212,21 +214,44 @@ export const FileExplorer = () => {
         {},
         {
             handlers,
-            curLoc,
             fileOrFolderContainer,
             setContent,
             classes,
             breadCrumb,
+            curLoc,
         }
     );
 };
 
-export const LocalExpController = () => {
-    let comp = FileExplorer();
-    //  load from .env
-    let url = localStorage.getItem("VITE_API_URL") as string || import.meta.env.VITE_API_URL as string || "http://localhost:8000/run/";
+export const FileExplorerPage = () => {
+    const fileExplorer = FileExplorer();
+    const header = Header();
+    const content = Tools.div({
+        children: [fileExplorer],
+    });
+    return Tools.div({
+        children: [header, content],
+    }, {}, {
+        fileExplorer,
+        header,
+        content,
+    });
+}
+
+export const FileExplorerCtrl = () => {
+    let s: { [key: string]: any } = { component: null };
+
 
     const load = async () => {
+        let url = import.meta.env.VITE_API_URL as string || "http://localhost:8000/run/";
+        if (s.model.exists(["VITE_API_URL"])) {
+            url = s.model.readEntry(["VITE_API_URL"]) as string;
+        }
+
+
+        const comp = getComponent();
+
+
         axios
             .post(url, {
                 name: "folder/dirList",
@@ -235,14 +260,16 @@ export const LocalExpController = () => {
             .then((response) => {
                 const { files, folders } = response.data;
                 comp.s.setContent(files, folders);
+                updateBreadcrumb();
             })
             .catch((error) => {
                 console.log(error);
                 comp.s.setContent([], []);
             });
     };
-    load();
+
     const updateBreadcrumb = () => {
+        const comp = getComponent();
         let loc = comp.s.curLoc.map((name: string, index: number) => {
             if (index === 0) return { name: "root", href: "#", index };
             return { name, href: "#", index };
@@ -250,6 +277,7 @@ export const LocalExpController = () => {
         comp.s.breadCrumb.s.handlers.setData(loc);
     };
     const onClick = (e: any, ls: any) => {
+        const comp = getComponent();
         const info = ls.s.data;
         if (info.type === "folder") {
             if (info.name === ".") return;
@@ -262,18 +290,104 @@ export const LocalExpController = () => {
         }
     };
     const onBreadCrumbClick = (e: any, ls: any) => {
+        const comp = getComponent();
         const info = ls.s.data;
         comp.s.curLoc = comp.s.curLoc.slice(0, info.index + 1);
         load();
         updateBreadcrumb();
     };
 
-    comp.s.handlers.onBreadCrumbClick = onBreadCrumbClick;
-
-    comp.s.handlers.onClick = onClick;
+    const setComponent = (component: any) => {
+        s.component = component;
+        
+    };
+    const getComponent = (): any => { // expecting a FileExplorer component
+        return s.component;
+    };
+    const updateLocation = () => {
+        const comp = getComponent();
+        let loc = ".";
+        if (s.model.exists(["VITE_DEFAULT_LOCATION"])) {
+            loc = s.model.readEntry(["VITE_DEFAULT_LOCATION"]) as string;
+        }
+        comp.s.curLoc = loc.split("/");
+    }
+    const setup = () => {
+        const comp = getComponent();
+        comp.s.handlers.onBreadCrumbClick = onBreadCrumbClick;
+        updateLocation();
+        load();
+        comp.s.handlers.onClick = onClick;
+    }
     return {
-        comp,
-        url,
         onClick,
+        setup,
+        setComponent,
+        load,
+        updateLocation,
+        s
     };
 };
+
+const LazyInstance = (creator: () => any) => {
+    let s: { [key: string]: any } = { instance: null, creator: creator };
+    const get = () => {
+        if (s.instance === null) {
+            s.instance = s.creator();
+        }
+        return s.instance;
+    }
+
+    return { get };
+}
+
+export const LocalExpController = () => {
+    let s: { [key: string]: any } = { component: null };
+    let toggler = 0;
+    const fileCtrl = FileExplorerCtrl();
+    const comp = FileExplorerPage();
+    s.localStorageSetterCtrl = LazyInstance(LocalStorageSetterCtrl);
+    fileCtrl.setComponent(comp.s.fileExplorer);
+    const setup = () => {
+        let localStorageSetterCtrl = s.localStorageSetterCtrl.get();
+        localStorageSetterCtrl.setup("FileExplorerModel");
+        fileCtrl.s.model = localStorageSetterCtrl.model;
+        fileCtrl.setup();
+        comp.s.header.s.settingsBtn.update({}, { click: onSettingsClick });
+        localStorageSetterCtrl.setter.s.saveBtn.update({}, { click: onSaveAll });
+
+
+    }
+
+    const onSettingsClick = (e: any, ls: any) => {
+        let localStorageSetterCtrl = s.localStorageSetterCtrl.get();
+        if (toggler % 2 === 0) {
+            localStorageSetterCtrl.s.children = {};
+            localStorageSetterCtrl.loadExisting();
+            const keys = localStorageSetterCtrl.model.get_keys([]);
+            for (const key in KEYS_TO_SAVE) {
+                if (!keys.includes(key)) {
+                    localStorageSetterCtrl.createRow(key, KEYS_TO_SAVE[key]);
+                }
+            }
+            comp.s.content.update({ innerHTML: "", children: [localStorageSetterCtrl.setter] });
+        } else {
+            comp.s.content.update({ innerHTML: "", children: [comp.s.fileExplorer] });
+        }
+        toggler++;
+    }
+
+    const onSaveAll = (e: any, ls: any) => {
+        let localStorageSetterCtrl = s.localStorageSetterCtrl.get();
+        localStorageSetterCtrl.saveAll();
+        fileCtrl.updateLocation();
+        fileCtrl.load();
+        onSettingsClick(e, ls);
+    }
+
+    return {
+        comp,
+        fileCtrl,
+        setup, onSettingsClick
+    };
+}
