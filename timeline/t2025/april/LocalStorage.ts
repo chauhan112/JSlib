@@ -18,6 +18,11 @@ export class Model {
         this.writeToStorage();
     }
     deleteEntry(location: string[]) {
+        if (location.length == 0) {
+            this.data = {};
+            this.writeToStorage();
+            return;
+        }
         let newLoc = location.slice(0, location.length - 1);
         let data = this.readEntry(newLoc);
         let lastKey = location[location.length - 1];
@@ -64,8 +69,7 @@ export class LocalStorageJSONModel extends Model {
     data: any;
     constructor(key?: string) {
         super();
-        this.key = key || "LocalStorageModel";
-        this.data = this.readFormStorage();
+        this.setLocalStorageKey(key || "LocalStorageModel");
     }
     readFormStorage() {
         let x = localStorage.getItem(this.key);
@@ -74,6 +78,11 @@ export class LocalStorageJSONModel extends Model {
     }
     writeToStorage() {
         localStorage.setItem(this.key, JSON.stringify(this.data));
+    }
+
+    setLocalStorageKey(key: string) {
+        this.key = key;
+        this.data = this.readFormStorage();
     }
 }
 
