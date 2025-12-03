@@ -1,5 +1,5 @@
-import { GComponent, IComponent } from "./GComponent";
-import { IFormComponent } from "./GForm";
+import { GComponent, type IComponent } from "./GComponent";
+import { type IFormComponent } from "./GForm";
 import { Tools } from "./tools";
 
 export class DropdownMenu implements IComponent, IFormComponent {

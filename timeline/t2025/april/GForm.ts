@@ -1,4 +1,4 @@
-import { IComponent, GComponent } from "./GComponent";
+import { type IComponent, GComponent } from "./GComponent";
 import { Tools } from "./tools";
 
 export interface IFormComponent {

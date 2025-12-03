@@ -1,4 +1,4 @@
-import { IComponent } from "./interfaces";
+import { type IComponent } from "./interfaces";
 
 export class GComponent implements IComponent {
     handlers: { [key: string]: (...args: any[]) => void } = {};

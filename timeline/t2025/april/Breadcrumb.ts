@@ -1,4 +1,4 @@
-import { GComponent, IComponent } from "./GComponent";
+import { GComponent, type IComponent } from "./GComponent";
 import { Atool } from "./Array";
 import { Tools } from "./tools";
 

@@ -1,5 +1,5 @@
 import { GComponent } from "./Components";
-import { IComponent } from "./interfaces";
+import { type IComponent } from "./interfaces";
 export class GIcon implements IComponent {
     states: { [key: string]: any } = {};
     iconComp: GComponent = new GComponent();

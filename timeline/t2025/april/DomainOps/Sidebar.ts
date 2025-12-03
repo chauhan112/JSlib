@@ -2,7 +2,7 @@ import { Tools } from "../tools";
 import { AccordionShowMany } from "../Accordion";
 import { ActivitiesContent } from "./ActivitiesCrud";
 import { DomainsContent, OperationsContent } from "./DomainOps";
-import { GComponent, IComponent } from "../GComponent";
+import { GComponent, type IComponent } from "../GComponent";
 
 export class Sidebar implements IComponent {
     accordion: AccordionShowMany;

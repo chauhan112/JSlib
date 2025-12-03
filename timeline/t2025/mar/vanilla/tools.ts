@@ -1,7 +1,7 @@
-import { IconNode } from "lucide";
+import { type IconNode } from "lucide";
 import { ConditionalComponent, GComponent, Grouper } from "./Components";
 import { Icon } from "../../april/icons";
-import { IComponent } from "./interfaces";
+import { type IComponent } from "./interfaces";
 
 export class CITTools {
     static readonly removeKeys = (obj: Record<string, any>, keys: string[]) => {

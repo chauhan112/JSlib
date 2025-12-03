@@ -1,4 +1,4 @@
-import { GComponent, IComponent } from "../GComponent";
+import { GComponent, type IComponent } from "../GComponent";
 import { Tools } from "../tools";
 import { Sidebar } from "./Sidebar";
 import { PropertySection } from "./PropertySection";
@@ -12,7 +12,7 @@ import {
     Plus,
     Clock,
     Pen,
-    IconNode,
+    type IconNode,
 } from "lucide";
 import { StructureForm } from "./StructureForm";
 let modal = ModalMain.modal();

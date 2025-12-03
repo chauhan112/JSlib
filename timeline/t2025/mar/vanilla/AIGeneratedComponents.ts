@@ -1,5 +1,5 @@
 import { GComponent } from "./Components";
-import { IComponent } from "./interfaces";
+import { type IComponent } from "./interfaces";
 export class Accordion implements IComponent {
     handlers: { [key: string]: (...args: any[]) => void } = {};
     states: { [key: string]: any } = {};

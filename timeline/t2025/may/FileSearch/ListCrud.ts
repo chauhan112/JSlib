@@ -1,4 +1,4 @@
-import { GComponent, IComponent } from "../../april/GComponent";
+import { GComponent, type IComponent } from "../../april/GComponent";
 import { Tools } from "../../april/tools";
 
 export class ListCrud {

@@ -1,4 +1,4 @@
-import { IComponent } from "./interfaces";
+import { type IComponent } from "./interfaces";
 import { Repeater, Button, GComponent } from "./Components";
 import { CITTools } from "./tools";
 import { ChevronDown, Plus } from "lucide";

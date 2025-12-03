@@ -1,11 +1,11 @@
 import {
-    IComponent,
+    type IComponent,
     Repeater,
     GComponent,
     ConditionalComponent,
     Container,
 } from "./GComponent";
-import { IconNode } from "lucide";
+import {type IconNode } from "lucide";
 import { Icon } from "./icons";
 import { Input } from "./GForm";
 

@@ -1,4 +1,4 @@
-import { IComponent, GComponent, Container } from "../GComponent";
+import { type IComponent, GComponent, Container } from "../GComponent";
 import { Tools } from "../tools";
 import { Edit, Plus, Trash, X } from "lucide";
 import { Modal } from "../Modal";

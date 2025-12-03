@@ -1,6 +1,6 @@
-import { EllipsisVertical, LogIn, PencilLine, Trash, IconNode } from "lucide";
+import { EllipsisVertical, LogIn, PencilLine, Trash, type IconNode } from "lucide";
 import { Tools } from "../../april/tools";
-import { GComponent, IComponent } from "../../april/GComponent";
+import { GComponent, type IComponent } from "../../april/GComponent";
 import "./newdesign.css";
 import { DocumentHandler, Atool } from "../../april/Array";
 

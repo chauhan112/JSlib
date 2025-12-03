@@ -1,4 +1,4 @@
-import { IComponent } from "../../april/GComponent";
+import { type IComponent } from "../../april/GComponent";
 import { Tools } from "../../april/tools";
 import { X } from "lucide";
 

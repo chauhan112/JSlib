@@ -1,4 +1,4 @@
-import { IComponent, Container } from "./GComponent";
+import { type IComponent, Container } from "./GComponent";
 import { Tools } from "./tools";
 
 export class Modal implements IComponent {
