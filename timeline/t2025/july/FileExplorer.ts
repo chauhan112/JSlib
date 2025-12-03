@@ -3,6 +3,124 @@ import { Tools } from "../april/tools";
 import { Breadcrumb } from "../june/domain-ops/Component";
 import axios from "axios";
 import { Atool } from "../april/Array";
+import { File, Folder, Search, Plus, Settings, LayoutGrid, List as ListIcon } from "lucide";
+import LocalStorageSetterCtrl from "../dec/localStorageSetter";
+
+export const KEYS_TO_SAVE: { [key: string]: string } = {
+    VITE_API_URL: "http://localhost:8000/run/",
+    VITE_DEFAULT_LOCATION: ".",
+}
+
+export const SearchBar = () => {
+    return Tools.div({
+        class: "flex-1 max-w-xl mx-6 relative group",
+        children: [
+            Tools.icon(Search, {
+                class: "absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors",
+                key: "search"
+            }),
+            Tools.comp("input", {
+                key: "searchInput",
+                type: "text",
+                placeholder: "Search files, folders...",
+                class: "w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all placeholder:text-gray-400"
+            })
+        ]
+    });
+};
+
+export const ViewControls = () => {
+    return Tools.div({
+        class: "flex items-center gap-1 p-1 bg-gray-100/80 rounded-lg mr-2",
+        children: [
+            Tools.icon(LayoutGrid, {
+                key: "layoutGrid",
+                class: "w-8 h-8 p-1.5 bg-white rounded-md shadow-sm text-gray-700 cursor-pointer"
+            }),
+            Tools.icon(ListIcon, {
+                key: "listIcon",
+                class: "w-8 h-8 p-1.5 text-gray-500 hover:text-gray-700 cursor-pointer transition-colors"
+            })
+        ]
+    });
+}
+
+export const Header = () => {
+    const searchBar = SearchBar();
+
+    const viewControls = ViewControls();
+
+    const newBtn = Tools.comp("button", {
+        class: "flex items-center gap-2 px-4 py-2 bg-black hover:bg-gray-800 text-white text-sm font-medium rounded-xl transition-all shadow-sm active:scale-95",
+        children: [
+            Tools.icon(Plus, { class: "w-4 h-4" }),
+            Tools.comp("span", { textContent: "Upload" })
+        ]
+    });
+
+    const settingsBtn = Tools.comp("button", {
+        class: "w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 transition-colors cursor-pointer",
+        children: [Tools.icon(Settings, { class: "w-5 h-5" })]
+    });
+
+    return Tools.comp("header", {
+        class: "w-full mb-6 flex items-center justify-between px-1",
+        children: [
+
+            Tools.div({
+                class: "flex items-center gap-3",
+                children: [
+                    Tools.div({
+                        class: "w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-lg px-8",
+                        textContent: "File"
+                    }),
+                    Tools.comp("h1", {
+                        class: "text-lg font-bold text-gray-800",
+                        textContent: "Explorer",
+                    })
+                ]
+            }),
+
+            searchBar,
+
+            Tools.div({
+                class: "flex items-center gap-3",
+                children: [viewControls, newBtn, settingsBtn]
+            })
+        ],
+    }, {}, {
+        searchBar,
+        viewControls,
+        newBtn,
+        settingsBtn,
+    });
+};
+export const HeaderV2 = () => {
+    const settingsToggle = Tools.comp("button", {
+        class:
+            "flex items-center space-x-1 px-3 py-1.5 text-sm font-medium bg-white border border-gray-200 rounded-full shadow-sm hover:bg-gray-50",
+        type: "button",
+        children: [
+            Tools.comp("span", { class: "text-gray-600", textContent: "⚙️" }),
+            Tools.comp("span", { class: "text-gray-700", textContent: "Settings" }),
+        ],
+    });
+
+    return Tools.comp("div", {
+        children: [
+            Tools.comp("header", {
+                class: "w-full mb-4 flex items-center justify-between",
+                children: [
+                    Tools.comp("h1", {
+                        class: "text-xl font-semibold text-gray-800",
+                        textContent: "My File Explorer",
+                    }),
+                    settingsToggle,
+                ],
+            }),
+        ],
+    });
+}
 
 export const FileExplorer = () => {
     const classes = {
