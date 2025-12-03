@@ -89,58 +89,81 @@ const OneRow = () => {
 }
 
 const LocalStorageSetterCtrl = () => {
-    const setter = LocalStorageSetter();
-    const children: GComponent[] = [];
-    const createRow = ( key: string, value: string ) => {
-        const row = OneRow();
-        row.s.key.update({ value: key });
-        row.s.value.update({ value: value });
+  const setter = LocalStorageSetter();
+  const model = new LocalStorageJSONModel();
+  let s: { [key: string]: any } = { children: {}, index: 0 };
 
-        row.s.removeBtn.update({}, { click: () => {
-            row.getElement().remove();
-            // children.splice(children.indexOf(row), 1);
-        }});
-        setter.s.rows.update({ child: row });
-        children.push(row);
-    }
+  const createRow = (key: string, value: string) => {
+    const row = OneRow();
+    row.s.index = s.index;
+    row.s.key.update({ value: key });
+    row.s.value.update({ value: value });
 
-    const saveAll = () => {
-        for (const row of children) {
-            const key = row.s.key.s.handlers.get();
-            const value = row.s.value.s.handlers.get();
-            localStorage.setItem(key, value);
-        }
-    }
+    row.s.removeBtn.update({}, {
+      click: () => {
+        model.deleteEntry([key]);
+        row.getElement().remove();
+        s.children[row.s.index] = null;
+      }
+    });
+    s.children[s.index] = row;
+    s.index++;
+    setter.s.rows.update({ child: row });
+  }
 
-    const loadExisting = () => {
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            const value = localStorage.getItem( key! ) || "";
-            createRow(key!, value);
-          }    
+  const get_value = (comp: GComponent) => {
+    const inputElement = comp.getElement() as HTMLInputElement;
+    return inputElement.value;
+  }
+
+  const saveAll = () => {
+    
+    for (const index in s.children) {
+      if (s.children[index] === null) continue;
+      const row = s.children[index];
+      const key = get_value(row.s.key);
+      const value = get_value(row.s.value);
+      if (model.exists([key])) {
+        model.updateEntry([key], value);
+      } else {
+        model.addEntry([key], value);
+      }
     }
-    const clearAll = () => {
-        if (confirm("Are you sure you want to clear ALL localStorage keys for this site?")) {
-            localStorage.clear();
-            setter.s.rows.update({ innerHTML: "" });
-            children.splice(0, children.length);
-            createRow("", "");
-        }
+  }
+
+  const loadExisting = () => {
+    setter.s.rows.update({ innerHTML: "" });
+    const keys = model.get_keys([]);
+    for (const key of keys) {
+      const value = model.readEntry([key]);
+      createRow(key, value);
     }
-    const setup = () => {
-        setter.s.addRowBtn.update({}, { click: () => createRow("", "") });
-        setter.s.saveBtn.update({}, { click: saveAll });
-        setter.s.loadExistingBtn.update({}, { click: loadExisting });
-        setter.s.clearAllBtn.update({}, { click: clearAll });
+  }
+  const clearAll = () => {
+    if (confirm("Are you sure you want to clear ALL localStorage keys for this site?")) {
+      model.deleteEntry([]);
+      s.children = {};
+      s.index = 0;
+      loadExisting();
     }
-    return {
-        setter,
-        createRow,
-        setup,
-        saveAll,
-        loadExisting,
-        clearAll,
-    }
+  }
+  const setup = (modelKey: string) => {
+    model.setLocalStorageKey(modelKey);
+    setter.s.addRowBtn.update({}, { click: () => createRow("", "") });
+    setter.s.saveBtn.update({}, { click: saveAll });
+    loadExisting();
+    setter.s.clearAllBtn.update({}, { click: clearAll });
+  }
+  return {
+    setter,
+    createRow,
+    setup,
+    saveAll,
+    loadExisting,
+    clearAll,
+    model,
+    s
+  }
 }
 
 export default LocalStorageSetterCtrl;
