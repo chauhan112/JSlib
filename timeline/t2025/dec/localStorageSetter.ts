@@ -1,6 +1,8 @@
 import { Tools } from "../april/tools";
 import { GComponent } from "../april/GComponent";
 import { LocalStorageJSONModel } from "../april/LocalStorage";
+
+
 const LocalStorageSetter = () => {
   const rows = Tools.comp("div", { class: "space-y-3" });
 
