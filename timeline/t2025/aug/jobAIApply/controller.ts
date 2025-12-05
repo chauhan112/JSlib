@@ -1,7 +1,7 @@
-import { Page, JobAddForm, JobCard, ShowJobDetails } from "./page";
+import { Page, JobAddForm, ShowJobDetails } from "./page";
 import { Tools } from "../../april/tools";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
-import { Model, ModelType } from "./model";
+import { Model, type ModelType } from "./model";
 import { GenericCRUDCtrl } from "../../july/generic-crud/page";
 
 export const JobCRUDWrapper = () => {
