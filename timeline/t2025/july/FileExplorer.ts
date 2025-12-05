@@ -5,6 +5,7 @@ import axios from "axios";
 import { Atool } from "../april/Array";
 import { File, Folder, Search, Plus, Settings, LayoutGrid, List as ListIcon } from "lucide";
 import LocalStorageSetterCtrl from "../dec/localStorageSetter";
+import { LazyInstance } from "../dec/lazyInstance";
 
 export const KEYS_TO_SAVE: { [key: string]: string } = {
     VITE_API_URL: "http://localhost:8000/run/",
@@ -310,7 +311,7 @@ export const FileExplorerCtrl = () => {
         if (s.model.exists(["VITE_DEFAULT_LOCATION"])) {
             loc = s.model.readEntry(["VITE_DEFAULT_LOCATION"]) as string;
         }
-        comp.s.curLoc = loc.split("/");
+        comp.s.curLoc = [loc];
     }
     const setup = () => {
         const comp = getComponent();
@@ -328,18 +329,6 @@ export const FileExplorerCtrl = () => {
         s
     };
 };
-
-const LazyInstance = (creator: () => any) => {
-    let s: { [key: string]: any } = { instance: null, creator: creator };
-    const get = () => {
-        if (s.instance === null) {
-            s.instance = s.creator();
-        }
-        return s.instance;
-    }
-
-    return { get };
-}
 
 export const LocalExpController = () => {
     let s: { [key: string]: any } = { component: null };

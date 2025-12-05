@@ -11,8 +11,8 @@ import {
 import { Tools } from "../../april/tools";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 import { StructureSection } from "../../june/domain-ops/ActivityLogger/Structures";
-import { MultiLayerModalStructure } from "./multiLayerModal";
-import { FormModel, ModelType, GenericCRUDModel } from "./model";
+import { type MultiLayerModalStructure } from "./multiLayerModal";
+import { FormModel, type ModelType, GenericCRUDModel } from "./model";
 import { DynamicFormController } from "../../july/DynamicForm";
 import { Filter, SearchType } from "./SearchSystem";
 import { FilterUICtrl } from "./searchUI";
@@ -265,6 +265,7 @@ export const DataCrudCtrl = () => {
         fields: [],
         refresh: () => {},
         model: new GenericCRUDModel(),
+        onCreateSubmit: () => {},
     };
     const textArea = Tools.comp("textarea", {
         placeholder: "content goes here",
@@ -279,7 +280,7 @@ export const DataCrudCtrl = () => {
         modal.s.handlers.display(dataFormCtrl.comp);
         modal.s.handlers.show();
         modal.s.modalTitle.update({ textContent: "Create" });
-        dataFormCtrl.comp.s.handlers.submit = onCreateSubmit;
+        dataFormCtrl.comp.s.handlers.submit = states.onCreateSubmit;
         dataFormCtrl.comp.s.handlers.clearValues();
     };
     const renderForm = () => {
@@ -297,6 +298,7 @@ export const DataCrudCtrl = () => {
             modal.s.handlers.hide();
         });
     };
+    states.onCreateSubmit = onCreateSubmit;
     const onEditSubmit = (e: any, ls: any) => {
         e.preventDefault();
         let prevVal = dataFormCtrl.comp.s.data;
@@ -447,7 +449,9 @@ export const GenericCRUDCtrl = () => {
         data: [],
     };
     dataCrudCtrl.states.refresh = async () => {
-        funcs.setData(await dataCrudCtrl.states.model.readAll());
+        let data = await dataCrudCtrl.states.model.readAll()
+        
+        funcs.setData(data);
     };
 
     formCtrl.model.states.onChange = () => {
@@ -464,6 +468,7 @@ export const GenericCRUDCtrl = () => {
         states.data = data;
         searchCtrl.states.getData = () => states.data;
         searchCtrl.states.setResult = (res: any) => {
+            console.log("tempo", res);
             paginationCtrl.setData(res);
         };
         searchCtrl.states.setResult(states.data);
