@@ -1,5 +1,5 @@
 import { Tools } from "../../april/tools";
-import { CircleCheck, IconNode } from "lucide";
+import { CircleCheck, type IconNode } from "lucide";
 import { Logo, GoBackOrHome, DEF_TITLE } from "./Components";
 import { Router } from "./Router";
 import { Page as FileSearchPage } from "../FileSearch/Components";

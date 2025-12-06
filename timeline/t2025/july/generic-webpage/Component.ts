@@ -4,7 +4,7 @@ import {
     ChevronDown,
     Cog,
     History,
-    IconNode,
+    type IconNode,
     Key,
     Menu,
     MessageSquareDot,

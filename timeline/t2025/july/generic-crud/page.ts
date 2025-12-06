@@ -14,8 +14,7 @@ import { StructureSection } from "../../june/domain-ops/ActivityLogger/Structure
 import { type MultiLayerModalStructure } from "./multiLayerModal";
 import { FormModel, type ModelType, GenericCRUDModel } from "./model";
 import { DynamicFormController } from "../../july/DynamicForm";
-import { Filter, SearchType } from "./SearchSystem";
-import { FilterUICtrl } from "./searchUI";
+import { SearchCtrl } from "./search/controller";
 
 export const GenericCRUD = () => {
     const searchIcon = Tools.icon(Search, {
@@ -374,53 +373,6 @@ export const DataCrudCtrl = () => {
         model: states.model,
         textArea,
     };
-};
-export const UiParamsMap = (params: { type: SearchType; params: any }[]) => {
-    let res: any = [];
-    for (const sfilter of params) {
-        if (sfilter.type === SearchType.ValStringSearch) {
-            sfilter.params = {
-                ...sfilter.params,
-                word: sfilter.params.search,
-            };
-        } else if (sfilter.type === SearchType.LocSearch) {
-            sfilter.params.params.word = sfilter.params.params.search;
-        } else if (sfilter.type === SearchType.KeyValSearch) {
-            sfilter.params = {
-                ...sfilter.params.params,
-                key: sfilter.params.key,
-            };
-            sfilter.params.word = sfilter.params.search;
-        }
-        res.push(sfilter);
-    }
-    return res;
-};
-export const SearchCtrl = () => {
-    const filterCtrl = FilterUICtrl();
-
-    const states = {
-        setResult: (res: any) => {},
-        getData: () => {
-            return {};
-        },
-    };
-    const searchIt = (params: { type: SearchType; params: any }[]) => {
-        let res = Filter.ArrayConcatSearch(
-            UiParamsMap(params),
-            states.getData() as any
-        );
-        let modal = GlobalStates.getInstance().getState("modal");
-        modal.s.handlers.hide();
-        states.setResult(res);
-    };
-
-    const setup = () => {
-        filterCtrl.setup();
-        filterCtrl.states.onSearch = searchIt;
-    };
-
-    return { states, filterCtrl, setup, searchIt };
 };
 export const GenericCRUDCtrl = () => {
     const comp = GenericCRUD();

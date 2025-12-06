@@ -257,7 +257,6 @@ export class Mapper {
     stringify() {}
     lengthCalc() {}
 }
-
 export class Filter {
     static ArrayConcatSearch(
         params: { type: SearchType; params: any }[],

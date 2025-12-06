@@ -1,9 +1,9 @@
 import { Tools } from "../tools";
-import { GComponent, IComponent } from "../GComponent";
+import { GComponent, type IComponent } from "../GComponent";
 
 import {
     GraduationCap,
-    IconNode,
+    type IconNode,
     BriefcaseBusiness,
     Github,
     Linkedin,

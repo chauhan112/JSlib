@@ -3,7 +3,7 @@ import {
     AttributeForm,
     PropertySection,
 } from "../../april/DomainOps/PropertySection";
-import { IconNode, Pencil, Trash } from "lucide";
+import { type IconNode, Pencil, Trash } from "lucide";
 import { GlobalStates } from "./GlobalStates";
 import { Model } from "./Model";
 import { Header } from "./FlexTable";

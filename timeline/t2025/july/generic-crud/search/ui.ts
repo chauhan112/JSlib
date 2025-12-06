@@ -1,12 +1,12 @@
 import { Trash, X } from "lucide";
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../april/tools";
 import {
     GenericForm,
     Params,
     FormInputComponent,
     Checkbox,
     Textarea,
-} from "../../june/domain-ops/Form";
+} from "../../../june/domain-ops/Form";
 
 export const SimpleSearchUI2 = () => {
     let form = GenericForm();

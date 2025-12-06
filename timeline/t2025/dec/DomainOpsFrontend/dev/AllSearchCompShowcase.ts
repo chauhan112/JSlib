@@ -1,8 +1,8 @@
 import { Tools } from "../../../april/tools";
-import { SimpleSearchUI2, SimpleSearchUI} from "../../../july/generic-crud/searchUI";
+import { SimpleSearchUI2, SimpleSearchUI} from "../../../july/generic-crud/search/ui";
 import { SimpleSearchComp } from "../../../aug/jobAIApply/page";
 import {SearchComp as SearchComp2} from "../../../june/domain-ops/Component";
-import {FilterUI} from "../../../july/generic-crud/searchUI";
+import {FilterUI} from "../../../july/generic-crud/search/ui";
 import { Dropdown, DropdownCtrl } from "../Component";
 
 export class MainCtrl {
