@@ -4,6 +4,8 @@ import { Tools } from "../../april/tools";
 import { DynamicFormController } from "../../july/DynamicForm";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 import { InputType } from "../../june/domain-ops/Model";
+import { Filter, SearchType } from "../../july/generic-crud/search/model";
+import { UiParamsMap } from "../../july/generic-crud/search/controller";
 
 export interface SingleCrudModelInterface {
     read_all: () => Promise<any[]>;
@@ -110,6 +112,7 @@ export class ViewController {
 export class SingleCrudController {
     comp: any;
     model: SingleCrudModelInterface = new SingleCrudModel();
+    dataManager: DataManager = new DataManager();
     searchComponentCtrl: SearchComponentCtrl = new SearchComponentCtrl();
     listDisplayerCtrl: ListDisplayerCtrl = new ListDisplayerCtrl();
     createDataFormCtrl: any = undefined;
@@ -129,17 +132,17 @@ export class SingleCrudController {
         this.comp = comp;
     }
     on_create_submit(data: any) {
-        this.model.create(data).then(() => {
-            this.render_list();
+        this.model.create(data).then((res_data: any) => {
+            this.dataManager.add_data(res_data);
+            this.render_list(true);
             let modal = GlobalStates.getInstance().getState("modal");
             modal.s.handlers.hide();
         });
     }
     on_update_submit(data: any, id: any) {
-        console.log(data, id);
         this.model.update(id, data).then(() => {
-            this.render_list();
-
+            this.dataManager.update_data(id, data);
+            this.render_list(true);
             let modal = GlobalStates.getInstance().getState("modal");
             modal.s.handlers.hide();
         });
@@ -156,7 +159,8 @@ export class SingleCrudController {
     on_delete_clicked(data: any) {
         if (confirm("Are you sure?")) {
             this.model.deleteIt(data.id).then(() => {
-                this.render_list();
+                this.dataManager.remove_data(data.id);
+                this.render_list(true);
             });
         }
     }
@@ -167,10 +171,16 @@ export class SingleCrudController {
         this.viewController.set_data(data);
         modal.s.modalTitle.update({ textContent: "Content View" });
     }
-    render_list(){
+    render_list(fromLocal: boolean = false){
+        if (fromLocal) {
+            this.listDisplayerCtrl.set_data(this.dataManager.get_data(), this.title_getter);
+            this.listDisplayerCtrl.update();
+            return;
+        }
         this.model.read_all().then((data: any) => {
             this.listDisplayerCtrl.set_data(data, this.title_getter);
             this.listDisplayerCtrl.update();
+            this.dataManager.set_data(data);
         });
     }
     setup(){
@@ -210,6 +220,60 @@ export class SingleCrudController {
         modal.s.modalTitle.update({ textContent: "Update" });
         this.updateForm.set_values(data.id,data );
         
+    }
+    on_search(params: { type: SearchType; params: any }[]) {
+        if (params.length > 0 ) {
+            this.dataManager.apply_filter(UiParamsMap(params));
+            this.render_list(true);
+        }else{
+            this.dataManager.clear_filter();
+            this.render_list(true);
+        }
+    }
+
+}
+export class DataManager {
+    data: any[] = [];
+    filteredData: any[] = [];
+    filterApplied: boolean = false;
+    filter: { type: SearchType; params: any }[] = [];
+    remove_data(id: string) {
+        this.data = this.data.filter((item: any) => item.id !== id);
+        this.sync_data();
+    }
+    update_data(id: string, data: any) {
+        this.data = this.data.map((item: any) => item.id === id ? data : item);
+        this.sync_data();
+    }
+    add_data(data: any) {
+        this.data.push(data);
+        this.sync_data();
+    }
+    get_data() {
+        return this.filteredData;
+    }
+    apply_filter(filter: { type: SearchType; params: any }[]) {
+        this.filter = filter;
+        this.filterApplied = true;
+        this.filteredData = Filter.ArrayConcatSearch(filter, this.data);
+    }
+    set_data(data: any[]) {
+        this.data = data;
+        this.filteredData = data;
+        this.filterApplied = false;
+        this.filter = [];
+    }
+    clear_filter() {
+        this.filteredData = this.data;
+        this.filterApplied = false;
+        this.filter = [];
+    }
+    sync_data() {
+        if (this.filterApplied) {
+            this.filteredData = Filter.ArrayConcatSearch(this.filter, this.data);
+        } else {
+            this.filteredData = this.data;
+        }
     }
 }
 export class MainCtrl {
