@@ -89,7 +89,15 @@ export class CardCompCtrl {
     onCardClicked: (data:any) => void = (data:any) => {
         console.log(data);
     };
-    on_ops_clicked: (e: any, ls: any) => void = (e:any, ls:any) => {
+    set_options(options: { label: string; }[]) {
+        this.options = options;
+        if (options.length > 0) {
+            this.comp.s.ops.getElement().classList.remove("hidden");
+        } else {
+            this.comp.s.ops.getElement().classList.add("hidden");
+        }
+    }
+    private on_ops_clicked: (e: any, ls: any) => void = (e:any, ls:any) => {
         e.stopPropagation();
         let cm = GlobalStates.getInstance().getState("contextMenu");
         let options = this.options.map((o: any) => ({ label: o.label, info: this.data, onClick: () => this.onOpsMenuClicked(this.data, o.label)}));
@@ -106,7 +114,7 @@ export class CardCompCtrl {
         this.data = data;
     }
     setup() {
-        this.comp.s.ops.update({}, { click: this.on_ops_clicked.bind(this) });
+        this.comp.s.ops.update({}, { click: (e: any, ls: any) => this.on_ops_clicked(e, ls) });
         this.comp.update({}, { click: () => this.onCardClicked(this.data) });
     }
 }
