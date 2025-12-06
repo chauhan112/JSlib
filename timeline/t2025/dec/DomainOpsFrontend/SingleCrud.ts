@@ -5,7 +5,14 @@ import { DynamicFormController } from "../../july/DynamicForm";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 import { InputType } from "../../june/domain-ops/Model";
 
-export class SingleCrudModel {
+export interface SingleCrudModelInterface {
+    read_all: () => Promise<any[]>;
+    read: (id: string) => Promise<any>;
+    create: (data: any) => Promise<any>;
+    update: (id: string, data: any) => Promise<any>;
+    deleteIt: (id: string) => Promise<void>;
+}
+export class SingleCrudModel implements SingleCrudModelInterface {
     data: any[] = [];
     constructor() {
         for (let i = 0; i < 10; i++) {
@@ -102,7 +109,7 @@ export class ViewController {
 }
 export class SingleCrudController {
     comp: any;
-    model: SingleCrudModel = new SingleCrudModel();
+    model: SingleCrudModelInterface = new SingleCrudModel();
     searchComponentCtrl: SearchComponentCtrl = new SearchComponentCtrl();
     listDisplayerCtrl: ListDisplayerCtrl = new ListDisplayerCtrl();
     createDataFormCtrl: any = undefined;
@@ -114,7 +121,7 @@ export class SingleCrudController {
     on_card_clicked: (data: any) => void = (data: any) => {
         console.log(data);
     };
-    set_model(model: SingleCrudModel) {
+    set_model(model: SingleCrudModelInterface) {
         this.model = model;
     }
     set_comp(comp: any) {
