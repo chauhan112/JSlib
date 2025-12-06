@@ -1,22 +1,41 @@
 import { SearchComp, SearchComponentCtrl } from "./SearchComponent";
 import { ListDisplayer, ListDisplayerCtrl } from "./ListDisplayer";
 import { Tools } from "../../april/tools";
+import { DynamicFormController } from "../../july/DynamicForm";
+import { GlobalStates } from "../../june/domain-ops/GlobalStates";
+import { InputType } from "../../june/domain-ops/Model";
 
 export class SingleCrudModel {
+    data: any[] = [];
+    constructor() {
+        for (let i = 0; i < 10; i++) {
+            this.data.push({title: `Test ${i}`, "id": i});
+        }
+    }
     async read_all (){
-        return [{title: "Test"}, {title: "Test2"}, {title: "Test3"}, {title: "Test4"}, {title: "Test5"}, {title: "Test6"}, {title: "Test7"}, {title: "Test8"}, {title: "Test9"}, {title: "Test10"}];
+        return this.data;
     }
     async read (id: string){
-        return {title: "Test"};
+        return this.data.find((item: any) => item.id === id);
     }
-    async create (name: string){
-        return {title: "Test"};
+    async create (data: any){
+        const newItem = { ...data, id: this.data.length + 1 };
+        this.data.push(newItem);
+        return newItem;
     }
-    async update (id: string, name: string){
-        return {title: "Test"};
+    async update (id: string, data: any){
+        const newData = [];
+        for (let item of this.data) {
+            if (item.id === id) {
+                newData.push({ ...item, ...data });
+            } else {
+                newData.push(item);
+            }
+        }
+        this.data = newData;
     }
     async deleteIt (id: string){
-        return {title: "Test"};
+        this.data = this.data.filter((item: any) => item.id !== id);
     }
 }
 
