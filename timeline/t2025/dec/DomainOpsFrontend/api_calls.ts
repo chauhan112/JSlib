@@ -13,7 +13,6 @@ if (!model.exists(["api_key"])) {
 const API_KEY = import.meta.env.VITE_API_KEY || model.readEntry(["api_key"]);
 
 export const backendCall = (op: string, payload: any, op_name: string) => {
-    
     return axios.post(
         BASE_URL,
         {
