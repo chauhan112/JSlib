@@ -196,6 +196,7 @@ export class SingleCrudController {
         this.updateForm.onSubmit = (data: any, id: any) => this.on_update_submit(data, id);
         this.comp.s.searchComp.s.plusIcon.update({}, { click: () => this.onPlusClicked() });
         this.viewController.set_comp(ViewComponent());
+        this.searchComponentCtrl.onSearch = (params: { type: SearchType; params: any }[]) => this.on_search(params);
     }
     set_pageSize(pageSize: number) {
         this.listDisplayerCtrl.set_pageSize(pageSize);
