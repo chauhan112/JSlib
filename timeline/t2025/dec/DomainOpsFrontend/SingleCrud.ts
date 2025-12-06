@@ -213,12 +213,24 @@ export class SingleCrudController {
     }
 }
 export class MainCtrl {
-    static singleCrud(pageSize: number = 10) {
+    static singleCrud(pageSize: number = 10, model?: SingleCrudModelInterface, title_getter?: (data: any) => string, 
+            createFields?: any[], updateFields?: any[] ) {
         const singleCrudCtrl = new SingleCrudController();
         const singleCrud = SingleCrud();
         singleCrudCtrl.set_comp(singleCrud);
-        
+        if (model) {
+            singleCrudCtrl.set_model(model);
+        }
         singleCrudCtrl.set_pageSize(pageSize);
+        if (title_getter) {
+            singleCrudCtrl.title_getter = title_getter;
+        }
+        if (createFields) {
+            singleCrudCtrl.createFields = createFields;
+        }
+        if (updateFields) {
+            singleCrudCtrl.updateFields = updateFields;
+        }
         singleCrudCtrl.setup();
         singleCrudCtrl.update();
         return singleCrudCtrl;
