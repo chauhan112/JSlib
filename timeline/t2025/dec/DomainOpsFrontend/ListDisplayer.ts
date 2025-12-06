@@ -103,13 +103,32 @@ export class ListDisplayerCtrl {
     }
 }
 export class MainCtrl {
-    static listDisplayer() {
-        const listDisplayerCtrl = new ListDisplayerCtrl();
+    static listDisplayer(data: any[], pageSize: number = 10, on_card_clicked?: (data: any) => void, 
+           on_more_ops_clicked?: (data: any, label: string) => void, menuOptions?: { label: string; }[]) {
+        const ldCtrl = new ListDisplayerCtrl();
         const listDisplayer = ListDisplayer();
-        listDisplayerCtrl.set_comp(listDisplayer);
-        return listDisplayerCtrl;
+        ldCtrl.paginationCtrl.model.pageSize = pageSize;
+        ldCtrl.set_comp(listDisplayer);
+        ldCtrl.set_data(data);
+        if (on_card_clicked) {
+            ldCtrl.on_card_clicked = on_card_clicked;
+        }
+        if (on_more_ops_clicked) {
+            ldCtrl.on_more_ops_clicked = on_more_ops_clicked;
+        }
+        if (menuOptions) {
+            ldCtrl.contextMenuOptions = menuOptions;
+        }
+        ldCtrl.setup();
+        ldCtrl.update();
+        return ldCtrl;
     }
-    static contextMenuOptionMaker(label: string, info: any, onClick: (e: any, ls: any) => void) {
-        return { label, info, onClick };
+    static pagination(pageSize: number = 10 ) {
+        const paginationCtrl = new PaginationCtrl();
+        const pagination = Pagination();
+        paginationCtrl.set_comp(pagination);
+        paginationCtrl.model.pageSize = pageSize;
+        paginationCtrl.setup();
+        return paginationCtrl;
     }
 }
