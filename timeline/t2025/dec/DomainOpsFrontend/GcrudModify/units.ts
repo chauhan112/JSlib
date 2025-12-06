@@ -1,11 +1,11 @@
 
-import { DynamicFormController } from "../../july/DynamicForm";
-import { InputType} from "../../june/domain-ops/Model";
-import { backendCall } from "./api_calls";
-import { FormSelectCompCtrl } from "../../aug/jobAIApply/simpleVersion";
-import { Tools } from "../../april/tools";
-import { GenericCRUDCtrl } from "../../july/generic-crud/page";
-import { type  ModelType} from "../../july/generic-crud/model";
+import { DynamicFormController } from "../../../july/DynamicForm";
+import { InputType} from "../../../june/domain-ops/Model";
+import { backendCall } from "../api_calls";
+import { FormSelectCompCtrl } from "../../../aug/jobAIApply/simpleVersion";
+import { Tools } from "../../../april/tools";
+import { GenericCRUDCtrl } from "../../../july/generic-crud/page";
+import { type  ModelType} from "../../../july/generic-crud/model";
 
 export const DomainOperationForm = () => {
     const s : { [key: string]: any } = {};

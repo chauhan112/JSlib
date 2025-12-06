@@ -1,7 +1,7 @@
-import { Tools } from "../../april/tools";
-import { FormSelectCompCtrl, FormTextareaCtrl } from "../../aug/jobAIApply/simpleVersion";
-import { GenericCRUD } from "../../july/generic-crud/page";
-import { CollectionForm } from "../../aug/LinksOpener/Page";
+import { Tools } from "../../../april/tools";
+import { FormSelectCompCtrl, FormTextareaCtrl } from "../../../aug/jobAIApply/simpleVersion";
+import { GenericCRUD } from "../../../july/generic-crud/page";
+import { CollectionForm } from "../../../aug/LinksOpener/Page";
 
 export const OpsSection = () => {
     const searchComp = FormSelectCompCtrl("dom op activities");
