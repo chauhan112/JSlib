@@ -64,12 +64,44 @@ export class PaginationCtrl {
 export class ListDisplayerCtrl {
     comp: any;
     contextMenuOptions: { label: string; }[] = [ {label: "Edit"}, {label: "Delete"}, {label: "View"} ];
+    listComps: any[] = [];
+    paginationCtrl: PaginationCtrl = new PaginationCtrl();
+    on_card_clicked: (data: any) => void = () => {};
+    on_more_ops_clicked: (data: any, label: string) => void = () => {};
+    cardCompCreator: (data: any) => CardCompCtrl = (data: any) => this.default_cardCompCreator(data);
+    title_getter: (data: any) => string = (data: any) => data.title;
     set_comp(comp: any) {
-        this.comp = comp;
+        this.comp = comp;   
     }
-    set_data(data: any[]) {}
+    setup() {
+        this.paginationCtrl.set_comp(this.comp.s.pagination);
+        this.paginationCtrl.setup();
+        this.paginationCtrl.update = this.update.bind(this);
+    }
+    default_cardCompCreator(data: any) {
+        const cardCompCtrl = CardCompMainCtrl.cardComp(data, this.title_getter);
+        cardCompCtrl.onOpsMenuClicked = (data: any, label: string) => this.on_more_ops_clicked(data, label);
+        cardCompCtrl.onCardClicked = (data: any) => this.on_card_clicked(data);
+        cardCompCtrl.set_options(this.contextMenuOptions);
+        cardCompCtrl.setup();
+        return cardCompCtrl.comp;
+    }
+    update() {
+        let data = this.paginationCtrl.model.getCurrentPageData();
+        this.listComps = data.map((d: any) => this.cardCompCreator(d));
+        this.comp.s.list.update({ innerHTML: "", children: this.listComps });
+        this.paginationCtrl.default_update();
+    }
+    set_data(data: any[], title_getter?: (data: any) => string) {
+        this.paginationCtrl.set_data(data);
+        if (title_getter) {
+            this.title_getter = title_getter;
+        }
+    }
+    set_pageSize(pageSize: number) {
+        this.paginationCtrl.model.pageSize = pageSize;
+    }
 }
-
 export class MainCtrl {
     static listDisplayer() {
         const listDisplayerCtrl = new ListDisplayerCtrl();
