@@ -97,6 +97,11 @@ export class ListDisplayerCtrl {
         if (title_getter) {
             this.title_getter = title_getter;
         }
+        if (this.paginationCtrl.model.maxPage > 1) {
+            this.comp.s.pagination.getElement().classList.remove("hidden");
+        } else {
+            this.comp.s.pagination.getElement().classList.add("hidden");
+        }
     }
     set_pageSize(pageSize: number) {
         this.paginationCtrl.model.pageSize = pageSize;
