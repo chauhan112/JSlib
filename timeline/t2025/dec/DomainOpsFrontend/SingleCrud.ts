@@ -118,6 +118,7 @@ export class SingleCrudController {
     createFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
     updateFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
     viewController: ViewController = new ViewController();
+    title_getter: (data: any) => string = (data: any) => data.title;
     on_card_clicked: (data: any) => void = (data: any) => {
         console.log(data);
     };
@@ -129,10 +130,7 @@ export class SingleCrudController {
     }
     on_create_submit(data: any) {
         this.model.create(data).then(() => {
-            this.model.read_all().then((data: any) => {
-                this.listDisplayerCtrl.set_data(data);
-                this.listDisplayerCtrl.update();
-            });
+            this.render_list();
             let modal = GlobalStates.getInstance().getState("modal");
             modal.s.handlers.hide();
         });
@@ -140,11 +138,8 @@ export class SingleCrudController {
     on_update_submit(data: any, id: any) {
         console.log(data, id);
         this.model.update(id, data).then(() => {
-            this.model.read_all().then((data: any) => {
-                console.log(data);
-                this.listDisplayerCtrl.set_data(data);
-                this.listDisplayerCtrl.update();
-            });
+            this.render_list();
+
             let modal = GlobalStates.getInstance().getState("modal");
             modal.s.handlers.hide();
         });
@@ -161,10 +156,7 @@ export class SingleCrudController {
     on_delete_clicked(data: any) {
         if (confirm("Are you sure?")) {
             this.model.deleteIt(data.id).then(() => {
-                this.model.read_all().then((data: any) => {
-                    this.listDisplayerCtrl.set_data(data);
-                    this.listDisplayerCtrl.update();
-                });
+                this.render_list();
             });
         }
     }
@@ -174,6 +166,12 @@ export class SingleCrudController {
         modal.s.handlers.show();
         this.viewController.set_data(data);
         modal.s.modalTitle.update({ textContent: "Content View" });
+    }
+    render_list(){
+        this.model.read_all().then((data: any) => {
+            this.listDisplayerCtrl.set_data(data, this.title_getter);
+            this.listDisplayerCtrl.update();
+        });
     }
     setup(){
         this.searchComponentCtrl.set_comp(this.comp.s.searchComp);
@@ -193,10 +191,7 @@ export class SingleCrudController {
         this.listDisplayerCtrl.set_pageSize(pageSize);
     }
     update() {
-        this.model.read_all().then((data: any) => {
-            this.listDisplayerCtrl.set_data(data, (data: any) => data.title);
-            this.listDisplayerCtrl.update();
-        });
+        this.render_list();
         this.listDisplayerCtrl.update();
     }
     onPlusClicked() {
