@@ -105,17 +105,120 @@ export class SingleCrudController {
     model: SingleCrudModel = new SingleCrudModel();
     searchComponentCtrl: SearchComponentCtrl = new SearchComponentCtrl();
     listDisplayerCtrl: ListDisplayerCtrl = new ListDisplayerCtrl();
+    createDataFormCtrl: any = undefined;
+    createForm : DynamicFormManager = new DynamicFormManager();
+    updateForm : DynamicFormManager = new DynamicFormManager();
+    createFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
+    updateFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
+    viewController: ViewController = new ViewController();
+    on_card_clicked: (data: any) => void = (data: any) => {
+        console.log(data);
+    };
     set_model(model: SingleCrudModel) {
         this.model = model;
     }
     set_comp(comp: any) {
         this.comp = comp;
     }
+    on_create_submit(data: any) {
+        this.model.create(data).then(() => {
+            this.model.read_all().then((data: any) => {
+                this.listDisplayerCtrl.set_data(data);
+                this.listDisplayerCtrl.update();
+            });
+            let modal = GlobalStates.getInstance().getState("modal");
+            modal.s.handlers.hide();
+        });
+    }
+    on_update_submit(data: any, id: any) {
+        console.log(data, id);
+        this.model.update(id, data).then(() => {
+            this.model.read_all().then((data: any) => {
+                console.log(data);
+                this.listDisplayerCtrl.set_data(data);
+                this.listDisplayerCtrl.update();
+            });
+            let modal = GlobalStates.getInstance().getState("modal");
+            modal.s.handlers.hide();
+        });
+    }
+    on_context_menu_clicked(data: any, label: string) {
+        if (label === "Edit") {
+            this.on_edit_clicked(data);
+        } else if (label === "Delete") {
+            this.on_delete_clicked(data);
+        } else if (label === "View") {
+            this.on_view_clicked(data);
+        }
+    }
+    on_delete_clicked(data: any) {
+        if (confirm("Are you sure?")) {
+            this.model.deleteIt(data.id).then(() => {
+                this.model.read_all().then((data: any) => {
+                    this.listDisplayerCtrl.set_data(data);
+                    this.listDisplayerCtrl.update();
+                });
+            });
+        }
+    }
+    on_view_clicked(data: any) {
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.handlers.display(this.viewController.comp);
+        modal.s.handlers.show();
+        this.viewController.set_data(data);
+        modal.s.modalTitle.update({ textContent: "Content View" });
+    }
     setup(){
         this.searchComponentCtrl.set_comp(this.comp.s.searchComp);
         this.searchComponentCtrl.setup();
-        this.listDisplayerCtrl.set_comp(this.comp.s.listDisplayer);
+        this.listDisplayerCtrl.set_comp(this.comp.s.listDisplayer); 
         this.listDisplayerCtrl.setup();
+        this.listDisplayerCtrl.on_card_clicked = (data: any) => this.on_card_clicked(data);
+        this.listDisplayerCtrl.on_more_ops_clicked = (data: any, label: string) => this.on_context_menu_clicked(data, label);
+        this.createForm.set_fields(this.createFields);
+        this.updateForm.set_fields(this.updateFields);
+        this.createForm.onSubmit = (data: any) => this.on_create_submit(data);
+        this.updateForm.onSubmit = (data: any, id: any) => this.on_update_submit(data, id);
+        this.comp.s.searchComp.s.plusIcon.update({}, { click: () => this.onPlusClicked() });
+        this.viewController.set_comp(ViewComponent());
     }
-    
+    set_pageSize(pageSize: number) {
+        this.listDisplayerCtrl.set_pageSize(pageSize);
+    }
+    update() {
+        this.model.read_all().then((data: any) => {
+            this.listDisplayerCtrl.set_data(data, (data: any) => data.title);
+            this.listDisplayerCtrl.update();
+        });
+        this.listDisplayerCtrl.update();
+    }
+    onPlusClicked() {
+        let modal = GlobalStates.getInstance().getState("modal");
+        this.createForm.setup();
+        modal.s.handlers.display(this.createForm.dataFormCtrl.comp);
+        modal.s.handlers.show();
+        modal.s.modalTitle.update({ textContent: "Create" });
+        this.createForm.clear_values();
+    }
+    on_edit_clicked(data: any) {
+        let modal = GlobalStates.getInstance().getState("modal");
+        this.updateForm.setup();
+        modal.s.handlers.display(this.updateForm.dataFormCtrl.comp);
+        modal.s.handlers.show();
+        modal.s.modalTitle.update({ textContent: "Update" });
+        this.updateForm.set_values(data.id,data );
+        
+    }
+}
+export class MainCtrl {
+    static singleCrud(pageSize: number = 10) {
+        const singleCrudCtrl = new SingleCrudController();
+        const singleCrud = SingleCrud();
+        singleCrudCtrl.set_comp(singleCrud);
+        
+        singleCrudCtrl.set_pageSize(pageSize);
+        singleCrudCtrl.setup();
+        singleCrudCtrl.update();
+        return singleCrudCtrl;
+    }
 }
