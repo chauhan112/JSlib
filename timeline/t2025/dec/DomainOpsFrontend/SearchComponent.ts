@@ -2,6 +2,9 @@ import { Tools } from "../../april/tools";
 import { InputComp, InputCompCtrl } from "./Component";
 import { Dropdown, DropdownCtrl } from "./Component";
 import { Plus } from "lucide";
+import { SearchType } from "../../july/generic-crud/search/model";
+import { FilterUICtrl } from "../../july/generic-crud/search/ui";
+import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 
 export const OptionType = {
     none: "None",
@@ -76,13 +79,15 @@ export const SearchComp = () => {
 
 export class SearchComponentCtrl {
     comp: any;
-    advancedFilterPanel: any;
+    filterUICtrl: any = FilterUICtrl();
     onPlusClicked: (e: any, ls: any) => void = () => {};
-    onAdvanceFilterToggle: (e: any, ls: any) => void = () => {};
-    onSearch: (e: any, ls: any) => void = () => {};
-    set_advancedFilterPanel(comp: any) {
-        this.advancedFilterPanel = comp;
-    }
+    onAdvanceFilterToggle: (e: any, ls: any) => void = () => {
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.handlers.display(this.filterUICtrl.comp);
+        modal.s.handlers.show();
+        modal.s.modalTitle.update({ textContent: "Advance Filter" });
+    };
+    onSearch: (params: { type: SearchType; params: any }[]) => void = () => {};
     set_comp(comp: any) {
         this.comp = comp;
     }
@@ -102,9 +107,14 @@ export class SearchComponentCtrl {
         this.comp.s.searchButton.update(
             {},
             {
-                click: (e: any, ls: any) => this.onSearch(e, ls),
+                click: (e: any, ls: any) => this.onSearch([{ type: SearchType.ValStringSearch, params: this.valueSearch(this.get_values()) }]),
             }
         );
+        this.filterUICtrl.setup();
+        this.filterUICtrl.states.onSearch = (params: { type: SearchType; params: any }[]) => {
+            this.onSearch(params);
+            console.log("params", params);
+        };
     }
     get_values() {
         return {
@@ -120,10 +130,24 @@ export class SearchComponentCtrl {
         this.comp.s.inputCompCtrl.clear_value();
         this.comp.s.dropdownCtrl.clear_value();
     }
+    valueSearch(values: { search: string, type: string }) {
+        if (values.type === "Word"){
+            return {
+                search: `\\b${values.search}\\b`,
+                case: false,
+                reg: true,
+            };
+        } 
+        return {
+            search: values.search,
+            case: values.type === "Case",
+            reg: values.type === "Regex",
+        };
+    }
 }
 
 export class MainCtrl {
-    static searchComponent(onPlusClicked: (e: any, ls: any) => void, onAdvanceFilterToggle: (e: any, ls: any) => void, onSearch: (e: any, ls: any) => void) {
+    static searchComponent(onPlusClicked: (e: any, ls: any) => void, onAdvanceFilterToggle: (e: any, ls: any) => void, onSearch: (p:{ type: SearchType; params: any }[]) => void) {
         const searchComponentCtrl = new SearchComponentCtrl();
         const searchComponent = SearchComp();
         searchComponentCtrl.set_comp(searchComponent);
