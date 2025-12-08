@@ -3,7 +3,7 @@ import { SimpleSearchUI2, SimpleSearchUI} from "../../../july/generic-crud/searc
 import { SimpleSearchComp } from "../../../aug/jobAIApply/page";
 import {SearchComp as SearchComp2} from "../../../june/domain-ops/Component";
 import {FilterUI} from "../../../july/generic-crud/search/ui";
-import { Dropdown, DropdownCtrl } from "../Component";
+import { Dropdown, DropdownCtrl } from "../components/atomic";
 
 export class MainCtrl {
     static dropdown(options: { value: string; label: string }[]) {

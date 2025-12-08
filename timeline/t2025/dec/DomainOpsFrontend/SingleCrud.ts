@@ -1,5 +1,5 @@
-import { SearchComp, SearchComponentCtrl } from "./SearchComponent";
-import { ListDisplayer, ListDisplayerCtrl } from "./ListDisplayer";
+import { SearchComp, SearchComponentCtrl } from "./components/SearchComponent";
+import { ListDisplayer, ListDisplayerCtrl } from "./components/ListDisplayer";
 import { Tools } from "../../april/tools";
 import { DynamicFormController } from "../../july/DynamicForm";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
