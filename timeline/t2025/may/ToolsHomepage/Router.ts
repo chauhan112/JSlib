@@ -25,7 +25,8 @@ export class Router {
         if (routeFunc) {
             routeFunc();
         } else {
-            console.error(`Route not found: ${hash}`);
+            Router.routes["*"]();
         }
     }
+    
 }
