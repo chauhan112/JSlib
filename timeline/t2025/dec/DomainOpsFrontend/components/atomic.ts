@@ -1,6 +1,6 @@
 import { EllipsisVertical } from "lucide";
-import { Tools } from "../../april/tools";
-import { GlobalStates } from "../../june/domain-ops/GlobalStates";
+import { Tools } from "../../../april/tools";
+import { GlobalStates } from "../../../june/domain-ops/GlobalStates";
 
 export const InputComp = () => {
     return Tools.comp("input", {
@@ -41,7 +41,7 @@ export class DropdownCtrl {
         this.comp = comp;
     }
     set_options(options: { value: string; label: string }[]) {
-        this.comp.update({ children: options.map((o: any) => Tools.comp("option", { value: o.value, textContent: o.label })) });
+        this.comp.update({ innerHTML: "", children: options.map((o: any) => Tools.comp("option", { value: o.value, textContent: o.label })) });
     }
     get_value() {
         return this.comp.getElement().value;
@@ -129,5 +129,10 @@ export class MainCtrl {
         cardCompCtrl.set_data(data);
         cardCompCtrl.setup();
         return cardCompCtrl;
+    }
+    static dropdown(options: { value: string; label: string }[]) {
+        const dropdownCtrl = new DropdownCtrl();
+        dropdownCtrl.set_comp(Dropdown(options));
+        return dropdownCtrl;
     }
 }

@@ -1,10 +1,10 @@
-import { Tools } from "../../april/tools";
-import { InputComp, InputCompCtrl } from "./Component";
-import { Dropdown, DropdownCtrl } from "./Component";
+import { Tools } from "../../../april/tools";
+import { InputComp, InputCompCtrl } from "./atomic";
+import { Dropdown, DropdownCtrl } from "./atomic";
 import { Plus } from "lucide";
-import { SearchType } from "../../july/generic-crud/search/model";
-import { FilterUICtrl } from "../../july/generic-crud/search/ui";
-import { GlobalStates } from "../../june/domain-ops/GlobalStates";
+import { SearchType } from "../../../july/generic-crud/search/model";
+import { FilterUICtrl } from "../../../july/generic-crud/search/ui";
+import { GlobalStates } from "../../../june/domain-ops/GlobalStates";
 
 export const OptionType = {
     none: "None",

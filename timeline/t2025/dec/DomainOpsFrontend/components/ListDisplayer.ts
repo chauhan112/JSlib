@@ -1,6 +1,6 @@
-import { Tools } from "../../april/tools";
-import {CardCompCtrl, MainCtrl as CardCompMainCtrl} from "./Component";
-import { Pagination } from "../../july/generic-crud/page";
+import { Tools } from "../../../april/tools";
+import {CardCompCtrl, MainCtrl as CardCompMainCtrl} from "./atomic";
+import { Pagination } from "../../../july/generic-crud/page";
 
 
 export const ListDisplayer = () => {
