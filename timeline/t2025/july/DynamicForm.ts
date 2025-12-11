@@ -39,6 +39,8 @@ export const DynamicFormController = () => {
                 applyIfNotExists(params, "class", defValues.textArea.class);
                 applyIfNotExists(params, "placeholder", "Enter " + field.key);
                 fieldComps.push(Params.textArea(field.key, params));
+            } else if (field.type == InputType.MultiSelect) {
+                fieldComps.push(Params.multi(field.key, field.params));
             }
         }
         fieldComps.push(Params.inpSubmit());

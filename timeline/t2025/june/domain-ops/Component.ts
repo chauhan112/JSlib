@@ -362,6 +362,7 @@ export const MultiSelectComponent = (options: any[]) => {
         }
     );
     const selectedItems: any[] = [];
+    
     const selectButton = Tools.comp(
         "button",
         {
@@ -408,7 +409,6 @@ export const MultiSelectComponent = (options: any[]) => {
     const getValue = () => {
         return selectedItems;
     };
-
     const setValue = (value: any[]) => {
         selectedItems.length = 0;
         for (const key in optionsComp) {
@@ -428,7 +428,6 @@ export const MultiSelectComponent = (options: any[]) => {
             textContent: placeholder,
         });
     };
-
     let comp = Tools.div(
         {
             class: "relative",

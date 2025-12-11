@@ -274,6 +274,7 @@ export class Logger {
 }
 export enum InputType {
     Input = "input",
+    MultiSelect = "multiselect",
     LargeText = "largeText",
     File = "file",
     Select = "select",
