@@ -1,6 +1,8 @@
 import { Tools } from "../../../april/tools";
-import { InputComp, InputCompCtrl } from "./atomic";
-import { Dropdown, DropdownCtrl } from "./atomic";
+import { InputCompCtrl } from "./atomic";
+import { DropdownCtrl } from "./atomic";
+import { InputComp } from "./atomicComp";
+import { Dropdown } from "./atomicComp";
 import { Plus } from "lucide";
 import { SearchType } from "../../../july/generic-crud/search/model";
 import { FilterUICtrl } from "../../../july/generic-crud/search/ui";
