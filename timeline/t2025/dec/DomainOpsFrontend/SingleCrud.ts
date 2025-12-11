@@ -121,6 +121,14 @@ export class SingleCrudController {
     createFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
     updateFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
     viewController: ViewController = new ViewController();
+    contextMenus: { [key: string]: any } = {};
+    constructor(){
+        this.contextMenus = {
+            Edit: this.on_edit_clicked.bind(this),
+            Delete: this.on_delete_clicked.bind(this),
+            View: this.on_view_clicked.bind(this),
+        }
+    }
     title_getter: (data: any) => string = (data: any) => data.title;
     on_card_clicked: (data: any) => void = (data: any) => {
         console.log(data);
@@ -148,13 +156,7 @@ export class SingleCrudController {
         });
     }
     on_context_menu_clicked(data: any, label: string) {
-        if (label === "Edit") {
-            this.on_edit_clicked(data);
-        } else if (label === "Delete") {
-            this.on_delete_clicked(data);
-        } else if (label === "View") {
-            this.on_view_clicked(data);
-        }
+        this.contextMenus[label](data);
     }
     on_delete_clicked(data: any) {
         if (confirm("Are you sure?")) {
