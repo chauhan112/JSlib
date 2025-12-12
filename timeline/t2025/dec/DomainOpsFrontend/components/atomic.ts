@@ -2,7 +2,7 @@ import { X } from "lucide";
 import { Tools } from "../../../april/tools";
 import { GlobalStates } from "../../../june/domain-ops/GlobalStates";
 import { CardComp, Dropdown, InputComp, Textarea, MultiSelectComponent } from "./atomicComp";
-
+import { DocumentHandler } from "../../../april/Array";
 export class InputCompCtrl {
     comp: any;
     set_comp(comp: any) {
@@ -91,6 +91,8 @@ export class MultiSelectCompCtrl {
     selected_values: { value: string; label: string }[] = [];
     options: { value: string; label: string }[] = [];
     is_open: boolean = false;
+    placeholder: string = "Select options...";
+    private docHandler: DocumentHandler = DocumentHandler.getInstance();
     cssSelected = {
         true: "px-4 py-2 cursor-pointer hover:bg-blue-50 transition bg-blue-100 text-blue-700 font-medium",
         false: "px-4 py-2 cursor-pointer hover:bg-blue-50 transition text-gray-700",
@@ -134,6 +136,10 @@ export class MultiSelectCompCtrl {
     }
     show_dropdown_menu() {
         this.comp.s.dropdownMenu.getElement().classList.remove("hidden");
+        this.docHandler.undoer.add(() => {
+            this.is_open = false;
+            this.comp.s.dropdownMenu.getElement().classList.add("hidden");
+        });
         this.comp.s.dropdownMenu.update({ innerHTML: "", children: this.options.map(o => this.create_option(o.value, o.label)) });
     }
     remove_tag(param: { value: string; label: string }) {
@@ -173,7 +179,7 @@ export class MultiSelectCompCtrl {
         this.update_ui();
     }
     private get_placeholder() {
-        return Tools.comp("span", { textContent: "Select options...", class: "text-gray-400 ml-2" });
+        return Tools.comp("span", { textContent: this.placeholder, class: "text-gray-400 ml-2" });
     }
 }
 
@@ -193,11 +199,15 @@ export class MainCtrl {
         dropdownCtrl.set_comp(Dropdown(options));
         return dropdownCtrl;
     }
-    static multiSelect(options: { value: string; label: string }[], selected_values: { value: string; label?: string }[]) {
+    static multiSelect(options: { value: string; label: string }[], 
+             selected_values: { value: string; label?: string }[], placeholder?: string) {
         const multiSelectCtrl = new MultiSelectCompCtrl();
         multiSelectCtrl.set_comp(MultiSelectComponent());
         multiSelectCtrl.set_options(options);
         multiSelectCtrl.set_value(selected_values.map(v => v.value));
+        if (placeholder) {
+            multiSelectCtrl.placeholder = placeholder;
+        }
         multiSelectCtrl.setup();
         return multiSelectCtrl;
     }

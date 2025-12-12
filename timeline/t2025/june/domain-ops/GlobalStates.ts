@@ -4,6 +4,7 @@ import { GenericModal } from "../../may/FileSearch/Modal";
 import { ContextMenu } from "./ContextMenu";
 import { MultiLayerModalCtrl } from "../../july/generic-crud/multiLayerModal";
 import { CompactModalCtrl } from "../../aug/LinksOpener/CompactModel";
+
 export class GlobalStates {
     static instance: GlobalStates | null = null;
     private readonly comp: GComponent;
