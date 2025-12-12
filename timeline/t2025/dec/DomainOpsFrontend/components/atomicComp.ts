@@ -52,13 +52,9 @@ export const Dropdown = (options: { value: string; label: string }[]) => {
 
 export const MultiSelectComponent = () => {
     let techInput = Tools.comp("input", { type: "hidden" });
-    let placeholder = Tools.comp("span", {
-        class: "text-gray-400 ml-2",
-        textContent: "Select technologies...",
-    });
+
     let selectBox = Tools.comp("div", {
         class: "w-full min-h-[42px] px-2 py-1 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 bg-white cursor-pointer flex flex-wrap items-center gap-2 relative",
-        children: [placeholder],
     });
     let dropdownMenu = Tools.comp("div", {
         class: "hidden absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto scroller",
