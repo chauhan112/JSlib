@@ -91,6 +91,10 @@ export class MultiSelectCompCtrl {
     selected_values: { value: string; label: string }[] = [];
     options: { value: string; label: string }[] = [];
     is_open: boolean = false;
+    cssSelected = {
+        true: "px-4 py-2 cursor-pointer hover:bg-blue-50 transition bg-blue-100 text-blue-700 font-medium",
+        false: "px-4 py-2 cursor-pointer hover:bg-blue-50 transition text-gray-700",
+    }
     set_comp(comp: any) { // MultiSelectComponent
         this.comp = comp;
     }
@@ -105,36 +109,36 @@ export class MultiSelectCompCtrl {
     }
     clear_value() {
         this.selected_values = [];
-        this.render_tags();
+        this.is_open = false;
+        this.update_ui();
     }
-    render_tags() {
+    update_ui() {
         this.comp.s.selectBox.update({ innerHTML: "", children: this.selected_values.map(v => this.create_tag(v.value, v.label)) });
+        if (this.selected_values.length === 0) {
+            this.comp.s.selectBox.update({ innerHTML: "", children: [this.get_placeholder()] })
+        }
+        if (this.is_open) {
+            this.show_dropdown_menu();
+        }else{
+            this.comp.s.dropdownMenu.getElement().classList.add("hidden");
+        }
     }
     setup() {
         this.comp.s.selectBox.update({}, { click: (e: any, ls: any) => this.on_select_box_clicked(e, ls) });
+        this.update_ui();
     }
     private on_select_box_clicked(e: any, ls: any) {
         e.stopPropagation();
-        if (this.is_open) {
-            this.hide_dropdown_menu();
-        } else {
-            this.show_dropdown_menu();
-        }
         this.is_open = !this.is_open;
+        this.update_ui();
     }
     show_dropdown_menu() {
         this.comp.s.dropdownMenu.getElement().classList.remove("hidden");
         this.comp.s.dropdownMenu.update({ innerHTML: "", children: this.options.map(o => this.create_option(o.value, o.label)) });
     }
-    hide_dropdown_menu() {
-        this.comp.s.dropdownMenu.getElement().classList.add("hidden");
-    }
     remove_tag(param: { value: string; label: string }) {
         this.selected_values = this.selected_values.filter(v => v.value !== param.value);
-        this.render_tags();
-        if (this.is_open) {
-            this.show_dropdown_menu();
-        }
+        this.update_ui();
     }
     private on_close_tag_clicked(e: any, ls: any) {
         e.stopPropagation();
@@ -148,19 +152,16 @@ export class MultiSelectCompCtrl {
         return Tools.comp("div", {
             class: "tag bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm flex items-center gap-1",
             children: [
-                Tools.comp("span", { textContent: label },{},{ label ,value}),
+                Tools.comp("span", { textContent: label },{click: (e: any) => e.stopPropagation()},{ label ,value}),
                 Tools.icon(X, { class: "cursor-pointer" },{ click: (e: any, ls: any) => this.on_close_tag_clicked(e, ls) },{ value, label }),
             ],
         });
     }
     create_option(value: string, label: string) {
         let isSelected = this.selected_values.some(v => v.value === value);
-        let cssSelected = {
-            true: "px-4 py-2 cursor-pointer hover:bg-blue-50 transition bg-blue-100 text-blue-700 font-medium",
-            false: "px-4 py-2 cursor-pointer hover:bg-blue-50 transition text-gray-700",
-        }
         return Tools.comp("div", {
-            class: cssSelected[isSelected ? "true" : "false"],
+            class: this.cssSelected[isSelected ? "true" : "false"],
+            textContent: label,
         },{ click: (e: any, ls: any) => this.on_option_clicked(e, ls) },{ value, label });
     }
     toggle_selection(param: { value: string; label: string }) {
@@ -169,7 +170,10 @@ export class MultiSelectCompCtrl {
         } else {
             this.selected_values.push(param);
         }
-        this.render_tags();
+        this.update_ui();
+    }
+    private get_placeholder() {
+        return Tools.comp("span", { textContent: "Select options...", class: "text-gray-400 ml-2" });
     }
 }
 
@@ -194,6 +198,7 @@ export class MainCtrl {
         multiSelectCtrl.set_comp(MultiSelectComponent());
         multiSelectCtrl.set_options(options);
         multiSelectCtrl.set_value(selected_values.map(v => v.value));
+        multiSelectCtrl.setup();
         return multiSelectCtrl;
     }
     static input(attrs?: { [key: string]: string }, handlers?: { [key: string]: (e: any, ls: any) => void }) {
