@@ -3,7 +3,15 @@ import { Tools } from "../../../april/tools";
 import { GlobalStates } from "../../../june/domain-ops/GlobalStates";
 import { CardComp, Dropdown, InputComp, Textarea, MultiSelectComponent } from "./atomicComp";
 import { DocumentHandler } from "../../../april/Array";
-export class InputCompCtrl {
+
+export interface IInputCompCtrl {
+    comp: any;
+    get_value(): any;
+    set_value(value: any): void;
+    clear_value(): void;
+}
+
+export class InputCompCtrl implements IInputCompCtrl {
     comp: any;
     set_comp(comp: any) {
         this.comp = comp;
@@ -19,7 +27,7 @@ export class InputCompCtrl {
     }
 }
 
-export class DropdownCtrl {
+export class DropdownCtrl implements IInputCompCtrl {
     comp: any;
     placeholder: string = "Select an option";
     has_placeholder: boolean = true;
@@ -86,7 +94,7 @@ export class CardCompCtrl {
     }
 }
 
-export class MultiSelectCompCtrl {
+export class MultiSelectCompCtrl implements IInputCompCtrl {
     comp: any;
     selected_values: { value: string; label: string }[] = [];
     options: { value: string; label: string }[] = [];
@@ -103,15 +111,18 @@ export class MultiSelectCompCtrl {
     set_options(options: { value: string; label: string }[]) {
         this.options = options;
     }
-    set_value(value: string[]) {
-        this.selected_values = this.options.filter(o => value.includes(o.value)).map(o => ({ value: o.value, label: o.label }));
+    set_value(vals: {value: string; label?: string}[]) {
+        let opMap: { [key: string]: { value: string; label: string } } = {};
+        this.options.forEach(o => {
+            opMap[o.value] = o;
+        });
+        this.selected_values = vals.map(v => opMap[v.value]);
     }
-    get_values() {
-        return this.selected_values.map(v => v.value);
+    get_value() {
+        return this.options.filter(o => this.selected_values.some(v => v.value === o.value));
     }
     clear_value() {
         this.selected_values = [];
-        this.is_open = false;
         this.update_ui();
     }
     update_ui() {
@@ -204,7 +215,7 @@ export class MainCtrl {
         const multiSelectCtrl = new MultiSelectCompCtrl();
         multiSelectCtrl.set_comp(MultiSelectComponent());
         multiSelectCtrl.set_options(options);
-        multiSelectCtrl.set_value(selected_values.map(v => v.value));
+        multiSelectCtrl.set_value(selected_values);
         if (placeholder) {
             multiSelectCtrl.placeholder = placeholder;
         }
@@ -223,7 +234,6 @@ export class MainCtrl {
         inputCtrl.set_comp(comp);
         return inputCtrl;
     }
-
     static textarea(attrs?: { [key: string]: string }, handlers?: { [key: string]: (e: any, ls: any) => void }) {
         const textareaCtrl = new InputCompCtrl();
         const comp = Textarea();
