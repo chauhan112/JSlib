@@ -81,3 +81,27 @@ export class MainCtrl {
         return formCtrl;
     }
 }
+
+// example usage
+const formCtrl = MainCtrl.dynamicForm([
+    { key: "name", type: "Input", params: { attrs: { placeholder: "Enter name", type: "text" } } },
+    { key: "email", type: "Input", params: { attrs: { placeholder: "Enter email", type: "email" } } },
+    { key: "password", type: "Input", params: { attrs: { placeholder: "Enter password", type: "password" } } },
+    { key: "date", type: "Input", params: { attrs: { placeholder: "Enter date", type: "date" } } },
+    { key: "time", type: "Input", params: { attrs: { placeholder: "Enter time", type: "time" } } },
+    { key: "datetime", type: "Input", params: { attrs: { placeholder: "Enter datetime", type: "datetime" } } },
+    { key: "file", type: "Input", params: { attrs: { placeholder: "Enter file", type: "file" }, handlers: { change: (e: any, ls: any) => { console.log(e.target.files); } } } },
+    { key: "description", type: "Textarea", params: { attrs: { placeholder: "Enter description" } } },
+    {
+        key: "domains", type: "MultiSelect", params: {
+            options: [{ value: "1", label: "Option 1" }, { value: "2", label: "Option 2" }, { value: "3", label: "Option 3" }],
+            selected_values: [{ value: "1", label: "Option 1" }, { value: "2", label: "Option 2" }], placeholder: "Select domains"
+        }
+
+    },
+    {
+        key: "operation", type: "Select", params: {
+            options: [{ value: "1", label: "Option 1" }, { value: "2", label: "Option 2" }, { value: "3", label: "Option 3" }]
+        }
+    },
+]);
