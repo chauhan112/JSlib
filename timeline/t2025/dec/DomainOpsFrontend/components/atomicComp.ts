@@ -4,14 +4,14 @@ import { Tools } from "../../../april/tools";
 export const InputComp = () => {
     return Tools.comp("input", {
         type: "text",
-        class: "w-full px-4 py-3 text-slate-700 placeholder-slate-400 outline-none",
+        class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none",
         placeholder: "Type to search...",
     });
 }
 
 export const Textarea = () => {
     return Tools.comp("textarea", {
-        class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition",
+        class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none",
     });
 }
 
