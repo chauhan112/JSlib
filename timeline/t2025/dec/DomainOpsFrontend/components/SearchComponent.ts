@@ -7,7 +7,7 @@ import { Plus } from "lucide";
 import { SearchType } from "../../../july/generic-crud/search/model";
 import { FilterUICtrl } from "../../../july/generic-crud/search/ui";
 import { GlobalStates } from "../../../june/domain-ops/GlobalStates";
-
+import type { IInputCompCtrl } from "./atomic";
 export const OptionType = {
     none: "None",
     regex: "Regex",
@@ -79,7 +79,7 @@ export const SearchComp = () => {
     }, {}, { inputCompCtrl, dropdownCtrl, advancedFilterPanel, advanceFilterToggle ,plusIcon, searchButton});
 }
 
-export class SearchComponentCtrl {
+export class SearchComponentCtrl implements IInputCompCtrl {
     comp: any;
     filterUICtrl: any = FilterUICtrl();
     onPlusClicked: (e: any, ls: any) => void = () => {};
@@ -109,7 +109,7 @@ export class SearchComponentCtrl {
         this.comp.s.searchButton.update(
             {},
             {
-                click: (e: any, ls: any) => this.onSearch([{ type: SearchType.ValStringSearch, params: this.valueSearch(this.get_values()) }]),
+                click: (e: any, ls: any) => this.onSearch([{ type: SearchType.ValStringSearch, params: this.valueSearch(this.get_value()) }]),
             }
         );
         this.filterUICtrl.setup();
@@ -118,17 +118,17 @@ export class SearchComponentCtrl {
             console.log("params", params);
         };
     }
-    get_values() {
+    get_value() {
         return {
             search: this.comp.s.inputCompCtrl.get_value(),
             type: this.comp.s.dropdownCtrl.get_value(),
         };
     }
-    set_values(values: { search: string, type: string }) {
+    set_value(values: { search: string, type: string }) {
         this.comp.s.inputCompCtrl.set_value(values.search);
         this.comp.s.dropdownCtrl.set_value(values.type);
     }
-    clear_values() {
+    clear_value() {
         this.comp.s.inputCompCtrl.clear_value();
         this.comp.s.dropdownCtrl.clear_value();
     }
