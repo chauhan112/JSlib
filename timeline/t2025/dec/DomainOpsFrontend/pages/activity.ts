@@ -15,6 +15,7 @@ export class ActivityCRUDModel implements SingleCrudModelInterface {
         let data = await backendCall("read", {id}, this.type);
         return data.data;
     }
+    
     async create (data: any){
         let payload = {
             table_name: data.table_name,
