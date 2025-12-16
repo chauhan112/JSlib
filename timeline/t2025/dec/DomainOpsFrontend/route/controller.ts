@@ -40,7 +40,8 @@ export class RouteWebPageController {
             if (!this.comp.s.sidebar.getElement().classList.contains('-translate-x-full') && window.innerWidth < 1024) {
                 this.on_toggle_sidebar();
             }
-            this.sidebar_ctrl.select_menu_item(this.get_link(href));
+            let link = this.get_link(href);
+            this.sidebar_ctrl.select_menu_item(link);
         });
     }
     on_toggle_sidebar() {
@@ -48,15 +49,21 @@ export class RouteWebPageController {
         this.comp.s.overlay.getElement().classList.toggle('hidden');
         
     }
+    set_app_name(app_name: string) {
+        this.comp.s.header.s.title.update({textContent: app_name});
+        this.sidebar_ctrl.set_app_name(app_name);
+    }
 }
 
 export class MainCtrl {
-    static routeWebPage(menus: { label: string, href: string }[], route_pages: { href: string, page: () => GComponent }[], home_page?: () => GComponent) {
+    static routeWebPage(menus: { label: string, href: string }[], route_pages: { href: string, page: () => GComponent }[], home_page?: () => GComponent, 
+           app_name: string = "DomainOps") {
         const routeWebPageCtrl = new RouteWebPageController();
         const routeWebPage = RouteWebPage();
         routeWebPageCtrl.set_comp(routeWebPage);
         routeWebPageCtrl.setup();
         routeWebPageCtrl.set_menus(menus);
+        routeWebPageCtrl.set_app_name(app_name);
         for (const route_page of route_pages) {
             routeWebPageCtrl.add_route_page(route_page.href, route_page.page);
         }
