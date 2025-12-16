@@ -14,7 +14,8 @@ export const Header = () => {
         children: [Tools.comp("h1", {
             class: "text-xl font-bold text-gray-800",
             textContent: "My App",
-        }), hamburger_btn ],
+            key: "title",
+        }), hamburger_btn],
     }, {}, { hamburger_btn });
 }
 
@@ -28,6 +29,7 @@ export const Sidebar = () => {
             Tools.comp("p", {
                 class: "text-sm text-gray-400",
                 textContent: "© 2023 My App",
+                key: "footer_text",
             }),
         ],
     });
@@ -38,7 +40,7 @@ export const Sidebar = () => {
                 class: "text-2xl font-bold select-none cursor-pointer",
                 key: "title",
                 textContent: "My App"
-            } ),
+            }),
             Tools.comp("button", {
                 class: "block rounded-lg border border-gray-300 dark:border-gray-600 p-1.5 lg:hidden",
                 key: "close_btn",
@@ -54,7 +56,7 @@ export const Sidebar = () => {
             menu_items,
             footer,
         ],
-    },{},{menu_items, header, footer});
+    }, {}, { menu_items, header, footer });
 }
 
 export class SidebarCtrl {
@@ -80,7 +82,7 @@ export class SidebarCtrl {
         })
     }
     add_menu_as_component(component: GComponent, href: string) {
-        this.comp.s.menu_items.update({ child:component });
+        this.comp.s.menu_items.update({ child: component });
         this.components[href] = component;
     }
     select_menu_item(href: string) {
@@ -89,10 +91,15 @@ export class SidebarCtrl {
             this.components[key].getElement().classList.add('hover:bg-gray-700');
 
         }
-        const link = this.components[href].getElement() as HTMLElement;
-        link.classList.add('bg-gray-900', 'border-l-4', 'border-blue-500');
-        link.classList.remove('hover:bg-gray-700');
-
+        if (this.components[href]) {
+            const link = this.components[href].getElement() as HTMLElement;
+            link.classList.add('bg-gray-900', 'border-l-4', 'border-blue-500');
+            link.classList.remove('hover:bg-gray-700');
+        }
+    }
+    set_app_name(app_name: string) {
+        this.comp.s.header.s.title.update({textContent: app_name});
+        this.comp.s.footer.s.footer_text.update({textContent: `© ${new Date().getFullYear()} ${app_name}`});
     }
 }
 
@@ -127,7 +134,7 @@ export const RouteWebPage = () => {
                 ],
             }),
         ],
-    }, {},{mainBody, sidebar, overlay, header});
+    }, {}, { mainBody, sidebar, overlay, header });
 }
 
 export const DefaultPageContent = () => {
