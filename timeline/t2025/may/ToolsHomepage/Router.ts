@@ -13,7 +13,6 @@ export class Router {
     addRoute(path: string, func: any) {
         Router.routes[path] = func;
     }
-
     addRoutes(routes: { [path: string]: any }) {
         for (const path in routes) {
             this.addRoute(path, routes[path]);
@@ -28,5 +27,8 @@ export class Router {
             Router.routes["*"]();
         }
     }
-    
+    navigate(path: string) {
+        window.location.hash = path;
+    }
+
 }
