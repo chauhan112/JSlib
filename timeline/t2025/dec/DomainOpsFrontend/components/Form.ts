@@ -1,5 +1,5 @@
 import { Tools } from "../../../april/tools";
-import {  MainCtrl as AtomicMainCtrl,  type IInputCompCtrl } from "./atomic";
+import { MainCtrl as AtomicMainCtrl, type IInputCompCtrl } from "./atomic";
 
 export const NewDynamicForm = () => {
     return Tools.comp(
@@ -10,14 +10,20 @@ export const NewDynamicForm = () => {
     );
 }
 export const FormElementType: { [key: string]: (...params: any[]) => IInputCompCtrl } = {
-    Input: ({attrs, handlers}: {attrs?: { [key: string]: string }, 
-        handlers?: { [key: string]: (e: any, ls: any) => void }}) => AtomicMainCtrl.input(attrs, handlers),
-    Select: ({options = []}: {options: { value: string; label: string }[] }) => AtomicMainCtrl.dropdown(options),
-    Textarea: ({attrs, handlers}: {attrs?: { [key: string]: string }, 
-        handlers?: { [key: string]: (e: any, ls: any) => void }}) => AtomicMainCtrl.textarea(attrs, handlers),
-    MultiSelect: ({options = [], selected_values = [], placeholder = "Select options..."}: {options: { value: string; label: string }[], 
-        selected_values: { value: string; label?: string }[], 
-        placeholder?: string}) => AtomicMainCtrl.multiSelect(options, selected_values, placeholder),
+    Input: ({ attrs, handlers }: {
+        attrs?: { [key: string]: string },
+        handlers?: { [key: string]: (e: any, ls: any) => void }
+    }) => AtomicMainCtrl.input(attrs, handlers),
+    Select: ({ options = [] }: { options: { value: string; label: string }[] }) => AtomicMainCtrl.dropdown(options),
+    Textarea: ({ attrs, handlers }: {
+        attrs?: { [key: string]: string },
+        handlers?: { [key: string]: (e: any, ls: any) => void }
+    }) => AtomicMainCtrl.textarea(attrs, handlers),
+    MultiSelect: ({ options = [], selected_values = [], placeholder = "Select options..." }: {
+        options: { value: string; label: string }[],
+        selected_values: { value: string; label?: string }[],
+        placeholder?: string
+    }) => AtomicMainCtrl.multiSelect(options, selected_values, placeholder),
 }
 export class NewDynamicFormCtrl implements IInputCompCtrl {
     comp: any;
