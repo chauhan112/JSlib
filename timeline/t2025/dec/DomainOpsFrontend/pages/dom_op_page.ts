@@ -1,8 +1,7 @@
-import { InputType } from "../../../june/domain-ops/Model";
-import { Tools } from "../../../april/tools";
-import { MainCtrl as SingleCrudMainCtrl } from "../SingleCrud";
+import { MainCtrl as SingleCrudMainCtrl, SingleCrudController } from "../SingleCrud";
 import { backendCall } from "../api_calls";
 import { type SingleCrudModelInterface } from "../SingleCrud";
+
 export class DomainOpsCRUDModel implements SingleCrudModelInterface {
     type: string = "Domain";
     
@@ -19,8 +18,8 @@ export class DomainOpsCRUDModel implements SingleCrudModelInterface {
         return res.data;
     }
     async update (id: string, data: any){
-        await backendCall("update", {id, ...data}, this.type);
-        return true;
+        let res = await backendCall("update", {id, ...data}, this.type);
+        return res.data;
     }
     async deleteIt (id: string){
         let data = await backendCall("delete", {id}, this.type);
