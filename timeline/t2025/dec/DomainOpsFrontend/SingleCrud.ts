@@ -57,38 +57,6 @@ export const SingleCrud = () => {
         children: [searchComp, listDisplayer],
     }, {}, { searchComp, listDisplayer });
 };
-export class DynamicFormManager {
-    fields: any[] = [];
-    dataFormCtrl: any = undefined;
-    currentId: any;
-    onSubmit: (data: any, id: any) => void = (data: any, id: any) => {
-        console.log(data, id);
-    };
-    set_fields(fields: any[]) {
-        this.fields = fields;
-    }
-    get_values() {
-        return this.dataFormCtrl.comp.s.handlers.getValues();
-    }
-    clear_values() {
-        this.dataFormCtrl.comp.s.handlers.clearValues();
-    }
-    set_values(id: any, values: any) {
-        this.dataFormCtrl.comp.s.handlers.setValues(values);
-        this.currentId = id;
-    }
-    private def_submit(e: any,) {
-        e.preventDefault();
-        this.onSubmit(this.get_values(), this.currentId);
-    }
-    setup() {
-        if (!this.dataFormCtrl) {
-            this.dataFormCtrl = DynamicFormController();
-            this.dataFormCtrl.comp.s.handlers.submit = this.def_submit.bind(this);
-            this.dataFormCtrl.setFields(this.fields);
-        }
-    }
-}
 export const ViewComponent = () => {
     return Tools.comp("textarea", {
         placeholder: "content goes here",
