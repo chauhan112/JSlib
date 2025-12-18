@@ -51,11 +51,11 @@ export class NewDynamicFormCtrl implements IInputCompCtrl {
     }
     add_field(key: string, compCtrl: IInputCompCtrl) {
         this.formElementCtrls[key] = compCtrl;
-        this.comp.update({ child: compCtrl.comp});
+        this.comp.update({ child: compCtrl.comp });
     }
     clear_comps() {
         this.formElementCtrls = {};
-        this.comp.update({ innerHTML: ""});
+        this.comp.update({ innerHTML: "" });
     }
     clear_value() {
         for (const key in this.formElementCtrls) {
@@ -64,14 +64,24 @@ export class NewDynamicFormCtrl implements IInputCompCtrl {
     }
     set_value(values: { [key: string]: any }) {
         for (const key in values) {
-            this.formElementCtrls[key].set_value(values[key]);
+            if (this.formElementCtrls[key]) {
+                this.formElementCtrls[key].set_value(values[key]);
+            }
         }
     }
     add_field_with_type(key: string, type: any, params?: any) {
-        if(params) {
+        if (params) {
             this.add_field(key, FormElementType[type](params));
         } else {
             this.add_field(key, FormElementType[type]());
+        }
+    }
+    add_submit_button(text?: string) {
+        this.comp.update({ child: Tools.comp("button", { textContent: text || "Submit", class: "cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded w-fit self-end" }) });
+    }
+    set_fields(fields: { key: string, type: any, params?: any }[]) {
+        for (const field of fields) {
+            this.add_field_with_type(field.key, field.type, field.params);
         }
     }
 }
