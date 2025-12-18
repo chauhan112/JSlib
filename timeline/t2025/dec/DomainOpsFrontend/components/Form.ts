@@ -28,7 +28,8 @@ export const FormElementType: { [key: string]: (...params: any[]) => IInputCompC
 export class NewDynamicFormCtrl implements IInputCompCtrl {
     comp: any;
     formElementCtrls: { [key: string]: any } = {};
-    onSubmit: (e: any, ls: any) => void = () => {
+    current_infos: any;
+    onSubmit: (data: any) => void = () => {
         console.log(this.get_value());
     };
     get_value() {
@@ -42,11 +43,11 @@ export class NewDynamicFormCtrl implements IInputCompCtrl {
         this.comp = comp;
     }
     setup() {
-        this.comp.update({}, { submit: (e: any, ls: any) => this.def_submit(e, ls) });
+        this.comp.update({}, { submit: (e: any,) => this.def_submit(e) });
     }
-    private def_submit(e: any, ls: any) {
+    private def_submit(e: any,) {
         e.preventDefault();
-        this.onSubmit(e, ls);
+        this.onSubmit(this.get_value());
     }
     add_field(key: string, compCtrl: IInputCompCtrl) {
         this.formElementCtrls[key] = compCtrl;
