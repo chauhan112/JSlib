@@ -26,16 +26,26 @@ export class DomainOpsCRUDModel implements SingleCrudModelInterface {
         return data.data;
     }
 }
-export const DomainOpsPage = () => {
-    const singleCrudCtrl = SingleCrudMainCtrl.singleCrud(4, new DomainOpsCRUDModel(), (data: any) => data.name,
-        [{type: InputType.Input, key: "name", params: {placeholder: "Enter name"}}],
-        [{type: InputType.Input, key: "name", params: {placeholder: "Enter name"}}]
-    );
-    
-    return Tools.div({
-        class: "w-full flex-col flex gap-2 p-2 ",
-        children: [singleCrudCtrl.comp],
-    }, {}, {
-        singleCrudCtrl
-    });
-};
+
+export class DomOpsPageCtrl {
+    singleCrudCtrl: SingleCrudController;
+    model: DomainOpsCRUDModel;
+    constructor() {
+        this.model = new DomainOpsCRUDModel();
+        this.singleCrudCtrl = SingleCrudMainCtrl.singleCrud(4, this.model, (data: any) => data.name,
+            [{type: "Input", key: "name", params: {attrs: {placeholder: "Enter name"}}}],
+            [{type: "Input", key: "name", params: {attrs: {placeholder: "Enter name"}}}]
+        );
+    }
+    get_domain_page() {
+        this.model.type = "Domain";
+        this.singleCrudCtrl.update();
+        return this.singleCrudCtrl.comp;
+    }
+    get_operation_page() {
+        this.model.type = "Operation";
+        this.singleCrudCtrl.update();
+        return this.singleCrudCtrl.comp;
+    }
+
+}
