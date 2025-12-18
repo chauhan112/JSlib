@@ -5,3 +5,13 @@ Dynamic Form generator: DynamicFormController :- \timeline\t2025\july\DynamicFor
 Dropdown: \timeline\t2025\dec\DomainOpsFrontend\components\SearchComponent.ts
 InputComponent: \timeline\t2025\dec\DomainOpsFrontend\components\atomic.ts
 generic pages with route options: \timeline\t2025\dec\DomainOpsFrontend\route\controller.ts
+
+
+next
+---
+* generic webpage -> use interface
+* generic crud -> use interface
+* generic lister -> use interface
+* deployment center
+* rlib-it
+* project creator
