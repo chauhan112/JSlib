@@ -87,13 +87,14 @@ export class NewDynamicFormCtrl implements IInputCompCtrl {
 }
 
 export class MainCtrl {
-    static dynamicForm(fields: { key: string, type: any, params?: any }[]) {
+    static dynamicForm(fields: { key: string, type: any, params?: any }[], submitBtnText?: string) {
         const formCtrl = new NewDynamicFormCtrl();
         const form = NewDynamicForm();
         formCtrl.set_comp(form);
         for (const field of fields) {
             formCtrl.add_field_with_type(field.key, field.type, field.params);
         }
+        formCtrl.add_submit_button(submitBtnText);
         formCtrl.setup();
         return formCtrl;
     }
