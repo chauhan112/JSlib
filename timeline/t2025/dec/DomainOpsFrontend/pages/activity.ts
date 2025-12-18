@@ -60,13 +60,14 @@ export class ActivityPageCtrl {
             let name = data.operation.name + " " + data.domains.map((dom: any) => dom.name).join(", ");
             return name;
         },
-            [{type: InputType.Input, key: "table_name", params: {placeholder: "enter table name"}}, 
-                {type: InputType.MultiSelect, key: "domains", params: []}, 
-                {type: InputType.Select, key: "operation", params: []}],
-            [{type: InputType.Input, key: "table_name", params: {placeholder: "enter table name"}}, 
-                {type: InputType.MultiSelect, key: "domains", params: []}, 
-                {type: InputType.Select, key: "operation", params: []}
-            ]
+            [   {type: "Input", key: "table_name", params: {attrs: {placeholder: "enter table name"}}}, 
+                {type: "MultiSelect", key: "domains", params: {options: []}}, 
+                {type: "Select", key: "operation", params: {options: []}}],
+
+            [{type: "Input", key: "table_name", params: {attrs: {placeholder: "enter table name"}}}, 
+                {type: "MultiSelect", key: "domains", params: {options: []}}, 
+                {type: "Select", key: "operation", params: {options: []}}
+            ],
         );
         
         this.singleCrudCtrl.comp.s.searchComp.s.plusIcon.update({}, { click: () => this.on_plus_clicked() });
