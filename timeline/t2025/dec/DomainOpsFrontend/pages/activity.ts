@@ -7,7 +7,6 @@ import type { NewDynamicFormCtrl } from "../components/Form";
 
 export class ActivityCRUDModel implements SingleCrudModelInterface {
     type: string = "Activity";
-    
     async read_all (){
         let data = await backendCall("read_all", {}, this.type);
         return data.data;
@@ -29,12 +28,6 @@ export class ActivityCRUDModel implements SingleCrudModelInterface {
     async update (id: string, data: any){
         let payload = {
             id: id, 
-            table_name: data.table_name,
-            domains: data.domains.map((dom: any) => dom.value),
-            operation_id: parseInt(data.operation),
-        }
-        let res = await backendCall("update", payload, this.type);
-        return res.data;
             table_name: data.table_name,
             domains: data.domains.map((dom: any) => dom.value),
             operation_id: parseInt(data.operation),
@@ -69,41 +62,51 @@ export class ActivityPageCtrl {
                 {type: "Select", key: "operation", params: {options: []}}
             ],
         );
-        
         this.singleCrudCtrl.comp.s.searchComp.s.plusIcon.update({}, { click: () => this.on_plus_clicked() });
         this.singleCrudCtrl.contextMenus["Edit"] = this.on_edit_clicked.bind(this);
+        this.singleCrudCtrl.listDisplayerCtrl.contextMenuOptions = [{label: "Edit"}, {label: "Delete"}, {label: "View"}, {label: "Structure"}];
+    }
+    set_domains(doms: { value: string; label: string }[], form: NewDynamicFormCtrl){
+        let multiSelectCtrl = form.formElementCtrls.domains as MultiSelectCompCtrl;
+        multiSelectCtrl.set_options(doms);
+    }
+    set_operations(ops: { value: string; label: string }[], form: NewDynamicFormCtrl){
+        let dropdownCtrl = form.formElementCtrls.operation as DropdownCtrl;
+        dropdownCtrl.set_options(ops);
     }
     on_plus_clicked(){
         (this.singleCrudCtrl.model as ActivityCRUDModel).read_for_create_form().then((data: any) => {
             this.singleCrudCtrl.onPlusClicked();
-            this.singleCrudCtrl.createForm.dataFormCtrl?.comp.s.formElements.domains.s.setOptions(data.domains.map((dom: any) => ({ value: dom.id, textContent: dom.name })));
-            this.singleCrudCtrl.createForm.dataFormCtrl?.comp.s.formElements.operation.s.setOptions(data.operations.map((op: any) => ({ value: op.id, textContent: op.name })));
+            let doms = data.domains.map((dom: any) => ({ value: dom.id, label: dom.name }));
+            let ops = data.operations.map((op: any) => ({ value: op.id, label: op.name }));
+            this.set_domains(doms, this.singleCrudCtrl.createForm);
+            this.set_operations(ops, this.singleCrudCtrl.createForm);
         });
-        
-        
-        
     }
     on_edit_clicked(data: any){
-        (this.singleCrudCtrl.model as ActivityCRUDModel).read_for_create_form().then((data2: any) => {;
-            
+        (this.singleCrudCtrl.model as ActivityCRUDModel).read_for_create_form().then((all_data: any) => {
+            let form = this.singleCrudCtrl.updateForm;
+            let modal = GlobalStates.getInstance().getState("modal");
+            modal.s.handlers.display(form.comp);
+            modal.s.handlers.show();
+            modal.s.modalTitle.update({ textContent: "Update" });
+            form.current_infos = data;
             let values = {
                 table_name: data.table_name,
-                domains: data.domains.map((dom: any) => dom.id),
+                domains: data.domains.map((dom: any) => ({ value: dom.id, label: dom.name })),
                 operation: data.operation.id,
             }
             
-            let modal = GlobalStates.getInstance().getState("modal");
-            this.singleCrudCtrl.updateForm.setup();
-
-
-            modal.s.handlers.display(this.singleCrudCtrl.updateForm.dataFormCtrl.comp);
-            modal.s.handlers.show();
-            modal.s.modalTitle.update({ textContent: "Update" });
-            this.singleCrudCtrl.updateForm.set_values(data.id,values );
-
+            let doms = all_data.domains.map((dom: any) => ({ value: dom.id, label: dom.name }));
+            let ops = all_data.operations.map((op: any) => ({ value: op.id, label: op.name }));
+            
+            this.set_domains(doms, form);
+            this.set_operations(ops, form);
+            form.set_value(values);
+            let multiSelectCtrl = this.singleCrudCtrl.updateForm.formElementCtrls.domains as MultiSelectCompCtrl;
+            multiSelectCtrl.update_ui();
         }); 
     }
-    
 }
 
 export const ActivityPage = () => {
