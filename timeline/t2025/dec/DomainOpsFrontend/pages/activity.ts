@@ -1,8 +1,9 @@
-import { InputType } from "../../../june/domain-ops/Model";
-import { SingleCrudController, MainCtrl as SingleCrudMainCtrl } from "../SingleCrud";
+import {  SingleCrudController, MainCtrl as SingleCrudMainCtrl } from "../SingleCrud";
 import { backendCall } from "../api_calls";
 import { type SingleCrudModelInterface } from "../SingleCrud";
 import { GlobalStates } from "../../../june/domain-ops/GlobalStates";
+import type { DropdownCtrl, MultiSelectCompCtrl } from "../components/atomic";
+import type { NewDynamicFormCtrl } from "../components/Form";
 
 export class ActivityCRUDModel implements SingleCrudModelInterface {
     type: string = "Activity";
@@ -26,8 +27,20 @@ export class ActivityCRUDModel implements SingleCrudModelInterface {
         return res.data;
     }
     async update (id: string, data: any){
-        await backendCall("update", {id, ...data}, this.type);
-        return true;
+        let payload = {
+            id: id, 
+            table_name: data.table_name,
+            domains: data.domains.map((dom: any) => dom.value),
+            operation_id: parseInt(data.operation),
+        }
+        let res = await backendCall("update", payload, this.type);
+        return res.data;
+            table_name: data.table_name,
+            domains: data.domains.map((dom: any) => dom.value),
+            operation_id: parseInt(data.operation),
+        }
+        let res = await backendCall("update", payload, this.type);
+        return res.data;
     }
     async deleteIt (id: string){
         let data = await backendCall("delete", {id}, this.type);
