@@ -1,28 +1,123 @@
 import { RouteWebPage, DefaultPageContent, SidebarCtrl, Page404 } from "./ui";
-import { Router } from "../../../may/ToolsHomepage/Router";
 import { GComponent } from "../../../april/GComponent";
+
+export type RouteHandler = (params: any, state: any) => void;
+
+export class AdvanceRouter {
+    routes: { path: string, handler: RouteHandler | AdvanceRouter }[] = [];
+    private state: any = null;
+    private isRoot: boolean = true;
+
+    constructor(isRoot: boolean = true) {
+        this.isRoot = isRoot;
+        console.log("AdvanceRouter constructor", this.isRoot);
+        if (this.isRoot) {
+            window.addEventListener("hashchange", () => this.route());
+        }
+    }
+
+    addRoute(path: string, handler: RouteHandler | AdvanceRouter) {
+        this.routes.push({ path, handler });
+    }
+
+    addRoutes(routes: { [path: string]: RouteHandler | AdvanceRouter }) {
+        for (const path in routes) {
+            this.addRoute(path, routes[path]);
+        }
+    }
+
+    private match(pattern: string, path: string) {
+        if (pattern === "*") return { params: {}, remaining: "" };
+
+        const isPrefixMatch = pattern !== "/" && pattern.endsWith("/");
+        const cleanPattern = isPrefixMatch ? pattern.slice(0, -1) : pattern;
+        
+        const patternSegments = cleanPattern.split("/").filter(s => s !== "");
+        const pathSegments = path.split("/").filter(s => s !== "");
+
+        if (!isPrefixMatch && patternSegments.length !== pathSegments.length) {
+            return null;
+        }
+        
+        if (isPrefixMatch && pathSegments.length < patternSegments.length) {
+            return null;
+        }
+
+        const params: any = {};
+        for (let i = 0; i < patternSegments.length; i++) {
+            const pSeg = patternSegments[i];
+            const uSeg = pathSegments[i];
+
+            if (pSeg.startsWith("{") && pSeg.endsWith("}")) {
+                const paramName = pSeg.slice(1, -1);
+                params[paramName] = uSeg || "";
+            } else if (pSeg !== uSeg) {
+                return null;
+            }
+        }
+
+        const remaining = "/" + pathSegments.slice(patternSegments.length).join("/");
+        return { params, remaining };
+    }
+
+    route(subPath?: string, state?: any) {
+        const path = subPath !== undefined ? subPath : (window.location.hash.slice(1) || "/");
+        const currentState = state !== undefined ? state : this.state;
+        
+        // Clear global state after trigger if it's the root router
+        if (subPath === undefined) this.state = null;
+
+        for (const route of this.routes) {
+            const match = this.match(route.path, path);
+            if (match) {
+                if (route.handler instanceof AdvanceRouter) {
+                    route.handler.route(match.remaining, currentState);
+                } else {
+                    route.handler(match.params, currentState);
+                }
+                return;
+            }
+        }
+
+        // Fallback to wildcard
+        const wildcard = this.routes.find(r => r.path === "*");
+        if (wildcard) {
+            if (wildcard.handler instanceof AdvanceRouter) {
+                wildcard.handler.route(path, currentState);
+            } else {
+                wildcard.handler({}, currentState);
+            }
+        }
+    }
+
+    navigate(path: string, state: any = null) {
+        this.state = state;
+        window.location.hash = path;
+    }
+}
 
 export class RouteWebPageController {
     comp: any;
-    router: Router = Router.getInstance();
-    home_page_getter: () => GComponent = DefaultPageContent;
+    router: AdvanceRouter = new AdvanceRouter();
+    home_page_getter: (params: any, state: any) => GComponent = DefaultPageContent;
     sidebar_ctrl: SidebarCtrl = new SidebarCtrl();
+    
     set_comp(comp: any) {
         this.comp = comp;
     }
+
     setup() {
         this.sidebar_ctrl.set_comp(this.comp.s.sidebar);
         this.sidebar_ctrl.setup();
         this.add_route_page("/", this.home_page_getter);
-        this.add_route_page("*", Page404);
         this.comp.s.header.s.hamburger_btn.update({}, { click: () => this.on_toggle_sidebar() });
         this.comp.s.sidebar.s.header.s.close_btn.update({}, { click: () => this.on_toggle_sidebar() });
     }
     add_menu_item(label: string, href: string) {
         this.sidebar_ctrl.add_menu_item(label, href);
     }
-    add_menu_as_component(component: GComponent) {
-        this.sidebar_ctrl.add_menu_as_component(component);
+    add_menu_as_component(component: GComponent, href: string) {
+        this.sidebar_ctrl.add_menu_as_component(component, href);
     }
     set_menus(menus: { label: string, href: string }[]) {
         for (const menu of menus) {
@@ -34,9 +129,9 @@ export class RouteWebPageController {
             return "#" + href;
         return href;
     }
-    add_route_page(href: string, page: () => GComponent) {
-        this.router.addRoute(href, () => {
-            this.comp.s.mainBody.update({ innerHTML: "", child: page() });
+    add_route_page(href: string, page: (params: any, state: any) => GComponent) {
+        this.router.addRoute(href, (params, state) => {
+            this.comp.s.mainBody.update({ innerHTML: "", child: page(params, state) });
             if (!this.comp.s.sidebar.getElement().classList.contains('-translate-x-full') && window.innerWidth < 1024) {
                 this.on_toggle_sidebar();
             }
@@ -52,6 +147,9 @@ export class RouteWebPageController {
     set_app_name(app_name: string) {
         this.comp.s.header.s.title.update({textContent: app_name});
         this.sidebar_ctrl.set_app_name(app_name);
+    }
+    add_404_page(){
+        this.add_route_page("*", Page404);
     }
 }
 
