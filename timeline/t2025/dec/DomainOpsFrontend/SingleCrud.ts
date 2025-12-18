@@ -1,11 +1,11 @@
 import { SearchComp, SearchComponentCtrl } from "./components/SearchComponent";
 import { ListDisplayer, ListDisplayerCtrl } from "./components/ListDisplayer";
 import { Tools } from "../../april/tools";
-import { DynamicFormController } from "../../july/DynamicForm";
 import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 import { InputType } from "../../june/domain-ops/Model";
 import { Filter, SearchType } from "../../july/generic-crud/search/model";
 import { UiParamsMap } from "../../july/generic-crud/search/controller";
+import { MainCtrl as DynamicFormMainCtrl, NewDynamicFormCtrl } from "./components/Form";
 
 export interface SingleCrudModelInterface {
     read_all: () => Promise<any[]>;
@@ -116,8 +116,8 @@ export class SingleCrudController {
     searchComponentCtrl: SearchComponentCtrl = new SearchComponentCtrl();
     listDisplayerCtrl: ListDisplayerCtrl = new ListDisplayerCtrl();
     createDataFormCtrl: any = undefined;
-    createForm : DynamicFormManager = new DynamicFormManager();
-    updateForm : DynamicFormManager = new DynamicFormManager();
+    createForm!: NewDynamicFormCtrl;
+    updateForm!: NewDynamicFormCtrl;
     createFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
     updateFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
     viewController: ViewController = new ViewController();
@@ -147,9 +147,12 @@ export class SingleCrudController {
             modal.s.handlers.hide();
         });
     }
-    on_update_submit(data: any, id: any) {
-        this.model.update(id, data).then(() => {
-            this.dataManager.update_data(id, data);
+    on_update_submit(data: any) {
+        const id = this.updateForm.current_infos.id;
+        
+        this.model.update(id, data).then((new_data: any) => {
+            this.dataManager.update_data(id, new_data);
+            this.updateForm.current_infos = null;
             this.render_list(true);
             let modal = GlobalStates.getInstance().getState("modal");
             modal.s.handlers.hide();
@@ -192,10 +195,10 @@ export class SingleCrudController {
         this.listDisplayerCtrl.setup();
         this.listDisplayerCtrl.on_card_clicked = (data: any) => this.on_card_clicked(data);
         this.listDisplayerCtrl.on_more_ops_clicked = (data: any, label: string) => this.on_context_menu_clicked(data, label);
-        this.createForm.set_fields(this.createFields);
-        this.updateForm.set_fields(this.updateFields);
+        this.createForm = DynamicFormMainCtrl.dynamicForm(this.createFields);
+        this.updateForm = DynamicFormMainCtrl.dynamicForm(this.updateFields);
         this.createForm.onSubmit = (data: any) => this.on_create_submit(data);
-        this.updateForm.onSubmit = (data: any, id: any) => this.on_update_submit(data, id);
+        this.updateForm.onSubmit = (data: any) => this.on_update_submit(data);
         this.comp.s.searchComp.s.plusIcon.update({}, { click: () => this.onPlusClicked() });
         this.viewController.set_comp(ViewComponent());
         this.searchComponentCtrl.onSearch = (params: { type: SearchType; params: any }[]) => this.on_search(params);
@@ -210,18 +213,19 @@ export class SingleCrudController {
     onPlusClicked() {
         let modal = GlobalStates.getInstance().getState("modal");
         this.createForm.setup();
-        modal.s.handlers.display(this.createForm.dataFormCtrl.comp);
+        modal.s.handlers.display(this.createForm.comp);
         modal.s.handlers.show();
         modal.s.modalTitle.update({ textContent: "Create" });
-        this.createForm.clear_values();
+        this.createForm.clear_value();
     }
     on_edit_clicked(data: any) {
         let modal = GlobalStates.getInstance().getState("modal");
         this.updateForm.setup();
-        modal.s.handlers.display(this.updateForm.dataFormCtrl.comp);
+        modal.s.handlers.display(this.updateForm.comp);
         modal.s.handlers.show();
         modal.s.modalTitle.update({ textContent: "Update" });
-        this.updateForm.set_values(data.id,data );
+        this.updateForm.current_infos = data;
+        this.updateForm.set_value(data);
         
     }
     on_search(params: { type: SearchType; params: any }[]) {
@@ -279,10 +283,12 @@ export class DataManager {
         }
     }
 }
+
 export class MainCtrl {
     static singleCrud(pageSize: number = 10, model?: SingleCrudModelInterface, title_getter?: (data: any) => string, 
-            createFields?: any[], updateFields?: any[] ) {
-        const singleCrudCtrl = new SingleCrudController();
+            createFields?: any[], updateFields?: any[]) {
+        let singleCrudCtrl = new SingleCrudController();
+        
         const singleCrud = SingleCrud();
         singleCrudCtrl.set_comp(singleCrud);
         if (model) {
@@ -302,4 +308,5 @@ export class MainCtrl {
         singleCrudCtrl.update();
         return singleCrudCtrl;
     }
+    
 }
