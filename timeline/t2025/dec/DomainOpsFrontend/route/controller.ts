@@ -10,7 +10,6 @@ export class AdvanceRouter {
 
     constructor(isRoot: boolean = true) {
         this.isRoot = isRoot;
-        console.log("AdvanceRouter constructor", this.isRoot);
         if (this.isRoot) {
             window.addEventListener("hashchange", () => this.route());
         }
@@ -26,7 +25,7 @@ export class AdvanceRouter {
         }
     }
 
-    private match(pattern: string, path: string) {
+    match(pattern: string, path: string) {
         if (pattern === "*") return { params: {}, remaining: "" };
 
         const isPrefixMatch = pattern !== "/" && pattern.endsWith("/");
@@ -64,7 +63,6 @@ export class AdvanceRouter {
         const path = subPath !== undefined ? subPath : (window.location.hash.slice(1) || "/");
         const currentState = state !== undefined ? state : this.state;
         
-        // Clear global state after trigger if it's the root router
         if (subPath === undefined) this.state = null;
 
         for (const route of this.routes) {
@@ -79,7 +77,6 @@ export class AdvanceRouter {
             }
         }
 
-        // Fallback to wildcard
         const wildcard = this.routes.find(r => r.path === "*");
         if (wildcard) {
             if (wildcard.handler instanceof AdvanceRouter) {
@@ -93,6 +90,18 @@ export class AdvanceRouter {
     navigate(path: string, state: any = null) {
         this.state = state;
         window.location.hash = path;
+    }
+    relative_navigate(path: string, state: any=null) {
+        this.state = state;
+        let new_path = path;
+        if (path.startsWith("/")) {
+            new_path = path.slice(1);
+        }
+        if (window.location.hash.endsWith("/")) {
+            window.location.hash += new_path;
+        } else {
+            window.location.hash += "/" + new_path;
+        }
     }
 }
 
@@ -109,7 +118,6 @@ export class RouteWebPageController {
     setup() {
         this.sidebar_ctrl.set_comp(this.comp.s.sidebar);
         this.sidebar_ctrl.setup();
-        this.add_route_page("/", this.home_page_getter);
         this.comp.s.header.s.hamburger_btn.update({}, { click: () => this.on_toggle_sidebar() });
         this.comp.s.sidebar.s.header.s.close_btn.update({}, { click: () => this.on_toggle_sidebar() });
     }
@@ -131,13 +139,16 @@ export class RouteWebPageController {
     }
     add_route_page(href: string, page: (params: any, state: any) => GComponent) {
         this.router.addRoute(href, (params, state) => {
-            this.comp.s.mainBody.update({ innerHTML: "", child: page(params, state) });
-            if (!this.comp.s.sidebar.getElement().classList.contains('-translate-x-full') && window.innerWidth < 1024) {
-                this.on_toggle_sidebar();
-            }
-            let link = this.get_link(href);
-            this.sidebar_ctrl.select_menu_item(link);
+            this.display_page(page(params, state), href);
         });
+    }
+    display_page(comp: GComponent, href: string) {
+        this.comp.s.mainBody.update({ innerHTML: "", child: comp });
+        if (!this.comp.s.sidebar.getElement().classList.contains('-translate-x-full') && window.innerWidth < 1024) {
+            this.on_toggle_sidebar();
+        }
+        let link = this.get_link(href);
+        this.sidebar_ctrl.select_menu_item(link);
     }
     on_toggle_sidebar() {
         this.comp.s.sidebar.getElement().classList.toggle('-translate-x-full');
@@ -168,6 +179,7 @@ export class MainCtrl {
         if (home_page) {
             routeWebPageCtrl.home_page_getter = home_page;
         }
+        routeWebPageCtrl.add_route_page("/", routeWebPageCtrl.home_page_getter);
         return routeWebPageCtrl;
     }
 }
