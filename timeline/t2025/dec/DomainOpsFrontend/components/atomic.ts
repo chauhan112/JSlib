@@ -32,7 +32,7 @@ export class DropdownCtrl implements IInputCompCtrl {
     placeholder: string = "Select an option";
     has_placeholder: boolean = true;
     set_comp(comp: any) {
-        this.comp = comp;
+        this.comp = comp; // Dropdown
     }
     set_options(options: { value: string; label: string }[]) {
         let opsComp: any[] = [];
