@@ -4,6 +4,9 @@ import { type SingleCrudModelInterface } from "../SingleCrud";
 import { GlobalStates } from "../../../june/domain-ops/GlobalStates";
 import type { DropdownCtrl, MultiSelectCompCtrl } from "../components/atomic";
 import type { NewDynamicFormCtrl } from "../components/Form";
+import { AdvanceRouter } from "../route/controller";
+import type { GComponent } from "../../../april/GComponent";
+import { Tools } from "../../../april/tools";
 
 export class ActivityCRUDModel implements SingleCrudModelInterface {
     type: string = "Activity";
@@ -45,10 +48,29 @@ export class ActivityCRUDModel implements SingleCrudModelInterface {
     }
 }
 
+export const StructureComp = () => {
+    return Tools.div({
+        class: "w-full h-full flex flex-col gap-2",
+        children: [
+            Tools.comp("h1", { textContent: "Structure" }),
+        ],
+    });
+}
+
+export class StructurePageCtrl {
+    comp: any;
+    constructor(){
+        this.comp = StructureComp();
+    }
+}
 export class ActivityPageCtrl {
     singleCrudCtrl: SingleCrudController;
     comp: any;
+    router: AdvanceRouter;
+    structurePageCtrl: StructurePageCtrl;
+    display_comp!: (comp: GComponent, href: string) => void;
     constructor(){
+        this.router = new AdvanceRouter(false);
         this.singleCrudCtrl = SingleCrudMainCtrl.singleCrud(4, new ActivityCRUDModel(), (data: any) => {
             let name = data.operation.name + " " + data.domains.map((dom: any) => dom.name).join(", ");
             return name;
@@ -65,6 +87,19 @@ export class ActivityPageCtrl {
         this.singleCrudCtrl.comp.s.searchComp.s.plusIcon.update({}, { click: () => this.on_plus_clicked() });
         this.singleCrudCtrl.contextMenus["Edit"] = this.on_edit_clicked.bind(this);
         this.singleCrudCtrl.listDisplayerCtrl.contextMenuOptions = [{label: "Edit"}, {label: "Delete"}, {label: "View"}, {label: "Structure"}];
+        this.singleCrudCtrl.contextMenus["Structure"] = this.on_structure_clicked.bind(this);
+        this.structurePageCtrl = new StructurePageCtrl();
+        this.router.addRoute("/{id}/structure", (params, state) => {
+            console.log("params", params);
+            console.log("state", state);
+            this.display_comp(this.structurePageCtrl.comp, `/activity`);
+        });
+        this.router.addRoute("/", () => {
+            this.display_comp(this.singleCrudCtrl.comp, `/activity`);
+        });
+    }
+    set_display_comp(display_comp: (comp: GComponent, href: string) => void){
+        this.display_comp = display_comp;
     }
     set_domains(doms: { value: string; label: string }[], form: NewDynamicFormCtrl){
         let multiSelectCtrl = form.formElementCtrls.domains as MultiSelectCompCtrl;
@@ -82,6 +117,9 @@ export class ActivityPageCtrl {
             this.set_domains(doms, this.singleCrudCtrl.createForm);
             this.set_operations(ops, this.singleCrudCtrl.createForm);
         });
+    }
+    on_structure_clicked(data: any){
+        this.router.relative_navigate(`/${data.id}/structure`);
     }
     on_edit_clicked(data: any){
         (this.singleCrudCtrl.model as ActivityCRUDModel).read_for_create_form().then((all_data: any) => {
@@ -107,9 +145,7 @@ export class ActivityPageCtrl {
             multiSelectCtrl.update_ui();
         }); 
     }
-}
-
-export const ActivityPage = () => {
-    const activityPageCtrl = new ActivityPageCtrl();
-    return activityPageCtrl.singleCrudCtrl.comp;
+    get_comp() {
+        return this.singleCrudCtrl.comp;
+    }
 }
