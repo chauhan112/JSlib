@@ -182,6 +182,7 @@ export class SingleCrudController {
             this.dataManager.set_data(data);
         });
     }
+    display_default(){this.display_on_body([this.comp.s.searchComp, this.comp.s.listDisplayer]);}
     setup(){
         this.searchComponentCtrl.set_comp(this.comp.s.searchComp);
         this.searchComponentCtrl.setup();
