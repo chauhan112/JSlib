@@ -1,11 +1,12 @@
 import { SearchComp, SearchComponentCtrl } from "./components/SearchComponent";
 import { ListDisplayer, ListDisplayerCtrl } from "./components/ListDisplayer";
 import { Tools } from "../../april/tools";
-import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 import { InputType } from "../../june/domain-ops/Model";
 import { Filter, SearchType } from "../../july/generic-crud/search/model";
 import { UiParamsMap } from "../../july/generic-crud/search/controller";
 import { MainCtrl as DynamicFormMainCtrl, NewDynamicFormCtrl } from "./components/Form";
+import { AdvanceRouter } from "./route/controller";
+import { GComponent } from "../../april/GComponent";
 
 export interface SingleCrudModelInterface {
     read_all: () => Promise<any[]>;
