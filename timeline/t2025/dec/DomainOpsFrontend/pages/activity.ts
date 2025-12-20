@@ -69,8 +69,9 @@ export class ActivityPageCtrl {
     router: AdvanceRouter;
     structurePageCtrl: StructurePageCtrl;
     display_comp!: (comp: GComponent, href: string) => void;
+    nav_selector!: (href: string) => void;
     constructor(){
-        this.router = new AdvanceRouter(false);
+        
         this.singleCrudCtrl = SingleCrudMainCtrl.singleCrud(4, new ActivityCRUDModel(), (data: any) => {
             let name = data.operation.name + " " + data.domains.map((dom: any) => dom.name).join(", ");
             return name;
@@ -89,13 +90,13 @@ export class ActivityPageCtrl {
         this.singleCrudCtrl.listDisplayerCtrl.contextMenuOptions = [{label: "Edit"}, {label: "Delete"}, {label: "View"}, {label: "Structure"}];
         this.singleCrudCtrl.contextMenus["Structure"] = this.on_structure_clicked.bind(this);
         this.structurePageCtrl = new StructurePageCtrl();
-        this.router.addRoute("/{id}/structure", (params, state) => {
-            console.log("params", params);
-            console.log("state", state);
+        this.router = this.singleCrudCtrl.router;
+        this.router.addRoute("/structure/{id}/", () => {
             this.display_comp(this.structurePageCtrl.comp, `/activity`);
         });
-        this.router.addRoute("/", () => {
-            this.display_comp(this.singleCrudCtrl.comp, `/activity`);
+        this.router.updateRoute("/", () => {
+            this.singleCrudCtrl.display_default();
+            this.nav_selector("/activity");
         });
     }
     set_display_comp(display_comp: (comp: GComponent, href: string) => void){
@@ -111,23 +112,20 @@ export class ActivityPageCtrl {
     }
     on_plus_clicked(){
         (this.singleCrudCtrl.model as ActivityCRUDModel).read_for_create_form().then((data: any) => {
-            this.singleCrudCtrl.onPlusClicked();
             let doms = data.domains.map((dom: any) => ({ value: dom.id, label: dom.name }));
             let ops = data.operations.map((op: any) => ({ value: op.id, label: op.name }));
-            this.set_domains(doms, this.singleCrudCtrl.createForm);
-            this.set_operations(ops, this.singleCrudCtrl.createForm);
+            this.set_domains(doms, this.singleCrudCtrl.formController.createForm);
+            this.set_operations(ops, this.singleCrudCtrl.formController.createForm);
+            this.singleCrudCtrl.router.relative_navigate("/create");
         });
     }
     on_structure_clicked(data: any){
-        this.router.relative_navigate(`/${data.id}/structure`);
+        this.router.relative_navigate(`/structure/${data.id}`);
     }
     on_edit_clicked(data: any){
         (this.singleCrudCtrl.model as ActivityCRUDModel).read_for_create_form().then((all_data: any) => {
-            let form = this.singleCrudCtrl.updateForm;
-            let modal = GlobalStates.getInstance().getState("modal");
-            modal.s.handlers.display(form.comp);
-            modal.s.handlers.show();
-            modal.s.modalTitle.update({ textContent: "Update" });
+            let form = this.singleCrudCtrl.formController.updateForm;
+            
             form.current_infos = data;
             let values = {
                 table_name: data.table_name,
@@ -141,11 +139,15 @@ export class ActivityPageCtrl {
             this.set_domains(doms, form);
             this.set_operations(ops, form);
             form.set_value(values);
-            let multiSelectCtrl = this.singleCrudCtrl.updateForm.formElementCtrls.domains as MultiSelectCompCtrl;
+            let multiSelectCtrl = this.singleCrudCtrl.formController.updateForm.formElementCtrls.domains as MultiSelectCompCtrl;
             multiSelectCtrl.update_ui();
+            this.singleCrudCtrl.router.relative_navigate("/edit/" + data.id);
         }); 
     }
     get_comp() {
         return this.singleCrudCtrl.comp;
+    }
+    set_nav_selector(nav_selector: (href: string) => void) {
+        this.nav_selector = nav_selector;
     }
 }
