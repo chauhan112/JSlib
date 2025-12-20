@@ -116,6 +116,12 @@ export class SingleCrudController {
     formController: FormController = new FormController();
     viewController: ViewController = new ViewController();
     contextMenus: { [key: string]: any } = {};
+    router!: AdvanceRouter;
+    title_getter: (data: any) => string = (data: any) => data.title;
+    on_card_clicked: (data: any) => void = (data: any) => {
+        console.log(data);
+    };
+    display_on_body: (comps: GComponent[]) => void = (comps: GComponent[]) => this.default_display_on_body(comps);
     constructor(){
         this.contextMenus = {
             Edit: this.on_edit_clicked.bind(this),
@@ -123,10 +129,9 @@ export class SingleCrudController {
             View: this.on_view_clicked.bind(this),
         }
     }
-    title_getter: (data: any) => string = (data: any) => data.title;
-    on_card_clicked: (data: any) => void = (data: any) => {
-        console.log(data);
-    };
+    set_router(router: AdvanceRouter) {
+        this.router = router;
+    }
     set_model(model: SingleCrudModelInterface) {
         this.model = model;
     }
@@ -137,19 +142,17 @@ export class SingleCrudController {
         this.model.create(data).then((res_data: any) => {
             this.dataManager.add_data(res_data);
             this.render_list(true);
-            let modal = GlobalStates.getInstance().getState("modal");
-            modal.s.handlers.hide();
+            this.router.go_back();
         });
     }
     on_update_submit(data: any) {
-        const id = this.updateForm.current_infos.id;
+        const id = this.formController.updateForm.current_infos.id;
         
         this.model.update(id, data).then((new_data: any) => {
             this.dataManager.update_data(id, new_data);
-            this.updateForm.current_infos = null;
+            this.formController.updateForm.current_infos = null;
             this.render_list(true);
-            let modal = GlobalStates.getInstance().getState("modal");
-            modal.s.handlers.hide();
+            this.router.go_back();
         });
     }
     on_context_menu_clicked(data: any, label: string) {
@@ -164,11 +167,8 @@ export class SingleCrudController {
         }
     }
     on_view_clicked(data: any) {
-        let modal = GlobalStates.getInstance().getState("modal");
-        modal.s.handlers.display(this.viewController.comp);
-        modal.s.handlers.show();
+        this.router.relative_navigate(`/view`);
         this.viewController.set_data(data);
-        modal.s.modalTitle.update({ textContent: "Content View" });
     }
     render_list(fromLocal: boolean = false){
         if (fromLocal) {
