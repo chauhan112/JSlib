@@ -245,7 +245,6 @@ export class SingleCrudController {
         this.formController.updateForm.current_infos = data;
                 
     }
-
     on_search(params: { type: SearchType; params: any }[]) {
         if (params.length > 0 ) {
             this.dataManager.apply_filter(UiParamsMap(params));

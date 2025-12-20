@@ -16,7 +16,6 @@ export const Page = () => {
     routeWebPageCtrl.add_404_page();
 
 
-    activityPageCtrl.set_display_comp(routeWebPageCtrl.display_page.bind(routeWebPageCtrl));
     domainCtrl.singleCrudCtrl.display_on_body = (comps: GComponent[]) => routeWebPageCtrl.comp.s.mainBody.update({ innerHTML: "", children: comps });
     operationCtrl.singleCrudCtrl.display_on_body = (comps: GComponent[]) => routeWebPageCtrl.comp.s.mainBody.update({ innerHTML: "", children: comps });
     domainCtrl.set_nav_selector((href: string) => routeWebPageCtrl.select_menu_item(href));

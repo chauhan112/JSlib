@@ -5,7 +5,6 @@ import { GlobalStates } from "../../../june/domain-ops/GlobalStates";
 import type { DropdownCtrl, MultiSelectCompCtrl } from "../components/atomic";
 import type { NewDynamicFormCtrl } from "../components/Form";
 import { AdvanceRouter } from "../route/controller";
-import type { GComponent } from "../../../april/GComponent";
 import { Tools } from "../../../april/tools";
 
 export class ActivityCRUDModel implements SingleCrudModelInterface {
@@ -85,23 +84,27 @@ export class ActivityPageCtrl {
                 {type: "Select", key: "operation", params: {options: []}}
             ],
         );
-        this.singleCrudCtrl.comp.s.searchComp.s.plusIcon.update({}, { click: () => this.on_plus_clicked() });
+        
         this.singleCrudCtrl.contextMenus["Edit"] = this.on_edit_clicked.bind(this);
         this.singleCrudCtrl.listDisplayerCtrl.contextMenuOptions = [{label: "Edit"}, {label: "Delete"}, {label: "View"}, {label: "Structure"}];
         this.singleCrudCtrl.contextMenus["Structure"] = this.on_structure_clicked.bind(this);
         this.structurePageCtrl = new StructurePageCtrl();
         this.router = this.singleCrudCtrl.router;
         this.router.addRoute("/structure/{id}/", () => {
-            this.display_comp(this.structurePageCtrl.comp, `/activity`);
+            this.singleCrudCtrl.display_on_body([this.structurePageCtrl.comp]);
+            this.nav_selector("/activity");
         });
         this.router.updateRoute("/", () => {
             this.singleCrudCtrl.display_default();
             this.nav_selector("/activity");
         });
+        this.router.updateRoute("/create/", () => {
+            this.singleCrudCtrl.display_on_body([this.singleCrudCtrl.formController.get_create_form()]);
+            this.nav_selector("/activity");
+            this.on_plus_clicked();
+        });
     }
-    set_display_comp(display_comp: (comp: GComponent, href: string) => void){
-        this.display_comp = display_comp;
-    }
+    
     set_domains(doms: { value: string; label: string }[], form: NewDynamicFormCtrl){
         let multiSelectCtrl = form.formElementCtrls.domains as MultiSelectCompCtrl;
         multiSelectCtrl.set_options(doms);
