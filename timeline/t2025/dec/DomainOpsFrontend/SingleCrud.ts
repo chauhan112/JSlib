@@ -82,6 +82,30 @@ export class ViewController {
         );
     }
 }
+
+export class FormController {
+    createForm!: NewDynamicFormCtrl;
+    updateForm!: NewDynamicFormCtrl;
+    createFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
+    updateFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
+    setup() {
+        this.createForm = DynamicFormMainCtrl.dynamicForm(this.createFields);
+        this.updateForm = DynamicFormMainCtrl.dynamicForm(this.updateFields);
+    }
+    get_create_form() {
+        return this.form(this.createForm.comp, "Create");
+    }
+    private form(comp: any, title: string) {
+        return Tools.div({
+            class: "w-full flex-col flex gap-2 p-2 ",
+            children: [Tools.comp("h3", { class: "text-lg font-semibold text-gray-800 break-all", textContent: title }), comp],
+        });
+    }
+    get_update_form() {
+        return this.form(this.updateForm.comp, "Update");
+    }
+}
+
 export class SingleCrudController {
     comp: any;
     model: SingleCrudModelInterface = new SingleCrudModel();
@@ -89,10 +113,7 @@ export class SingleCrudController {
     searchComponentCtrl: SearchComponentCtrl = new SearchComponentCtrl();
     listDisplayerCtrl: ListDisplayerCtrl = new ListDisplayerCtrl();
     createDataFormCtrl: any = undefined;
-    createForm!: NewDynamicFormCtrl;
-    updateForm!: NewDynamicFormCtrl;
-    createFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
-    updateFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
+    formController: FormController = new FormController();
     viewController: ViewController = new ViewController();
     contextMenus: { [key: string]: any } = {};
     constructor(){
