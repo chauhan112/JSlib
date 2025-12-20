@@ -155,9 +155,6 @@ export class SingleCrudController {
             this.router.go_back();
         });
     }
-    on_context_menu_clicked(data: any, label: string) {
-        this.contextMenus[label](data);
-    }
     on_delete_clicked(data: any) {
         if (confirm("Are you sure?")) {
             this.model.deleteIt(data.id).then(() => {
@@ -309,9 +306,14 @@ export class DataManager {
 
 export class MainCtrl {
     static singleCrud(pageSize: number = 10, model?: SingleCrudModelInterface, title_getter?: (data: any) => string, 
-            createFields?: any[], updateFields?: any[]) {
+            createFields?: any[], updateFields?: any[], router?: AdvanceRouter) {
+        // router is used to navigate the page (make sure a parent router is passed with true which means hash change is allowed)
         let singleCrudCtrl = new SingleCrudController();
-        
+        if (router) {
+            singleCrudCtrl.set_router(router);
+        }else{
+            singleCrudCtrl.set_router(new AdvanceRouter(false)); // local router can be used in the parent page so its better to not allow hash change
+        }
         const singleCrud = SingleCrud();
         singleCrudCtrl.set_comp(singleCrud);
         if (model) {
@@ -322,10 +324,10 @@ export class MainCtrl {
             singleCrudCtrl.title_getter = title_getter;
         }
         if (createFields) {
-            singleCrudCtrl.createFields = createFields;
+            singleCrudCtrl.formController.createFields = createFields;
         }
         if (updateFields) {
-            singleCrudCtrl.updateFields = updateFields;
+            singleCrudCtrl.formController.updateFields = updateFields;
         }
         singleCrudCtrl.setup();
         singleCrudCtrl.update();
