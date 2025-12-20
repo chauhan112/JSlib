@@ -31,6 +31,7 @@ export class DropdownCtrl implements IInputCompCtrl {
     comp: any;
     placeholder: string = "Select an option";
     has_placeholder: boolean = true;
+    options: { value: string; label: string }[] = [];
     set_comp(comp: any) {
         this.comp = comp; // Dropdown
     }
@@ -42,13 +43,17 @@ export class DropdownCtrl implements IInputCompCtrl {
         for (const o of options) {
             opsComp.push(Tools.comp("option", { value: o.value, textContent: o.label }));
         }
+        this.options = options;
         this.comp.update({ innerHTML: "", children: opsComp });
     }
     get_value() {
         return this.comp.getElement().value;
     }
     set_value(value: string) {
-        this.comp.getElement().value = value;
+        let op = this.options.find(o => o.value === value);
+        if (op) {
+            this.comp.getElement().value = op.value;
+        }
     }
     clear_value() {
         this.comp.getElement().value = "";
