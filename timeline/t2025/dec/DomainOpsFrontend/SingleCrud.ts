@@ -189,14 +189,25 @@ export class SingleCrudController {
         this.listDisplayerCtrl.set_comp(this.comp.s.listDisplayer); 
         this.listDisplayerCtrl.setup();
         this.listDisplayerCtrl.on_card_clicked = (data: any) => this.on_card_clicked(data);
-        this.listDisplayerCtrl.on_more_ops_clicked = (data: any, label: string) => this.on_context_menu_clicked(data, label);
-        this.createForm = DynamicFormMainCtrl.dynamicForm(this.createFields);
-        this.updateForm = DynamicFormMainCtrl.dynamicForm(this.updateFields);
-        this.createForm.onSubmit = (data: any) => this.on_create_submit(data);
-        this.updateForm.onSubmit = (data: any) => this.on_update_submit(data);
-        this.comp.s.searchComp.s.plusIcon.update({}, { click: () => this.onPlusClicked() });
+        this.listDisplayerCtrl.on_more_ops_clicked = (data: any, label: string) => this.contextMenus[label](data);
+
+        this.formController.setup();
+        this.formController.createForm.onSubmit = (data: any) => this.on_create_submit(data);
+        this.formController.updateForm.onSubmit = (data: any) => this.on_update_submit(data);
+        this.comp.s.searchComp.s.plusIcon.update({}, { click: () => this.router.relative_navigate("/create") });
         this.viewController.set_comp(ViewComponent());
         this.searchComponentCtrl.onSearch = (params: { type: SearchType; params: any }[]) => this.on_search(params);
+
+        this.router.addRoute("/create/", () => {
+            this.display_on_body([this.formController.get_create_form()]);
+        });
+        this.router.addRoute("/edit/{id}", (params: { id: string }) => this.on_route_to_update(params));
+        this.router.addRoute("/view", () => {
+            this.display_on_body([this.viewController.comp]);
+        });
+        this.router.addRoute("/", () => {
+            this.display_default();
+        });
     }
     set_pageSize(pageSize: number) {
         this.listDisplayerCtrl.set_pageSize(pageSize);
