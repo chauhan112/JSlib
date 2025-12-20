@@ -67,7 +67,7 @@ export class AdvanceRouter {
     }
     private sub_route(router: AdvanceRouter | RouteHandler, path: string, state: any, params: any = {}){
         if (router instanceof AdvanceRouter) {
-            router.route(path, state);
+            router._route(path, state);
         } else {
             router(params, state);
         }
@@ -81,6 +81,9 @@ export class AdvanceRouter {
 
     route(subPath?: string, state?: any) {
         this.call_and_clear_next_route_calls();
+        this._route(subPath, state);
+    }
+    _route(subPath?: string, state?: any) {
         const path = subPath !== undefined ? subPath : (window.location.hash.slice(1) || "/");
         const currentState = state !== undefined ? state : this.state;
         

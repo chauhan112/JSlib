@@ -1,7 +1,6 @@
 import {  SingleCrudController, MainCtrl as SingleCrudMainCtrl } from "../SingleCrud";
 import { backendCall } from "../api_calls";
 import { type SingleCrudModelInterface } from "../SingleCrud";
-import { GlobalStates } from "../../../june/domain-ops/GlobalStates";
 import type { DropdownCtrl, MultiSelectCompCtrl } from "../components/atomic";
 import type { NewDynamicFormCtrl } from "../components/Form";
 import { AdvanceRouter } from "../route/controller";
@@ -67,7 +66,6 @@ export class ActivityPageCtrl {
     comp: any;
     router: AdvanceRouter;
     structurePageCtrl: StructurePageCtrl;
-    display_comp!: (comp: GComponent, href: string) => void;
     nav_selector!: (href: string) => void;
     constructor(){
         
@@ -119,7 +117,6 @@ export class ActivityPageCtrl {
             let ops = data.operations.map((op: any) => ({ value: op.id, label: op.name }));
             this.set_domains(doms, this.singleCrudCtrl.formController.createForm);
             this.set_operations(ops, this.singleCrudCtrl.formController.createForm);
-            this.singleCrudCtrl.router.relative_navigate("/create");
         });
     }
     on_structure_clicked(data: any){
