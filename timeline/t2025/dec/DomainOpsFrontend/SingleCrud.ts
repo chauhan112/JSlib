@@ -51,12 +51,16 @@ export class SingleCrudModel implements SingleCrudModelInterface {
 export const SingleCrud = () => {
     const searchComp = SearchComp();
     searchComp.getElement().classList.remove("p-4");
-
+    
     const listDisplayer = ListDisplayer();
-    return Tools.div({
+    const body = Tools.div({
         class: "w-full flex-col flex gap-2 p-2 ",
         children: [searchComp, listDisplayer],
-    }, {}, { searchComp, listDisplayer });
+    });
+    return Tools.div({
+        class: "w-full flex-col flex gap-2 p-2 ",
+        child: body,
+    }, {}, { searchComp, listDisplayer, body });
 };
 export const ViewComponent = () => {
     return Tools.comp("textarea", {
