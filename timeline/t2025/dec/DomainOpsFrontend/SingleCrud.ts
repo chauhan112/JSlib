@@ -216,24 +216,39 @@ export class SingleCrudController {
         this.render_list();
         this.listDisplayerCtrl.update();
     }
-    onPlusClicked() {
-        let modal = GlobalStates.getInstance().getState("modal");
-        this.createForm.setup();
-        modal.s.handlers.display(this.createForm.comp);
-        modal.s.handlers.show();
-        modal.s.modalTitle.update({ textContent: "Create" });
-        this.createForm.clear_value();
+    on_route_to_update(params: { id: string }) {
+        let unsetter = () => {
+            this.router.add_unset_call(() => {
+                this.formController.updateForm.current_infos = null;
+                this.formController.updateForm.clear_value();
+            });
+        }
+
+        if (this.formController.updateForm.current_infos) {
+            this.formController.updateForm.set_value(this.formController.updateForm.current_infos);
+            this.display_on_body([this.formController.get_update_form()]);
+            unsetter();
+            return;
+        }
+        if(!params.id) {
+            console.error("No id provided");
+            return;
+        }
+        this.model.read(params.id).then((data: any) => {
+            this.formController.updateForm.current_infos = data;
+            this.formController.updateForm.set_value(data);
+            this.display_on_body([this.formController.get_update_form()]);
+            unsetter();
+        }).catch((error: any) => {
+            console.error("Error reading data", error);
+        });
     }
     on_edit_clicked(data: any) {
-        let modal = GlobalStates.getInstance().getState("modal");
-        this.updateForm.setup();
-        modal.s.handlers.display(this.updateForm.comp);
-        modal.s.handlers.show();
-        modal.s.modalTitle.update({ textContent: "Update" });
-        this.updateForm.current_infos = data;
-        this.updateForm.set_value(data);
-        
+        this.router.relative_navigate(`/edit/${data.id}`);
+        this.formController.updateForm.current_infos = data;
+                
     }
+
     on_search(params: { type: SearchType; params: any }[]) {
         if (params.length > 0 ) {
             this.dataManager.apply_filter(UiParamsMap(params));
@@ -243,7 +258,9 @@ export class SingleCrudController {
             this.render_list(true);
         }
     }
-
+    private default_display_on_body(comps: GComponent[]) {
+        this.comp.s.body.update({innerHTML: "", children: comps });
+    }
 }
 export class DataManager {
     data: any[] = [];
