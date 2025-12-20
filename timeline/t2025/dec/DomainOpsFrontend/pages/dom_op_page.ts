@@ -27,25 +27,43 @@ export class DomainOpsCRUDModel implements SingleCrudModelInterface {
     }
 }
 
-export class DomOpsPageCtrl {
+export class DomainCtrl {
     singleCrudCtrl: SingleCrudController;
     model: DomainOpsCRUDModel;
+    nav_selector!: (href: string) => void;
     constructor() {
         this.model = new DomainOpsCRUDModel();
-        this.singleCrudCtrl = SingleCrudMainCtrl.singleCrud(4, this.model, (data: any) => data.name,
+        this.model.type = "Domain";
+        this.singleCrudCtrl = SingleCrudMainCtrl.singleCrud(10, this.model, (data: any) => data.name,
             [{type: "Input", key: "name", params: {attrs: {placeholder: "Enter name"}}}],
             [{type: "Input", key: "name", params: {attrs: {placeholder: "Enter name"}}}]
         );
+        this.singleCrudCtrl.router.updateRoute("/", () => {
+            this.singleCrudCtrl.display_default();
+            this.nav_selector("/domain");
+        });
     }
-    get_domain_page() {
-        this.model.type = "Domain";
-        this.singleCrudCtrl.update();
-        return this.singleCrudCtrl.comp;
+    set_nav_selector(nav_selector: (href: string) => void) {
+        this.nav_selector = nav_selector;
     }
-    get_operation_page() {
+}
+export class OperationCtrl {
+    singleCrudCtrl: SingleCrudController;
+    model: DomainOpsCRUDModel;
+    nav_selector!: (href: string) => void;
+    constructor() {
+        this.model = new DomainOpsCRUDModel();
         this.model.type = "Operation";
-        this.singleCrudCtrl.update();
-        return this.singleCrudCtrl.comp;
+        this.singleCrudCtrl = SingleCrudMainCtrl.singleCrud(10, this.model, (data: any) => data.name,
+            [{type: "Input", key: "name", params: {attrs: {placeholder: "Enter name"}}}],
+            [{type: "Input", key: "name", params: {attrs: {placeholder: "Enter name"}}}]
+        );
+        this.singleCrudCtrl.router.updateRoute("/", () => {
+            this.singleCrudCtrl.display_default();
+            this.nav_selector("/operation");
+        });
     }
-
+    set_nav_selector(nav_selector: (href: string) => void) {
+        this.nav_selector = nav_selector;
+    }
 }

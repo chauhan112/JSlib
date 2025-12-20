@@ -3,18 +3,10 @@ import { SimpleSearchUI2, SimpleSearchUI} from "../../../july/generic-crud/searc
 import { SimpleSearchComp } from "../../../aug/jobAIApply/page";
 import {SearchComp as SearchComp2} from "../../../june/domain-ops/Component";
 import {FilterUI} from "../../../july/generic-crud/search/ui";
-import { Dropdown, DropdownCtrl } from "../components/atomic";
-
-export class MainCtrl {
-    static dropdown(options: { value: string; label: string }[]) {
-        const dropdown = new DropdownCtrl();
-        dropdown.set_comp(Dropdown(options));
-        return dropdown;
-    }
-}
+import { MainCtrl as AtomicMainCtrl } from "../components/atomic";
 
 export const AllSearchComp = () => {
-    const searchCompCtrl = MainCtrl.dropdown([
+    const searchCompCtrl = AtomicMainCtrl.dropdown([
         { value: "domain", label: "Domain" },
         { value: "operation", label: "Operation" },
         {

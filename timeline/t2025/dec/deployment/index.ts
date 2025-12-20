@@ -17,21 +17,18 @@ const get_config_component = (location: string[], title: string) => {
 export const Page = () => {
     
     const menus = [{label: "app-config", href: "/app-config"}, {label: "global-config", href: "/config"}];
-    const routeWebPageCtrl = RouteWebPageMainCtrl.routeWebPage(menus, [
-        {href: "/app-config", page: () => {
-            const listerCrudCtrl = ListDisplayerMainCtrl.listDisplayer([], 10, (data: any) => {
-                Router.getInstance().navigate(`/app-config/${data.id}`);
-            }, undefined, [])
-            get_app_list().then((data: any) => {
-                listerCrudCtrl.set_data(data);
-                listerCrudCtrl.update();
-            });
-            return listerCrudCtrl.comp
-            
-        }},
-        {href: "/config", page: () => {
-            return get_config_component(["global"], "Global Config");
-        }},
-    ], undefined, "Deployment")
+    const routeWebPageCtrl = RouteWebPageMainCtrl.routeWebPage(menus, undefined, "Deployment")
+    routeWebPageCtrl.add_route_page("/app-config", () => {
+        const listerCrudCtrl = ListDisplayerMainCtrl.listDisplayer([], 10, (data: any) => {
+            Router.getInstance().navigate(`/app-config/${data.id}`);
+        }, undefined, [])
+        get_app_list().then((data: any) => {
+            listerCrudCtrl.set_data(data);
+            listerCrudCtrl.update();
+        });
+        return listerCrudCtrl.comp
+        
+    });
+    routeWebPageCtrl.add_route_page("/config", get_config_component(["global"], "Global Config"))
     return routeWebPageCtrl
 };  

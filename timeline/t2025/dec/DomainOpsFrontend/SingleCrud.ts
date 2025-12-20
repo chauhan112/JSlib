@@ -1,11 +1,12 @@
 import { SearchComp, SearchComponentCtrl } from "./components/SearchComponent";
 import { ListDisplayer, ListDisplayerCtrl } from "./components/ListDisplayer";
 import { Tools } from "../../april/tools";
-import { GlobalStates } from "../../june/domain-ops/GlobalStates";
 import { InputType } from "../../june/domain-ops/Model";
 import { Filter, SearchType } from "../../july/generic-crud/search/model";
 import { UiParamsMap } from "../../july/generic-crud/search/controller";
 import { MainCtrl as DynamicFormMainCtrl, NewDynamicFormCtrl } from "./components/Form";
+import { AdvanceRouter } from "./route/controller";
+import { GComponent } from "../../april/GComponent";
 
 export interface SingleCrudModelInterface {
     read_all: () => Promise<any[]>;
@@ -50,12 +51,16 @@ export class SingleCrudModel implements SingleCrudModelInterface {
 export const SingleCrud = () => {
     const searchComp = SearchComp();
     searchComp.getElement().classList.remove("p-4");
-
+    
     const listDisplayer = ListDisplayer();
-    return Tools.div({
+    const body = Tools.div({
         class: "w-full flex-col flex gap-2 p-2 ",
         children: [searchComp, listDisplayer],
-    }, {}, { searchComp, listDisplayer });
+    });
+    return Tools.div({
+        class: "w-full flex-col flex gap-2 p-2 ",
+        child: body,
+    }, {}, { searchComp, listDisplayer, body });
 };
 export const ViewComponent = () => {
     return Tools.comp("textarea", {
@@ -77,6 +82,30 @@ export class ViewController {
         );
     }
 }
+
+export class FormController {
+    createForm!: NewDynamicFormCtrl;
+    updateForm!: NewDynamicFormCtrl;
+    createFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
+    updateFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
+    setup() {
+        this.createForm = DynamicFormMainCtrl.dynamicForm(this.createFields);
+        this.updateForm = DynamicFormMainCtrl.dynamicForm(this.updateFields);
+    }
+    get_create_form() {
+        return this.form(this.createForm.comp, "Create");
+    }
+    private form(comp: any, title: string) {
+        return Tools.div({
+            class: "w-full flex-col flex gap-2 p-2 ",
+            children: [Tools.comp("h3", { class: "text-lg font-semibold text-gray-800 break-all", textContent: title }), comp],
+        });
+    }
+    get_update_form() {
+        return this.form(this.updateForm.comp, "Update");
+    }
+}
+
 export class SingleCrudController {
     comp: any;
     model: SingleCrudModelInterface = new SingleCrudModel();
@@ -84,12 +113,15 @@ export class SingleCrudController {
     searchComponentCtrl: SearchComponentCtrl = new SearchComponentCtrl();
     listDisplayerCtrl: ListDisplayerCtrl = new ListDisplayerCtrl();
     createDataFormCtrl: any = undefined;
-    createForm!: NewDynamicFormCtrl;
-    updateForm!: NewDynamicFormCtrl;
-    createFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
-    updateFields: any[] = [{type: InputType.Input, key: "title", params: {placeholder: "Enter title"}}];
+    formController: FormController = new FormController();
     viewController: ViewController = new ViewController();
     contextMenus: { [key: string]: any } = {};
+    router!: AdvanceRouter;
+    title_getter: (data: any) => string = (data: any) => data.title;
+    on_card_clicked: (data: any) => void = (data: any) => {
+        console.log(data);
+    };
+    display_on_body: (comps: GComponent[]) => void = (comps: GComponent[]) => this.default_display_on_body(comps);
     constructor(){
         this.contextMenus = {
             Edit: this.on_edit_clicked.bind(this),
@@ -97,10 +129,9 @@ export class SingleCrudController {
             View: this.on_view_clicked.bind(this),
         }
     }
-    title_getter: (data: any) => string = (data: any) => data.title;
-    on_card_clicked: (data: any) => void = (data: any) => {
-        console.log(data);
-    };
+    set_router(router: AdvanceRouter) {
+        this.router = router;
+    }
     set_model(model: SingleCrudModelInterface) {
         this.model = model;
     }
@@ -111,23 +142,18 @@ export class SingleCrudController {
         this.model.create(data).then((res_data: any) => {
             this.dataManager.add_data(res_data);
             this.render_list(true);
-            let modal = GlobalStates.getInstance().getState("modal");
-            modal.s.handlers.hide();
+            this.router.go_back();
         });
     }
     on_update_submit(data: any) {
-        const id = this.updateForm.current_infos.id;
+        const id = this.formController.updateForm.current_infos.id;
         
         this.model.update(id, data).then((new_data: any) => {
             this.dataManager.update_data(id, new_data);
-            this.updateForm.current_infos = null;
+            this.formController.updateForm.current_infos = null;
             this.render_list(true);
-            let modal = GlobalStates.getInstance().getState("modal");
-            modal.s.handlers.hide();
+            this.router.go_back();
         });
-    }
-    on_context_menu_clicked(data: any, label: string) {
-        this.contextMenus[label](data);
     }
     on_delete_clicked(data: any) {
         if (confirm("Are you sure?")) {
@@ -138,11 +164,8 @@ export class SingleCrudController {
         }
     }
     on_view_clicked(data: any) {
-        let modal = GlobalStates.getInstance().getState("modal");
-        modal.s.handlers.display(this.viewController.comp);
-        modal.s.handlers.show();
+        this.router.relative_navigate(`/view`);
         this.viewController.set_data(data);
-        modal.s.modalTitle.update({ textContent: "Content View" });
     }
     render_list(fromLocal: boolean = false){
         if (fromLocal) {
@@ -156,20 +179,32 @@ export class SingleCrudController {
             this.dataManager.set_data(data);
         });
     }
+    display_default(){this.display_on_body([this.comp.s.searchComp, this.comp.s.listDisplayer]);}
     setup(){
         this.searchComponentCtrl.set_comp(this.comp.s.searchComp);
         this.searchComponentCtrl.setup();
         this.listDisplayerCtrl.set_comp(this.comp.s.listDisplayer); 
         this.listDisplayerCtrl.setup();
         this.listDisplayerCtrl.on_card_clicked = (data: any) => this.on_card_clicked(data);
-        this.listDisplayerCtrl.on_more_ops_clicked = (data: any, label: string) => this.on_context_menu_clicked(data, label);
-        this.createForm = DynamicFormMainCtrl.dynamicForm(this.createFields);
-        this.updateForm = DynamicFormMainCtrl.dynamicForm(this.updateFields);
-        this.createForm.onSubmit = (data: any) => this.on_create_submit(data);
-        this.updateForm.onSubmit = (data: any) => this.on_update_submit(data);
-        this.comp.s.searchComp.s.plusIcon.update({}, { click: () => this.onPlusClicked() });
+        this.listDisplayerCtrl.on_more_ops_clicked = (data: any, label: string) => this.contextMenus[label](data);
+
+        this.formController.setup();
+        this.formController.createForm.onSubmit = (data: any) => this.on_create_submit(data);
+        this.formController.updateForm.onSubmit = (data: any) => this.on_update_submit(data);
+        this.comp.s.searchComp.s.plusIcon.update({}, { click: () => this.router.relative_navigate("/create") });
         this.viewController.set_comp(ViewComponent());
         this.searchComponentCtrl.onSearch = (params: { type: SearchType; params: any }[]) => this.on_search(params);
+
+        this.router.addRoute("/create/", () => {
+            this.display_on_body([this.formController.get_create_form()]);
+        });
+        this.router.addRoute("/edit/{id}", (params: { id: string }) => this.on_route_to_update(params));
+        this.router.addRoute("/view", () => {
+            this.display_on_body([this.viewController.comp]);
+        });
+        this.router.addRoute("/", () => {
+            this.display_default();
+        });
     }
     set_pageSize(pageSize: number) {
         this.listDisplayerCtrl.set_pageSize(pageSize);
@@ -178,24 +213,39 @@ export class SingleCrudController {
         this.render_list();
         this.listDisplayerCtrl.update();
     }
-    onPlusClicked() {
-        let modal = GlobalStates.getInstance().getState("modal");
-        this.createForm.setup();
-        modal.s.handlers.display(this.createForm.comp);
-        modal.s.handlers.show();
-        modal.s.modalTitle.update({ textContent: "Create" });
-        this.createForm.clear_value();
+    on_route_to_update(params: { id: string }) {
+        let unsetter = () => {
+            this.router.add_unset_call(() => {
+                this.formController.updateForm.current_infos = null;
+                this.formController.updateForm.clear_value();
+            });
+        }
+
+        if (this.formController.updateForm.current_infos) {
+            this.formController.updateForm.set_value(this.formController.updateForm.current_infos);
+            this.display_on_body([this.formController.get_update_form()]);
+            unsetter();
+            return;
+        }
+        if(!params.id) {
+            console.error("No id provided");
+            return;
+        }
+        this.model.read(params.id).then((data: any) => {
+            this.formController.updateForm.current_infos = data;
+            this.formController.updateForm.set_value(data);
+            this.display_on_body([this.formController.get_update_form()]);
+            unsetter();
+        }).catch((error: any) => {
+            console.error("Error reading data", error);
+        });
     }
     on_edit_clicked(data: any) {
-        let modal = GlobalStates.getInstance().getState("modal");
-        this.updateForm.setup();
-        modal.s.handlers.display(this.updateForm.comp);
-        modal.s.handlers.show();
-        modal.s.modalTitle.update({ textContent: "Update" });
-        this.updateForm.current_infos = data;
-        this.updateForm.set_value(data);
-        
+        this.router.relative_navigate(`/edit/${data.id}`);
+        this.formController.updateForm.current_infos = data;
+                
     }
+
     on_search(params: { type: SearchType; params: any }[]) {
         if (params.length > 0 ) {
             this.dataManager.apply_filter(UiParamsMap(params));
@@ -205,7 +255,9 @@ export class SingleCrudController {
             this.render_list(true);
         }
     }
-
+    private default_display_on_body(comps: GComponent[]) {
+        this.comp.s.body.update({innerHTML: "", children: comps });
+    }
 }
 export class DataManager {
     data: any[] = [];
@@ -254,9 +306,14 @@ export class DataManager {
 
 export class MainCtrl {
     static singleCrud(pageSize: number = 10, model?: SingleCrudModelInterface, title_getter?: (data: any) => string, 
-            createFields?: any[], updateFields?: any[]) {
+            createFields?: any[], updateFields?: any[], router?: AdvanceRouter) {
+        // router is used to navigate the page (make sure a parent router is passed with true which means hash change is allowed)
         let singleCrudCtrl = new SingleCrudController();
-        
+        if (router) {
+            singleCrudCtrl.set_router(router);
+        }else{
+            singleCrudCtrl.set_router(new AdvanceRouter(false)); // local router can be used in the parent page so its better to not allow hash change
+        }
         const singleCrud = SingleCrud();
         singleCrudCtrl.set_comp(singleCrud);
         if (model) {
@@ -267,10 +324,10 @@ export class MainCtrl {
             singleCrudCtrl.title_getter = title_getter;
         }
         if (createFields) {
-            singleCrudCtrl.createFields = createFields;
+            singleCrudCtrl.formController.createFields = createFields;
         }
         if (updateFields) {
-            singleCrudCtrl.updateFields = updateFields;
+            singleCrudCtrl.formController.updateFields = updateFields;
         }
         singleCrudCtrl.setup();
         singleCrudCtrl.update();
