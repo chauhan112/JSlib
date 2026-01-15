@@ -214,4 +214,7 @@ export class MainCtrl {
             globalThis.location.hash += "/" + new_path;
         }
     }
+    static go_to_home() {
+        globalThis.location.href = "/"
+    }
 }
