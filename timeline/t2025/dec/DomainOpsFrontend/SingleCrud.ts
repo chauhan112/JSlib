@@ -82,7 +82,6 @@ export class ViewController {
         );
     }
 }
-
 export class FormController {
     createForm!: NewDynamicFormCtrl;
     updateForm!: NewDynamicFormCtrl;
@@ -105,7 +104,6 @@ export class FormController {
         return this.form(this.updateForm.comp, "Update");
     }
 }
-
 export class SingleCrudController {
     comp: any;
     model: SingleCrudModelInterface = new SingleCrudModel();
@@ -302,7 +300,6 @@ export class DataManager {
         }
     }
 }
-
 export class MainCtrl {
     static singleCrud(pageSize: number = 10, model?: SingleCrudModelInterface, title_getter?: (data: any) => string, 
             createFields?: any[], updateFields?: any[], router?: AdvanceRouter) {

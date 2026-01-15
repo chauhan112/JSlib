@@ -12,7 +12,7 @@ export class AdvanceRouter {
     constructor(isRoot: boolean = true) {
         this.isRoot = isRoot;
         if (this.isRoot) {
-            window.addEventListener("hashchange", () => this.route());
+            globalThis.addEventListener("hashchange", () => this.route());
         }
     }
 
@@ -104,7 +104,7 @@ export class AdvanceRouter {
 
     navigate(path: string, state: any = null) {
         this.state = state;
-        window.location.hash = path;
+        globalThis.location.hash = path;
     }
     relative_navigate(path: string, state: any=null) {
         this.state = state;
@@ -112,10 +112,10 @@ export class AdvanceRouter {
         if (path.startsWith("/")) {
             new_path = path.slice(1);
         }
-        if (window.location.hash.endsWith("/")) {
-            window.location.hash += new_path;
+        if (globalThis.location.hash.endsWith("/")) {
+            globalThis.location.hash += new_path;
         } else {
-            window.location.hash += "/" + new_path;
+            globalThis.location.hash += "/" + new_path;
         }
     }
     go_back() {
@@ -198,5 +198,20 @@ export class MainCtrl {
         }
         routeWebPageCtrl.add_route_page("/", routeWebPageCtrl.home_page_getter);
         return routeWebPageCtrl;
+    }
+
+    static navigate(path: string) {
+        globalThis.location.hash = path;
+    }
+    static relative_navigate(path: string) {
+        let new_path = path;
+        if (path.startsWith("/")) {
+            new_path = path.slice(1);
+        }
+        if (globalThis.location.hash.endsWith("/")) {
+            globalThis.location.hash += new_path;
+        } else {
+            globalThis.location.hash += "/" + new_path;
+        }
     }
 }
