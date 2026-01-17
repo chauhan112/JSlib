@@ -1,6 +1,7 @@
 import { Tools } from "../../../april/tools";
 import {CardCompCtrl, MainCtrl as CardCompMainCtrl} from "./atomic";
 import { Pagination } from "../../../july/generic-crud/page";
+import type { GComponent } from "../../../april/GComponent";
 
 
 export const ListDisplayer = () => {
@@ -54,6 +55,11 @@ export class PaginationCtrl {
         this.model.setData(data);
     }
     default_update() {
+        if (this.model.maxPage <= 1) {
+            this.comp.getElement().classList.add("hidden");
+        } else {
+            this.comp.getElement().classList.remove("hidden");
+        }
         this.comp.s.page.update({ textContent: `${this.model.currentPage}/${this.model.maxPage}` });
     }
     setup() {
@@ -68,17 +74,18 @@ export class ListDisplayerCtrl {
     paginationCtrl: PaginationCtrl = new PaginationCtrl();
     on_card_clicked: (data: any) => void = () => {};
     on_more_ops_clicked: (data: any, label: string) => void = () => {};
-    cardCompCreator: (data: any) => CardCompCtrl = (data: any) => this.default_cardCompCreator(data);
+    cardCompCreator: (data: any) => GComponent = (data: any) => this.default_cardCompCreator(data);
     title_getter: (data: any) => string = (data: any) => data.title;
     set_comp(comp: any) {
         this.comp = comp;   
     }
     setup() {
         this.paginationCtrl.set_comp(this.comp.s.pagination);
-        this.paginationCtrl.setup();
         this.paginationCtrl.update = this.update.bind(this);
+        this.paginationCtrl.setup();
+        
     }
-    default_cardCompCreator(data: any) {
+    default_cardCompCreator(data: any): GComponent {
         const cardCompCtrl = CardCompMainCtrl.cardComp(data, this.title_getter);
         cardCompCtrl.onOpsMenuClicked = (data: any, label: string) => this.on_more_ops_clicked(data, label);
         cardCompCtrl.onCardClicked = (data: any) => this.on_card_clicked(data);

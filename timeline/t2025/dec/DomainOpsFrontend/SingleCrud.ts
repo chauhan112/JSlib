@@ -300,6 +300,7 @@ export class DataManager {
         }
     }
 }
+
 export class MainCtrl {
     static singleCrud(pageSize: number = 10, model?: SingleCrudModelInterface, title_getter?: (data: any) => string, 
             createFields?: any[], updateFields?: any[], router?: AdvanceRouter) {
