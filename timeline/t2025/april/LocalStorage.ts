@@ -70,7 +70,6 @@ export class Model {
 
 export class LocalStorageJSONModel extends Model {
     key: string;
-    data: any;
     constructor(key?: string) {
         super();
         this.setLocalStorageKey(key || "LocalStorageModel");
