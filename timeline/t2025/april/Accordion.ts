@@ -3,7 +3,7 @@ import { ChevronDown, Plus } from "lucide";
 import { Undoers } from "./Array";
 import { Tools } from "./tools";
 
-export class AccordionShowOne implements IComponent-*
+export class AccordionShowOne implements IComponent{
     s: { [key: string]: any } = {};
     comp: Repeater | null = null;
     undoer = new Undoers();
