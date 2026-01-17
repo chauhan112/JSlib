@@ -214,6 +214,10 @@ export class MainCtrl {
             globalThis.location.hash += "/" + new_path;
         }
     }
+    static go_back(n: number = 1) {
+        let path = globalThis.location.hash.split("/").slice(0, -n).join("/");
+        globalThis.location.hash = path;
+    }
     static go_to_home() {
         globalThis.location.href = "/"
     }

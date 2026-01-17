@@ -137,10 +137,10 @@ export const RouteWebPage = () => {
     }, {}, { mainBody, sidebar, overlay, header });
 }
 
-export const DefaultPageContent = () => {
+export const DefaultPageContent = (textContent: string = "Page Content") => {
     return Tools.comp("div", {
         children: [
-            Tools.comp("h2", { textContent: "Page Content" }),
+            Tools.comp("h2", { textContent: textContent }),
         ],
     });
 }
