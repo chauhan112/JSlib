@@ -2,7 +2,7 @@ import { SearchComponentCtrl } from "../../../../t2025/dec/DomainOpsFrontend/com
 import { ListDisplayerCtrl } from "../../../../t2025/dec/DomainOpsFrontend/components/ListDisplayer";
 import { SingleCrud } from "../../../../t2025/dec/DomainOpsFrontend/SingleCrud";
 import { SearchType } from "../../../../t2025/july/generic-crud/search/model";
-import { GlobalStates } from "../../../../t2025/june/domain-ops/GlobalStates";
+import { GlobalStates } from "../../../../globalComps/GlobalStates";
 import { MainCtrl as RouteWebPageMainCtrl } from "../../../../t2025/dec/DomainOpsFrontend/route/controller";
 
 export class SearchWithList{

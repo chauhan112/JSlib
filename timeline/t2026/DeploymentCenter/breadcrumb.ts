@@ -1,4 +1,4 @@
-import { Tools } from "../../t2025/april/tools";
+import { Tools } from "../../globalComps/tools";
 import { Atool } from "../../t2025/april/Array";
 
 export interface IBreadcrumbItem {

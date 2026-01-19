@@ -1,5 +1,5 @@
 import { Keyboard, Search, Sliders, Terminal } from "lucide";
-import { Tools } from "../../t2025/april/tools";
+import { Tools } from "../../globalComps/tools";
 import { MainCtrl as RouteWebPageMainCtrl } from "../../t2025/dec/DomainOpsFrontend/route/controller";
 import { RouteWebPage, SidebarCtrl } from "../../t2025/dec/DomainOpsFrontend/route/ui";
 

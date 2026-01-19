@@ -1,4 +1,4 @@
-import { GComponent } from "../../t2025/april/GComponent";
+import { GComponent } from "../../globalComps/GComponent";
 
 export interface IApp {
     name: string;
