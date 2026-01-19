@@ -1,7 +1,7 @@
-import { Tools } from "../../../april/tools";
+import { Tools } from "../../../../globalComps/tools";
 import {CardCompCtrl, MainCtrl as CardCompMainCtrl} from "./atomic";
 import { Pagination } from "../../../july/generic-crud/page";
-import type { GComponent } from "../../../april/GComponent";
+import type { GComponent } from "../../../../globalComps/GComponent";
 
 
 export const ListDisplayer = () => {

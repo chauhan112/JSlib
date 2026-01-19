@@ -1,6 +1,6 @@
 import { Page, JobAddForm, ShowJobDetails } from "./page";
-import { Tools } from "../../april/tools";
-import { GlobalStates } from "../../june/domain-ops/GlobalStates";
+import { Tools } from "../../../globalComps/tools";
+import { GlobalStates } from "../../../globalComps/GlobalStates";
 import { Model, type ModelType } from "./model";
 import { GenericCRUDCtrl } from "../../july/generic-crud/page";
 

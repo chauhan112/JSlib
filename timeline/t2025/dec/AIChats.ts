@@ -1,5 +1,5 @@
 import { InputType } from "../june/domain-ops/Model";
-import { Tools } from "../april/tools";
+import { Tools } from "../../globalComps/tools";
 import { MainCtrl as SingleCrudMainCtrl } from "./DomainOpsFrontend/SingleCrud";
 import { backendCall } from "./DomainOpsFrontend/api_calls";
 import { type SingleCrudModelInterface } from "./DomainOpsFrontend/SingleCrud";

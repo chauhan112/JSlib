@@ -1,5 +1,5 @@
 import { RouteWebPage, DefaultPageContent, SidebarCtrl, Page404 } from "./ui";
-import { GComponent } from "../../../april/GComponent";
+import { GComponent } from "../../../../globalComps/GComponent";
 
 export type RouteHandler = (params: any, state: any) => void;
 

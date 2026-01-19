@@ -1,7 +1,8 @@
-import { Tools } from "../tools";
+import { Tools } from "../../../globalComps/tools";
 import { ListWithCrud } from "../ListWithCrud";
 import { Eye, Trash, Pencil } from "lucide";
 import { GForm, Input } from "../GForm";
+import { DropdownMenu } from "../Select";
 
 export const compCreator = (props: any) => {
     return new Input(props, "input");
@@ -9,6 +10,11 @@ export const compCreator = (props: any) => {
 type FormCompType = "dropdown" | "input" | "textarea";
 type FormCompProps = { type: FormCompType; props: any; key?: string };
 
+const dropdown = (options: Partial<HTMLOptionElement>[], defValue?: any, props: any = {}) => {
+    let comp = new DropdownMenu(options, defValue, props);
+    comp.getElement();
+    return comp;
+}
 export const dropdownComp = (props: any) => {
     let comp = Tools.comp("select", {
         class: "w-full p-2 rounded-md bg-gray-100 text-black",
@@ -52,7 +58,7 @@ export const NewForm = (strucs: FormCompProps[]) => {
                 ...item?.props,
             });
         } else if (item?.type === "dropdown") {
-            return Tools.dropdown(
+            return dropdown(
                 item?.props?.options,
                 null,
                 item?.props.selectProps

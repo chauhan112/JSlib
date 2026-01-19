@@ -1,5 +1,5 @@
-import { GComponent } from "../../april/GComponent";
-import { Tools } from "../../april/tools";
+import { GComponent } from "../GComponent";
+import { Tools } from "../tools";
 import { X } from "lucide";
 
 export const GenericModal = (title: string) => {

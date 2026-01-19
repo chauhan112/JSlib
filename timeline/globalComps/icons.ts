@@ -83,10 +83,3 @@ export class Icon implements IComponent {
     }
 }
 
-export const iconTest = () => {
-    let icon = new Icon(ArrowDown);
-    icon.update({
-        class: "text-red-500 w-12 h-12 ",
-    });
-    return icon;
-};

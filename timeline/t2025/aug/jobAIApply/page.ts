@@ -1,5 +1,5 @@
 import { Brain, Calendar, Cog, List, Plus, Search, Trash } from "lucide";
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 import "./style.css";
 
 export const Header = () => {

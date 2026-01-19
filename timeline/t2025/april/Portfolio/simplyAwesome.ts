@@ -1,5 +1,5 @@
-import { Tools } from "../tools";
-import { GComponent, type IComponent } from "../GComponent";
+import { Tools } from "../../../globalComps/tools";
+import { GComponent, type IComponent } from "../../../globalComps/GComponent";
 
 import {
     GraduationCap,

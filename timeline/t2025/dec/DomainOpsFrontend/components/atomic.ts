@@ -1,6 +1,6 @@
 import { X } from "lucide";
-import { Tools } from "../../../april/tools";
-import { GlobalStates } from "../../../june/domain-ops/GlobalStates";
+import { Tools } from "../../../../globalComps/tools";
+import { GlobalStates } from "../../../../globalComps/GlobalStates";
 import { CardComp, Dropdown, InputComp, Textarea, MultiSelectComponent } from "./atomicComp";
 import { DocumentHandler } from "../../../april/Array";
 

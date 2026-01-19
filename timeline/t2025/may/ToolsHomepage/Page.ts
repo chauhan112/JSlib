@@ -1,4 +1,4 @@
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 import { CircleCheck, type IconNode } from "lucide";
 import { Logo, GoBackOrHome, DEF_TITLE } from "./Components";
 import { Router } from "./Router";

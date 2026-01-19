@@ -1,9 +1,10 @@
-import { GComponent } from "../../april/GComponent";
-import { Tools } from "../../april/tools";
-import { GenericModal } from "../../may/FileSearch/Modal";
+import { CompactModalCtrl } from "./CompactModel";
+import { MultiLayerModalCtrl } from "./multiLayerModal";
 import { ContextMenu } from "./ContextMenu";
-import { MultiLayerModalCtrl } from "../../july/generic-crud/multiLayerModal";
-import { CompactModalCtrl } from "../../aug/LinksOpener/CompactModel";
+import { GenericModal } from "./Modal";
+import type { GComponent } from "../GComponent";
+import { Tools } from "../tools";
+
 
 export class GlobalStates {
     static instance: GlobalStates | null = null;

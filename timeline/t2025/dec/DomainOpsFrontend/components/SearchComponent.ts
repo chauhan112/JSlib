@@ -1,4 +1,4 @@
-import { Tools } from "../../../april/tools";
+import { Tools } from "../../../../globalComps/tools";
 import { InputCompCtrl } from "./atomic";
 import { DropdownCtrl } from "./atomic";
 import { InputComp } from "./atomicComp";
@@ -6,7 +6,7 @@ import { Dropdown } from "./atomicComp";
 import { Plus } from "lucide";
 import { SearchType } from "../../../july/generic-crud/search/model";
 import { FilterUICtrl } from "../../../july/generic-crud/search/ui";
-import { GlobalStates } from "../../../june/domain-ops/GlobalStates";
+import { GlobalStates } from "../../../../globalComps/GlobalStates";
 import type { IInputCompCtrl } from "./atomic";
 export const OptionType = {
     none: "None",

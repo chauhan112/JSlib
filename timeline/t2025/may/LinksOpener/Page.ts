@@ -1,8 +1,8 @@
 // npm install uuid
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 import { LocalStorageJSONModel } from "../../april/LocalStorage";
 import { v4 as uuidv4 } from "uuid";
-import { GComponent } from "../../april/GComponent";
+import { GComponent } from "../../../globalComps/GComponent";
 import { CollectionCard } from "./collectionCard";
 
 const STORE_KEY = "linkCollectionsApp";

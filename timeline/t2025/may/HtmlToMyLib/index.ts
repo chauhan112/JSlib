@@ -1,7 +1,7 @@
 // npm install prettier
 
-import { GComponent } from "../../april/GComponent";
-import { Tools } from "../../april/tools";
+import { GComponent } from "../../../globalComps/GComponent";
+import { Tools } from "../../../globalComps/tools";
 import prettier from "prettier";
 import * as parserEstree from "prettier/plugins/estree";
 import * as parserTypescript from "prettier/plugins/typescript";

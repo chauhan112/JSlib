@@ -27,8 +27,8 @@ import { python } from "@codemirror/lang-python";
 import { html } from "@codemirror/lang-html";
 import { css } from "@codemirror/lang-css";
 import { oneDark } from "@codemirror/theme-one-dark";
-import { Tools } from "../../april/tools";
-import { GComponent } from "../../april/GComponent";
+import { Tools } from "../../../globalComps/tools";
+import { GComponent } from "../../../globalComps/GComponent";
 
 export class CodeMirrorModel {
     private editor: EditorView | null = null;

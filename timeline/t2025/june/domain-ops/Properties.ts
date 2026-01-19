@@ -1,10 +1,10 @@
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 import {
     AttributeForm,
     PropertySection,
 } from "../../april/DomainOps/PropertySection";
 import { type IconNode, Pencil, Trash } from "lucide";
-import { GlobalStates } from "./GlobalStates";
+import { GlobalStates } from "../../../globalComps/GlobalStates";
 import { Model } from "./Model";
 import { Header } from "./FlexTable";
 

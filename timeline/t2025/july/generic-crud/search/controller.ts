@@ -1,7 +1,7 @@
 import { SearchType } from "./model";
 import { FilterUICtrl } from "./ui";
 import { Filter } from "./model";
-import { GlobalStates } from "../../../june/domain-ops/GlobalStates";
+import { GlobalStates } from "../../../../globalComps/GlobalStates";
 
 export const UiParamsMap = (params: { type: SearchType; params: any }[]) => {
     let res: any = [];

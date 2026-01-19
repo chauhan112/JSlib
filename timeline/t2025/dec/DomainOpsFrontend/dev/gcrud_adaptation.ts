@@ -3,7 +3,7 @@ import { DynamicFormController } from "../../../july/DynamicForm";
 import { InputType} from "../../../june/domain-ops/Model";
 import { backendCall } from "../api_calls";
 import { FormSelectCompCtrl } from "../../../aug/jobAIApply/simpleVersion";
-import { Tools } from "../../../april/tools";
+import { Tools } from "../../../../globalComps/tools";
 import { GenericCRUDCtrl } from "../../../july/generic-crud/page";
 import { type  ModelType} from "../../../july/generic-crud/model";
 

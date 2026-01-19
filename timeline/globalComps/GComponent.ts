@@ -1,10 +1,9 @@
-import { Tools } from "./tools";
-
 export interface IComponent {
     s: { [key: string]: any };
     getElement(): HTMLElement | SVGElement;
     getProps(): { [key: string]: any };
 }
+
 export class GComponent implements IComponent {
     handlers: { [key: string]: (...args: any[]) => void } = {};
     s: { [key: string]: any } = {};
@@ -119,97 +118,3 @@ export class Container implements IComponent {
     }
 }
 
-export class Repeater implements IComponent {
-    s: { [key: string]: any } = {};
-    comp: GComponent | null = null;
-    itemComp: { [key: string]: IComponent } = {};
-    getElement(): HTMLElement {
-        if (!this.comp) {
-            this.comp = Tools.comp("div");
-        }
-        return this.comp.getElement();
-    }
-    setData(data: { [key: string]: IComponent }) {
-        this.s.data = data;
-        this.itemComp = {};
-        let crn = [];
-        for (let key in data) {
-            let val = data[key];
-            crn.push(val);
-            this.itemComp[key] = val;
-        }
-        this.getElement();
-        this.comp!.update({
-            children: crn,
-        });
-    }
-    getProps(): { [key: string]: any } {
-        return this.comp!.getProps();
-    }
-}
-
-export class ConditionalComponent implements IComponent {
-    s: { [key: string]: any } = {};
-    comp: GComponent | null = null;
-    constructor() {
-        this.s.conditions = [];
-        this.s.defaultValue = null;
-    }
-    setValue(value: any) {
-        this.s.value = value;
-        this.comp!.update({
-            innerHTML: "",
-        });
-        for (const condition of this.s.conditions) {
-            if (condition.func(value)) {
-                if (condition.comp)
-                    this.comp!.update({
-                        child: condition.comp,
-                    });
-                break;
-            }
-        }
-    }
-    setConditions(
-        conditions: { func: (value: any) => boolean; comp: IComponent }[]
-    ) {
-        this.s.conditions = conditions;
-    }
-
-    getElement(): HTMLElement {
-        if (!this.comp) {
-            this.comp = Tools.div();
-            this.setValue(this.s.defaultValue);
-        }
-        return this.comp.getElement();
-    }
-    display(comp: IComponent) {
-        this.comp!.update({
-            innerHTML: "",
-            child: comp,
-        });
-    }
-    clear() {
-        this.comp!.update({
-            innerHTML: "",
-        });
-    }
-    getProps() {
-        return this.comp!.getProps();
-    }
-}
-
-export class Test {
-    static repeater() {
-        let repeater = new Repeater();
-        repeater.setData({
-            "1": Tools.comp("div", {
-                textContent: "hello",
-            }),
-            "2": Tools.comp("div", {
-                textContent: "world",
-            }),
-        });
-        return repeater;
-    }
-}

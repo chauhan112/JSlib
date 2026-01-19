@@ -1,5 +1,5 @@
 import { Pencil, Trash } from "lucide";
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 
 export const SingleLinkComp = (link: {
     id: string;

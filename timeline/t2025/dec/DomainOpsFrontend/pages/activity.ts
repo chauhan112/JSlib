@@ -4,7 +4,7 @@ import { type SingleCrudModelInterface } from "../SingleCrud";
 import type { DropdownCtrl, MultiSelectCompCtrl } from "../components/atomic";
 import type { NewDynamicFormCtrl } from "../components/Form";
 import { AdvanceRouter } from "../route/controller";
-import { Tools } from "../../../april/tools";
+import { Tools } from "../../../../globalComps/tools";
 
 export class ActivityCRUDModel implements SingleCrudModelInterface {
     type: string = "Activity";

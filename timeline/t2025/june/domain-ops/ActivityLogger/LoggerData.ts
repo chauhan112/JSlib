@@ -1,6 +1,6 @@
 import { DynamicFormController } from "../../../july/DynamicForm";
 import { GenericForm, Params } from "../Form";
-import { GlobalStates } from "../GlobalStates";
+import { GlobalStates } from "../../../../globalComps/GlobalStates";
 import { Model } from "../Model";
 import { FlexTable } from "../FlexTable";
 

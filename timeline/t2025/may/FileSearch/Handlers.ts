@@ -1,5 +1,5 @@
 import { StringTool, FileTools, GitTools } from "./tools";
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 
 export const Allowed_Extensions = [
     ".js",

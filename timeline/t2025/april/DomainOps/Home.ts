@@ -1,5 +1,5 @@
-import { GComponent, type IComponent } from "../GComponent";
-import { Tools } from "../tools";
+import { GComponent, type IComponent } from "../../../globalComps/GComponent";
+import { Tools } from "../../../globalComps/tools";
 import { Sidebar } from "./Sidebar";
 import { PropertySection } from "./PropertySection";
 import { Main as ModalMain } from "../Modal";

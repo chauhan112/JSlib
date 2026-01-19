@@ -1,5 +1,5 @@
-import { GComponent, type IComponent } from "../../april/GComponent";
-import { Tools } from "../../april/tools";
+import { GComponent, type IComponent } from "../../../globalComps/GComponent";
+import { Tools } from "../../../globalComps/tools";
 
 export class ListCrud {
     private viewFunc: (label: string, val: any) => IComponent;

@@ -1,7 +1,7 @@
 import { MainCtrl as RouteWebPageMainCtrl } from "./route/controller";
 import { DomainCtrl, OperationCtrl } from "./pages/dom_op_page";
 import { ActivityPageCtrl } from "./pages/activity";
-import { GComponent } from "../../april/GComponent";
+import { GComponent } from "../../../globalComps/GComponent";
 
 export const Page = () => {
     const domainCtrl = new DomainCtrl();

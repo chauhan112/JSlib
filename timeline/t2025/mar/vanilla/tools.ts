@@ -1,6 +1,6 @@
 import { type IconNode } from "lucide";
 import { ConditionalComponent, GComponent, Grouper } from "./Components";
-import { Icon } from "../../april/icons";
+import { Icon } from "../../../globalComps/icons";
 import { type IComponent } from "./interfaces";
 
 export class CITTools {

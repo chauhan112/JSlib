@@ -1,5 +1,5 @@
 import { Pencil, Plus, Trash } from "lucide";
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 
 export const TableColumns = {
     three_cols: {

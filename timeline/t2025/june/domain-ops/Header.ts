@@ -1,5 +1,5 @@
 import { ChevronLeft } from "lucide";
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 import { AppLogoSVG } from "./Logo";
 export const Header = () => {
     const { svg } = AppLogoSVG();

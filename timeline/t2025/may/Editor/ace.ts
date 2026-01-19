@@ -26,8 +26,8 @@ import "ace-builds/src-noconflict/mode-typescript";
 import "ace-builds/src-noconflict/mode-json";
 
 import "ace-builds/src-noconflict/ext-language_tools";
-import { Tools } from "../../april/tools";
-import { GComponent } from "../../april/GComponent";
+import { Tools } from "../../../globalComps/tools";
+import { GComponent } from "../../../globalComps/GComponent";
 
 ace.config.set("basePath", "/node_modules/ace-builds/src-noconflict/");
 

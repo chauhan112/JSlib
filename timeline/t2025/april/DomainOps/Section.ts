@@ -1,7 +1,7 @@
-import { Tools } from "../tools";
+import { Tools } from "../../../globalComps/tools";
 
 import { create, readAll, deleteItem, updateName } from "./api/pythonAnywhere";
-import { GComponent } from "../GComponent";
+import { GComponent } from "../../../globalComps/GComponent";
 import { GForm } from "../GForm";
 import { ListWithCrud } from "../ListWithCrud";
 import { ListWithCrudWrapper } from "./ListWithCrudWrapper";

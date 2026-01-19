@@ -1,4 +1,4 @@
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 import { InputWithLabel } from "./LabeledInput";
 import {
     LightFsWrapper,
@@ -8,7 +8,7 @@ import {
 } from "./model";
 
 import { AceEditor } from "../Editor/ace";
-import { GenericModal } from "./Modal";
+import { GenericModal } from "../../../globalComps/GlobalStates/Modal";
 import { SearchComponent } from "./Search";
 
 export const TITLE = "Clone Git Repo & Search Files";

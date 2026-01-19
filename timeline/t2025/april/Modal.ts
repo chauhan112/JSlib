@@ -1,5 +1,5 @@
-import { type IComponent, Container } from "./GComponent";
-import { Tools } from "./tools";
+import { type IComponent, Container } from "../../globalComps/GComponent";
+import { Tools } from "../../globalComps/tools";
 
 export class Modal implements IComponent {
     s: { [key: string]: any } = {};

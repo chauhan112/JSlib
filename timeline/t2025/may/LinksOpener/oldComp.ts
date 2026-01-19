@@ -1,4 +1,4 @@
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 export const CardComponent = (title: string, description: string) => {
     return Tools.div({
         class: "tool-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col items-center text-center h-[fit-content]",

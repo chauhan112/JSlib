@@ -1,4 +1,4 @@
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 import { PropertiesCtrl } from "./Properties";
 import { NewDesignCtrl } from "./NewDesign";
 import { Atool } from "../../april/Array";

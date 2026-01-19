@@ -1,9 +1,9 @@
 import { Atool } from "../../april/Array";
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 import { Header } from "./page";
 import { getCVCreatePrompt, getMotivationCreatePrompt } from "./prompts";
 import { LocalStorageJSONModel } from "../../april/LocalStorage";
-import { GlobalStates } from "../../june/domain-ops/GlobalStates";
+import { GlobalStates } from "../../../globalComps/GlobalStates";
 export const Label = (text: string, args: any) => {
     return Tools.comp("label", {
         textContent: text,

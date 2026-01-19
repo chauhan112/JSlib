@@ -1,5 +1,5 @@
-import { type IComponent, GComponent, Container } from "../GComponent";
-import { Tools } from "../tools";
+import { type IComponent, GComponent, Container } from "../../../globalComps/GComponent";
+import { Tools } from "../../../globalComps/tools";
 import { Edit, Plus, Trash, X } from "lucide";
 import { Modal } from "../Modal";
 import {
@@ -8,6 +8,18 @@ import {
     deleteProperty,
     updateProperty,
 } from "./api/pythonAnywhere";
+import { Input } from "../GForm";
+import { DropdownMenu } from "../Select";
+
+const input = (props: { [key: string]: any }, typ: string = "input") => {
+    let comp = new Input(props, typ);
+    return comp;
+}
+const dropdown = (options: Partial<HTMLOptionElement>[], defValue?: any, props: any = {}) => {
+    let comp = new DropdownMenu(options, defValue, props);
+    comp.getElement();
+    return comp;
+}
 
 export class Table implements IComponent {
     s: { [key: string]: any } = {};
@@ -120,14 +132,14 @@ export class AttributeForm implements IComponent {
             }
         );
 
-        const keyInput = Tools.input({
+        const keyInput = input({
             class: "p-1 outline-slate-500 w-full border",
             key: "key",
             placeholder: "Key",
             type: "text",
         });
 
-        const typeSelect = Tools.dropdown([
+        const typeSelect = dropdown([
             {
                 value: "string",
                 textContent: "string",
@@ -139,7 +151,7 @@ export class AttributeForm implements IComponent {
         ]);
         typeSelect.comp!.getElement().classList.toggle("w-full");
 
-        const valueInput = Tools.input(
+        const valueInput = input(
             {
                 class: "p-1 mt-2 w-full outline-slate-500 border",
                 key: "value",

@@ -1,8 +1,8 @@
-import { Tools } from "../tools";
+import { Tools } from "../../../globalComps/tools";
 import { AccordionShowMany } from "../Accordion";
 import { ActivitiesContent } from "./ActivitiesCrud";
 import { DomainsContent, OperationsContent } from "./DomainOps";
-import { GComponent, type IComponent } from "../GComponent";
+import { GComponent, type IComponent } from "../../../globalComps/GComponent";
 
 export class Sidebar implements IComponent {
     accordion: AccordionShowMany;

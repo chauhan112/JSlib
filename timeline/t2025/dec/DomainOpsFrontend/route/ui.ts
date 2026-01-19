@@ -1,6 +1,6 @@
-import { Tools } from "../../../april/tools";
+import { Tools } from "../../../../globalComps/tools";
 import { Menu, X } from "lucide";
-import { GComponent } from "../../../april/GComponent";
+import { GComponent } from "../../../../globalComps/GComponent";
 
 
 export const Header = () => {
