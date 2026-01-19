@@ -1,5 +1,4 @@
-import { Tools } from "../../../../t2025/april/tools";
-import { backendCall } from "../../../../t2025/dec/DomainOpsFrontend/api_calls";
+import { Tools } from "../../../../globalComps/tools";
 import { ListDisplayerCtrl, MainCtrl as ListDisplayerMainCtrl } from "../../../../t2025/dec/DomainOpsFrontend/components/ListDisplayer";
 export const ManagePage = () => {
     let cloneForm = Tools.comp("form", {
@@ -7,12 +6,14 @@ export const ManagePage = () => {
         children: [
             Tools.comp("input", {
                 type: "text",
+                name: "url",
                 required: "",
                 placeholder: "https://github.com/user/repo",
                 class:
                     "flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base",
             }),
             Tools.comp("button", {
+                key: "cloneBtn",
                 type: "submit",
                 class:
                     "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors font-medium w-full sm:w-auto cursor-pointer",
@@ -84,13 +85,11 @@ export const ManagePage = () => {
 
 export class ManagePageCtrl {
     comp: any;
-    backend_url: string = "";
-    api_key: string = "";
     repoListCtrl: ListDisplayerCtrl = ListDisplayerMainCtrl.listDisplayer([], 10, this.on_repo_clicked, this.on_more_ops_clicked, [{label: "pull"}, {label: "delete"}]);
     setup() {
         this.comp = ManagePage();
-        this.comp.s.deleteAllBtn.update({}, { click: this.on_delete_all });
-        this.comp.s.cloneForm.update({}, { submit: this.on_submit_clone_form });
+        this.comp.s.deleteAllBtn.update({}, { click: this.on_delete_all.bind(this) });
+        this.comp.s.cloneForm.update({}, { submit: this.on_submit_clone_form.bind(this) });
         this.repoListCtrl.title_getter = (data: any) => data.name;
         this.comp.s.repoList.update({ innerHTML: "", child: this.repoListCtrl.comp });
         this.populate_repo_list();
@@ -98,15 +97,42 @@ export class ManagePageCtrl {
     async fetch_repos_list() {
         return [{name: "repo1"}, {name: "repo2"}, {name: "repo3"}, {name: "repo4"}, ];
     }
-    on_submit_clone_form(e: Event) {
+    async git_clone(gitUrl_or_sshlink: string) {
+        console.log("git_clone", gitUrl_or_sshlink);
+    }
+    private async on_submit_clone_form(e: Event) {
         e.preventDefault();
-        console.log("submit clone form");
+        let form = e.target as HTMLFormElement;
+        const formData = new FormData(form);
+        const values = Object.fromEntries(formData.entries());
+        let gitUrl_or_sshlink = values.url as string;
+        this.comp.s.cloneForm.s.cloneBtn.update({
+            disabled: true,
+            textContent: "Cloning...",
+        });
+        try {
+            let res = await this.git_clone(gitUrl_or_sshlink);
+            this.comp.s.cloneForm.s.cloneBtn.update({
+                textContent: "Clone",
+                disabled: false,
+            });
+            form.reset();
+            this.populate_repo_list();
+        } catch (error) {
+            console.error(error);
+        }
     }
-    on_delete_all() {
+    
+    async delete_all() {
         console.log("delete all");
+        return "deleted all";
     }
-    call_backend(op: string, payload: any) {
-        return backendCall(op, payload, "git-cloner");
+    private async on_delete_all() {
+        if (confirm("Are you sure you want to delete all repositories?")) {
+            let res = await this.delete_all();
+            console.log(res);
+            this.populate_repo_list();
+        }
     }
     populate_repo_list() {
         this.fetch_repos_list().then((res: any) => {
