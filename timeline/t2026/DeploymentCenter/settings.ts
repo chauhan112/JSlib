@@ -1,12 +1,12 @@
-import type { GComponent } from "../../t2025/april/GComponent";
-import { Tools } from "../../t2025/april/tools";
+import type { GComponent } from "../../globalComps/GComponent";
+import { Tools } from "../../globalComps/tools";
 import { Settings } from "lucide";
 import { MainCtrl as RouteWebPageMainCtrl } from "../../t2025/dec/DomainOpsFrontend/route/controller";
 import { type IApp, type IRouteController, GRouteController } from "./routeController";
 import { DefaultPageContent } from "../../t2025/dec/DomainOpsFrontend/route/ui";
 import { MainCtrl as LocalStorageConfigurerMainCtrl, LocalStorageConfigurer } from "../../t2025/dec/localStorageSetter";
 import { AppCard } from "./Components";
-import { DefaultPageSkeleton } from "./apps/defaults";
+import { DefaultPageSkeleton, MainCtrl as DefaultPageSkeletonMainCtrl } from "./apps/defaults";
 
 const Section = (title: string, children: GComponent[]) => {
     return Tools.comp("section", {
@@ -67,15 +67,15 @@ export class SettingsPageCtrl extends GRouteController implements IRouteControll
     comp: any | undefined;
     private apps: IApp[] = [];
     sub_routes: string[] = ["global", "apps"];
-    ctrl: DefaultPageSkeleton = new DefaultPageSkeleton("/settings");
+    ctrl: DefaultPageSkeleton;
     localStorageSetterCtrl:LocalStorageConfigurer;
     private path: string = "";
     constructor() {
         super();
         this.localStorageSetterCtrl = LocalStorageConfigurerMainCtrl.localStorageConfigurer("DeploymentCenterSettings");
+        this.ctrl = DefaultPageSkeletonMainCtrl.defaultPageSkeleton("/settings", {name: "Settings", href: "/settings", subtitle: "Settings"});
     }
     setup() {
-        this.comp = SettingsPage();
         this.comp.s.global_config_panel.update({}, { click: () => RouteWebPageMainCtrl.navigate("/settings/global") });
         this.set_apps(this.apps);
     }
@@ -99,9 +99,10 @@ export class SettingsPageCtrl extends GRouteController implements IRouteControll
     }
     set_apps(apps: IApp[]) {
         this.apps = apps;
+        let apps_with_settings = apps.filter(app => app.params?.length && app.params.length > 0);
         this.comp.s.appList.update({
             innerHTML: "",
-            children: apps.map(app => MainCtrl.appCard({name: app.name, subtitle: `${app.params?.length} settings`, href: app.href})),
+            children: apps_with_settings.map(app => MainCtrl.appCard({name: app.name, subtitle: `${app.params?.length} settings`, href: app.href})),
         });
     }
     matches_path(path: string): boolean {
@@ -109,9 +110,7 @@ export class SettingsPageCtrl extends GRouteController implements IRouteControll
         return path.startsWith("/settings");
     }
     get_component({parent, params}: {parent: any, params?: string[]}): GComponent {
-        if (!this.comp) {
-            this.setup();
-        }
+
         this.set_apps(parent.home_route_ctrl.apps);
         let res = this.ctrl.get_component(params);
         this.ctrl.body_comp.update({innerHTML: "", child: this.get_body_comp(this.path)});

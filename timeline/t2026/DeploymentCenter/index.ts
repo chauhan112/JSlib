@@ -1,9 +1,9 @@
-import { Tools } from "../../t2025/april/tools";
+import { Tools } from "../../globalComps/tools";
 import { DefaultPageContent } from "../../t2025/dec/DomainOpsFrontend/route/ui";
 import { type IApp, type IRouteController } from "./routeController";
-import { HomeRouteController, MainCtrl as DefaultPageSkeletonMainCtrl } from "./apps/defaults";
-import { SettingsPageCtrl } from "./settings";
-import { GitRepoPageCtrl } from "./apps/git-cloner";
+import { HomeRouteController, MainCtrl as DafaultCompCtrl } from "./apps/defaults";
+import { SettingsPageCtrl, MainCtrl as SettingsPageMainCtrl } from "./settings";
+import { MainCtrl as GitRepoPageMainCtrl, GitRepoPageCtrl } from "./apps/git-cloner";
 export const DeploymentCenterPage = () => {
     return Tools.comp("div", {
         class: "flex-1 flex flex-col",
@@ -15,8 +15,8 @@ export class DeploymentCenterPageCtrl {
     comp: any;
     apps: {name: string, href: string}[] = [];
     routes: IRouteController[] = [];
-    home_route_ctrl: HomeRouteController = new HomeRouteController();
-    settings_route_ctrl: SettingsPageCtrl = new SettingsPageCtrl();
+    home_route_ctrl: HomeRouteController = DafaultCompCtrl.homeRouteController();
+    settings_route_ctrl: SettingsPageCtrl = SettingsPageMainCtrl.settingsPage();
 
     constructor() {
         globalThis.addEventListener("hashchange", () => this.route());
@@ -41,7 +41,8 @@ export class DeploymentCenterPageCtrl {
         }
         for (const route of this.routes) {
             if (route.matches_path(path)) {
-                let comp = route.get_component({parent: this, params: this.settings_route_ctrl.get_app_infos(route.get_info())});
+                let params = this.settings_route_ctrl.get_app_infos(route.get_info());
+                let comp = route.get_component({parent: this, params});
                 this.comp.update({innerHTML: "", child: comp});
                 return;
             }
@@ -53,7 +54,6 @@ export class DeploymentCenterPageCtrl {
         for (const route of this.routes) {
             if (route.matches_path(path)) {
                 let comp = route.get_component({parent: this});
-                console.log(route.get_info());
                 this.comp.update({innerHTML: "", child: comp});
                 return;
             }
@@ -64,10 +64,10 @@ export class DeploymentCenterPageCtrl {
 export const DeploymentCenter = () => {
     const deploymentCenterPageCtrl = new DeploymentCenterPageCtrl();
     deploymentCenterPageCtrl.set_comp(DeploymentCenterPage());
-    let gitRepoSearchRouteCtrl = new GitRepoPageCtrl();
+    let gitRepoSearchRouteCtrl = GitRepoPageMainCtrl.gitRepoPage();
     deploymentCenterPageCtrl.add_app(gitRepoSearchRouteCtrl);
     for (let i = 0; i < 20; i++) {
-        let app2RouteCtrl = DefaultPageSkeletonMainCtrl.defaultPageSkeleton(`/app-${i}`, {
+        let app2RouteCtrl = DafaultCompCtrl.defaultPageSkeleton(`/app-${i}`, {
             name: `App ${i}`, href: `/app-${i}`, subtitle: `app ${i}`, params: []
         });
         deploymentCenterPageCtrl.add_app(app2RouteCtrl);

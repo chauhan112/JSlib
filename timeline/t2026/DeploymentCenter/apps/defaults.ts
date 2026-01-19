@@ -1,10 +1,10 @@
 import { HeaderWithSearch, HeaderController } from "../Components";
-import { Tools } from "../../../t2025/april/tools";
+import { Tools } from "../../../globalComps/tools";
 import { MainCtrl as ListDisplayerMainCtrl, ListDisplayerCtrl } from "../../../t2025/dec/DomainOpsFrontend/components/ListDisplayer";
 import { DefaultPageContent } from "../../../t2025/dec/DomainOpsFrontend/route/ui";
 import { MainCtrl as SettingsPageMainCtrl } from "../settings";
 import type { IRouteController, IApp } from "../routeController";
-import type { GComponent } from "../../../t2025/april/GComponent";
+import type { GComponent } from "../../../globalComps/GComponent";
 import { GRouteController } from "../routeController";
 
 
@@ -33,6 +33,8 @@ export class DefaultPageSkeleton extends GRouteController implements IRouteContr
     constructor(path: string) {
         super();
         this.path = path;
+    }
+    setup() {
         this.header_ctrl.set_comp(HeaderWithSearch());
         this.header_ctrl.setup();
         this.header_ctrl.comp.s.search.update({class: "hidden"});
@@ -66,7 +68,6 @@ export class HomeRouteController extends GRouteController implements IRouteContr
     constructor() {
         super();
         this.header_comp = HeaderWithSearch();
-        this.setup();
     }
 
     setup() {
@@ -116,18 +117,24 @@ export class HomeRouteController extends GRouteController implements IRouteContr
     }
 }
 export class MainCtrl  {
+    static homeRouteController() {
+        const homeRouteController = new HomeRouteController();
+        homeRouteController.setup();
+        return homeRouteController;
+    }
     static route(url: string, compGetter: (params?: any) => GComponent): IRouteController {
         const equalRouteController = new EqualRouteController();
         equalRouteController.set_path(url);
         equalRouteController.set_compGetter(compGetter);
         return equalRouteController;
     }
-    static defaultPageSkeleton(path: string, info: IApp, body_comp_func?: (params: any) => GComponent): IRouteController {
+    static defaultPageSkeleton(path: string, info: IApp, body_comp_func?: (params: any) => GComponent): DefaultPageSkeleton {
         const defaultPageSkeleton = new DefaultPageSkeleton(path);
         defaultPageSkeleton.set_info(info);
         if (body_comp_func) {
             defaultPageSkeleton.set_body_comp_func(body_comp_func);
         }
+        defaultPageSkeleton.setup();
         return defaultPageSkeleton;
     }
 }
