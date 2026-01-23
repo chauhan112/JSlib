@@ -186,6 +186,7 @@ export class RouteWebPageController {
 }
 
 export class MainCtrl {
+    private static params: any = {};
     static routeWebPage(menus: { label: string, href: string }[], home_page?: () => GComponent, app_name: string = "DomainOps") {
         const routeWebPageCtrl = new RouteWebPageController();
         const routeWebPage = RouteWebPage();
@@ -200,10 +201,20 @@ export class MainCtrl {
         return routeWebPageCtrl;
     }
 
-    static navigate(path: string) {
+    static get_params() {
+        return this.params;
+    }
+    static set_params(params: any) {
+        if (params) this.params = params;
+        else this.params = {};
+    }
+    static navigate(path: string, params?: any) {
+        this.set_params(params);
+
         globalThis.location.hash = path;
     }
-    static relative_navigate(path: string) {
+    static relative_navigate(path: string, params?: any) {
+        this.set_params(params);
         let new_path = path;
         if (path.startsWith("/")) {
             new_path = path.slice(1);
@@ -214,11 +225,13 @@ export class MainCtrl {
             globalThis.location.hash += "/" + new_path;
         }
     }
-    static go_back(n: number = 1) {
+    static go_back(n: number = 1, params?: any) {
+        this.set_params(params);
         let path = globalThis.location.hash.split("/").slice(0, -n).join("/");
         globalThis.location.hash = path;
     }
-    static go_to_home() {
+    static go_to_home(params?: any) {
+        this.set_params(params);
         globalThis.location.href = "/"
     }
 }
