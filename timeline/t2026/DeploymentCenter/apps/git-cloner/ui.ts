@@ -1,3 +1,4 @@
+import { GlobalStates } from "../../../../globalComps/GlobalStates";
 import { Tools } from "../../../../globalComps/tools";
 import { ListDisplayerCtrl, MainCtrl as ListDisplayerMainCtrl } from "../../../../t2025/dec/DomainOpsFrontend/components/ListDisplayer";
 export const ManagePage = () => {
@@ -28,7 +29,7 @@ export const ManagePage = () => {
     });
     let repoList = Tools.div({ class: "flex flex-col gap-2" });
     return Tools.comp("div", {
-        class: "bg-white rounded-lg shadow-md p-4 md:p-6",
+        class: "bg-white rounded-lg shadow-md p-4 md:p-6 flex flex-col h-full",
         children: [
             Tools.comp("section", {
                 class: "mb-8",
@@ -41,7 +42,7 @@ export const ManagePage = () => {
                 ],
             }),
             Tools.comp("section", {
-                class: "mb-8",
+                class: "mb-8 flex flex-1 flex-col",
                 children: [
                     Tools.comp("h2", {
                         class: "text-lg font-semibold mb-3 text-gray-700",
@@ -85,7 +86,8 @@ export const ManagePage = () => {
 
 export class ManagePageCtrl {
     comp: any;
-    repoListCtrl: ListDisplayerCtrl = ListDisplayerMainCtrl.listDisplayer([], 10, this.on_repo_clicked, this.on_more_ops_clicked, [{label: "pull"}, {label: "delete"}]);
+    repoListCtrl: ListDisplayerCtrl = ListDisplayerMainCtrl.listDisplayer([], 10, this.on_repo_clicked.bind(this), 
+        this.on_more_ops_clicked.bind(this), [{label: "pull"}, {label: "delete"}]);
     setup() {
         this.comp = ManagePage();
         this.comp.s.deleteAllBtn.update({}, { click: this.on_delete_all.bind(this) });
@@ -99,6 +101,7 @@ export class ManagePageCtrl {
     }
     async git_clone(gitUrl_or_sshlink: string) {
         console.log("git_clone", gitUrl_or_sshlink);
+        return {response: {error: "failed to clone repository"}};
     }
     private async on_submit_clone_form(e: Event) {
         e.preventDefault();
@@ -107,19 +110,22 @@ export class ManagePageCtrl {
         const values = Object.fromEntries(formData.entries());
         let gitUrl_or_sshlink = values.url as string;
         this.comp.s.cloneForm.s.cloneBtn.update({
-            disabled: true,
             textContent: "Cloning...",
         });
         try {
-            let res = await this.git_clone(gitUrl_or_sshlink);
+            await this.git_clone(gitUrl_or_sshlink);
             this.comp.s.cloneForm.s.cloneBtn.update({
                 textContent: "Clone",
-                disabled: false,
             });
             form.reset();
             this.populate_repo_list();
-        } catch (error) {
-            console.error(error);
+            GlobalStates.getInstance().states.notification.addToast("repository cloned successfully", "repository cloned successfully", "success");
+        } catch (error: any) {
+            GlobalStates.getInstance().states.notification.addToast("failed to clone repository", error?.response?.data?.detail as string, "error");
+            this.comp.s.cloneForm.s.cloneBtn.update({
+                textContent: "Clone",
+            })
+            return;
         }
     }
     
@@ -132,6 +138,7 @@ export class ManagePageCtrl {
             let res = await this.delete_all();
             console.log(res);
             this.populate_repo_list();
+            GlobalStates.getInstance().states.notification.addToast("all repositories deleted successfully", "all repositories deleted successfully", "success");
         }
     }
     populate_repo_list() {
@@ -143,7 +150,26 @@ export class ManagePageCtrl {
     on_repo_clicked(data: any) {
         console.log(data);
     }
-    on_more_ops_clicked(data: any, label: string) {
-        console.log(data, label);
+    private async on_more_ops_clicked(data: {name: string, url: string}, label: string) {
+        try{
+            if (label === "pull") {
+                await this.git_pull(data);
+                GlobalStates.getInstance().states.notification.addToast("repository pulled successfully", "", "success");
+            } else if (label === "delete") {
+                await this.git_delete(data);
+                this.populate_repo_list();
+                GlobalStates.getInstance().states.notification.addToast("repository deleted successfully", "", "success");
+            }
+        } catch (error: any) {
+            GlobalStates.getInstance().states.notification.addToast("failed to " + label, error?.response?.data?.detail as string, "error");
+        }
+    }
+    async git_pull(data: {name: string, url: string}) {
+        console.log("git_pull", data.name);
+        return {response: {error: "failed to pull repository"}};
+    }
+    async git_delete(data: {name: string, url: string}) {
+        console.log("git_delete", data.name);
+        return {response: {error: "failed to delete repository"}};
     }
 }

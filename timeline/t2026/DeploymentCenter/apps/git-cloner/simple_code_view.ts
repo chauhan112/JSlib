@@ -11,7 +11,7 @@ const var_file_status = Tools.comp("span", {
 export const SimpleCodeView = () => {
     const goBackBtn = Tools.icon(ArrowLeft, { class: "w-8 h-8 cursor-pointer" })
     const code_container = Tools.comp("div", {
-        class: "font-mono text-xs md:text-sm min-w-full pb-4",
+        class: "font-mono text-xs md:text-sm min-w-full pb-4 text-slate-400",
         children: [
             Tools.comp("div", {
                 class: "text-slate-500 text-center mt-10 p-4",
@@ -51,7 +51,7 @@ export const SimpleCodeView = () => {
     });
 }
 function renderCode(els:any, text:string, highlightLineNum:number) {
-    els.fileContentDisplay.innerHTML = '';
+    els.getElement().innerHTML = '';
     const lines = text.split('\n');
     
     lines.forEach((line, index) => {
@@ -70,7 +70,7 @@ function renderCode(els:any, text:string, highlightLineNum:number) {
 
         row.appendChild(numSpan);
         row.appendChild(contentSpan);
-        els.fileContentDisplay.appendChild(row);
+        els.getElement().appendChild(row);
     });
 
     if (highlightLineNum) {
@@ -89,5 +89,8 @@ export class SimpleCodeViewCtrl {
     }
     go_back() {
         RouteWebPageMainCtrl.go_back(2);
+    }
+    set_code(code: string, line: number) {
+        renderCode(this.comp.s.code_container, code, line);
     }
 }
