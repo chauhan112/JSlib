@@ -8,8 +8,20 @@ import { MainCtrl as SearchWithListMainCtrl, SearchWithList } from "./search_wit
 import { SimpleCodeViewCtrl } from "./simple_code_view";
 import { ArrowLeft } from "lucide";
 import { add_url, backendCall } from "../../backend_call";
-import { GlobalStates } from "../../../../globalComps/GlobalStates";
+import { DropdownCtrl, MainCtrl as AtomicMainCtrl } from "../../../../t2025/dec/DomainOpsFrontend/components/atomic";
+import { SearchType } from "../../../../t2025/july/generic-crud/search/model";
+
 // git@github.com:chauhan112/apps-center.git
+
+class GitUtils {
+    static extensions = [".py", ".ts", ".js", ".jsx", ".tsx"];
+    static async list_repos(params: any) {
+        let url = add_url(params["backend-url"], "api/github/list_repos");
+        const response = await backendCall(url, {}, params["api-key"]);
+        return response.data.response.map((repo: any) => ({name: repo.local_path, url: repo.repo_url}));
+    }
+}
+
 export class GitRepoManagePageCtrl extends GRouteController implements IRouteController {
     ctrl: ManagePageCtrl | undefined;
     params: any;
@@ -20,18 +32,14 @@ export class GitRepoManagePageCtrl extends GRouteController implements IRouteCon
         this.params = params.params;
         if (!this.ctrl) {
             this.ctrl = new ManagePageCtrl();
-            this.ctrl.fetch_repos_list = this.list_repos.bind(this);
+            this.ctrl.fetch_repos_list = async () => await GitUtils.list_repos(this.params);
             this.ctrl.git_clone = this.git_clone.bind(this);
             this.ctrl.delete_all = this.git_delete_all.bind(this);
+            this.ctrl.git_pull = this.git_pull.bind(this);
+            this.ctrl.git_delete = this.git_delete.bind(this);
             this.ctrl.setup();
         }
         return this.ctrl.comp;
-    }
-    
-    async list_repos() {
-        let url = add_url(this.params["backend-url"], "api/github/list_repos");
-        const response = await backendCall(url, {}, this.params["api-key"]);
-        return response.data.response.map((repo: any) => ({name: repo.local_path, url: repo.repo_url}));
     }
     async git_clone(gitUrl_or_sshlink: string) {
         let url = add_url(this.params["backend-url"], "api/github/clone");
@@ -41,17 +49,16 @@ export class GitRepoManagePageCtrl extends GRouteController implements IRouteCon
     async git_delete_all() {
         let url = add_url(this.params["backend-url"], "api/github/clean");
         const response = await backendCall(url, {}, this.params["api-key"]);
-        console.log("git_delete_all response", response.data.response);
         return response.data
     }
-    async git_pull(repo_name: string) {
+    async git_pull(data: {name: string, url: string}) {
         let url = add_url(this.params["backend-url"], "api/github/pull");
-        const response = await backendCall(url, {repo: repo_name}, this.params["api-key"]);
+        const response = await backendCall(url, {repo: data.name}, this.params["api-key"]);
         return response.data
     }
-    async git_delete(repo_name: string) {
+    async git_delete(data: {name: string, url: string}) {
         let url = add_url(this.params["backend-url"], "api/github/delete");
-        const response = await backendCall(url, {repo: repo_name}, this.params["api-key"]);
+        const response = await backendCall(url, {repo: data.name}, this.params["api-key"]);
         return response.data
     }
 }
