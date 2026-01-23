@@ -9,8 +9,8 @@ export class SearchWithList{
     comp: any;
     searchComponentCtrl: SearchComponentCtrl = new SearchComponentCtrl();
     listDisplayerCtrl: ListDisplayerCtrl = new ListDisplayerCtrl();
-    on_card_clicked: (data: any) => void = (data: {title: string}) => {
-        RouteWebPageMainCtrl.relative_navigate(`/view/${data.title}`);
+    on_card_clicked: (data: any) => void = (data: any) => {
+        RouteWebPageMainCtrl.relative_navigate(`/view/${data.title}`, data);
     };
     setup() {
         this.comp.s.searchComp.s.plusIcon.update({class:"hidden"});
@@ -21,24 +21,24 @@ export class SearchWithList{
         this.listDisplayerCtrl.setup();
         this.listDisplayerCtrl.update();
         this.listDisplayerCtrl.on_card_clicked = (data: any) => this.on_card_clicked(data);
-        this.searchComponentCtrl.onSearch = (params: { type: SearchType; params: any }[]) => this.search(params);
+        this.searchComponentCtrl.onSearch = (params: { type: SearchType; params: any }[]) => {this.on_search(params)};
         this.searchComponentCtrl.filterUICtrl.states.onSearch = (params: { type: SearchType; params: any }[]) => this.on_filter_search_clicked(params);
         this.listDisplayerCtrl.contextMenuOptions = []
     }
 
-    
-    on_filter_search_clicked(params: { type: SearchType; params: any }[]) {
-        let modal = GlobalStates.getInstance().getState("modal");
-        modal.s.handlers.display(this.searchComponentCtrl.filterUICtrl.comp);
-        modal.s.handlers.hide();
-        this.search(params)
-    }
-    search(params: { type: SearchType; params: any }[]) {
-        let data = this.get_result_data(params);
+    private async on_search(params: { type: SearchType; params: any }[]) {
+        let data = await this.get_result_data(params);
         this.listDisplayerCtrl.set_data(data);
         this.listDisplayerCtrl.update();
     }
-    get_result_data(params: { type: SearchType; params: any }[]) {
+    private on_filter_search_clicked(params: { type: SearchType; params: any }[]) {
+        let modal = GlobalStates.getInstance().getState("modal");
+        modal.s.handlers.display(this.searchComponentCtrl.filterUICtrl.comp);
+        modal.s.handlers.hide();
+        this.on_search(params)
+    }
+
+    async get_result_data(params: { type: SearchType; params: any }[]) {
         return [{title: "file1", pageNr:1}, {title: "file2", pageNr:2}, {title: "file3", pageNr:3}, {title: "file4", pageNr:4}, {title: "file5", pageNr:5}];
     }
 }
