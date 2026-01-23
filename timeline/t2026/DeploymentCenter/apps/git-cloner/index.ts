@@ -64,28 +64,80 @@ export class GitRepoManagePageCtrl extends GRouteController implements IRouteCon
 }
 
 export class GitRepoSearchPageCtrl extends GRouteController implements IRouteController {
-    ctrl: SearchWithList | undefined;
+    ctrl: SearchWithList = SearchWithListMainCtrl.searchWithList();    
+    dropdownCtrl: DropdownCtrl = AtomicMainCtrl.dropdown([]);
+    private readonly infos: any ={"selector": {value: null, label: "-- Select Repo --"}};
+    comp: any | undefined;
+    params: any;
     matches_path(path: string): boolean {
         return path === "/search";
     }
+    
     get_component(params: any): GComponent {
-        this.ctrl ??= SearchWithListMainCtrl.searchWithList();
-        return this.ctrl.comp;
+        this.params = params.params;
+        if (!this.comp) {
+            this.dropdownCtrl.placeholder = "-- select a repo --";
+            this.comp = Tools.div({
+                class: "w-full flex-col flex gap-2 p-2",
+                children: [
+                    this.dropdownCtrl.comp,
+                    this.ctrl.comp,
+                ],
+            });
+            GitUtils.list_repos(this.params).then((repos: any[]) => {
+                let options = repos.map((repo: any) => ({value: repo.url, label: repo.name}));
+                this.dropdownCtrl.set_options(options);
+            });
+            this.ctrl.get_result_data = this.search.bind(this);
+        }
+        
+        return this.comp;
+    }
+    private async search(search_params: { type: SearchType; params: any }[]) {
+        let repo_url = this.dropdownCtrl.get_value();
+        let url = add_url(this.params["backend-url"], "api/github/search");
+        let params = search_params[0].params as {search: string, case: boolean, reg: boolean};
+        let payload = {repo: repo_url, word: params.search, case: params.case, reg: params.reg, extensions: [".py", ".ts", ".js", ".jsx", ".tsx"]}
+        const response = await backendCall(url, payload, this.params["api-key"]);
+        let res = response.data.response.map((item: {name: string, line: number}) => ({title: item.name, data: {...item, repo_url: repo_url}}));
+        return res;
     }
 
 }
 
 export class GitRepoCodeViewPageCtrl extends GRouteController implements IRouteController {
     ctrl: SimpleCodeViewCtrl | undefined;
+    params: any;
     matches_path(path: string): boolean {
         return path.startsWith("/search/view/");
     }
     get_component(params: any): GComponent {
+        this.params = params.params;
         if (!this.ctrl) {
             this.ctrl = new SimpleCodeViewCtrl();
             this.ctrl.setup();
         }
+        let data = RouteWebPageMainCtrl.get_params();
+        // let repo = data.
+        console.log(data);
+        if (!data.data) {
+            RouteWebPageMainCtrl.go_back(2);
+            return this.ctrl.comp;
+        }
+        
+        let line = data.data.line;
+        this.get_code(data.data).then((code: {help: any, response: {content: string}}) => {
+            this.ctrl!.set_code(code.response.content, line);
+        });
         return this.ctrl.comp;
+    }
+
+    async get_code(data: {repo_url: string, name: string}) {
+        let url = add_url(this.params["backend-url"], "api/github/get_file_content");
+        let payload = {repo: data.repo_url, file: data.name}
+        console.log(url, payload);
+        const response = await backendCall(url, {repo: data.repo_url, file: data.name}, this.params["api-key"]);
+        return response.data;
     }
 
 }
