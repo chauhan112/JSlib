@@ -73,11 +73,11 @@ export class ActivityPageCtrl {
             let name = data.operation.name + " " + data.domains.map((dom: any) => dom.name).join(", ");
             return name;
         },
-            [   {type: "Input", key: "table_name", params: {attrs: {placeholder: "enter table name"}}}, 
+            [    
                 {type: "MultiSelect", key: "domains", params: {options: []}}, 
                 {type: "Select", key: "operation", params: {options: []}}],
 
-            [{type: "Input", key: "table_name", params: {attrs: {placeholder: "enter table name"}}}, 
+            [
                 {type: "MultiSelect", key: "domains", params: {options: []}}, 
                 {type: "Select", key: "operation", params: {options: []}}
             ],
