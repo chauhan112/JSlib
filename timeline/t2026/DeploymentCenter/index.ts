@@ -4,6 +4,7 @@ import { type IApp, type IRouteController } from "./routeController";
 import { HomeRouteController, MainCtrl as DafaultCompCtrl } from "./apps/defaults";
 import { SettingsPageCtrl, MainCtrl as SettingsPageMainCtrl } from "./settings";
 import { MainCtrl as GitRepoPageMainCtrl, GitRepoPageCtrl } from "./apps/git-cloner";
+import { DomOpsApp } from "./apps/domOps";
 export const DeploymentCenterPage = () => {
     return Tools.comp("div", {
         class: "flex-1 flex flex-col",
@@ -66,13 +67,13 @@ export const DeploymentCenter = () => {
     deploymentCenterPageCtrl.set_comp(DeploymentCenterPage());
     let gitRepoSearchRouteCtrl = GitRepoPageMainCtrl.gitRepoPage();
     deploymentCenterPageCtrl.add_app(gitRepoSearchRouteCtrl);
+    deploymentCenterPageCtrl.add_app(new DomOpsApp());
     for (let i = 0; i < 20; i++) {
         let app2RouteCtrl = DafaultCompCtrl.defaultPageSkeleton(`/app-${i}`, {
             name: `App ${i}`, href: `/app-${i}`, subtitle: `app ${i}`, params: []
         });
         deploymentCenterPageCtrl.add_app(app2RouteCtrl);
     }
-    // deploymentCenterPageCtrl.add_app(app2RouteCtrl);
     deploymentCenterPageCtrl.setup();
     return deploymentCenterPageCtrl;
 }
