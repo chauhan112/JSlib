@@ -1,5 +1,5 @@
-import { DocumentHandler } from "../../april/Array";
-import { Tools } from "../../april/tools";
+import { DocumentHandler } from "../../t2025/april/Array";
+import { Tools } from "../tools";
 export const ContextMenu = (items: { label: string; info?: any }[]) => {
     const docHandler = DocumentHandler.getInstance();
     const createMenuItem = (item: {

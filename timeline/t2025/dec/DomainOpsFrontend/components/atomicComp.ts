@@ -1,5 +1,5 @@
 import { EllipsisVertical, X } from "lucide";
-import { Tools } from "../../../april/tools";
+import { Tools } from "../../../../globalComps/tools";
 
 export const InputComp = () => {
     return Tools.comp("input", {

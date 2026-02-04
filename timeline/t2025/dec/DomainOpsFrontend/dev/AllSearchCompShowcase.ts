@@ -1,4 +1,4 @@
-import { Tools } from "../../../april/tools";
+import { Tools } from "../../../../globalComps/tools";
 import { SimpleSearchUI2, SimpleSearchUI} from "../../../july/generic-crud/search/ui";
 import { SimpleSearchComp } from "../../../aug/jobAIApply/page";
 import {SearchComp as SearchComp2} from "../../../june/domain-ops/Component";

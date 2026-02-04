@@ -1,4 +1,4 @@
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
 export const createNS = (name: string, props?: { [key: string]: any }) => {

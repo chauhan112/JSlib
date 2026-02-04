@@ -1,7 +1,7 @@
-import { GComponent, type IComponent, Container } from "./GComponent";
+import { GComponent, type IComponent, Container } from "../../globalComps/GComponent";
 import { EllipsisVertical, CornerRightDown } from "lucide";
 import { DocumentHandler } from "./Array";
-import { Tools } from "./tools";
+import { Tools } from "../../globalComps/tools";
 type ElementType = {
     name: string;
     key: string;

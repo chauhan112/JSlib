@@ -1,4 +1,4 @@
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 import { Sidebar, Header as NewHeader } from "./Component";
 import { DocumentHandler } from "../../april/Array";
 

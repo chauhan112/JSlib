@@ -1,5 +1,5 @@
-import { type IComponent, GComponent } from "./GComponent";
-import { Tools } from "./tools";
+import { type IComponent, GComponent } from "../../globalComps/GComponent";
+import { Tools } from "../../globalComps/tools";
 
 export interface IFormComponent {
     get(): any;

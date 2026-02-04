@@ -1,5 +1,5 @@
 import { ListWithCrud } from "../ListWithCrud";
-import { Tools } from "../tools";
+import { Tools } from "../../../globalComps/tools";
 
 export class ListWithCrudWrapper {
     list: ListWithCrud;

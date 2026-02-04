@@ -1,12 +1,12 @@
 import { SearchComp, SearchComponentCtrl } from "./components/SearchComponent";
 import { ListDisplayer, ListDisplayerCtrl } from "./components/ListDisplayer";
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 import { InputType } from "../../june/domain-ops/Model";
 import { Filter, SearchType } from "../../july/generic-crud/search/model";
 import { UiParamsMap } from "../../july/generic-crud/search/controller";
 import { MainCtrl as DynamicFormMainCtrl, NewDynamicFormCtrl } from "./components/Form";
 import { AdvanceRouter } from "./route/controller";
-import { GComponent } from "../../april/GComponent";
+import { GComponent } from "../../../globalComps/GComponent";
 
 export interface SingleCrudModelInterface {
     read_all: () => Promise<any[]>;
@@ -82,7 +82,6 @@ export class ViewController {
         );
     }
 }
-
 export class FormController {
     createForm!: NewDynamicFormCtrl;
     updateForm!: NewDynamicFormCtrl;
@@ -105,7 +104,6 @@ export class FormController {
         return this.form(this.updateForm.comp, "Update");
     }
 }
-
 export class SingleCrudController {
     comp: any;
     model: SingleCrudModelInterface = new SingleCrudModel();

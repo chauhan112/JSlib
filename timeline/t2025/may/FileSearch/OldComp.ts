@@ -1,4 +1,4 @@
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 import { InputWithLabel } from "./LabeledInput";
 export const DivWrap = (child: any, props: any = {}) => {
     return Tools.div({

@@ -1,5 +1,5 @@
 import { RouteWebPage, DefaultPageContent, SidebarCtrl, Page404 } from "./ui";
-import { GComponent } from "../../../april/GComponent";
+import { GComponent } from "../../../../globalComps/GComponent";
 
 export type RouteHandler = (params: any, state: any) => void;
 
@@ -12,7 +12,7 @@ export class AdvanceRouter {
     constructor(isRoot: boolean = true) {
         this.isRoot = isRoot;
         if (this.isRoot) {
-            window.addEventListener("hashchange", () => this.route());
+            globalThis.addEventListener("hashchange", () => this.route());
         }
     }
 
@@ -104,7 +104,7 @@ export class AdvanceRouter {
 
     navigate(path: string, state: any = null) {
         this.state = state;
-        window.location.hash = path;
+        globalThis.location.hash = path;
     }
     relative_navigate(path: string, state: any=null) {
         this.state = state;
@@ -112,10 +112,10 @@ export class AdvanceRouter {
         if (path.startsWith("/")) {
             new_path = path.slice(1);
         }
-        if (window.location.hash.endsWith("/")) {
-            window.location.hash += new_path;
+        if (globalThis.location.hash.endsWith("/")) {
+            globalThis.location.hash += new_path;
         } else {
-            window.location.hash += "/" + new_path;
+            globalThis.location.hash += "/" + new_path;
         }
     }
     go_back() {
@@ -186,6 +186,7 @@ export class RouteWebPageController {
 }
 
 export class MainCtrl {
+    private static params: any = {};
     static routeWebPage(menus: { label: string, href: string }[], home_page?: () => GComponent, app_name: string = "DomainOps") {
         const routeWebPageCtrl = new RouteWebPageController();
         const routeWebPage = RouteWebPage();
@@ -198,5 +199,39 @@ export class MainCtrl {
         }
         routeWebPageCtrl.add_route_page("/", routeWebPageCtrl.home_page_getter);
         return routeWebPageCtrl;
+    }
+
+    static get_params() {
+        return this.params;
+    }
+    static set_params(params: any) {
+        if (params) this.params = params;
+        else this.params = {};
+    }
+    static navigate(path: string, params?: any) {
+        this.set_params(params);
+
+        globalThis.location.hash = path;
+    }
+    static relative_navigate(path: string, params?: any) {
+        this.set_params(params);
+        let new_path = path;
+        if (path.startsWith("/")) {
+            new_path = path.slice(1);
+        }
+        if (globalThis.location.hash.endsWith("/")) {
+            globalThis.location.hash += new_path;
+        } else {
+            globalThis.location.hash += "/" + new_path;
+        }
+    }
+    static go_back(n: number = 1, params?: any) {
+        this.set_params(params);
+        let path = globalThis.location.hash.split("/").slice(0, -n).join("/");
+        globalThis.location.hash = path;
+    }
+    static go_to_home(params?: any) {
+        this.set_params(params);
+        globalThis.location.href = "/"
     }
 }

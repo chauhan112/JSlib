@@ -1,8 +1,8 @@
 import { Settings } from "lucide";
-import { Tools } from "../../april/tools";
-import { GenericModal } from "../../may/FileSearch/Modal";
+import { Tools } from "../../../globalComps/tools";
+import { GenericModal } from "../../../globalComps/GlobalStates/Modal";
 import { FirebaseInst } from "./firebaseConfig";
-import { GComponent } from "../../april/GComponent";
+import { GComponent } from "../../../globalComps/GComponent";
 import {
     collection,
     addDoc,

@@ -1,6 +1,6 @@
 // npm install motion
 import { animate, stagger } from "motion";
-import { Tools } from "../april/tools";
+import { Tools } from "../../globalComps/tools";
 export const SimpleAnimationExample = () => {
     let comp = Tools.div({
         class: " p-8 rounded-xl shadow-lg cursor-pointer transform-gpu",

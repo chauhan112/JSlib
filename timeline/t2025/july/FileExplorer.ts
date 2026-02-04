@@ -1,5 +1,5 @@
 
-import { Tools } from "../april/tools";
+import { Tools } from "../../globalComps/tools";
 import { Breadcrumb } from "../june/domain-ops/Component";
 import axios from "axios";
 import { Atool } from "../april/Array";

@@ -1,4 +1,4 @@
-import { Tools } from "../april/tools";
+import { Tools } from "../../globalComps/tools";
 import "./styles.css";
 export const Overlay = () => {
     return Tools.div({

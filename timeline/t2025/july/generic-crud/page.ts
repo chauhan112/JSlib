@@ -8,10 +8,10 @@ import {
     Search,
 } from "lucide";
 
-import { Tools } from "../../april/tools";
-import { GlobalStates } from "../../june/domain-ops/GlobalStates";
+import { Tools } from "../../../globalComps/tools";
+import { GlobalStates } from "../../../globalComps/GlobalStates";
 import { StructureSection } from "../../june/domain-ops/ActivityLogger/Structures";
-import { type MultiLayerModalStructure } from "./multiLayerModal";
+import { type MultiLayerModalStructure } from "../../../globalComps/GlobalStates/multiLayerModal";
 import { FormModel, type ModelType, GenericCRUDModel } from "./model";
 import { DynamicFormController } from "../../july/DynamicForm";
 import { SearchCtrl } from "./search/controller";

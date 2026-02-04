@@ -1,6 +1,6 @@
-import { GComponent, type IComponent } from "./GComponent";
+import { GComponent, type IComponent } from "../../globalComps/GComponent";
 import { type IFormComponent } from "./GForm";
-import { Tools } from "./tools";
+import { Tools } from "../../globalComps/tools";
 
 export class DropdownMenu implements IComponent, IFormComponent {
     s: { [key: string]: any } = {};

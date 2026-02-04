@@ -62,11 +62,14 @@ export class Model {
             return false;
         }
     }
+    updateEntryAtRoot(values: any) {
+        this.data = { ...this.data, ...values };
+        this.writeToStorage();
+    }
 }
 
 export class LocalStorageJSONModel extends Model {
     key: string;
-    data: any;
     constructor(key?: string) {
         super();
         this.setLocalStorageKey(key || "LocalStorageModel");

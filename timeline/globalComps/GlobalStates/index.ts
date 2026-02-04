@@ -1,29 +1,36 @@
-import { GComponent } from "../../april/GComponent";
-import { Tools } from "../../april/tools";
-import { GenericModal } from "../../may/FileSearch/Modal";
+import { CompactModalCtrl } from "./CompactModel";
+import { MultiLayerModalCtrl } from "./multiLayerModal";
 import { ContextMenu } from "./ContextMenu";
-import { MultiLayerModalCtrl } from "../../july/generic-crud/multiLayerModal";
-import { CompactModalCtrl } from "../../aug/LinksOpener/CompactModel";
+import { GenericModal } from "./Modal";
+import type { GComponent } from "../GComponent";
+import { Tools } from "../tools";
+import { NotificationCompCtrl } from "./NotificationComp";
+
+
+type key = "modal" | "contextMenu" | "multiModal" | "compactModal" | "notification";
 
 export class GlobalStates {
     static instance: GlobalStates | null = null;
     private readonly comp: GComponent;
     private constructor() {
-        this.states = {};
+        this.states = {} as { [K in key]: any };
         let modal = GenericModal("");
         let mModalCtrl = MultiLayerModalCtrl();
         let contextMenu = ContextMenu([]);
         let compactModal = CompactModalCtrl();
+        let notification = new NotificationCompCtrl();
         this.addState("modal", modal);
         this.addState("contextMenu", contextMenu);
         this.addState("multiModal", mModalCtrl);
         this.addState("compactModal", compactModal);
+        this.addState("notification", notification);
         this.comp = Tools.div({
             children: [
                 modal,
                 contextMenu,
                 mModalCtrl.modal,
                 compactModal.modal,
+                notification.comp,
             ],
         });
         this.addToBody();

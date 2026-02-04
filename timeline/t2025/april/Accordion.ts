@@ -1,9 +1,17 @@
-import { type IComponent, Repeater, GComponent, Container } from "./GComponent";
+import { type IComponent, GComponent, Container } from "../../globalComps/GComponent";
+import { ConditionalComponent } from "./ConditionalComponent";
+import { Repeater } from "./Repeater";
 import { ChevronDown, Plus } from "lucide";
 import { Undoers } from "./Array";
-import { Tools } from "./tools";
+import { Tools } from "../../globalComps/tools";
 
-export class AccordionShowOne implements IComponent-*
+const repeater = (data: { [key: string]: IComponent }) => {
+    let repeater = new Repeater();
+    repeater.setData(data);
+    return repeater;
+}
+
+export class AccordionShowOne implements IComponent{
     s: { [key: string]: any } = {};
     comp: Repeater | null = null;
     undoer = new Undoers();
@@ -87,7 +95,7 @@ export class AccordionShowOne implements IComponent-*
         if (this.comp) {
             return this.comp.getElement();
         }
-        this.comp = Tools.rep(this.getData(this.s.data));
+        this.comp = repeater(this.getData(this.s.data));
         return this.comp.getElement();
     }
     setData(data: { [key: string]: any }) {
@@ -128,8 +136,20 @@ export class AccordionShowOne implements IComponent-*
     hideContent(key: string) {
         this.comp!.itemComp[key].s.iff.setValue(false);
     }
+    private ifComp(
+        conditions: { func: (value: any) => boolean; comp: IComponent }[],
+        defaultValue: any = null,
+        props?: { [key: string]: any }
+    ) {
+        let comp = new ConditionalComponent();
+        comp.s.defaultValue = defaultValue;
+        comp.setConditions(conditions);
+        comp.getElement();
+        comp.comp!.update(props);
+        return comp;
+    }
     private ifCreator(item: { title: string; content: string; more?: any }) {
-        return Tools.ifComp(
+        return this.ifComp(
             [
                 {
                     func: (value: any) => value,

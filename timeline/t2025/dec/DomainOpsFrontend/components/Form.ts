@@ -1,4 +1,4 @@
-import { Tools } from "../../../april/tools";
+import { Tools } from "../../../../globalComps/tools";
 import { MainCtrl as AtomicMainCtrl, type IInputCompCtrl } from "./atomic";
 
 export const NewDynamicForm = () => {

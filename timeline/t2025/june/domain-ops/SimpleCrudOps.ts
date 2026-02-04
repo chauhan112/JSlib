@@ -1,5 +1,5 @@
-import { Tools } from "../../april/tools";
-import { GComponent } from "../../april/GComponent";
+import { Tools } from "../../../globalComps/tools";
+import { GComponent } from "../../../globalComps/GComponent";
 import { NavChild } from "./Component";
 export const SmallCRUDops = (ops: any[], form: GComponent) => {
     form.getElement().classList.add("hidden");

@@ -1,4 +1,4 @@
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 
 export const CollectionForm = () => {
     const title = Tools.comp("input", {

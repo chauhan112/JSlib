@@ -1,5 +1,5 @@
-import { type IComponent } from "../../april/GComponent";
-import { Tools } from "../../april/tools";
+import { type IComponent } from "../GComponent";
+import { Tools } from "../tools";
 import { X } from "lucide";
 export const CompactModal = () => {
     const title = Tools.comp("h2", {

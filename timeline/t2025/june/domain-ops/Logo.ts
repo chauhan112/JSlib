@@ -1,6 +1,6 @@
 // npm install motion
 import { animate } from "motion";
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 import { createNS, SVGCreator } from "./SVGCreator";
 
 export const AppLogoSVG = (animateIt: boolean = true) => {

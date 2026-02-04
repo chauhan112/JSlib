@@ -6,11 +6,28 @@ import {
     updateActivity,
 } from "./api/pythonAnywhere";
 import { DocumentHandler } from "../Array";
-import { GComponent } from "../GComponent";
-import { GForm } from "../GForm";
+import { Container, GComponent } from "../../../globalComps/GComponent";
+import { GForm, Input } from "../GForm";
 import { ListWithCrud } from "../ListWithCrud";
-import { Tools } from "../tools";
 import { ListWithCrudWrapper } from "./ListWithCrudWrapper";
+import { DropdownMenu, MultiSelect } from "../Select";
+import { Tools } from "../../../globalComps/tools";
+
+class LocalTools{
+    static input(props: { [key: string]: any }, typ: string = "input") {
+        let comp = new Input(props, typ);
+        return comp;
+    }
+    static dropdown(options: Partial<HTMLOptionElement>[], defValue?: any, props: any = {}) {
+        let comp = new DropdownMenu(options, defValue, props);
+        comp.getElement();
+        return comp;
+    }
+    static multiSelect(options: any[], placeholder?: string) {
+        let comp = new MultiSelect(options, undefined, placeholder);
+        return comp;
+    }
+}
 
 export class ActivitiesContent {
     form: GForm;
@@ -38,12 +55,12 @@ export class ActivitiesContent {
     makeForm() {
         const form = new GForm();
         form.s.funcs.createItem = (comp: any) => comp.comp;
-        this.comps.operation = Tools.dropdown([]);
-        this.comps.domains = Tools.multiSelect([], "Select domains...");
+        this.comps.operation = LocalTools.dropdown([]);
+        this.comps.domains = LocalTools.multiSelect([], "Select domains...");
         form.s.data = [
             {
                 key: "activityName",
-                comp: Tools.input({
+                comp: LocalTools.input({
                     key: "activityName",
                     placeholder: "Enter activity name",
                     class: "w-full p-1 rounded-sm bg-gray-100 text-black",
@@ -58,7 +75,7 @@ export class ActivitiesContent {
                 comp: this.comps.domains,
             },
             {
-                comp: Tools.input({
+                comp: LocalTools.input({
                     type: "submit",
                     textContent: "Submit",
                     class: "w-full p-1 rounded-md bg-blue-500 text-white",

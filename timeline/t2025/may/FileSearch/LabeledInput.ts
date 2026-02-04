@@ -1,4 +1,4 @@
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 import { LocalStorageJSONModel } from "../../april/LocalStorage";
 
 export const InputWithLabel = (

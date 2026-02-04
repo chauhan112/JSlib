@@ -1,5 +1,5 @@
-import { Tools } from "../april/tools";
-import { GComponent } from "../april/GComponent";
+import { Tools } from "../../globalComps/tools";
+import { GComponent } from "../../globalComps/GComponent";
 import { LocalStorageJSONModel } from "../april/LocalStorage";
 
 
@@ -91,7 +91,7 @@ const OneRow = () => {
   });
 }
 
-const LocalStorageSetterCtrl = () => {
+export const LocalStorageSetterCtrl = () => {
   const setter = LocalStorageSetter();
   const model = new LocalStorageJSONModel();
   let s: { [key: string]: any } = { children: {}, index: 0 };
@@ -215,14 +215,26 @@ export class LocalStorageConfigurer {
     this.loadExisting();
   }
   loadExisting() {
+    this.reset_ui();
     if (!this.model.exists([...this.model_location])) return;
     const keys = this.model.get_keys([...this.model_location]);
-
     for (const key of keys) {
       const value = this.model.readEntry([...this.model_location, key]);
       this.createRow(key, value);
     }
   }
+
+  load_keys(keys: string[]) {
+    this.reset_ui();
+    for (const key of keys) {
+      let value = "not set";
+      if (this.model.exists([...this.model_location, key])) {
+        value = this.model.readEntry([...this.model_location, key]);
+      }
+      this.createRow(key, value);
+    }
+  }
+
   createRow(key: string, value: string) {
     const row = MainCtrl.oneRow(this.counter);
     row.on_remove = (index: number) => this.on_remove(index);
@@ -240,7 +252,11 @@ export class LocalStorageConfigurer {
       data[values.key] = values.value;
     }
     if (this.model.exists([...this.model_location])) {
-      this.model.updateEntry([...this.model_location], data);
+      if (this.model_location.length == 0) {
+        this.model.updateEntryAtRoot(data);
+      } else {
+        this.model.updateEntry([...this.model_location], data);
+      }
     } else {
       this.model.addEntry([...this.model_location], data);
     }
@@ -248,13 +264,16 @@ export class LocalStorageConfigurer {
   clearAll() {
     if (confirm("Are you sure you want to clear ALL localStorage keys for this site?")) {
       this.model.deleteEntry([...this.model_location]);
-      this.rows = {};
-      this.counter = 0;
-      this.comp.s.rows.update({ innerHTML: "" });
+      this.reset_ui();
     }
   }
   set_title(title: string) {
     this.comp.s.title.update({ textContent: title });
+  }
+  reset_ui() {
+    this.comp.s.rows.update({ innerHTML: "" });
+    this.rows = {};
+    this.counter = 0;
   }
 }
 

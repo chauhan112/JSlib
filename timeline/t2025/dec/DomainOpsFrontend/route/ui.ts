@@ -1,6 +1,6 @@
-import { Tools } from "../../../april/tools";
+import { Tools } from "../../../../globalComps/tools";
 import { Menu, X } from "lucide";
-import { GComponent } from "../../../april/GComponent";
+import { GComponent } from "../../../../globalComps/GComponent";
 
 
 export const Header = () => {
@@ -67,7 +67,7 @@ export class SidebarCtrl {
         this.comp = comp;
     }
     setup() {
-        this.comp.s.header.s.title.update({}, { click: () => window.location.href = "/" });
+        this.comp.s.header.s.title.update({}, { click: () => globalThis.location.href = "/" });
     }
     add_menu_item(label: string, href: string) {
         const menu_item = this.get_menu_item(label, href);
@@ -92,7 +92,7 @@ export class SidebarCtrl {
 
         }
         if (this.components[href]) {
-            const link = this.components[href].getElement() as HTMLElement;
+            const link = this.components[href].getElement();
             link.classList.add('bg-gray-900', 'border-l-4', 'border-blue-500');
             link.classList.remove('hover:bg-gray-700');
         }
@@ -137,10 +137,10 @@ export const RouteWebPage = () => {
     }, {}, { mainBody, sidebar, overlay, header });
 }
 
-export const DefaultPageContent = () => {
+export const DefaultPageContent = (textContent: string = "Page Content") => {
     return Tools.comp("div", {
         children: [
-            Tools.comp("h2", { textContent: "Page Content" }),
+            Tools.comp("h2", { textContent: textContent }),
         ],
     });
 }

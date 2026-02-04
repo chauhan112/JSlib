@@ -1,9 +1,9 @@
-import { Tools, MoreTools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 import { LabeledInput } from "./LabeledInput";
 // npm install lucide
 import { Cog, RotateCcw, Plus, X } from "lucide";
-import { GlobalStates } from "../../june/domain-ops/GlobalStates";
-
+import { GlobalStates } from "../../../globalComps/GlobalStates";
+import { GComponent } from "../../../globalComps/GComponent";
 // npm install uuid
 import { v4 as uuidv4 } from "uuid";
 
@@ -145,6 +145,16 @@ const SearchCompCrud = () => {
     );
     return lay;
 };
+
+class MoreTools {
+    static removeLastElement(ele: GComponent) {
+        let lastChild = ele.getElement().lastChild;
+        if (lastChild) {
+            ele.getElement().removeChild(lastChild);
+        }
+    }
+}
+
 export const ConcatenatedSearch = () => {
     let searchComps: any = [];
 

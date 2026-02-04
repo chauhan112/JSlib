@@ -1,4 +1,4 @@
-import { Tools } from "./tools";
+import { Tools } from "../../globalComps/tools";
 
 export const ToggleButton = () => {
     return Tools.comp("label", {

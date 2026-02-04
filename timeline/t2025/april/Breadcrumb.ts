@@ -1,6 +1,6 @@
-import { GComponent, type IComponent } from "./GComponent";
+import { GComponent, type IComponent } from "../../globalComps/GComponent";
 import { Atool } from "./Array";
-import { Tools } from "./tools";
+import { Tools } from "../../globalComps/tools";
 
 export class Breadcrumb implements IComponent {
     s: { [key: string]: any } = {};

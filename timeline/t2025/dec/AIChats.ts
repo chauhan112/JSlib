@@ -1,10 +1,10 @@
 import { InputType } from "../june/domain-ops/Model";
-import { Tools } from "../april/tools";
+import { Tools } from "../../globalComps/tools";
 import { MainCtrl as SingleCrudMainCtrl } from "./DomainOpsFrontend/SingleCrud";
 import { backendCall } from "./DomainOpsFrontend/api_calls";
 import { type SingleCrudModelInterface } from "./DomainOpsFrontend/SingleCrud";
 
-//  for rendering chat see https://drive.google.com/file/d/10ywF_CDfGIBQj3krFLywPVrcvcH4aFWK/view?usp=sharing, https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221yn6MoSa-bZbA738mXuCI8wErlyGkSuJA%22%5D,%22action%22:%22open%22,%22userId%22:%22106663925177571275835%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing
+// for rendering chat see https://drive.google.com/file/d/10ywF_CDfGIBQj3krFLywPVrcvcH4aFWK/view?usp=sharing, https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221yn6MoSa-bZbA738mXuCI8wErlyGkSuJA%22%5D,%22action%22:%22open%22,%22userId%22:%22106663925177571275835%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing
 export class AIChatsCRUDModel implements SingleCrudModelInterface {
     type: string = "AIChats";
     

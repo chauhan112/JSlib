@@ -1,5 +1,5 @@
-import { GComponent } from "../../april/GComponent";
-import { Tools } from "../../april/tools";
+import { GComponent } from "../../../globalComps/GComponent";
+import { Tools } from "../../../globalComps/tools";
 import { MultiSelectComponent, SelectComponent } from "./Component";
 
 export const FormInputComponent = (props: [any?, any?, any?]) => {

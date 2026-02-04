@@ -6,8 +6,8 @@
 //
 
 import { editor as monacoEditor, IPosition } from "monaco-editor";
-import { Tools } from "../../april/tools";
-import { GComponent } from "../../april/GComponent";
+import { Tools } from "../../../globalComps/tools";
+import { GComponent } from "../../../globalComps/GComponent";
 
 export class EditorModel {
     private editor: monacoEditor.IStandaloneCodeEditor | null = null;

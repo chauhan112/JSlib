@@ -1,5 +1,5 @@
 import { Trash, X } from "lucide";
-import { Tools } from "../../../april/tools";
+import { Tools } from "../../../../globalComps/tools";
 import {
     GenericForm,
     Params,

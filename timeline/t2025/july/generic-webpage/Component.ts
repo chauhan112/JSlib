@@ -13,8 +13,8 @@ import {
     SlidersHorizontal,
     Sun,
 } from "lucide";
-import { Tools } from "../../april/tools";
-import { GComponent } from "../../april/GComponent";
+import { Tools } from "../../../globalComps/tools";
+import { GComponent } from "../../../globalComps/GComponent";
 
 export const Accordion = () => {
     const comp = Tools.comp("div", {

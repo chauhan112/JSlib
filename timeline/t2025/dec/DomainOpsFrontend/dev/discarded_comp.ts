@@ -1,4 +1,4 @@
-import { Tools } from "../../../april/tools";
+import { Tools } from "../../../../globalComps/tools";
 import { FormSelectCompCtrl, FormTextareaCtrl } from "../../../aug/jobAIApply/simpleVersion";
 import { GenericCRUD } from "../../../july/generic-crud/page";
 import { CollectionForm } from "../../../aug/LinksOpener/Page";

@@ -1,4 +1,4 @@
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 export const DEF_TITLE = "RajaDevKit";
 export const Logo = () => {
     return Tools.div({

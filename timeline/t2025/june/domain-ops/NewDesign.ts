@@ -1,7 +1,7 @@
 import { Plus } from "lucide";
-import { Tools } from "../../april/tools";
+import { Tools } from "../../../globalComps/tools";
 import { SearchComponent } from "../../may/FileSearch/Search";
-import { GComponent } from "../../april/GComponent";
+import { GComponent } from "../../../globalComps/GComponent";
 import { Model } from "./Model";
 import {
     ActitivityForm,
@@ -12,7 +12,7 @@ import {
 import { Header } from "./Header";
 import { Properties, PropertiesCtrl } from "./Properties";
 import { SmallCRUDops } from "./SimpleCrudOps";
-import { GlobalStates } from "./GlobalStates";
+import { GlobalStates } from "../../../globalComps/GlobalStates";
 
 export const CardComponentWrapper = (comp: GComponent) => {
     const lay = Tools.div({

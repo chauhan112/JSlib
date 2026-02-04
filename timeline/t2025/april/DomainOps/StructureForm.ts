@@ -1,6 +1,6 @@
 import { CRUDForm, NewForm } from "../GenericCRUD/Form";
 import { Model } from "../LocalStorage";
-import { Tools } from "../tools";
+import { Tools } from "../../../globalComps/tools";
 import { Input } from "../GForm";
 
 const ViewContent = (onCancel: any) => {
