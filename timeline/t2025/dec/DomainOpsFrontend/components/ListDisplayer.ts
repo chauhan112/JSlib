@@ -1,5 +1,5 @@
 import { Tools } from "../../../../globalComps/tools";
-import {CardCompCtrl, MainCtrl as CardCompMainCtrl} from "./atomic";
+import {MainCtrl as CardCompMainCtrl} from "./atomic";
 import { Pagination } from "../../../july/generic-crud/page";
 import type { GComponent } from "../../../../globalComps/GComponent";
 
@@ -67,6 +67,32 @@ export class PaginationCtrl {
         this.comp.s.prev.update({}, { click: () => { this.model.prevPage(); this.update(); } });
     }
 }
+
+export interface ICardCompCtrl {
+    get_comp: () => GComponent;
+}
+
+export class CardCompCtrl implements ICardCompCtrl {
+    comp: any;
+    constructor(data: any, title_getter: (data: any) => string,
+        on_more_ops_clicked: (data: any, label: string) => void,
+        on_card_clicked: (data: any) => void,
+        contextMenuOptions: { label: string; }[]
+    ) {
+        const cardCompCtrl = CardCompMainCtrl.cardComp(data, title_getter);
+        cardCompCtrl.onOpsMenuClicked = on_more_ops_clicked;
+        cardCompCtrl.onCardClicked = on_card_clicked;
+        cardCompCtrl.set_options(contextMenuOptions);
+        cardCompCtrl.setup();
+        this.comp = cardCompCtrl;
+    }
+    get_comp() {
+        return this.comp.comp;
+    }
+}
+
+export type CardCompReturn = GComponent | ICardCompCtrl;
+
 export class ListDisplayerCtrl {
     comp: any;
     contextMenuOptions: { label: string; }[] = [ {label: "Edit"}, {label: "Delete"}, {label: "View"} ];
@@ -74,7 +100,7 @@ export class ListDisplayerCtrl {
     paginationCtrl: PaginationCtrl = new PaginationCtrl();
     on_card_clicked: (data: any) => void = () => {};
     on_more_ops_clicked: (data: any, label: string) => void = () => {};
-    cardCompCreator: (data: any) => GComponent = (data: any) => this.default_cardCompCreator(data);
+    cardCompCreator: (data: any) => CardCompReturn = (data: any) => this.default_cardCompCreator(data);
     title_getter: (data: any) => string = (data: any) => data.title;
     set_comp(comp: any) {
         this.comp = comp;   
@@ -83,15 +109,10 @@ export class ListDisplayerCtrl {
         this.paginationCtrl.set_comp(this.comp.s.pagination);
         this.paginationCtrl.update = this.update.bind(this);
         this.paginationCtrl.setup();
-        
     }
-    default_cardCompCreator(data: any): GComponent {
-        const cardCompCtrl = CardCompMainCtrl.cardComp(data, this.title_getter);
-        cardCompCtrl.onOpsMenuClicked = (data: any, label: string) => this.on_more_ops_clicked(data, label);
-        cardCompCtrl.onCardClicked = (data: any) => this.on_card_clicked(data);
-        cardCompCtrl.set_options(this.contextMenuOptions);
-        cardCompCtrl.setup();
-        return cardCompCtrl.comp;
+    default_cardCompCreator(data: any): CardCompReturn {
+        const cardCompCtrl = new CardCompCtrl(data, this.title_getter, this.on_more_ops_clicked, this.on_card_clicked, this.contextMenuOptions);
+        return cardCompCtrl.get_comp();
     }
     update() {
         let data = this.paginationCtrl.model.getCurrentPageData();
@@ -112,6 +133,20 @@ export class ListDisplayerCtrl {
     }
     set_pageSize(pageSize: number) {
         this.paginationCtrl.model.pageSize = pageSize;
+    }
+}
+
+export class NewListDisplayerCtrl extends ListDisplayerCtrl {
+    cardCompCreator: (data: any) => ICardCompCtrl = (data: any) => this.default_cardCompCreator(data);
+    default_cardCompCreator(data: any): ICardCompCtrl {
+        const cardCompCtrl = new CardCompCtrl(data, this.title_getter, this.on_more_ops_clicked, this.on_card_clicked, this.contextMenuOptions);
+        return cardCompCtrl;
+    }
+    update() {
+        let data = this.paginationCtrl.model.getCurrentPageData();
+        this.listComps = data.map((d: any) => this.cardCompCreator(d));
+        this.comp.s.list.update({ innerHTML: "", children: this.listComps.map((comp: ICardCompCtrl) => comp.get_comp()) });
+        this.paginationCtrl.default_update();
     }
 }
 export class MainCtrl {
