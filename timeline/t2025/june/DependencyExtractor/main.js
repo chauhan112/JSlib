@@ -13,7 +13,7 @@ export async function extractDependencies(
 
     let module_rel_path = path.relative(path.dirname(entry_point), lib_loc);
 
-    const command = `npx depcruise --include-only "${module_rel_path}" --output-type json ${entry_point} --no-config --ts-pre-compilation-deps`;
+    const command = `bun depcruise --include-only "${module_rel_path}" --output-type json ${entry_point} --no-config --ts-pre-compilation-deps`;
 
     let depJson;
     try {
