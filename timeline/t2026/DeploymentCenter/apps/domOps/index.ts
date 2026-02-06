@@ -1,30 +1,46 @@
+import { WebPageWithNavCtrl } from "./webPageWithNav";
+import { CrudList } from "./crud_list";
+import type {IApp, IRouteController} from "../../routeController";
 import type { GComponent } from "../../../../globalComps/GComponent";
-import { GRouteController, type IRouteController, type IApp } from "../../routeController";
-import { SearchComponentCtrl } from "./Components";
 
-export const DomOps = () => {
-    const searchComponentCtrl = new SearchComponentCtrl();
-    searchComponentCtrl.setup();
-    return searchComponentCtrl;
-}
-export class DomOpsApp extends GRouteController implements IRouteController {
-    searchComponentCtrl: SearchComponentCtrl;
+export class DomOpsCtrl implements IRouteController {
+    comp: any;
     infos: IApp = {
         name: "DomOps",
         href: "/dom-ops",
         subtitle: "advance logger",
         params: [],
     };
+    crudList: CrudList;
+    webPageWithNav: WebPageWithNavCtrl;
     constructor() {
-        super();
-        this.searchComponentCtrl = DomOps();
-
+        this.crudList = new CrudList();
+        this.webPageWithNav = new WebPageWithNavCtrl();
+    }
+    setup() {
+        this.crudList.model.get_page_size = () => 20;
+        this.crudList.setup();
+        this.webPageWithNav.model.sidebar.get_items = () => {
+            return [{label: "Domains", relative_route_path: "/domains"}, 
+                {label: "Operations", relative_route_path: "/operations"}, 
+                {label: "Activity", relative_route_path: "/activity"}, 
+            ];
+        }
+        this.webPageWithNav.setup();
+        this.crudList.model.contextMenuOptions.clicked = async (data: any) => {
+            this.webPageWithNav.model.show.info(data.title)
+        };
     }
     matches_path(path: string): boolean {
-        return path === "/dom-ops";
+        return this.crudList.matches_path(path);
     }
     get_component(params: any): GComponent {
-        return this.searchComponentCtrl.comp;
+        const comp = this.crudList.get_component(params);
+        this.webPageWithNav.comp.s.mainBody.update({innerHTML: "", child: comp });
+        return this.webPageWithNav.comp;
+    }
+    set_info(infos: IApp) {
+        this.infos = infos;
     }
     get_info(): IApp {
         return this.infos;
