@@ -184,20 +184,7 @@ export const MainPage = () => {
     page.layout.s.wrapper.s.header.s.wrapper.s.goBack.s.img.update({
         src: "logo.png",
     });
-    page.addApp({
-        title: "Content Searching",
-        description: "Search in your git repo files content",
-        link: "file-search/",
-        routeFunc: () => {
-            const fspage = FileSearchPage();
-            page.mainBody.clear();
-            page.mainBody.display(fspage);
-            page.layout.s.wrapper.s.header.s.updateTitle(
-                DEF_TITLE + " - " + "Content Searching"
-            );
-        },
-        icon: CircleCheck,
-    });
+    
     page.addApp({
         title: "Links Opener",
         description: "Search in your git repo files content",
