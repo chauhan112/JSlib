@@ -2,9 +2,8 @@ import { RouteWebPage } from "../../../../../t2025/dec/DomainOpsFrontend/route/u
 import type { GComponent } from "../../../../../globalComps/GComponent";
 import { type IRouteController, type IApp } from "../../../routeController";
 import { HeaderCtrl } from "./Header";
-import  { RouteWebPageController } from "../../../../../t2025/dec/DomainOpsFrontend/route/controller";
+import  { RouteWebPageController, MainCtrl as RouteWebPageMainCtrl } from "../../../../../t2025/dec/DomainOpsFrontend/route/controller";
 import  { GenericModel } from "./generic_impl";
-
 
 export class WebPageWithNavCtrl implements IRouteController {
     comp: any = RouteWebPage();
@@ -26,6 +25,7 @@ export class WebPageWithNavCtrl implements IRouteController {
         this.comp.s.mainBody.update({ innerHTML: "", child: this.headerCtrl.get_comp() });
         this.headerCtrl.update();
         this.model.setup();
+        this.routeWebPageCtrl.sidebar_ctrl.comp.s.header.s.title.update({}, { click: () => RouteWebPageMainCtrl.relative_navigate("/") });
     }
     
     matches_path(path: string): boolean {
