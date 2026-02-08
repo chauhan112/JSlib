@@ -1,11 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
-import type { ICRUDModel, ListItem, IContextMenuOptions, IRoute, IView, ICreateFormFields, IUpdateFormFields, CrudListModel, FormField, IViewComponent } from "./interface";
+import type { ICRUDModel, ListItem, IContextMenuOptions, IRoute, IView, ICreateFormFields, IUpdateFormFields, CrudListModel, FormField, IViewComponent, IFilterModel, FilterType, IFilter } from "./interface";
 import type { GComponent } from "../../../../../globalComps/GComponent";
 import type { NewListDisplayerCtrl } from "../../../../../t2025/dec/DomainOpsFrontend/components/ListDisplayer";
 import { MainCtrl as RouteWebPageMainCtrl } from "../../../../../t2025/dec/DomainOpsFrontend/route/controller";
 import { NewDynamicFormCtrl, MainCtrl as DynamicFormMainCtrl } from "../../../../../t2025/dec/DomainOpsFrontend/components/Form";
 import { CreateForm } from "./Components";
 import { ViewComponent } from "../../../../../t2025/dec/DomainOpsFrontend/SingleCrud";
+import { Tools } from "../../../../../globalComps/tools";
 
 
 export class GenericCrudModel implements ICRUDModel {
@@ -234,5 +235,52 @@ export class GenericViewComponent implements IViewComponent {
             null,
             2
         );
+    }
+}
+
+export class GenericFilterModel implements IFilterModel {
+    values: FilterType[] = [];
+    constructor() {
+        this.values = [
+            {name: "name", value: "name" },
+            {name: "description", value: "description" },
+            {name: "status", value: "status" },
+            {name: "createdOn", value: "createdOn" },
+            {name: "modifiedOn", value: "modifiedOn" },
+        ];
+    }
+    read_all(): FilterType[] {
+        return this.values;
+    }
+    read(name: string): FilterType {
+        return this.values.find((value: FilterType) => value.name === name)!;
+    }
+    create(name: string, value: any): void {
+        this.values.push({name, value});
+    }
+    update(name: string, new_value: any): void {
+        this.values = this.values.map((value: FilterType) => value.name === name ? {name, value: new_value} : value);
+    }
+    delete(name: string): void {
+        this.values = this.values.filter((value: FilterType) => value.name !== name);
+    }
+}
+
+export class GenericFilter implements IFilter {
+    comp: GComponent;
+    model: IFilterModel;
+    store_locally: boolean = false;
+    constructor(parent_ctrl: CrudListModel) {
+        this.model = new GenericFilterModel();
+        this.comp = Tools.div({
+            class: "flex flex-col gap-2",
+            textContent: "Filter",
+        });
+    }
+    get_comp(): GComponent {
+        return this.comp;
+    }
+    storeLocally(value: boolean): void {
+        this.store_locally = value;
     }
 }
