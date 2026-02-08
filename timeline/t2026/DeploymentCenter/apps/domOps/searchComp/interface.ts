@@ -25,10 +25,24 @@ export type FilterType = {
     value: any;
 }
 
+export type ActiveComponents = {
+    search: boolean;
+    filter: boolean;
+    create: boolean;
+} ;
+
 export interface IFilterModel {
     read_all: () => FilterType[];
     read: (name: string) => FilterType;
     create: (name: string, value: any) => void;
     update: (name: string, value: any) => void;
     delete: (name: string) => void;
+}
+
+export interface ISearchInput{
+    active_comp: ActiveComponents;
+    data: IDatamodel;
+    resultDisplayer: IResultDisplayer;
+    handler: ISearchHandler;
+    filter: IFilter;
 }

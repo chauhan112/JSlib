@@ -1,8 +1,10 @@
 import { Check, Filter, Plus, X } from "lucide";
 import { Tools } from "../../../../../globalComps/tools";
 import { InputCompCtrl, MainCtrl as AtomicMainCtrl } from "../../../../../t2025/dec/DomainOpsFrontend/components/atomic";
-import type { ISearchHandler, IDatamodel, IResultDisplayer } from "./interface";
-import { SearchHandler, DataModel, ResultDisplayer } from "./generic";
+import type { ISearchInput } from "./interface";
+import { SearchInput } from "./generic";
+import type { IApp, IRouteController } from "../../../routeController";
+import type { GComponent } from "../../../../../globalComps/GComponent";
 export const Chip = (text: string) => {
     return Tools.comp("div", {
         class: "bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full flex items-center space-x-1",
@@ -45,33 +47,30 @@ export const SearchComponent = () => {
         { value: "", label: "--filter--" },
     ]);
     filters.comp.getElement().classList.add("mt-2", "w-full", "sm:w-auto", "sm:mt-0");
-
+    const inp_with_ok_btn = Tools.comp("div", {
+        class: "flex flex-grow items-center border border-gray-300 rounded focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all",
+        children: [inp_comp, okBtn]
+    })
     const filterBtn = Tools.icon(Filter, { class: "w-6 h-6 text-gray-500 hover:text-gray-700 active:text-gray-800 cursor-pointer" });
     return Tools.comp("div", {
         class: "flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-2 bg-white rounded-lg border border-gray-200 shadow-sm",
         children: [
             addNewBtn,
             chips,
-            Tools.comp("div", {
-                class: "flex flex-grow items-center border border-gray-300 rounded focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all",
-                children: [inp_comp, okBtn]
-            }),
+            inp_with_ok_btn,
             Tools.div({
                 class:"flex gap-2 flex-col sm:flex-row items-center",
                 children: [search_button, filters.comp, filterBtn]
             })
         ],
-    }, {}, { inp_comp, search_button, chips, okBtn, addNewBtn });
+    }, {}, { inp_comp, search_button, chips, okBtn, addNewBtn, filters, filterBtn, inp_with_ok_btn });
 }
 
 export class SearchComponentCtrl {
     comp: any;
-    search_handler: ISearchHandler = new SearchHandler();
-    comps: {[key: string]: any}[] = [];
+    search: ISearchInput = new SearchInput();
     inp_comp_ctrl: InputCompCtrl = new InputCompCtrl();
-    chipsValue: string[] = [];
-    datamodel: IDatamodel = new DataModel();
-    resultDisplayer: IResultDisplayer = new ResultDisplayer();
+    chipsValue: string[] = []
     constructor() {
         this.comp = SearchComponent();
     }
@@ -80,10 +79,40 @@ export class SearchComponentCtrl {
     }
     setup() {
         this.inp_comp_ctrl.set_comp(this.comp.s.inp_comp);
-        this.comps.push({ inp_comp: this.comp.s.inp_comp, search_button: this.comp.s.search_button, chips: this.comp.s.chips });
-        this.comp.s.inp_comp.update({}, {keydown: (e: any) => this.on_keydown(e)},);
-        this.comp.s.search_button.update({}, {click: (e: any) => this.on_search(e)}, );
-        this.comp.s.okBtn.update({}, {click: (e: any) => this.on_ok_btn(e)}, );
+        
+        if (this.search.active_comp.filter) {
+            this.show_comp(this.comp.s.filters.comp);
+            this.show_comp(this.comp.s.filterBtn);
+        }else{
+            this.hide_comp(this.comp.s.filters.comp);
+            this.hide_comp(this.comp.s.filterBtn);
+        }
+        if (this.search.active_comp.create) {
+            this.show_comp(this.comp.s.addNewBtn);
+        }else{
+            this.hide_comp(this.comp.s.addNewBtn);
+        }
+        if (this.search.active_comp.search) {
+            this.show_comp(this.comp.s.inp_with_ok_btn);
+            this.show_comp(this.comp.s.search_button);
+            this.show_comp(this.comp.s.chips);
+            this.comp.s.inp_comp.update({}, {keydown: (e: any) => this.on_keydown(e)},);
+            this.comp.s.search_button.update({}, {click: (e: any) => this.on_search(e)}, );
+            this.comp.s.okBtn.update({}, {click: (e: any) => this.on_ok_btn(e)}, );
+        }else{
+            this.hide_comp(this.comp.s.search_button);
+            this.hide_comp(this.comp.s.inp_with_ok_btn);
+            this.hide_comp(this.comp.s.chips);
+        }
+
+
+
+    }
+    private hide_comp(comp: any) {
+        comp.getElement().classList.add("hidden");
+    }
+    private show_comp(comp: any) {
+        comp.getElement().classList.remove("hidden");
     }
     private on_keydown(e: any) {
         const value = this.inp_comp_ctrl.get_value();
@@ -112,15 +141,15 @@ export class SearchComponentCtrl {
         return chip;
     }
     private async on_search(e: any) {
-        let search_words = this.chipsValue.map((v: string) => this.search_handler.parse_chip_value(v));
+        let search_words = this.chipsValue.map((v: string) => this.search.handler.parse_chip_value(v));
         let inp_word = this.inp_comp_ctrl.get_value().trim()
         if (inp_word !== "") {
-            search_words.push(this.search_handler.parse_chip_value(inp_word));
+            search_words.push(this.search.handler.parse_chip_value(inp_word));
         }
-        let data = await this.datamodel.get_data();
-        this.search_handler.set_data(data);
-        let result = await this.search_handler.on_search(search_words);
-        this.resultDisplayer.display_data(result);
+        let data = await this.search.data.get_data();
+        this.search.handler.set_data(data);
+        let result = await this.search.handler.on_search(search_words);
+        this.search.resultDisplayer.display_data(result);
     }
 }
 

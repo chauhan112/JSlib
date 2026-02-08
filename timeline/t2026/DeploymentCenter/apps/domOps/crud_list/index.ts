@@ -117,10 +117,10 @@ export class GenericCrudListCtrl implements CrudListModel {
         this.viewComponent = new GenericViewComponent(this);
         this.filter = new GenericFilter();
         this.searchCtrl = new SearchComponentCtrl();
-        this.searchCtrl.search_handler = new CrudListSearchHandler();
+        this.searchCtrl.search.handler = new CrudListSearchHandler();
         this.dataModel = new GenericDataModel(this.view, this.model);
-        this.searchCtrl.datamodel = this.dataModel;
-        this.searchCtrl.resultDisplayer = this.dataModel;
+        this.searchCtrl.search.data = this.dataModel;
+        this.searchCtrl.search.resultDisplayer = this.dataModel;
     }
 
     get_page_size() {

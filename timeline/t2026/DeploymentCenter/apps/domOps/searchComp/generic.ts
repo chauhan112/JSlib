@@ -7,6 +7,8 @@ import type {
     IFilter,
     IFilterModel,
     FilterType,
+    ActiveComponents,
+    ISearchInput,
 } from "./interface";
 import { Tools } from "../../../../../globalComps/tools";
 
@@ -99,5 +101,20 @@ export class SearchHandler implements ISearchHandler {
             query.$or.push({ description: { $regex: value, $options: "i" } });
         }
         return query;
+    }
+}
+
+export class SearchInput implements ISearchInput{
+    active_comp: ActiveComponents = {
+        search: true,
+        filter: true,
+        create: true,
+    };
+    data: IDatamodel = new DataModel();
+    resultDisplayer: IResultDisplayer = new ResultDisplayer();
+    handler: ISearchHandler = new SearchHandler();
+    filter: IFilter = new GenericFilter();
+    constructor() {
+        this.filter.model = new GenericFilterModel();
     }
 }
