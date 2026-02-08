@@ -2,6 +2,9 @@ import { WebPageWithNavCtrl } from "./webPageWithNav";
 import { CrudList } from "./crud_list";
 import type {IApp, IRouteController} from "../../routeController";
 import type { GComponent } from "../../../../globalComps/GComponent";
+import { NAVS } from "./interface";
+
+
 
 export class DomOpsCtrl implements IRouteController {
     comp: any;
@@ -20,12 +23,7 @@ export class DomOpsCtrl implements IRouteController {
     setup() {
         this.crudList.model.get_page_size = () => 20;
         this.crudList.setup();
-        this.webPageWithNav.model.sidebar.get_items = () => {
-            return [{label: "Domains", relative_route_path: "/domains"}, 
-                {label: "Operations", relative_route_path: "/operations"}, 
-                {label: "Activity", relative_route_path: "/activity"}, 
-            ];
-        }
+        this.webPageWithNav.model.sidebar.get_items = () => NAVS;
         this.webPageWithNav.setup();
         this.crudList.model.contextMenuOptions.clicked = async (data: any) => {
             this.webPageWithNav.model.show.info(data.title)
