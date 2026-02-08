@@ -130,40 +130,63 @@ export class GenericCrudListCtrl implements CrudListModel{
     }
     
 }
+
 export const SearchCrudList = () => {
     const searchComp = SearchComponent();
     const listDisplayer = ListDisplayer();
-    return Tools.div({
-        class: "flex flex-col gap-2",
-        children: [searchComp, listDisplayer],
-    }, {}, { searchComp, listDisplayer });
-}
-export class CrudList  {
+    return Tools.div(
+        {
+            class: "flex flex-col gap-2",
+            children: [searchComp, listDisplayer],
+        },
+        {},
+        { searchComp, listDisplayer },
+    );
+};
+
+export class CrudList {
     comp: any = SearchCrudList();
-    searchComponentCtrl: SearchComponentCtrl = new SearchComponentCtrl();
     listDisplayerCtrl: NewListDisplayerCtrl = new NewListDisplayerCtrl();
-    model: GenericCrudListCtrl
+    model: GenericCrudListCtrl;
     base_path: string = "/dom-ops";
     constructor() {
         this.model = new GenericCrudListCtrl(this.listDisplayerCtrl);
     }
     setup() {
-        this.searchComponentCtrl.set_comp(this.comp.s.searchComp);
-        this.searchComponentCtrl.setup();
+        this.model.searchCtrl.set_comp(this.comp.s.searchComp);
+        this.model.searchCtrl.setup();
         this.listDisplayerCtrl.set_comp(this.comp.s.listDisplayer);
         this.listDisplayerCtrl.setup();
-        this.searchComponentCtrl.search_handler = (this.model as unknown as ISearchHandler);
-        this.listDisplayerCtrl.contextMenuOptions = this.model.contextMenuOptions.get_options().map((option: string) => ({ label: option }));
+        this.listDisplayerCtrl.contextMenuOptions =
+            this.model.contextMenuOptions
+                .get_options()
+                .map((option: string) => ({ label: option }));
         this.listDisplayerCtrl.title_getter = this.title_getter;
-        this.listDisplayerCtrl.paginationCtrl.model.pageSize = this.model.get_page_size();
-        this.listDisplayerCtrl.on_more_ops_clicked = this.on_more_ops_clicked.bind(this);
-        this.listDisplayerCtrl.on_card_clicked = this.on_card_clicked.bind(this);
-        this.comp.s.searchComp.s.addNewBtn.update({}, { click: () => this.model.route.route_to("/create") });
+        this.listDisplayerCtrl.paginationCtrl.model.pageSize =
+            this.model.get_page_size();
+        this.listDisplayerCtrl.on_more_ops_clicked =
+            this.on_more_ops_clicked.bind(this);
+        this.listDisplayerCtrl.on_card_clicked =
+            this.on_card_clicked.bind(this);
+        this.comp.s.searchComp.s.addNewBtn.update(
+            {},
+            { click: () => this.model.route.route_to("/create") },
+        );
+
+        this.define_routes();
+    }
+    private define_routes() {
         this.model.route.define_route("", () => this.comp);
         this.model.route.define_route("/", () => this.comp);
-        this.model.route.define_route("/create", () => this.model.createFormFields.get_form());
-        this.model.route.define_route("/edit", () => this.model.updateFormFields.get_form());
-        this.model.route.define_route("/view", () => this.model.viewComponent.get_comp());
+        this.model.route.define_route("/create", () =>
+            this.model.createFormFields.get_form(),
+        );
+        this.model.route.define_route("/edit", () =>
+            this.model.updateFormFields.get_form(),
+        );
+        this.model.route.define_route("/view", () =>
+            this.model.viewComponent.get_comp(),
+        );
 
         this.model.model.read_all().then((data: any[]) => {
             this.model.view.set_data(data);
@@ -178,18 +201,49 @@ export class CrudList  {
     update() {
         this.comp.s.listDisplayerCtrl.update();
     }
-    
+
     title_getter(data: ListItem) {
         return data.title;
     }
     matches_path(path: string): boolean {
         let after_base_path = path.slice(this.base_path.length).trim();
-        return path.startsWith(this.base_path) && this.model.route.match_route(after_base_path);
+        return (
+            path.startsWith(this.base_path) &&
+            this.model.route.match_route(after_base_path)
+        );
     }
     get_component(params: any): GComponent {
         return Tools.div({
             class: "flex flex-col gap-2 p-2",
             children: [this.model.route.get_matched_route()],
         });
+    }
+}
+
+export class CrudListAsPage implements IRouteController {
+    comp: any;
+    infos: IApp = {
+        name: "CrudList",
+        href: "/crud-list",
+        subtitle: "CrudList",
+        params: [],
+    };
+    constructor() {
+        this.comp = new CrudList();
+    }
+    setup() {
+        this.comp.setup();
+    }
+    matches_path(path: string): boolean {
+        return path === "/crud-list";
+    }
+    get_component(params: any): GComponent {
+        return this.comp.comp;
+    }
+    set_info(info: IApp): void {
+        this.infos = info;
+    }
+    get_info(): IApp {
+        return this.infos;
     }
 }
