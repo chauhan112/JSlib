@@ -33,55 +33,50 @@ import {
     GenericFilter,
 } from "./generic_interface";
 import type { GComponent } from "../../../../../globalComps/GComponent";
+import type { IRouteController, IApp } from "../../../routeController";
 
-export class GenericCrudListCtrl implements CrudListModel, ISearchHandler {
-    model: ICRUDModel = new GenericCrudModel();
-    createFormFields: ICreateFormFields;
-    updateFormFields: IUpdateFormFields;
-    view: IView;
-    route: IRoute = new GenericRoute();
-    contextMenuOptions: IContextMenuOptions;
-    viewComponent: IViewComponent;
-    constructor(listComp: any) {
-        this.createFormFields = new GenericCreateFormFields(this);
-        this.updateFormFields = new GenericUpdateFormFields(this);
-        let contextMenuOptions = new GenericCrudContextMenuOptions(this);
-        this.contextMenuOptions = contextMenuOptions;
-        this.view = new GenericView(listComp);
-        this.viewComponent = new GenericViewComponent(this);
-    }
-    on_search(words: any[]) {
+
+export class GenericSearchHandler implements ISearchHandler {
+    data: ListItem[] = [];
+    async on_search(words: any[]) {
         if (words.length === 0) {
-            this.model.read_all().then((vals: ListItem[]) => {
-                this.view.set_data(vals);
-            });
-            return;
+            return this.data;
         }
-        this.model.read_all().then((vals: ListItem[]) => {
-            let res: ListItem[] = [];
-            for (let val of vals) {
-                let match = true;
-                for (let word of words) {
-                    if (!this.match_word(word, val)) {
-                        match = false;
-                        break;
-                    }
-                }
-                if (match) {
-                    res.push(val);
+        let res: ListItem[] = [];
+        for (let val of this.data) {
+            let match = true;
+            for (let word of words) {
+                if (!this.match_word(word, val)) {
+                    match = false;
+                    break;
                 }
             }
-            this.view.set_data(res);
-        });
-    };
-
+            if (match) {
+                res.push(val);
+            }
+        }
+        return res;
+    }
+    set_data(data: ListItem[]) {
+        this.data = data;
+    }
+    parse_chip_value(value: string) {
+        if (value.includes(":")) {
+            const [key, val] = value.split(":");
+            return { [key]: val };
+        }
+        return value;
+    }
     private match_word(word: any, val: ListItem) {
-        if (typeof word === 'string') {
+        if (typeof word === "string") {
             return val.title.includes(word);
         }
-        if (typeof word === 'object') {
+        if (typeof word === "object") {
             for (let key in word) {
-                if (val.original[key]  && JSON.stringify(val.original[key]).includes(word[key])) {
+                if (
+                    val.original[key] &&
+                    JSON.stringify(val.original[key]).includes(word[key])
+                ) {
                     return true;
                 }
             }
@@ -89,16 +84,49 @@ export class GenericCrudListCtrl implements CrudListModel, ISearchHandler {
         }
         return false;
     }
+}
+export class GenericDataModel implements IDatamodel, IResultDisplayer {
+    view: IView;
+    model: ICRUDModel;
+    constructor(view: IView, model: ICRUDModel) {
+        this.view = view;
+        this.model = model;
+    }
+    async get_data() {
+        return this.model.read_all();
+    }
+    display_data(data: ListItem[]) {
+        this.view.set_data(data);
+    }
+}
+export class GenericCrudListCtrl implements CrudListModel{
+    dataModel: GenericDataModel;
+    model: ICRUDModel = new GenericCrudModel();
+    createFormFields: ICreateFormFields;
+    updateFormFields: IUpdateFormFields;
+    view: IView;
+    route: IRoute = new GenericRoute();
+    contextMenuOptions: IContextMenuOptions;
+    viewComponent: IViewComponent;
+    filter: IFilter;
+    searchCtrl: SearchComponentCtrl;
+    constructor(listComp: any) {
+        this.createFormFields = new GenericCreateFormFields(this);
+        this.updateFormFields = new GenericUpdateFormFields(this);
+        let contextMenuOptions = new GenericCrudContextMenuOptions(this);
+        this.contextMenuOptions = contextMenuOptions;
+        this.view = new GenericView(listComp);
+        this.viewComponent = new GenericViewComponent(this);
+        this.filter = new GenericFilter(this);
+        this.searchCtrl = new SearchComponentCtrl();
+        this.searchCtrl.search_handler = new GenericSearchHandler();
+        this.dataModel = new GenericDataModel(this.view, this.model);
+        this.searchCtrl.datamodel = this.dataModel;
+        this.searchCtrl.resultDisplayer = this.dataModel;
+    }
 
-    get_page_size(){
+    get_page_size() {
         return 10;
-    };
-    parse_chip_value(value: string) {
-        if (value.includes(':')) {
-            const [key, val] = value.split(':');
-            return { [key]: val };
-        }
-        return value;
     }
     
 }
