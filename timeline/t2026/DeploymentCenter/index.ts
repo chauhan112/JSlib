@@ -5,6 +5,8 @@ import { HomeRouteController, MainCtrl as DafaultCompCtrl } from "./apps/default
 import { SettingsPageCtrl, MainCtrl as SettingsPageMainCtrl } from "./settings";
 import { MainCtrl as GitRepoPageMainCtrl, GitRepoPageCtrl } from "./apps/git-cloner";
 import { DomOpsCtrl } from "./apps/domOps";
+import {CrudListAsPage } from "./apps/domOps/crud_list";
+
 export const DeploymentCenterPage = () => {
     return Tools.comp("div", {
         class: "flex-1 flex flex-col",
@@ -63,14 +65,14 @@ export class DeploymentCenterPageCtrl {
 }
 
 export const DeploymentCenter = () => {
-    
     const deploymentCenterPageCtrl = new DeploymentCenterPageCtrl();
     deploymentCenterPageCtrl.set_comp(DeploymentCenterPage());
     let gitRepoSearchRouteCtrl = GitRepoPageMainCtrl.gitRepoPage();
     deploymentCenterPageCtrl.add_app(gitRepoSearchRouteCtrl);
     let navs: IRouteController[] = [];
-    
     navs.push(new DomOpsCtrl());
+    navs.push(new CrudListAsPage());
+
     
     for (const nav of navs) {
         (nav as any).setup();
