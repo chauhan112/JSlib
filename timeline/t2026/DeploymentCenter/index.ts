@@ -6,6 +6,7 @@ import { SettingsPageCtrl, MainCtrl as SettingsPageMainCtrl } from "./settings";
 import { MainCtrl as GitRepoPageMainCtrl, GitRepoPageCtrl } from "./apps/git-cloner";
 import { DomOpsCtrl } from "./apps/domOps";
 import {CrudListAsPage } from "./apps/domOps/crud_list";
+import { SearchComponentAsPage } from "./apps/domOps/searchComp";
 
 export const DeploymentCenterPage = () => {
     return Tools.comp("div", {
@@ -72,7 +73,7 @@ export const DeploymentCenter = () => {
     let navs: IRouteController[] = [];
     navs.push(new DomOpsCtrl());
     navs.push(new CrudListAsPage());
-
+    navs.push(new SearchComponentAsPage());
     
     for (const nav of navs) {
         (nav as any).setup();

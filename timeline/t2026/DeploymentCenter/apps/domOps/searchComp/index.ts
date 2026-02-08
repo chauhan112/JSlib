@@ -153,3 +153,29 @@ export class SearchComponentCtrl {
     }
 }
 
+export class SearchComponentAsPage implements IRouteController {
+    comp: any;
+    ctrl: SearchComponentCtrl = new SearchComponentCtrl();
+    infos: IApp = {
+        name: "Search",
+        href: "/search",
+        subtitle: "Search",
+        params: [],
+    }
+    
+    setup() {
+        this.ctrl.setup();
+    }
+    matches_path(path: string): boolean {
+        return path === "/search-component";
+    }
+    get_component(params: any): GComponent {
+        return this.ctrl.comp;
+    }
+    set_info(info: IApp): void {
+        this.infos = info;
+    }
+    get_info(): IApp {
+        return this.infos;
+    }
+}
