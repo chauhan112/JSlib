@@ -1,8 +1,37 @@
 import { Tools } from "../../../../../globalComps/tools";
-import { ListDisplayer, NewListDisplayerCtrl } from "../../../../../t2025/dec/DomainOpsFrontend/components/ListDisplayer";
-import { SearchComponent, SearchComponentCtrl, type ISearchHandler } from "../Components";
-import type { CrudListModel, IContextMenuOptions, ICreateFormFields, ICRUDModel, IRoute, IUpdateFormFields, IView, IViewComponent, ListItem } from "./interface";
-import { GenericUpdateFormFields, GenericRoute, GenericView, GenericCreateFormFields, GenericCrudModel, GenericCrudContextMenuOptions, GenericViewComponent } from "./generic_interface";
+import {
+    ListDisplayer,
+    NewListDisplayerCtrl,
+} from "../../../../../t2025/dec/DomainOpsFrontend/components/ListDisplayer";
+import {
+    SearchComponent,
+    SearchComponentCtrl,
+    type IDatamodel,
+    type ISearchHandler,
+    type IResultDisplayer,
+} from "../Components";
+import type {
+    CrudListModel,
+    IContextMenuOptions,
+    ICreateFormFields,
+    ICRUDModel,
+    IRoute,
+    IUpdateFormFields,
+    IView,
+    IViewComponent,
+    ListItem,
+    IFilter,
+} from "./interface";
+import {
+    GenericUpdateFormFields,
+    GenericRoute,
+    GenericView,
+    GenericCreateFormFields,
+    GenericCrudModel,
+    GenericCrudContextMenuOptions,
+    GenericViewComponent,
+    GenericFilter,
+} from "./generic_interface";
 import type { GComponent } from "../../../../../globalComps/GComponent";
 
 export class GenericCrudListCtrl implements CrudListModel, ISearchHandler {
