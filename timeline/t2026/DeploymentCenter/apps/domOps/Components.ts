@@ -1,6 +1,7 @@
-import { Check, Plus, X } from "lucide";
+import { Check, Filter, Plus, X } from "lucide";
 import { Tools } from "../../../../globalComps/tools";
-import { InputCompCtrl } from "../../../../t2025/dec/DomainOpsFrontend/components/atomic";
+import { InputCompCtrl, MainCtrl as AtomicMainCtrl } from "../../../../t2025/dec/DomainOpsFrontend/components/atomic";
+import type { ListItem } from "./crud_list/interface";
 
 export const Chip = (text: string) => {
     return Tools.comp("div", {
@@ -39,6 +40,13 @@ export const SearchComponent = () => {
         class: "flex justify-center items-center bg-green-600 hover:bg-green-700 active:bg-green-800 text-white rounded shadow-sm transition-colors font-medium w-full sm:w-auto cursor-pointer",
         children: [Tools.icon(Plus, { class: "w-6 h-6" })],
     });
+
+    const filters = AtomicMainCtrl.dropdown([
+        { value: "", label: "--filter--" },
+    ]);
+    filters.comp.getElement().classList.add("mt-2", "w-full", "sm:w-auto", "sm:mt-0");
+
+    const filterBtn = Tools.icon(Filter, { class: "w-6 h-6 text-gray-500 hover:text-gray-700 active:text-gray-800 cursor-pointer" });
     return Tools.comp("div", {
         class: "flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-2 bg-white rounded-lg border border-gray-200 shadow-sm",
         children: [
@@ -48,20 +56,48 @@ export const SearchComponent = () => {
                 class: "flex flex-grow items-center border border-gray-300 rounded focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all",
                 children: [inp_comp, okBtn]
             }),
-            search_button
+            Tools.div({
+                class:"flex gap-2 flex-col sm:flex-row items-center",
+                children: [search_button, filters.comp, filterBtn]
+            })
         ],
     }, {}, { inp_comp, search_button, chips, okBtn, addNewBtn });
 }
 
 export interface ISearchHandler{
-    on_search: (words: any[], comps: {[key: string]: any}[]) => void;
+    on_search: (words: any[]) => Promise<ListItem[]>;
     parse_chip_value: (value: string) => any;
+    set_data: (data: ListItem[]) => void;
+}
+
+export interface IDatamodel {
+    get_data: () => Promise<ListItem[]>;
+}
+
+export interface IResultDisplayer {
+    display_data: (data: ListItem[]) => void;
+}
+
+export class ResultDisplayer implements IResultDisplayer {
+    display_data(data: ListItem[]) {
+        console.log("displaying data", data);
+    }
+}
+
+export class DataModel implements IDatamodel {
+    async get_data() {
+        return [];
+    }
 }
 
 export class SearchHandler implements ISearchHandler{
-    on_search(words: any[], comps: {[key: string]: any}[]) {
-        console.log(words);
-        return [];
+    data: ListItem[] = [];
+    set_data(data: ListItem[]) {
+        this.data = data;
+    }
+    async on_search(words: any[]) {
+        console.log("parameters of search", words);
+        return this.data;
     };
     parse_chip_value(value: string) {
         let query: any = {};
@@ -89,6 +125,8 @@ export class SearchComponentCtrl {
     comps: {[key: string]: any}[] = [];
     inp_comp_ctrl: InputCompCtrl = new InputCompCtrl();
     chipsValue: string[] = [];
+    datamodel: IDatamodel = new DataModel();
+    resultDisplayer: IResultDisplayer = new ResultDisplayer();
     constructor() {
         this.comp = SearchComponent();
     }
@@ -128,13 +166,16 @@ export class SearchComponentCtrl {
         }});
         return chip;
     }
-    private on_search(e: any) {
+    private async on_search(e: any) {
         let search_words = this.chipsValue.map((v: string) => this.search_handler.parse_chip_value(v));
         let inp_word = this.inp_comp_ctrl.get_value().trim()
         if (inp_word !== "") {
             search_words.push(this.search_handler.parse_chip_value(inp_word));
         }
-        this.search_handler.on_search(search_words, this.comps);
+        let data = await this.datamodel.get_data();
+        this.search_handler.set_data(data);
+        let result = await this.search_handler.on_search(search_words);
+        this.resultDisplayer.display_data(result);
     }
 }
 
