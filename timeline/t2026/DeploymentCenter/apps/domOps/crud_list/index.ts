@@ -3,13 +3,12 @@ import {
     ListDisplayer,
     NewListDisplayerCtrl,
 } from "../../../../../t2025/dec/DomainOpsFrontend/components/ListDisplayer";
-import {
-    SearchComponent,
-    SearchComponentCtrl,
-    type IDatamodel,
-    type ISearchHandler,
-    type IResultDisplayer,
-} from "../Components";
+import type {
+    IDatamodel,
+    ISearchHandler,
+    IResultDisplayer,
+    IFilter,
+} from "../searchComp/interface";
 import type {
     CrudListModel,
     IContextMenuOptions,
@@ -20,7 +19,6 @@ import type {
     IView,
     IViewComponent,
     ListItem,
-    IFilter,
 } from "./interface";
 import {
     GenericUpdateFormFields,
@@ -30,13 +28,13 @@ import {
     GenericCrudModel,
     GenericCrudContextMenuOptions,
     GenericViewComponent,
-    GenericFilter,
 } from "./generic_interface";
 import type { GComponent } from "../../../../../globalComps/GComponent";
 import type { IRouteController, IApp } from "../../../routeController";
+import { GenericFilter } from "../searchComp/generic";
+import { SearchComponent, SearchComponentCtrl } from "../searchComp";
 
-
-export class GenericSearchHandler implements ISearchHandler {
+export class CrudListSearchHandler implements ISearchHandler {
     data: ListItem[] = [];
     async on_search(words: any[]) {
         if (words.length === 0) {
@@ -99,7 +97,7 @@ export class GenericDataModel implements IDatamodel, IResultDisplayer {
         this.view.set_data(data);
     }
 }
-export class GenericCrudListCtrl implements CrudListModel{
+export class GenericCrudListCtrl implements CrudListModel {
     dataModel: GenericDataModel;
     model: ICRUDModel = new GenericCrudModel();
     createFormFields: ICreateFormFields;
@@ -117,9 +115,9 @@ export class GenericCrudListCtrl implements CrudListModel{
         this.contextMenuOptions = contextMenuOptions;
         this.view = new GenericView(listComp);
         this.viewComponent = new GenericViewComponent(this);
-        this.filter = new GenericFilter(this);
+        this.filter = new GenericFilter();
         this.searchCtrl = new SearchComponentCtrl();
-        this.searchCtrl.search_handler = new GenericSearchHandler();
+        this.searchCtrl.search_handler = new CrudListSearchHandler();
         this.dataModel = new GenericDataModel(this.view, this.model);
         this.searchCtrl.datamodel = this.dataModel;
         this.searchCtrl.resultDisplayer = this.dataModel;
@@ -128,7 +126,6 @@ export class GenericCrudListCtrl implements CrudListModel{
     get_page_size() {
         return 10;
     }
-    
 }
 
 export const SearchCrudList = () => {

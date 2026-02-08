@@ -1,4 +1,5 @@
 import type { GComponent } from "../../../../../globalComps/GComponent";
+import type { IFilter } from "../searchComp/interface";
 
 export type ListItem = {
     title: string;
@@ -92,23 +93,4 @@ export interface CrudListModel {
     route: IRoute;
     filter: IFilter;
     get_page_size: () => number;
-}
-
-export interface IFilter {
-    get_comp: () => GComponent;
-    model: IFilterModel;
-    storeLocally(value: boolean): void;
-}
-
-export type FilterType = {
-    name: string;
-    value: any;
-}
-
-export interface IFilterModel {
-    read_all: () => FilterType[];
-    read: (name: string) => FilterType;
-    create: (name: string, value: any) => void;
-    update: (name: string, value: any) => void;
-    delete: (name: string) => void;
 }

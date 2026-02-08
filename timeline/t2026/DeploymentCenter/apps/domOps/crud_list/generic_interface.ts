@@ -1,51 +1,90 @@
 import { v4 as uuidv4 } from "uuid";
-import type { ICRUDModel, ListItem, IContextMenuOptions, IRoute, IView, ICreateFormFields, IUpdateFormFields, CrudListModel, FormField, IViewComponent, IFilterModel, FilterType, IFilter } from "./interface";
+import type {
+    ICRUDModel,
+    ListItem,
+    IContextMenuOptions,
+    IRoute,
+    IView,
+    ICreateFormFields,
+    IUpdateFormFields,
+    CrudListModel,
+    FormField,
+    IViewComponent,
+} from "./interface";
 import type { GComponent } from "../../../../../globalComps/GComponent";
 import type { NewListDisplayerCtrl } from "../../../../../t2025/dec/DomainOpsFrontend/components/ListDisplayer";
 import { MainCtrl as RouteWebPageMainCtrl } from "../../../../../t2025/dec/DomainOpsFrontend/route/controller";
-import { NewDynamicFormCtrl, MainCtrl as DynamicFormMainCtrl } from "../../../../../t2025/dec/DomainOpsFrontend/components/Form";
+import {
+    NewDynamicFormCtrl,
+    MainCtrl as DynamicFormMainCtrl,
+} from "../../../../../t2025/dec/DomainOpsFrontend/components/Form";
 import { CreateForm } from "./Components";
 import { ViewComponent } from "../../../../../t2025/dec/DomainOpsFrontend/SingleCrud";
-import { Tools } from "../../../../../globalComps/tools";
-
 
 export class GenericCrudModel implements ICRUDModel {
     data: any[] = [];
     constructor() {
         for (let i = 0; i < 20; i++) {
-            this.data.push({title: `Test ${i}`, id: i.toString()} );
+            this.data.push({ title: `Test ${i}`, id: i.toString() });
         }
     }
     read_all: () => Promise<ListItem[]> = async () => {
-        return this.data.map((item: any) => ({title: item.title, id: item.id, original: item}));
-    }
+        return this.data.map((item: any) => ({
+            title: item.title,
+            id: item.id,
+            original: item,
+        }));
+    };
     read: (id: string) => Promise<ListItem> = async (id: string) => {
         const item = this.data.find((item: ListItem) => item.id === id);
         if (!item) {
             throw new Error(`Item with id ${id} not found`);
         }
-        return {title: item.title, id: item.id, original: item};
-    }
+        return { title: item.title, id: item.id, original: item };
+    };
     create: (data: any) => Promise<ListItem> = async (data: any) => {
         const newItem = { ...data, id: uuidv4() };
         this.data.push(newItem);
-        return {title: newItem.title, id: newItem.id, original: newItem};
-    }
-    update: (id: string, data: any) => Promise<ListItem> = async (id: string, data: any) => {
+        return { title: newItem.title, id: newItem.id, original: newItem };
+    };
+    update: (id: string, data: any) => Promise<ListItem> = async (
+        id: string,
+        data: any,
+    ) => {
         const item = this.data.find((item: ListItem) => item.id === id);
         if (!item) {
             throw new Error(`Item with id ${id} not found`);
         }
         const updatedItem = { ...item, ...data };
-        this.data = this.data.map((item: ListItem) => item.id === id ? updatedItem : item);
-        return {title: updatedItem.title, id: updatedItem.id, original: updatedItem};
-    }
+        this.data = this.data.map((item: ListItem) =>
+            item.id === id ? updatedItem : item,
+        );
+        return {
+            title: updatedItem.title,
+            id: updatedItem.id,
+            original: updatedItem,
+        };
+    };
     deleteIt: (id: string) => Promise<void> = async (id: string) => {
         this.data = this.data.filter((item: ListItem) => item.id !== id);
-    }
-    search: (word: string, case_sensitive: boolean, regex: boolean) => Promise<ListItem[]> = async (word: string, case_sensitive: boolean, regex: boolean) => {
-        return this.data.filter((item: any) => item.title.includes(word)).map((item: any) => ({title: item.title, id: item.id, original: item}));
-    }
+    };
+    search: (
+        word: string,
+        case_sensitive: boolean,
+        regex: boolean,
+    ) => Promise<ListItem[]> = async (
+        word: string,
+        case_sensitive: boolean,
+        regex: boolean,
+    ) => {
+        return this.data
+            .filter((item: any) => item.title.includes(word))
+            .map((item: any) => ({
+                title: item.title,
+                id: item.id,
+                original: item,
+            }));
+    };
 }
 
 export class GenericCrudContextMenuOptions implements IContextMenuOptions {
@@ -56,7 +95,7 @@ export class GenericCrudContextMenuOptions implements IContextMenuOptions {
     get_options(): string[] {
         return ["View", "Edit", "Delete"];
     }
-    async more_ops_clicked(label: string, data:  ListItem) {
+    async more_ops_clicked(label: string, data: ListItem) {
         switch (label) {
             case "View":
                 this.parent_ctrl.route.route_to("/view", { data: data });
@@ -83,25 +122,41 @@ export class GenericCreateFormFields implements ICreateFormFields {
         this.parent_ctrl = parent_ctrl;
     }
     get_fields(): FormField[] {
-        return [{type: "Input", key: "title", params: {attrs: {placeholder: "Title"}}}];
+        return [
+            {
+                type: "Input",
+                key: "title",
+                params: { attrs: { placeholder: "Title" } },
+            },
+        ];
     }
     get_title: (data: any) => string = (data: any) => {
         return data.title;
-    }
-    async save(data: any){
-        this.parent_ctrl.model.create(data).then((createdItem: ListItem) => {
-            this.parent_ctrl.route.route_back();
-            this.parent_ctrl.view.create_one(createdItem);
-        }).catch((error: any) => {
-            console.error(error);
-        });
+    };
+    async save(data: any) {
+        this.parent_ctrl.model
+            .create(data)
+            .then((createdItem: ListItem) => {
+                this.parent_ctrl.route.route_back();
+                this.parent_ctrl.view.create_one(createdItem);
+            })
+            .catch((error: any) => {
+                console.error(error);
+            });
     }
     get_form(): GComponent {
         if (!this.form) {
-            this.form = DynamicFormMainCtrl.dynamicForm(this.get_fields(), "Create");
+            this.form = DynamicFormMainCtrl.dynamicForm(
+                this.get_fields(),
+                "Create",
+            );
             this.form.onSubmit = this.save_impl.bind(this);
         }
-        return CreateForm([this.form.comp], () => this.parent_ctrl.route.route_back(), "Create New Item");
+        return CreateForm(
+            [this.form.comp],
+            () => this.parent_ctrl.route.route_back(),
+            "Create New Item",
+        );
     }
     private save_impl(data: any) {
         this.save(data);
@@ -116,35 +171,50 @@ export class GenericUpdateFormFields implements IUpdateFormFields {
         this.parent_ctrl = parent_ctrl;
     }
     get_fields(): FormField[] {
-        return [{type: "Input", key: "title", params: {attrs: {placeholder: "Title"}}}];
+        return [
+            {
+                type: "Input",
+                key: "title",
+                params: { attrs: { placeholder: "Title" } },
+            },
+        ];
     }
     get_title: (data: any) => string = (data: any) => {
         return data.title;
-    }
-    async save(data: any){
-        
-        let updatedData = {...this.prev_data, ...data};
+    };
+    async save(data: any) {
+        let updatedData = { ...this.prev_data, ...data };
         console.log("updatedData", updatedData);
-        this.parent_ctrl.model.update(this.prev_data.id, updatedData).then((updatedItem: ListItem) => {
-            this.parent_ctrl.route.route_back();
-            this.parent_ctrl.view.update_one(updatedItem);
-        }).catch((error: any) => {
-            console.error(error);
-        });
+        this.parent_ctrl.model
+            .update(this.prev_data.id, updatedData)
+            .then((updatedItem: ListItem) => {
+                this.parent_ctrl.route.route_back();
+                this.parent_ctrl.view.update_one(updatedItem);
+            })
+            .catch((error: any) => {
+                console.error(error);
+            });
     }
     get_form(): GComponent {
         if (!this.form) {
-            this.form = DynamicFormMainCtrl.dynamicForm(this.get_fields(), "Update");
-            this.form.onSubmit = this.save_impl.bind(this);            
+            this.form = DynamicFormMainCtrl.dynamicForm(
+                this.get_fields(),
+                "Update",
+            );
+            this.form.onSubmit = this.save_impl.bind(this);
         }
-        let data = this.parent_ctrl.route.get_params()
+        let data = this.parent_ctrl.route.get_params();
         if (data) {
             this.prev_data = data.data.original;
             this.form.set_value(this.prev_data);
-        }else{
+        } else {
             this.parent_ctrl.route.route_back();
         }
-        return CreateForm([this.form.comp], () => this.parent_ctrl.route.route_back(), "Update Item");
+        return CreateForm(
+            [this.form.comp],
+            () => this.parent_ctrl.route.route_back(),
+            "Update Item",
+        );
     }
     private save_impl(data: any) {
         this.save(data);
@@ -161,17 +231,25 @@ export class GenericView implements IView {
         this.comp.update();
     }
     update_one(data: ListItem) {
-        this.comp.paginationCtrl.model.data = this.comp.paginationCtrl.model.data.map((item: ListItem) => item.id === data.id ? data : item);
+        this.comp.paginationCtrl.model.data =
+            this.comp.paginationCtrl.model.data.map((item: ListItem) =>
+                item.id === data.id ? data : item,
+            );
         this.comp.update();
     }
     delete_one(id: string) {
-        this.comp.paginationCtrl.model.data = this.comp.paginationCtrl.model.data.filter((item: ListItem) => item.id !== id);
-        this.comp.paginationCtrl.model.maxPage = this.comp.paginationCtrl.model.getMaxPage();
+        this.comp.paginationCtrl.model.data =
+            this.comp.paginationCtrl.model.data.filter(
+                (item: ListItem) => item.id !== id,
+            );
+        this.comp.paginationCtrl.model.maxPage =
+            this.comp.paginationCtrl.model.getMaxPage();
         this.comp.update();
     }
     create_one(data: ListItem) {
         this.comp.paginationCtrl.model.data.push(data.original);
-        this.comp.paginationCtrl.model.maxPage = this.comp.paginationCtrl.model.getMaxPage();
+        this.comp.paginationCtrl.model.maxPage =
+            this.comp.paginationCtrl.model.getMaxPage();
         this.comp.update();
     }
 }
@@ -221,10 +299,10 @@ export class GenericViewComponent implements IViewComponent {
         this.comp = ViewComponent();
     }
     get_comp(): GComponent {
-        let data = this.parent_ctrl.route.get_params()
+        let data = this.parent_ctrl.route.get_params();
         if (data) {
             this.set_data(data.data.original);
-        }else{
+        } else {
             this.parent_ctrl.route.route_back();
         }
         return this.comp;
@@ -233,54 +311,7 @@ export class GenericViewComponent implements IViewComponent {
         (this.comp.getElement() as HTMLTextAreaElement).value = JSON.stringify(
             data,
             null,
-            2
+            2,
         );
-    }
-}
-
-export class GenericFilterModel implements IFilterModel {
-    values: FilterType[] = [];
-    constructor() {
-        this.values = [
-            {name: "name", value: "name" },
-            {name: "description", value: "description" },
-            {name: "status", value: "status" },
-            {name: "createdOn", value: "createdOn" },
-            {name: "modifiedOn", value: "modifiedOn" },
-        ];
-    }
-    read_all(): FilterType[] {
-        return this.values;
-    }
-    read(name: string): FilterType {
-        return this.values.find((value: FilterType) => value.name === name)!;
-    }
-    create(name: string, value: any): void {
-        this.values.push({name, value});
-    }
-    update(name: string, new_value: any): void {
-        this.values = this.values.map((value: FilterType) => value.name === name ? {name, value: new_value} : value);
-    }
-    delete(name: string): void {
-        this.values = this.values.filter((value: FilterType) => value.name !== name);
-    }
-}
-
-export class GenericFilter implements IFilter {
-    comp: GComponent;
-    model: IFilterModel;
-    store_locally: boolean = false;
-    constructor(parent_ctrl: CrudListModel) {
-        this.model = new GenericFilterModel();
-        this.comp = Tools.div({
-            class: "flex flex-col gap-2",
-            textContent: "Filter",
-        });
-    }
-    get_comp(): GComponent {
-        return this.comp;
-    }
-    storeLocally(value: boolean): void {
-        this.store_locally = value;
     }
 }
