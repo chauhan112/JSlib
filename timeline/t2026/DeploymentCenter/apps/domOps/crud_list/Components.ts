@@ -14,7 +14,7 @@ export const CreateForm = (children: GComponent[], onCancel: () => void, title: 
         textContent: title,
     });
     return Tools.div({
-        class: "bg-gray-100 flex items-center justify-center min-h-screen",
+        class: "bg-gray-100 flex items-center justify-center",
         children: [
             Tools.div({
                 class: "max-w-md bg-white p-4 rounded-lg shadow-md w-full",
