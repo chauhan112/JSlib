@@ -1,6 +1,7 @@
 import { GComponent } from "../../../../globalComps/GComponent";
 import { Tools } from "../../../../globalComps/tools";
-import { GRouteController, type IApp, type IRouteController } from "../../routeController";
+import { type IApp, type IRouteController } from "../../interfaces";
+import { GRouteController } from "../../routeController";
 import { WebPageWithNav, MainCtrl as WebPageWithNavMainCtrl } from "../../Components";
 import { MainCtrl as RouteWebPageMainCtrl } from "../../../../t2025/dec/DomainOpsFrontend/route/controller";
 import { ManagePageCtrl } from "./ui";

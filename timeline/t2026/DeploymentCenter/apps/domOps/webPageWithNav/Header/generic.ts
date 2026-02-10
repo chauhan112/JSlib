@@ -1,22 +1,15 @@
-import { Bell, MessageSquare } from "lucide";
-import type { CenterCompItem, IHeader, RightCompItem} from "./interface";
+import type { CenterCompItem, IHeader, RightCompItem } from "./interface";
 
-export class GenericHeader implements IHeader{
+export class GenericHeader implements IHeader {
     has_back_button: boolean = false;
-    get_header(): string {
-        return "Header";
-    }
-    get_subtitle(): string {
-        return "Subtitle";
-    }
-    get_logo(): string {
-        return "Logo";
-    }
+    header: string = "Header";
+    subtitle: string = "Subtitle";
+    logo: string = "Logo";
     get_center_links(): CenterCompItem[] {
         return [];
     }
     get_right_links(): RightCompItem[] {
-        return [];   
+        return [];
     }
     center_click(comp: CenterCompItem): void {
         console.log(comp);
@@ -28,4 +21,3 @@ export class GenericHeader implements IHeader{
         console.log("back button clicked");
     }
 }
-
