@@ -1,6 +1,6 @@
 import { WebPageWithNavCtrl } from "./webPageWithNav";
 import { CrudList } from "./crud_list";
-import type {IApp, IRouteController} from "../../routeController";
+import type {IApp, IRouteController} from "../../interfaces";
 import type { GComponent } from "../../../../globalComps/GComponent";
 import { NAVS } from "./interface";
 

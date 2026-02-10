@@ -1,6 +1,6 @@
 import { RouteWebPage } from "../../../../../t2025/dec/DomainOpsFrontend/route/ui";
 import type { GComponent } from "../../../../../globalComps/GComponent";
-import { type IRouteController, type IApp } from "../../../routeController";
+import { type IRouteController, type IApp } from "../../../interfaces";
 import { HeaderCtrl } from "./Header";
 import  { RouteWebPageController, MainCtrl as RouteWebPageMainCtrl } from "../../../../../t2025/dec/DomainOpsFrontend/route/controller";
 import  { GenericModel } from "./generic_impl";

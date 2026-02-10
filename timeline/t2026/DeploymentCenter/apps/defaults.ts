@@ -3,7 +3,7 @@ import { Tools } from "../../../globalComps/tools";
 import { MainCtrl as ListDisplayerMainCtrl, ListDisplayerCtrl } from "../../../t2025/dec/DomainOpsFrontend/components/ListDisplayer";
 import { DefaultPageContent } from "../../../t2025/dec/DomainOpsFrontend/route/ui";
 import { MainCtrl as SettingsPageMainCtrl } from "../settings";
-import type { IRouteController, IApp } from "../routeController";
+import type { IRouteController, IApp } from "../interfaces";
 import type { GComponent } from "../../../globalComps/GComponent";
 import { GRouteController } from "../routeController";
 

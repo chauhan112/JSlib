@@ -30,7 +30,7 @@ import {
     GenericViewComponent,
 } from "./generic_interface";
 import type { GComponent } from "../../../../../globalComps/GComponent";
-import type { IRouteController, IApp } from "../../../routeController";
+import type { IRouteController, IApp } from "../../../interfaces";
 import { GenericFilter } from "../searchComp/generic";
 import { SearchComponent, SearchComponentCtrl } from "../searchComp";
 

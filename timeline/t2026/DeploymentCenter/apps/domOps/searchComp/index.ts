@@ -3,7 +3,7 @@ import { Tools } from "../../../../../globalComps/tools";
 import { InputCompCtrl, MainCtrl as AtomicMainCtrl } from "../../../../../t2025/dec/DomainOpsFrontend/components/atomic";
 import type { ISearchInput } from "./interface";
 import { SearchInput } from "./generic";
-import type { IApp, IRouteController } from "../../../routeController";
+import type { IApp, IRouteController } from "../../../interfaces";
 import type { GComponent } from "../../../../../globalComps/GComponent";
 export const Chip = (text: string) => {
     return Tools.comp("div", {
@@ -167,7 +167,7 @@ export class SearchComponentAsPage implements IRouteController {
         this.ctrl.setup();
     }
     matches_path(path: string): boolean {
-        return path === "/search-component";
+        return path === this.infos.href;
     }
     get_component(params: any): GComponent {
         return this.ctrl.comp;

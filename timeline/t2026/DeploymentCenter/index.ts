@@ -1,11 +1,14 @@
 import { Tools } from "../../globalComps/tools";
 import { DefaultPageContent } from "../../t2025/dec/DomainOpsFrontend/route/ui";
-import { type IApp, type IRouteController } from "./routeController";
-import { HomeRouteController, MainCtrl as DafaultCompCtrl } from "./apps/defaults";
+import { type IApp, type IRouteController } from "./interfaces";
+import {
+    HomeRouteController,
+    MainCtrl as DafaultCompCtrl,
+} from "./apps/defaults";
 import { SettingsPageCtrl, MainCtrl as SettingsPageMainCtrl } from "./settings";
-import { MainCtrl as GitRepoPageMainCtrl, GitRepoPageCtrl } from "./apps/git-cloner";
+import { MainCtrl as GitRepoPageMainCtrl } from "./apps/git-cloner";
 import { DomOpsCtrl } from "./apps/domOps";
-import {CrudListAsPage } from "./apps/domOps/crud_list";
+import { CrudListAsPage } from "./apps/domOps/crud_list";
 import { SearchComponentAsPage } from "./apps/domOps/searchComp";
 
 export const DeploymentCenterPage = () => {
@@ -17,9 +20,10 @@ export const DeploymentCenterPage = () => {
 
 export class DeploymentCenterPageCtrl {
     comp: any;
-    apps: {name: string, href: string}[] = [];
+    apps: { name: string; href: string }[] = [];
     routes: IRouteController[] = [];
-    home_route_ctrl: HomeRouteController = DafaultCompCtrl.homeRouteController();
+    home_route_ctrl: HomeRouteController =
+        DafaultCompCtrl.homeRouteController();
     settings_route_ctrl: SettingsPageCtrl = SettingsPageMainCtrl.settingsPage();
 
     constructor() {
@@ -39,26 +43,28 @@ export class DeploymentCenterPageCtrl {
         this.home_route_ctrl.add_app(app);
     }
     route() {
-        let path = globalThis.location.hash
+        let path = globalThis.location.hash;
         if (path.startsWith("#")) {
             path = path.slice(1);
         }
         for (const route of this.routes) {
             if (route.matches_path(path)) {
-                let params = this.settings_route_ctrl.get_app_infos(route.get_info());
-                let comp = route.get_component({parent: this, params});
-                this.comp.update({innerHTML: "", child: comp});
+                let params = this.settings_route_ctrl.get_app_infos(
+                    route.get_info(),
+                );
+                let comp = route.get_component({ parent: this, params });
+                this.comp.update({ innerHTML: "", child: comp });
                 return;
             }
         }
-        this.comp.update({innerHTML: "", child: DefaultPageContent()});
+        this.comp.update({ innerHTML: "", child: DefaultPageContent() });
     }
     route_to_app(app: IApp) {
         let path = app.href;
         for (const route of this.routes) {
             if (route.matches_path(path)) {
-                let comp = route.get_component({parent: this});
-                this.comp.update({innerHTML: "", child: comp});
+                let comp = route.get_component({ parent: this });
+                this.comp.update({ innerHTML: "", child: comp });
                 return;
             }
         }
@@ -74,21 +80,24 @@ export const DeploymentCenter = () => {
     navs.push(new DomOpsCtrl());
     navs.push(new CrudListAsPage());
     navs.push(new SearchComponentAsPage());
-    
+
     for (const nav of navs) {
         (nav as any).setup();
         deploymentCenterPageCtrl.add_app(nav);
     }
     for (let i = 0; i < 20; i++) {
         let app2RouteCtrl = DafaultCompCtrl.defaultPageSkeleton(`/app-${i}`, {
-            name: `App ${i}`, href: `/app-${i}`, subtitle: `app ${i}`, params: []
+            name: `App ${i}`,
+            href: `/app-${i}`,
+            subtitle: `app ${i}`,
+            params: [],
         });
         deploymentCenterPageCtrl.add_app(app2RouteCtrl);
     }
-    
+
     deploymentCenterPageCtrl.setup();
     return deploymentCenterPageCtrl;
-}
+};
 
 export class MainCtrl {
     static deploymentCenterPage() {
