@@ -13,6 +13,7 @@ import { SearchComponentAsPage } from "./apps/domOps/searchComp";
 import { AIChats } from "../q1/AIChats";
 import { SearchCompAsPage } from "../q1/view_crud_list/searchComp";
 import { CrudPage } from "../q1/view_crud_list";
+import { DirectusTableCrud } from "../q1/ExperimentView";
 
 export const DeploymentCenterPage = () => {
     return Tools.comp("div", {
@@ -31,6 +32,7 @@ export class DeploymentCenterPageCtrl {
 
     constructor() {
         globalThis.addEventListener("hashchange", () => this.route());
+        this.settings_route_ctrl.parent = this;
     }
     setup() {
         this.routes.push(this.home_route_ctrl);
@@ -63,7 +65,7 @@ export class DeploymentCenterPageCtrl {
                 if (!route.initialized) {
                     (route as any).setup();
                 }
-                let comp = route.get_component({ parent: this, params });
+                let comp = route.get_component(params);
                 this.comp.update({ innerHTML: "", child: comp });
                 return;
             }
@@ -94,6 +96,7 @@ export const DeploymentCenter = () => {
     navs.push(new AIChats());
     navs.push(new SearchCompAsPage());
     navs.push(new CrudPage());
+    navs.push(new DirectusTableCrud());
 
     for (const nav of navs) {
         deploymentCenterPageCtrl.add_app(nav);
