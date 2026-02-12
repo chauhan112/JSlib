@@ -10,6 +10,9 @@ import { MainCtrl as GitRepoPageMainCtrl } from "./apps/git-cloner";
 import { DomOpsCtrl } from "./apps/domOps";
 import { CrudListAsPage } from "./apps/domOps/crud_list";
 import { SearchComponentAsPage } from "./apps/domOps/searchComp";
+import { AIChats } from "../q1/AIChats";
+import { SearchCompAsPage } from "../q1/view_crud_list/searchComp";
+import { CrudPage } from "../q1/view_crud_list";
 
 export const DeploymentCenterPage = () => {
     return Tools.comp("div", {
@@ -38,6 +41,11 @@ export class DeploymentCenterPageCtrl {
         this.comp = comp;
     }
     add_app(route_ctrl: IRouteController) {
+        for (const route of this.routes) {
+            if (route.get_info().href === route_ctrl.get_info().href) {
+                throw new Error("App already exists");
+            }
+        }
         this.routes.push(route_ctrl);
         let app: IApp = route_ctrl.get_info();
         this.home_route_ctrl.add_app(app);
@@ -52,6 +60,9 @@ export class DeploymentCenterPageCtrl {
                 let params = this.settings_route_ctrl.get_app_infos(
                     route.get_info(),
                 );
+                if (!route.initialized) {
+                    (route as any).setup();
+                }
                 let comp = route.get_component({ parent: this, params });
                 this.comp.update({ innerHTML: "", child: comp });
                 return;
@@ -80,21 +91,13 @@ export const DeploymentCenter = () => {
     navs.push(new DomOpsCtrl());
     navs.push(new CrudListAsPage());
     navs.push(new SearchComponentAsPage());
+    navs.push(new AIChats());
+    navs.push(new SearchCompAsPage());
+    navs.push(new CrudPage());
 
     for (const nav of navs) {
-        (nav as any).setup();
         deploymentCenterPageCtrl.add_app(nav);
     }
-    for (let i = 0; i < 20; i++) {
-        let app2RouteCtrl = DafaultCompCtrl.defaultPageSkeleton(`/app-${i}`, {
-            name: `App ${i}`,
-            href: `/app-${i}`,
-            subtitle: `app ${i}`,
-            params: [],
-        });
-        deploymentCenterPageCtrl.add_app(app2RouteCtrl);
-    }
-
     deploymentCenterPageCtrl.setup();
     return deploymentCenterPageCtrl;
 };
