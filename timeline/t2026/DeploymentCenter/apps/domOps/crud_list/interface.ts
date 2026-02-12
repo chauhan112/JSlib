@@ -56,7 +56,7 @@ export interface IUpdateFormFields {
     get_form: () => GComponent;
 }
 
-export interface IViewComponent {
+export interface IViewComponent { 
     get_comp: () => GComponent;
     set_data: (data: any) => void;
 }
@@ -76,7 +76,7 @@ export interface IRoute {
     get_params: () => any;
 }
 
-export interface IView {
+export interface IView { // this view is frontend view model which will be used to optimize the loading time
     set_data: (data: ListItem[]) => void;
     update_one: (data: ListItem) => void;
     delete_one: (id: string) => void;
