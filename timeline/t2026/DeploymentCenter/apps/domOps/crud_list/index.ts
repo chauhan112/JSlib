@@ -67,7 +67,7 @@ export class CrudListSearchHandler implements ISearchHandler {
     }
     private match_word(word: any, val: ListItem) {
         if (typeof word === "string") {
-            return val.title.includes(word);
+            return JSON.stringify(val.original).includes(word);
         }
         if (typeof word === "object") {
             for (let key in word) {
@@ -166,7 +166,6 @@ export class CrudList {
             {},
             { click: () => this.model.route.route_to("/create") },
         );
-
         this.define_routes();
         this.fetch_data_and_update();
     }
