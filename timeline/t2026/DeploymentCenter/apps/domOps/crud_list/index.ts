@@ -84,21 +84,18 @@ export class CrudListSearchHandler implements ISearchHandler {
     }
 }
 export class GenericDataModel implements IDatamodel, IResultDisplayer {
-    view: IView;
-    model: ICRUDModel;
-    constructor(view: IView, model: ICRUDModel) {
-        this.view = view;
-        this.model = model;
+    parent: CrudListModel;
+    constructor(parent: CrudListModel) {
+        this.parent = parent;
     }
     async get_data() {
-        return this.model.read_all();
+        return await this.parent.model.read_all();
     }
     display_data(data: ListItem[]) {
-        this.view.set_data(data);
+        this.parent.view.set_data(data);
     }
 }
 export class GenericCrudListCtrl implements CrudListModel {
-    dataModel: GenericDataModel;
     model: ICRUDModel = new GenericCrudModel();
     createFormFields: ICreateFormFields;
     updateFormFields: IUpdateFormFields;
@@ -118,9 +115,9 @@ export class GenericCrudListCtrl implements CrudListModel {
         this.filter = new GenericFilter();
         this.searchCtrl = new SearchComponentCtrl();
         this.searchCtrl.search.handler = new CrudListSearchHandler();
-        this.dataModel = new GenericDataModel(this.view, this.model);
-        this.searchCtrl.search.data = this.dataModel;
-        this.searchCtrl.search.resultDisplayer = this.dataModel;
+        let dataModel = new GenericDataModel(this);
+        this.searchCtrl.search.data = dataModel;
+        this.searchCtrl.search.resultDisplayer = dataModel;
     }
 
     get_page_size() {
