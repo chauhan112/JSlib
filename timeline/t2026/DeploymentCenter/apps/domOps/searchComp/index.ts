@@ -1,6 +1,9 @@
 import { Check, Filter, Plus, X } from "lucide";
 import { Tools } from "../../../../../globalComps/tools";
-import { InputCompCtrl, MainCtrl as AtomicMainCtrl } from "../../../../../t2025/dec/DomainOpsFrontend/components/atomic";
+import {
+    InputCompCtrl,
+    MainCtrl as AtomicMainCtrl,
+} from "../../../../../t2025/dec/DomainOpsFrontend/components/atomic";
 import type { ISearchInput } from "./interface";
 import { SearchInput } from "./generic";
 import type { IApp, IRouteController } from "../../../interfaces";
@@ -17,15 +20,16 @@ export const Chip = (text: string) => {
             }),
         ],
     });
-}
+};
 
 export const SearchComponent = () => {
     const inp_comp = Tools.comp("input", {
         type: "text",
         class: "flex-grow min-w-0 outline-none text-gray-700 px-3 py-2 text-base md:text-sm",
-        placeholder: "Type filter (e.g. status:active, price:>100) and hit Enter...",
+        placeholder:
+            "Type filter (e.g. status:active, price:>100) and hit Enter...",
     });
-    
+
     const search_button = Tools.comp("button", {
         class: "px-6 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded shadow-sm transition-colors font-medium w-full sm:w-auto cursor-pointer",
         textContent: "Search",
@@ -46,31 +50,49 @@ export const SearchComponent = () => {
     const filters = AtomicMainCtrl.dropdown([
         { value: "", label: "--filter--" },
     ]);
-    filters.comp.getElement().classList.add("mt-2", "w-full", "sm:w-auto", "sm:mt-0");
+    filters.comp
+        .getElement()
+        .classList.add("mt-2", "w-full", "sm:w-auto", "sm:mt-0");
     const inp_with_ok_btn = Tools.comp("div", {
         class: "flex flex-grow items-center border border-gray-300 rounded focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all",
-        children: [inp_comp, okBtn]
-    })
-    const filterBtn = Tools.icon(Filter, { class: "w-6 h-6 text-gray-500 hover:text-gray-700 active:text-gray-800 cursor-pointer" });
-    return Tools.comp("div", {
-        class: "flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-2 bg-white rounded-lg border border-gray-200 shadow-sm",
-        children: [
-            addNewBtn,
+        children: [inp_comp, okBtn],
+    });
+    const filterBtn = Tools.icon(Filter, {
+        class: "w-6 h-6 text-gray-500 hover:text-gray-700 active:text-gray-800 cursor-pointer",
+    });
+    return Tools.comp(
+        "div",
+        {
+            class: "flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-2 bg-white rounded-lg border border-gray-200 shadow-sm",
+            children: [
+                addNewBtn,
+                chips,
+                inp_with_ok_btn,
+                Tools.div({
+                    class: "flex gap-2 flex-col sm:flex-row items-center",
+                    children: [search_button, filters.comp, filterBtn],
+                }),
+            ],
+        },
+        {},
+        {
+            inp_comp,
+            search_button,
             chips,
+            okBtn,
+            addNewBtn,
+            filters,
+            filterBtn,
             inp_with_ok_btn,
-            Tools.div({
-                class:"flex gap-2 flex-col sm:flex-row items-center",
-                children: [search_button, filters.comp, filterBtn]
-            })
-        ],
-    }, {}, { inp_comp, search_button, chips, okBtn, addNewBtn, filters, filterBtn, inp_with_ok_btn });
-}
+        },
+    );
+};
 
 export class SearchComponentCtrl {
     comp: any;
     search: ISearchInput = new SearchInput();
     inp_comp_ctrl: InputCompCtrl = new InputCompCtrl();
-    chipsValue: string[] = []
+    chipsValue: string[] = [];
     constructor() {
         this.comp = SearchComponent();
     }
@@ -79,34 +101,40 @@ export class SearchComponentCtrl {
     }
     setup() {
         this.inp_comp_ctrl.set_comp(this.comp.s.inp_comp);
-        
+
         if (this.search.active_comp.filter) {
             this.show_comp(this.comp.s.filters.comp);
             this.show_comp(this.comp.s.filterBtn);
-        }else{
+        } else {
             this.hide_comp(this.comp.s.filters.comp);
             this.hide_comp(this.comp.s.filterBtn);
         }
         if (this.search.active_comp.create) {
             this.show_comp(this.comp.s.addNewBtn);
-        }else{
+        } else {
             this.hide_comp(this.comp.s.addNewBtn);
         }
         if (this.search.active_comp.search) {
             this.show_comp(this.comp.s.inp_with_ok_btn);
             this.show_comp(this.comp.s.search_button);
             this.show_comp(this.comp.s.chips);
-            this.comp.s.inp_comp.update({}, {keydown: (e: any) => this.on_keydown(e)},);
-            this.comp.s.search_button.update({}, {click: (e: any) => this.on_search(e)}, );
-            this.comp.s.okBtn.update({}, {click: (e: any) => this.on_ok_btn(e)}, );
-        }else{
+            this.comp.s.inp_comp.update(
+                {},
+                { keydown: (e: any) => this.on_keydown(e) },
+            );
+            this.comp.s.search_button.update(
+                {},
+                { click: (e: any) => this.on_search(e) },
+            );
+            this.comp.s.okBtn.update(
+                {},
+                { click: (e: any) => this.on_ok_btn(e) },
+            );
+        } else {
             this.hide_comp(this.comp.s.search_button);
             this.hide_comp(this.comp.s.inp_with_ok_btn);
             this.hide_comp(this.comp.s.chips);
         }
-
-
-
     }
     private hide_comp(comp: any) {
         comp.getElement().classList.add("hidden");
@@ -116,7 +144,7 @@ export class SearchComponentCtrl {
     }
     private on_keydown(e: any) {
         const value = this.inp_comp_ctrl.get_value();
-        if (e.key === 'Enter' && value.trim() !== "") {
+        if (e.key === "Enter" && value.trim() !== "") {
             let chip = this.get_chip(value.trim());
             this.comp.s.chips.update({ child: chip });
             this.inp_comp_ctrl.clear_value();
@@ -134,15 +162,24 @@ export class SearchComponentCtrl {
     }
     private get_chip(value: string) {
         let chip = Chip(value.trim());
-        chip.s.delete.update({},{ click: () => {
-            chip.getElement().remove();
-            this.chipsValue = this.chipsValue.filter((v: string) => v !== value.trim());
-        }});
+        chip.s.delete.update(
+            {},
+            {
+                click: () => {
+                    chip.getElement().remove();
+                    this.chipsValue = this.chipsValue.filter(
+                        (v: string) => v !== value.trim(),
+                    );
+                },
+            },
+        );
         return chip;
     }
     private async on_search(e: any) {
-        let search_words = this.chipsValue.map((v: string) => this.search.handler.parse_chip_value(v));
-        let inp_word = this.inp_comp_ctrl.get_value().trim()
+        let search_words = this.chipsValue.map((v: string) =>
+            this.search.handler.parse_chip_value(v),
+        );
+        let inp_word = this.inp_comp_ctrl.get_value().trim();
         if (inp_word !== "") {
             search_words.push(this.search.handler.parse_chip_value(inp_word));
         }
@@ -161,10 +198,12 @@ export class SearchComponentAsPage implements IRouteController {
         href: "/search",
         subtitle: "Search",
         params: [],
-    }
-    
+    };
+    initialized: boolean = false;
+
     setup() {
         this.ctrl.setup();
+        this.initialized = true;
     }
     matches_path(path: string): boolean {
         return path === this.infos.href;

@@ -29,7 +29,7 @@ export type ActiveComponents = {
     search: boolean;
     filter: boolean;
     create: boolean;
-} ;
+};
 
 export interface IFilterModel {
     read_all: () => FilterType[];

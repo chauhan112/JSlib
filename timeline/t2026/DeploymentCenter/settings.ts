@@ -5,9 +5,15 @@ import { MainCtrl as RouteWebPageMainCtrl } from "../../t2025/dec/DomainOpsFront
 import { type IApp, type IRouteController } from "./interfaces";
 import { GRouteController } from "./routeController";
 import { DefaultPageContent } from "../../t2025/dec/DomainOpsFrontend/route/ui";
-import { MainCtrl as LocalStorageConfigurerMainCtrl, LocalStorageConfigurer } from "../../t2025/dec/localStorageSetter";
+import {
+    MainCtrl as LocalStorageConfigurerMainCtrl,
+    LocalStorageConfigurer,
+} from "../../t2025/dec/localStorageSetter";
 import { AppCard } from "./Components";
-import { DefaultPageSkeleton, MainCtrl as DefaultPageSkeletonMainCtrl } from "./apps/defaults";
+import {
+    DefaultPageSkeleton,
+    MainCtrl as DefaultPageSkeletonMainCtrl,
+} from "./apps/defaults";
 
 const Section = (title: string, children: GComponent[]) => {
     return Tools.comp("section", {
@@ -20,12 +26,11 @@ const Section = (title: string, children: GComponent[]) => {
             ...children,
         ],
     });
-}
+};
 
 export const SettingsPage = () => {
     let cog = Tools.comp("div", {
-        class:
-            "p-3 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors",
+        class: "p-3 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors",
         children: [Tools.icon(Settings, { class: "w-4 h-4" })],
     });
     let labels = Tools.comp("div", {
@@ -41,44 +46,61 @@ export const SettingsPage = () => {
         ],
     });
     let global_config_panel = Tools.comp("div", {
-        class:
-            "group bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all cursor-pointer flex items-center justify-between",
+        class: "group bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all cursor-pointer flex items-center justify-between",
         children: [
             Tools.comp("div", {
                 class: "flex items-center space-x-5",
                 children: [cog, labels],
             }),
-
         ],
-    })
+    });
     let appList = Tools.comp("div", {
-        class: "grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-6 overflow-auto"
-    })
-    let comp = Tools.comp("div", {
-        class: "p-8",
-        children: [
-            Section("System-Wide", [global_config_panel]),
-            Section("Installed Applications", [appList]),
-        ],
-    },{},{appList,global_config_panel,cog,labels});
+        class: "grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-6 overflow-auto",
+    });
+    let comp = Tools.comp(
+        "div",
+        {
+            class: "p-8",
+            children: [
+                Section("System-Wide", [global_config_panel]),
+                Section("Installed Applications", [appList]),
+            ],
+        },
+        {},
+        { appList, global_config_panel, cog, labels },
+    );
     return comp;
-}
+};
 
-export class SettingsPageCtrl extends GRouteController implements IRouteController {
+export class SettingsPageCtrl
+    extends GRouteController
+    implements IRouteController
+{
     comp: any | undefined;
     private apps: IApp[] = [];
     sub_routes: string[] = ["global", "apps"];
     ctrl: DefaultPageSkeleton;
-    localStorageSetterCtrl:LocalStorageConfigurer;
+    localStorageSetterCtrl: LocalStorageConfigurer;
+    initialized: boolean = false;
     private path: string = "";
     constructor() {
         super();
-        this.localStorageSetterCtrl = LocalStorageConfigurerMainCtrl.localStorageConfigurer("DeploymentCenterSettings");
-        this.ctrl = DefaultPageSkeletonMainCtrl.defaultPageSkeleton("/settings", {name: "Settings", href: "/settings", subtitle: "Settings"});
+        this.localStorageSetterCtrl =
+            LocalStorageConfigurerMainCtrl.localStorageConfigurer(
+                "DeploymentCenterSettings",
+            );
+        this.ctrl = DefaultPageSkeletonMainCtrl.defaultPageSkeleton(
+            "/settings",
+            { name: "Settings", href: "/settings", subtitle: "Settings" },
+        );
     }
     setup() {
-        this.comp.s.global_config_panel.update({}, { click: () => RouteWebPageMainCtrl.navigate("/settings/global") });
+        this.comp.s.global_config_panel.update(
+            {},
+            { click: () => RouteWebPageMainCtrl.navigate("/settings/global") },
+        );
         this.set_apps(this.apps);
+        this.initialized = true;
     }
     set_comp(comp: any) {
         this.comp = comp;
@@ -91,30 +113,46 @@ export class SettingsPageCtrl extends GRouteController implements IRouteControll
             return this.comp;
         }
         let remaining_path = path.replace("/settings", "");
-        let app = this.apps.find(app => app.href === remaining_path);
-        if (app?.params?.length  && app.params.length > 0) {
-            return  this.get_app_settings_comp(app);
+        let app = this.apps.find((app) => app.href === remaining_path);
+        if (app?.params?.length && app.params.length > 0) {
+            return this.get_app_settings_comp(app);
         }
-        
+
         return DefaultPageContent("No settings found");
     }
     set_apps(apps: IApp[]) {
         this.apps = apps;
-        let apps_with_settings = apps.filter(app => app.params?.length && app.params.length > 0);
+        let apps_with_settings = apps.filter(
+            (app) => app.params?.length && app.params.length > 0,
+        );
         this.comp.s.appList.update({
             innerHTML: "",
-            children: apps_with_settings.map(app => MainCtrl.appCard({name: app.name, subtitle: `${app.params?.length} settings`, href: app.href})),
+            children: apps_with_settings.map((app) =>
+                MainCtrl.appCard({
+                    name: app.name,
+                    subtitle: `${app.params?.length} settings`,
+                    href: app.href,
+                }),
+            ),
         });
     }
     matches_path(path: string): boolean {
         this.path = path;
         return path.startsWith("/settings");
     }
-    get_component({parent, params}: {parent: any, params?: string[]}): GComponent {
-
+    get_component({
+        parent,
+        params,
+    }: {
+        parent: any;
+        params?: string[];
+    }): GComponent {
         this.set_apps(parent.home_route_ctrl.apps);
         let res = this.ctrl.get_component(params);
-        this.ctrl.body_comp.update({innerHTML: "", child: this.get_body_comp(this.path)});
+        this.ctrl.body_comp.update({
+            innerHTML: "",
+            child: this.get_body_comp(this.path),
+        });
 
         return res;
     }
@@ -125,9 +163,12 @@ export class SettingsPageCtrl extends GRouteController implements IRouteControll
         return this.localStorageSetterCtrl.comp;
     }
 
-    get_app_infos(app: IApp) {;
+    get_app_infos(app: IApp) {
         if (this.localStorageSetterCtrl.model.exists(["apps", app.href])) {
-            return this.localStorageSetterCtrl.model.readEntry(["apps", app.href]);
+            return this.localStorageSetterCtrl.model.readEntry([
+                "apps",
+                app.href,
+            ]);
         }
         return {};
     }
@@ -156,16 +197,33 @@ export class MainCtrl {
         return settingsPageCtrl;
     }
     static appCard(app: IApp) {
-        
-        let card = AppCard({icon: MainCtrl.get_icon_from_name(app.name), name: app.name, status: app.subtitle});
-        card.update({}, { click: () => RouteWebPageMainCtrl.relative_navigate(app.href) });
+        let card = AppCard({
+            icon: MainCtrl.get_icon_from_name(app.name),
+            name: app.name,
+            status: app.subtitle,
+        });
+        card.update(
+            {},
+            { click: () => RouteWebPageMainCtrl.relative_navigate(app.href) },
+        );
         return card;
-    }   
+    }
     static get_icon_from_name(name: string) {
-        let icons = ["🌍", "🔥", "💧", "🍎", "🌱", "🍇", "🎮", "💨", "⛰️", "⚡"];
+        let icons = [
+            "🌍",
+            "🔥",
+            "💧",
+            "🍎",
+            "🌱",
+            "🍇",
+            "🎮",
+            "💨",
+            "⛰️",
+            "⚡",
+        ];
         let hash = 0;
         for (let i = 0; i < name.length; i++) {
-            hash = name.charCodeAt(i) ;
+            hash = name.charCodeAt(i);
         }
         return icons[hash % icons.length];
     }

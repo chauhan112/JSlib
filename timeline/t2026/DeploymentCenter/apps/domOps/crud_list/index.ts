@@ -225,14 +225,16 @@ export class CrudListAsPage implements IRouteController {
         subtitle: "CrudList",
         params: [],
     };
+    initialized: boolean = false;
     constructor() {
         this.comp = new CrudList();
     }
     setup() {
         this.comp.setup();
+        this.initialized = true;
     }
     matches_path(path: string): boolean {
-        return path === "/crud-list";
+        return path === this.infos.href;
     }
     get_component(params: any): GComponent {
         return this.comp.comp;

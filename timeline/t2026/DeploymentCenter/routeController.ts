@@ -1,22 +1,22 @@
 import type { IApp, IRouteController } from "./interfaces";
 import type { GComponent } from "../../globalComps/GComponent";
 
-export class GRouteController  {
-    private info: IApp = {name: "", href: "", subtitle: "", params: []};
+export class GRouteController {
+    private info: IApp = { name: "", href: "", subtitle: "", params: [] };
     set_info(info: IApp): void {
         this.info = info;
     }
     get_info(): IApp {
         return this.info;
     }
-    
 }
 
 export class RouteWrapper extends GRouteController implements IRouteController {
     private navs: IRouteController[] = [];
     private current_nav: IRouteController | null = null;
     private current_path: string = "";
-    
+    initialized: boolean = true;
+
     matches_path(path: string): boolean {
         this.current_path = path;
         for (const nav of this.navs) {
