@@ -7,6 +7,15 @@ export class DirectusModel {
         this.token = token;
     }
 
+    async get_count(collection: string) {
+        const url = `${this.base_url}/items/${collection}?aggregate[count]=*`;
+        console.log(url, this.headers);
+        const response = await fetch(url, {
+            headers: this.headers,
+        });
+        return response.json();
+    }
+
     private get headers() {
         return {
             "Content-Type": "application/json",
