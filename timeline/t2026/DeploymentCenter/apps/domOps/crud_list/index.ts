@@ -168,6 +168,7 @@ export class CrudList {
         );
 
         this.define_routes();
+        this.fetch_data_and_update();
     }
     private define_routes() {
         this.model.route.define_route("", () => this.comp);
@@ -181,10 +182,6 @@ export class CrudList {
         this.model.route.define_route("/view", () =>
             this.model.viewComponent.get_comp(),
         );
-
-        this.model.model.read_all().then((data: any[]) => {
-            this.model.view.set_data(data);
-        });
     }
     private on_more_ops_clicked(data: any, label: string) {
         this.model.contextMenuOptions.more_ops_clicked(label, data);
@@ -194,6 +191,13 @@ export class CrudList {
     }
     update() {
         this.comp.s.listDisplayerCtrl.update();
+    }
+
+    fetch_data_and_update() {
+        this.model.model.read_all().then((data: any[]) => {
+            this.listDisplayerCtrl.set_data(data);
+            this.model.view.set_data(data);
+        });
     }
 
     title_getter(data: ListItem) {
