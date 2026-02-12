@@ -78,7 +78,7 @@ export class HomeRouteController
 {
     private readonly header_ctrl: HeaderController = new HeaderController();
     private app_list_ctrl: ListDisplayerCtrl | undefined;
-    private apps: IApp[] = [];
+    apps: IApp[] = [];
     private header_comp: any;
     initialized: boolean = false;
     constructor() {

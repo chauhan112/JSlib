@@ -55,8 +55,8 @@ export class AIChats implements IRouteController {
 
     get_component(params: any): GComponent {
         if (!this.initialized) {
-            let url = params.params["directus-url"];
-            let token = params.params["directus-token"];
+            let url = params["directus-url"];
+            let token = params["directus-token"];
             if (url.endsWith("/")) url = url.slice(0, -1);
             this.model.model.set_url_and_token(url, token);
             this.initialized = true;

@@ -14,6 +14,7 @@ import {
     DefaultPageSkeleton,
     MainCtrl as DefaultPageSkeletonMainCtrl,
 } from "./apps/defaults";
+import { type DeploymentCenterPageCtrl } from "./index";
 
 const Section = (title: string, children: GComponent[]) => {
     return Tools.comp("section", {
@@ -83,7 +84,8 @@ export class SettingsPageCtrl
     localStorageSetterCtrl: LocalStorageConfigurer;
     initialized: boolean = false;
     private path: string = "";
-    constructor() {
+    parent: DeploymentCenterPageCtrl;
+    constructor(parent: DeploymentCenterPageCtrl) {
         super();
         this.localStorageSetterCtrl =
             LocalStorageConfigurerMainCtrl.localStorageConfigurer(
@@ -93,6 +95,7 @@ export class SettingsPageCtrl
             "/settings",
             { name: "Settings", href: "/settings", subtitle: "Settings" },
         );
+        this.parent = parent;
     }
     setup() {
         this.comp.s.global_config_panel.update(
@@ -140,14 +143,8 @@ export class SettingsPageCtrl
         this.path = path;
         return path.startsWith("/settings");
     }
-    get_component({
-        parent,
-        params,
-    }: {
-        parent: any;
-        params?: string[];
-    }): GComponent {
-        this.set_apps(parent.home_route_ctrl.apps);
+    get_component(params: any): GComponent {
+        this.set_apps(this.parent.home_route_ctrl.apps);
         let res = this.ctrl.get_component(params);
         this.ctrl.body_comp.update({
             innerHTML: "",
@@ -191,7 +188,7 @@ export class SettingsPageCtrl
 
 export class MainCtrl {
     static settingsPage() {
-        const settingsPageCtrl = new SettingsPageCtrl();
+        const settingsPageCtrl = new SettingsPageCtrl({} as any);
         settingsPageCtrl.set_comp(SettingsPage());
         settingsPageCtrl.setup();
         return settingsPageCtrl;

@@ -46,7 +46,7 @@ export class GitRepoManagePageCtrl
         return path === "/manage";
     }
     get_component(params: any): GComponent {
-        this.params = params.params;
+        this.params = params;
         if (!this.ctrl) {
             this.ctrl = new ManagePageCtrl();
             this.ctrl.fetch_repos_list = async () =>
@@ -111,7 +111,7 @@ export class GitRepoSearchPageCtrl
     }
 
     get_component(params: any): GComponent {
-        this.params = params.params;
+        this.params = params;
         if (!this.comp) {
             this.dropdownCtrl.placeholder = "-- select a repo --";
             this.comp = Tools.div({
@@ -172,7 +172,7 @@ export class GitRepoCodeViewPageCtrl
         return path.startsWith("/search/view/");
     }
     get_component(params: any): GComponent {
-        this.params = params.params;
+        this.params = params;
         if (!this.ctrl) {
             this.ctrl = new SimpleCodeViewCtrl();
             this.ctrl.setup();
