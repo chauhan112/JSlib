@@ -26,16 +26,17 @@ export class InputCompCtrl implements IInputCompCtrl {
         this.comp.getElement().value = "";
     }
 }
+export type IOptionItem = { value: string; label: string };
 
 export class DropdownCtrl implements IInputCompCtrl {
     comp: any;
     placeholder: string = "Select an option";
     has_placeholder: boolean = true;
-    options: { value: string; label: string }[] = [];
+    options: IOptionItem[] = [];
     set_comp(comp: any) {
         this.comp = comp; // Dropdown
     }
-    set_options(options: { value: string; label: string }[]) {
+    set_options(options: IOptionItem[]) {
         let opsComp: any[] = [];
         if (this.has_placeholder) {
             opsComp.push(Tools.comp("option", { value: "", textContent: this.placeholder, selected: true, disabled: true }));
@@ -63,10 +64,10 @@ export class DropdownCtrl implements IInputCompCtrl {
 export class CardCompCtrl {
     comp: any;
     options: { label: string; }[] = [{ label: "Edit" }, { label: "Delete" }, { label: "View" }];
-    onOpsMenuClicked: (data: any, label: string) => void = (data: any, label: string) => {
+    onOpsMenuClicked (data: any, label: string) {
         console.log(data, label);
     };
-    onCardClicked: (data: any) => void = (data: any) => {
+    onCardClicked(data: any) {
         console.log(data);
     };
     set_options(options: { label: string; }[]) {
