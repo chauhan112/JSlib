@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from "uuid"; // bun install uuid
 import type {
     ICRUDModel,
     ListItem,
@@ -28,29 +28,26 @@ export class GenericCrudModel implements ICRUDModel {
             this.data.push({ title: `Test ${i}`, id: i.toString() });
         }
     }
-    read_all: () => Promise<ListItem[]> = async () => {
+    async read_all() {
         return this.data.map((item: any) => ({
             title: item.title,
             id: item.id,
             original: item,
         }));
-    };
-    read: (id: string) => Promise<ListItem> = async (id: string) => {
+    }
+    async read(id: string) {
         const item = this.data.find((item: ListItem) => item.id === id);
         if (!item) {
             throw new Error(`Item with id ${id} not found`);
         }
         return { title: item.title, id: item.id, original: item };
-    };
-    create: (data: any) => Promise<ListItem> = async (data: any) => {
+    }
+    async create(data: any) {
         const newItem = { ...data, id: uuidv4() };
         this.data.push(newItem);
         return { title: newItem.title, id: newItem.id, original: newItem };
-    };
-    update: (id: string, data: any) => Promise<ListItem> = async (
-        id: string,
-        data: any,
-    ) => {
+    }
+    async update(id: string, data: any) {
         const item = this.data.find((item: ListItem) => item.id === id);
         if (!item) {
             throw new Error(`Item with id ${id} not found`);
@@ -64,19 +61,11 @@ export class GenericCrudModel implements ICRUDModel {
             id: updatedItem.id,
             original: updatedItem,
         };
-    };
-    deleteIt: (id: string) => Promise<void> = async (id: string) => {
+    }
+    async deleteIt(id: string) {
         this.data = this.data.filter((item: ListItem) => item.id !== id);
-    };
-    search: (
-        word: string,
-        case_sensitive: boolean,
-        regex: boolean,
-    ) => Promise<ListItem[]> = async (
-        word: string,
-        case_sensitive: boolean,
-        regex: boolean,
-    ) => {
+    }
+    async search(word: string, case_sensitive: boolean, regex: boolean) {
         return this.data
             .filter((item: any) => item.title.includes(word))
             .map((item: any) => ({
@@ -84,7 +73,7 @@ export class GenericCrudModel implements ICRUDModel {
                 id: item.id,
                 original: item,
             }));
-    };
+    }
 }
 
 export class GenericCrudContextMenuOptions implements IContextMenuOptions {
