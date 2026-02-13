@@ -1,7 +1,13 @@
 import { X } from "lucide";
 import { Tools } from "../../../../globalComps/tools";
 import { GlobalStates } from "../../../../globalComps/GlobalStates";
-import { CardComp, Dropdown, InputComp, Textarea, MultiSelectComponent } from "./atomicComp";
+import {
+    CardComp,
+    Dropdown,
+    InputComp,
+    Textarea,
+    MultiSelectComponent,
+} from "./atomicComp";
 import { DocumentHandler } from "../../../april/Array";
 
 export interface IInputCompCtrl {
@@ -39,10 +45,19 @@ export class DropdownCtrl implements IInputCompCtrl {
     set_options(options: IOptionItem[]) {
         let opsComp: any[] = [];
         if (this.has_placeholder) {
-            opsComp.push(Tools.comp("option", { value: "", textContent: this.placeholder, selected: true, disabled: true }));
+            opsComp.push(
+                Tools.comp("option", {
+                    value: "",
+                    textContent: this.placeholder,
+                    selected: true,
+                    disabled: true,
+                }),
+            );
         }
         for (const o of options) {
-            opsComp.push(Tools.comp("option", { value: o.value, textContent: o.label }));
+            opsComp.push(
+                Tools.comp("option", { value: o.value, textContent: o.label }),
+            );
         }
         this.options = options;
         this.comp.update({ innerHTML: "", children: opsComp });
@@ -51,7 +66,7 @@ export class DropdownCtrl implements IInputCompCtrl {
         return this.comp.getElement().value;
     }
     set_value(value: string) {
-        let op = this.options.find(o => o.value === value);
+        let op = this.options.find((o) => o.value === value);
         if (op) {
             this.comp.getElement().value = op.value;
         }
@@ -63,14 +78,18 @@ export class DropdownCtrl implements IInputCompCtrl {
 
 export class CardCompCtrl {
     comp: any;
-    options: { label: string; }[] = [{ label: "Edit" }, { label: "Delete" }, { label: "View" }];
-    onOpsMenuClicked (data: any, label: string) {
+    options: { label: string }[] = [
+        { label: "Edit" },
+        { label: "Delete" },
+        { label: "View" },
+    ];
+    onOpsMenuClicked(data: any, label: string) {
         console.log(data, label);
-    };
+    }
     onCardClicked(data: any) {
         console.log(data);
-    };
-    set_options(options: { label: string; }[]) {
+    }
+    set_options(options: { label: string }[]) {
         this.options = options;
         if (options.length > 0) {
             this.comp.s.ops.getElement().classList.remove("hidden");
@@ -81,7 +100,11 @@ export class CardCompCtrl {
     private on_ops_clicked: (e: any, ls: any) => void = (e: any, ls: any) => {
         e.stopPropagation();
         let cm = GlobalStates.getInstance().getState("contextMenu");
-        let options = this.options.map((o: any) => ({ label: o.label, info: this.data, onClick: () => this.onOpsMenuClicked(this.data, o.label) }));
+        let options = this.options.map((o: any) => ({
+            label: o.label,
+            info: this.data,
+            onClick: () => this.onOpsMenuClicked(this.data, o.label),
+        }));
         cm.s.setOptions(options);
         cm.s.displayMenu(e, ls);
     };
@@ -95,7 +118,10 @@ export class CardCompCtrl {
         this.data = data;
     }
     setup() {
-        this.comp.s.ops.update({}, { click: (e: any, ls: any) => this.on_ops_clicked(e, ls) });
+        this.comp.s.ops.update(
+            {},
+            { click: (e: any, ls: any) => this.on_ops_clicked(e, ls) },
+        );
         this.comp.update({}, { click: () => this.onCardClicked(this.data) });
     }
 }
@@ -110,40 +136,54 @@ export class MultiSelectCompCtrl implements IInputCompCtrl {
     cssSelected = {
         true: "px-4 py-2 cursor-pointer hover:bg-blue-50 transition bg-blue-100 text-blue-700 font-medium",
         false: "px-4 py-2 cursor-pointer hover:bg-blue-50 transition text-gray-700",
-    }
-    set_comp(comp: any) { // MultiSelectComponent
+    };
+    set_comp(comp: any) {
+        // MultiSelectComponent
         this.comp = comp;
     }
     set_options(options: { value: string; label: string }[]) {
         this.options = options;
     }
-    set_value(vals: {value: string; label?: string}[]) {
+    set_value(vals: { value: string; label?: string }[]) {
         let opMap: { [key: string]: { value: string; label: string } } = {};
-        this.options.forEach(o => {
+        this.options.forEach((o) => {
             opMap[o.value] = o;
         });
-        this.selected_values = vals.map(v => opMap[v.value]);
+        this.selected_values = vals.map((v) => opMap[v.value]);
     }
     get_value() {
-        return this.options.filter(o => this.selected_values.some(v => v.value === o.value));
+        return this.options.filter((o) =>
+            this.selected_values.some((v) => v.value === o.value),
+        );
     }
     clear_value() {
         this.selected_values = [];
         this.update_ui();
     }
     update_ui() {
-        this.comp.s.selectBox.update({ innerHTML: "", children: this.selected_values.map(v => this.create_tag(v.value, v.label)) });
+        this.comp.s.selectBox.update({
+            innerHTML: "",
+            children: this.selected_values.map((v) =>
+                this.create_tag(v.value, v.label),
+            ),
+        });
         if (this.selected_values.length === 0) {
-            this.comp.s.selectBox.update({ innerHTML: "", children: [this.get_placeholder()] })
+            this.comp.s.selectBox.update({
+                innerHTML: "",
+                children: [this.get_placeholder()],
+            });
         }
         if (this.is_open) {
             this.show_dropdown_menu();
-        }else{
+        } else {
             this.comp.s.dropdownMenu.getElement().classList.add("hidden");
         }
     }
     setup() {
-        this.comp.s.selectBox.update({}, { click: (e: any, ls: any) => this.on_select_box_clicked(e, ls) });
+        this.comp.s.selectBox.update(
+            {},
+            { click: (e: any, ls: any) => this.on_select_box_clicked(e, ls) },
+        );
         this.update_ui();
     }
     private on_select_box_clicked(e: any, ls: any) {
@@ -157,10 +197,17 @@ export class MultiSelectCompCtrl implements IInputCompCtrl {
             this.is_open = false;
             this.comp.s.dropdownMenu.getElement().classList.add("hidden");
         });
-        this.comp.s.dropdownMenu.update({ innerHTML: "", children: this.options.map(o => this.create_option(o.value, o.label)) });
+        this.comp.s.dropdownMenu.update({
+            innerHTML: "",
+            children: this.options.map((o) =>
+                this.create_option(o.value, o.label),
+            ),
+        });
     }
     remove_tag(param: { value: string; label: string }) {
-        this.selected_values = this.selected_values.filter(v => v.value !== param.value);
+        this.selected_values = this.selected_values.filter(
+            (v) => v.value !== param.value,
+        );
         this.update_ui();
     }
     private on_close_tag_clicked(e: any, ls: any) {
@@ -175,28 +222,51 @@ export class MultiSelectCompCtrl implements IInputCompCtrl {
         return Tools.comp("div", {
             class: "tag bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm flex items-center gap-1",
             children: [
-                Tools.comp("span", { textContent: label },{click: (e: any) => e.stopPropagation()},{ label ,value}),
-                Tools.icon(X, { class: "cursor-pointer" },{ click: (e: any, ls: any) => this.on_close_tag_clicked(e, ls) },{ value, label }),
+                Tools.comp(
+                    "span",
+                    { textContent: label },
+                    { click: (e: any) => e.stopPropagation() },
+                    { label, value },
+                ),
+                Tools.icon(
+                    X,
+                    { class: "cursor-pointer" },
+                    {
+                        click: (e: any, ls: any) =>
+                            this.on_close_tag_clicked(e, ls),
+                    },
+                    { value, label },
+                ),
             ],
         });
     }
     create_option(value: string, label: string) {
-        let isSelected = this.selected_values.some(v => v.value === value);
-        return Tools.comp("div", {
-            class: this.cssSelected[isSelected ? "true" : "false"],
-            textContent: label,
-        },{ click: (e: any, ls: any) => this.on_option_clicked(e, ls) },{ value, label });
+        let isSelected = this.selected_values.some((v) => v.value === value);
+        return Tools.comp(
+            "div",
+            {
+                class: this.cssSelected[isSelected ? "true" : "false"],
+                textContent: label,
+            },
+            { click: (e: any, ls: any) => this.on_option_clicked(e, ls) },
+            { value, label },
+        );
     }
     toggle_selection(param: { value: string; label: string }) {
-        if (this.selected_values.some(v => v.value === param.value)) {
-            this.selected_values = this.selected_values.filter(v => v.value !== param.value);
+        if (this.selected_values.some((v) => v.value === param.value)) {
+            this.selected_values = this.selected_values.filter(
+                (v) => v.value !== param.value,
+            );
         } else {
             this.selected_values.push(param);
         }
         this.update_ui();
     }
     private get_placeholder() {
-        return Tools.comp("span", { textContent: this.placeholder, class: "text-gray-400 ml-2" });
+        return Tools.comp("span", {
+            textContent: this.placeholder,
+            class: "text-gray-400 ml-2",
+        });
     }
 }
 
@@ -216,8 +286,11 @@ export class MainCtrl {
         dropdownCtrl.set_comp(Dropdown(options));
         return dropdownCtrl;
     }
-    static multiSelect(options: { value: string; label: string }[], 
-             selected_values: { value: string; label?: string }[], placeholder?: string) {
+    static multiSelect(
+        options: { value: string; label: string }[],
+        selected_values: { value: string; label?: string }[],
+        placeholder?: string,
+    ) {
         const multiSelectCtrl = new MultiSelectCompCtrl();
         multiSelectCtrl.set_comp(MultiSelectComponent());
         multiSelectCtrl.set_options(options);
@@ -228,7 +301,10 @@ export class MainCtrl {
         multiSelectCtrl.setup();
         return multiSelectCtrl;
     }
-    static input(attrs?: { [key: string]: string }, handlers?: { [key: string]: (e: any, ls: any) => void }) {
+    static input(
+        attrs?: { [key: string]: string },
+        handlers?: { [key: string]: (e: any, ls: any) => void },
+    ) {
         const inputCtrl = new InputCompCtrl();
         const comp = InputComp();
         if (attrs) {
@@ -240,7 +316,10 @@ export class MainCtrl {
         inputCtrl.set_comp(comp);
         return inputCtrl;
     }
-    static textarea(attrs?: { [key: string]: string }, handlers?: { [key: string]: (e: any, ls: any) => void }) {
+    static textarea(
+        attrs?: { [key: string]: string },
+        handlers?: { [key: string]: (e: any, ls: any) => void },
+    ) {
         const textareaCtrl = new InputCompCtrl();
         const comp = Textarea();
         if (attrs) {
@@ -252,4 +331,9 @@ export class MainCtrl {
         textareaCtrl.set_comp(comp);
         return textareaCtrl;
     }
+    // static checkbox() {
+    //     const checkboxCtrl = new CheckboxCompCtrl();
+    //     checkboxCtrl.set_comp(CheckboxComp());
+    //     return checkboxCtrl;
+    // }
 }

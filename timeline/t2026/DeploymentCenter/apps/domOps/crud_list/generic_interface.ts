@@ -5,8 +5,7 @@ import type {
     IContextMenuOptions,
     IRoute,
     IView,
-    ICreateFormFields,
-    IUpdateFormFields,
+    IFormFields,
     CrudListModel,
     FormField,
     IViewComponent,
@@ -104,20 +103,20 @@ export class GenericCrudContextMenuOptions implements IContextMenuOptions {
     }
 }
 
-export class GenericCreateFormFields implements ICreateFormFields {
+export class GenericCreateFormFields implements IFormFields {
     form: NewDynamicFormCtrl | undefined;
     parent_ctrl: CrudListModel;
+    fields: FormField[] = [
+        {
+            type: "Input",
+            key: "title",
+            params: { attrs: { placeholder: "Title" } },
+        },
+    ];
+    title: string = "Create New Item";
+
     constructor(parent_ctrl: CrudListModel) {
         this.parent_ctrl = parent_ctrl;
-    }
-    get_fields(): FormField[] {
-        return [
-            {
-                type: "Input",
-                key: "title",
-                params: { attrs: { placeholder: "Title" } },
-            },
-        ];
     }
     get_title: (data: any) => string = (data: any) => {
         return data.title;
@@ -135,16 +134,13 @@ export class GenericCreateFormFields implements ICreateFormFields {
     }
     get_form(): GComponent {
         if (!this.form) {
-            this.form = DynamicFormMainCtrl.dynamicForm(
-                this.get_fields(),
-                "Create",
-            );
+            this.form = DynamicFormMainCtrl.dynamicForm(this.fields, "create");
             this.form.onSubmit = this.save_impl.bind(this);
         }
         return CreateForm(
             [this.form.comp],
             () => this.parent_ctrl.route.route_back(),
-            "Create New Item",
+            this.title,
         );
     }
     private save_impl(data: any) {
@@ -152,25 +148,21 @@ export class GenericCreateFormFields implements ICreateFormFields {
     }
 }
 
-export class GenericUpdateFormFields implements IUpdateFormFields {
+export class GenericUpdateFormFields implements IFormFields {
     form: NewDynamicFormCtrl | undefined;
     parent_ctrl: CrudListModel;
     prev_data: any = null;
     constructor(parent_ctrl: CrudListModel) {
         this.parent_ctrl = parent_ctrl;
     }
-    get_fields(): FormField[] {
-        return [
-            {
-                type: "Input",
-                key: "title",
-                params: { attrs: { placeholder: "Title" } },
-            },
-        ];
-    }
-    get_title: (data: any) => string = (data: any) => {
-        return data.title;
-    };
+    fields: FormField[] = [
+        {
+            type: "Input",
+            key: "title",
+            params: { attrs: { placeholder: "Title" } },
+        },
+    ];
+    title: string = "Update Item";
     async save(data: any) {
         let updatedData = { ...this.prev_data, ...data };
         console.log("updatedData", updatedData);
@@ -186,10 +178,7 @@ export class GenericUpdateFormFields implements IUpdateFormFields {
     }
     get_form(): GComponent {
         if (!this.form) {
-            this.form = DynamicFormMainCtrl.dynamicForm(
-                this.get_fields(),
-                "Update",
-            );
+            this.form = DynamicFormMainCtrl.dynamicForm(this.fields, "Update");
             this.form.onSubmit = this.save_impl.bind(this);
         }
         let data = this.parent_ctrl.route.get_params();
@@ -202,7 +191,7 @@ export class GenericUpdateFormFields implements IUpdateFormFields {
         return CreateForm(
             [this.form.comp],
             () => this.parent_ctrl.route.route_back(),
-            "Update Item",
+            this.title,
         );
     }
     private save_impl(data: any) {
