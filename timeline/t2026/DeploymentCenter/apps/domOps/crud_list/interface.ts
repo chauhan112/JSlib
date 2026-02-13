@@ -5,7 +5,7 @@ export type ListItem = {
     title: string;
     id: string;
     original: any;
-}
+};
 
 export interface ICRUDModel {
     read_all: () => Promise<ListItem[]>;
@@ -13,28 +13,32 @@ export interface ICRUDModel {
     create: (data: any) => Promise<ListItem>;
     update: (id: string, data: any) => Promise<ListItem>;
     deleteIt: (id: string) => Promise<void>;
-    search: (word: string, case_sensitive: boolean, regex: boolean) => Promise<ListItem[]>;
+    search: (
+        word: string,
+        case_sensitive: boolean,
+        regex: boolean,
+    ) => Promise<ListItem[]>;
 }
 
 export type InputParams = {
     attrs?: { [key: string]: string };
     handlers?: { [key: string]: (e: any, ls: any) => void };
-}
+};
 
 export type SelectParams = {
     options: { value: string; label: string }[];
-}
+};
 
 export type TextareaParams = {
     attrs?: { [key: string]: string };
     handlers?: { [key: string]: (e: any, ls: any) => void };
-}
+};
 
 export type MultiSelectParams = {
     options: { value: string; label: string }[];
     selected_values: { value: string; label?: string }[];
     placeholder?: string;
-}
+};
 
 export type FormField =
     | { type: "Input"; key: string; params: InputParams }
@@ -42,21 +46,14 @@ export type FormField =
     | { type: "Textarea"; key: string; params: TextareaParams }
     | { type: "MultiSelect"; key: string; params: MultiSelectParams };
 
-export interface ICreateFormFields {
-    get_fields: () => FormField[];
-    get_title: (data: any) => string;
+export interface IFormFields {
+    fields: FormField[];
+    title: string;
     save: (data: any) => Promise<void>;
     get_form: () => GComponent;
 }
 
-export interface IUpdateFormFields {
-    get_fields: () => FormField[];
-    get_title: (data: any) => string;
-    save: (data: any) => Promise<void>;
-    get_form: () => GComponent;
-}
-
-export interface IViewComponent { 
+export interface IViewComponent {
     get_comp: () => GComponent;
     set_data: (data: any) => void;
 }
@@ -76,7 +73,8 @@ export interface IRoute {
     get_params: () => any;
 }
 
-export interface IView { // this view is frontend view model which will be used to optimize the loading time
+export interface IView {
+    // this view is frontend view model which will be used to optimize the loading time
     set_data: (data: ListItem[]) => void;
     update_one: (data: ListItem) => void;
     delete_one: (id: string) => void;
@@ -85,8 +83,8 @@ export interface IView { // this view is frontend view model which will be used 
 
 export interface CrudListModel {
     model: ICRUDModel;
-    createFormFields: ICreateFormFields;
-    updateFormFields: IUpdateFormFields;
+    createFormFields: IFormFields;
+    updateFormFields: IFormFields;
     contextMenuOptions: IContextMenuOptions;
     view: IView;
     viewComponent: IViewComponent;

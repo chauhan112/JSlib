@@ -12,10 +12,9 @@ import type {
 import type {
     CrudListModel,
     IContextMenuOptions,
-    ICreateFormFields,
     ICRUDModel,
     IRoute,
-    IUpdateFormFields,
+    IFormFields,
     IView,
     IViewComponent,
     ListItem,
@@ -97,8 +96,8 @@ export class GenericDataModel implements IDatamodel, IResultDisplayer {
 }
 export class GenericCrudListCtrl implements CrudListModel {
     model: ICRUDModel = new GenericCrudModel();
-    createFormFields: ICreateFormFields;
-    updateFormFields: IUpdateFormFields;
+    createFormFields: IFormFields;
+    updateFormFields: IFormFields;
     view: IView;
     route: IRoute = new GenericRoute();
     contextMenuOptions: IContextMenuOptions;
