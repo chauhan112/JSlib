@@ -19,23 +19,23 @@ export class GRoute implements IRoute {
         }
         this.routes.push(route);
     }
-    remove_route(route: IRouteItem): void {
-        this.routes = this.routes.filter((r) => r.path !== route.path);
+    remove_route(href: string): void {
+        this.routes = this.routes.filter((r) => r.path !== href);
     }
-    has_route(route: IRouteItem): boolean {
+    has_route(href: string): boolean {
         for (let r of this.routes) {
-            if (r.path === route.path) {
+            if (r.path === href) {
                 this.matched_route = r;
                 return true;
             }
         }
         return false;
     }
-    get_route_component(): GComponent | null {
+    get_route_component(): GComponent {
         if (this.matched_route) {
             return this.matched_route.onRouted({});
         }
-        return null;
+        throw new Error("Route not found");
     }
     clear_routes(): void {
         this.routes = [];
@@ -61,6 +61,7 @@ export class WebPageWithRoutes implements IPage {
             path: "/",
             onRouted: () => this.root_comp,
             display: () => {},
+            root_comp: this.root_comp,
         });
     }
     get_comp(route: string, params: any): GComponent {

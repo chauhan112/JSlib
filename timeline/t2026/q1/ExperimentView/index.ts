@@ -6,8 +6,11 @@ import type {
 import type { GComponent } from "../../../globalComps/GComponent";
 import type { ITableCrud } from "./interface";
 import { TableCrud } from "./generic";
+import type { IPage, IRoute } from "../WebPageWithRoutes/interface";
+import { GRoute } from "../WebPageWithRoutes/generic";
 
-export class DirectusTableCrud implements IRouteController {
+export class DirectusTableCrud implements IRouteController, IPage {
+    route: IRoute = new GRoute();
     crud = new CrudList();
     initialized: boolean = false;
     infos: IApp = {
@@ -31,32 +34,61 @@ export class DirectusTableCrud implements IRouteController {
         this.crud.model.contextMenuOptions.get_options = () =>
             this.inp.contextMenus;
         this.crud.setup();
+        this.route.add_route({
+            path: "/",
+            onRouted: () => this.crud.comp,
+            display: () => {},
+            root_comp: this.crud.comp,
+        });
+        this.route.add_route({
+            path: "",
+            onRouted: () => this.crud.comp,
+            display: () => {},
+            root_comp: this.crud.comp,
+        });
+        this.initialized = true;
     }
     matches_path(path: string): boolean {
         let after = path.slice(this.infos.href.length).trim();
         if (!this.initialized) this.setup();
-        console.log(after);
-        return (
-            path.startsWith(this.infos.href) && this.crud.matches_path(after)
-        );
+        if (path.startsWith(this.infos.href)) {
+            if (this.route.has_route(after)) {
+                this.selected_router = this.route;
+                return true;
+            } else if (this.crud.matches_path(after)) {
+                this.selected_router = this.crud;
+                return true;
+            }
+        }
+        return false;
     }
 
     get_component(params: any): GComponent {
-        if (!this.initialized) {
+        if (!this.fetched) {
             let url = params["directus-url"];
             let token = params["directus-token"];
             if (url && url.endsWith("/")) url = url.slice(0, -1);
-
             this.inp.model.set_url_and_token(url, token);
-            this.initialized = true;
             this.crud.fetch_data_and_update();
+            this.fetched = true;
         }
-        return this.crud.comp;
+        if (this.selected_router) {
+            if (this.selected_router === this.crud)
+                return this.crud.get_component(params);
+            return (this.selected_router as IRoute).get_route_component();
+        }
+        throw new Error("Route not found");
     }
     set_info(info: IApp): void {
         this.infos = info;
     }
     get_info(): IApp {
         return this.infos;
+    }
+    get_comp(route: string, params: any): GComponent {
+        return this.get_component(params);
+    }
+    display_component(comp: GComponent): void {
+        throw new Error("Method not implemented.");
     }
 }
