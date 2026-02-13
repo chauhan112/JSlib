@@ -19,8 +19,9 @@ export class DirectusTableCrud implements IRouteController, IPage {
         subtitle: "crud table",
         params: ["directus-url", "directus-token"],
     };
-    inp: ITableCrud = new TableCrud();
-
+    inp: ITableCrud = new TableCrud(this.crud);
+    fetched: boolean = false;
+    private selected_router: IRoute | CrudList | null = null;
     setup() {
         this.crud.base_path = "";
         this.crud.model.model.read_all = this.inp.read_all.bind(this.inp);
@@ -33,6 +34,13 @@ export class DirectusTableCrud implements IRouteController, IPage {
             this.inp.filter_on;
         this.crud.model.contextMenuOptions.get_options = () =>
             this.inp.contextMenus;
+        this.crud.model.contextMenuOptions.clicked =
+            this.inp.clicked.bind(this);
+        this.crud.model.createFormFields.fields = this.inp.create_fields;
+        this.crud.model.updateFormFields.fields = this.inp.update_fields;
+        this.crud.model.model.create = this.inp.create.bind(this.inp);
+        this.crud.model.model.update = this.inp.update.bind(this.inp);
+        this.crud.model.model.deleteIt = this.inp.deleteIt.bind(this.inp);
         this.crud.setup();
         this.route.add_route({
             path: "/",
