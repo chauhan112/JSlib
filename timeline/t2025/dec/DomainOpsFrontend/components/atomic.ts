@@ -331,9 +331,4 @@ export class MainCtrl {
         textareaCtrl.set_comp(comp);
         return textareaCtrl;
     }
-    // static checkbox() {
-    //     const checkboxCtrl = new CheckboxCompCtrl();
-    //     checkboxCtrl.set_comp(CheckboxComp());
-    //     return checkboxCtrl;
-    // }
 }

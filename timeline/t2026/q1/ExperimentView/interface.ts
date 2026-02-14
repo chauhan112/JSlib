@@ -16,6 +16,7 @@ export interface ITableCrud {
     page_size: number;
     read_all_fields: string[];
     search_fields: string[];
+
     read_all(): Promise<ListItem[]>;
     read_all_for_search(): Promise<any[]>;
     get_create_view(): GComponent | null;

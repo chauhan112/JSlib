@@ -1,11 +1,8 @@
 import { GComponent } from "../../../globalComps/GComponent";
-import {
-    RouteTool,
-    type IPage,
-    type IRoute,
-    type IRouteItem,
-} from "./interface";
+import type { IPage, IRoute, IRouteItem, IRouteTool } from "./interface";
 import { Tools } from "../../../globalComps/tools";
+
+import { MainCtrl as RouteWebPageMainCtrl } from "../../../t2025/dec/DomainOpsFrontend/route/controller";
 
 export class GRoute implements IRoute {
     routes: IRouteItem[] = [];
@@ -56,24 +53,36 @@ export class WebPageWithRoutes implements IPage {
             class: "flex flex-col gap-4",
         });
     }
-    setup() {
-        this.route.add_route({
-            path: "/",
-            onRouted: () => this.root_comp,
-            display: () => {},
-            root_comp: this.root_comp,
-        });
-    }
+    setup() {}
     get_comp(route: string, params: any): GComponent {
         return this.root_comp;
-    }
-    display_component(comp: GComponent): void {
-        throw new Error("Method not implemented.");
     }
 }
 
 export class RouteTools {
     static parse_route(path: string): { path: string; params: any } {
         return { path: path, params: {} };
+    }
+}
+
+export class RouteTool implements IRouteTool {
+    prev_url = "";
+    route_to(route: string, params?: any) {
+        this.prev_url = this.get_current_url();
+        RouteWebPageMainCtrl.navigate(route, params);
+    }
+    route_back(n: number = 1) {
+        this.prev_url = this.get_current_url();
+        RouteWebPageMainCtrl.go_back(n);
+    }
+    relative_route(route: string, params?: any) {
+        this.prev_url = this.get_current_url();
+        RouteWebPageMainCtrl.relative_navigate(route, params);
+    }
+    get_current_url() {
+        return globalThis.location.hash;
+    }
+    get_prev_url() {
+        return this.prev_url;
     }
 }

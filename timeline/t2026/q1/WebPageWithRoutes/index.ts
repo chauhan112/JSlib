@@ -1,5 +1,5 @@
 import { HeaderCtrl } from "../../DeploymentCenter/apps/domOps/webPageWithNav/Header";
-import { BreadcrumbCtrl } from "./breadcrumb";
+import { BreadcrumbCtrl } from "../breadcrumb";
 import { Tools } from "../../../globalComps/tools";
 import type { GComponent } from "../../../globalComps/GComponent";
 

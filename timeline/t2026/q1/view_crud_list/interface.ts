@@ -1,12 +1,7 @@
 import { type ISearchView } from "./searchComp";
-import { GComponent } from "../../../globalComps/GComponent";
 import type { ICRUDModel } from "../../DeploymentCenter/apps/domOps/crud_list/interface";
 import type { IRoute } from "../WebPageWithRoutes/interface";
-
-export interface IComponent {
-    get_comp(): GComponent;
-    setup(): void;
-}
+import type { IGComponent as IComponent } from "../../../globalComps/interface";
 
 export interface IListModel {
     contextMenus: string[];
