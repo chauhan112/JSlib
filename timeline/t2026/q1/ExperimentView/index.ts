@@ -41,6 +41,7 @@ export class DirectusTableCrud implements IRouteController, IPage {
         this.crud.model.model.create = this.inp.create.bind(this.inp);
         this.crud.model.model.update = this.inp.update.bind(this.inp);
         this.crud.model.model.deleteIt = this.inp.deleteIt.bind(this.inp);
+        this.crud.model.get_page_size = () => this.inp.page_size;
         this.crud.setup();
         this.route.add_route({
             path: "/",

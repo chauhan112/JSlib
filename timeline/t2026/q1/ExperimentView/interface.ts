@@ -14,6 +14,8 @@ export interface ITableCrud {
     create_fields: FormField[];
     update_fields: FormField[];
     page_size: number;
+    read_all_fields: string[];
+    search_fields: string[];
     read_all(): Promise<ListItem[]>;
     read_all_for_search(): Promise<any[]>;
     get_create_view(): GComponent | null;
@@ -22,4 +24,5 @@ export interface ITableCrud {
     create(data: any): Promise<ListItem>;
     update(id: string, data: any): Promise<ListItem>;
     deleteIt(id: string): Promise<void>;
+    convert_any_data_to_list_item(data: any): ListItem;
 }
