@@ -19,15 +19,15 @@ export interface IRouteTool {
 export class RouteTool implements IRouteTool {
     prev_url = "";
     route_to(route: string, params: any) {
-        this.prev_url = globalThis.location.hash;
+        this.prev_url = this.get_current_url();
         RouteWebPageMainCtrl.navigate(route, params);
     }
     route_back(n: number = 1) {
-        this.prev_url = globalThis.location.hash;
+        this.prev_url = this.get_current_url();
         RouteWebPageMainCtrl.go_back(n);
     }
     relative_route(route: string, params: any) {
-        this.prev_url = globalThis.location.hash;
+        this.prev_url = this.get_current_url();
         RouteWebPageMainCtrl.relative_navigate(route, params);
     }
     get_current_url() {
