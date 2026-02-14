@@ -14,6 +14,7 @@ import { AIChats } from "../q1/AIChats";
 import { SearchCompAsPage } from "../q1/view_crud_list/searchComp";
 import { CrudPage } from "../q1/view_crud_list";
 import { DirectusTableCrud } from "../q1/ExperimentView";
+import { DynamicFormGenerator } from "../q1/dynamicFormGenerator";
 
 export const DeploymentCenterPage = () => {
     return Tools.comp("div", {
@@ -97,6 +98,7 @@ export const DeploymentCenter = () => {
     navs.push(new SearchCompAsPage());
     navs.push(new CrudPage());
     navs.push(new DirectusTableCrud());
+    navs.push(new DynamicFormGenerator());
 
     for (const nav of navs) {
         deploymentCenterPageCtrl.add_app(nav);
