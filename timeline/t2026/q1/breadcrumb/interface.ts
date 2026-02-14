@@ -1,4 +1,4 @@
-import type { GComponent } from "../../../../globalComps/GComponent";
+import type { GComponent } from "../../../globalComps/GComponent";
 
 export interface IBreadcrumbItem {
     name: string;

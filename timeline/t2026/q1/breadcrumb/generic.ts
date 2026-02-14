@@ -1,7 +1,7 @@
-import type { GComponent } from "../../../../globalComps/GComponent";
+import type { GComponent } from "../../../globalComps/GComponent";
 import type { IHandler, IDisplayer, IBreadcrumbItem } from "./interface";
-import { Tools } from "../../../../globalComps/tools";
-import { Atool } from "../../../../t2025/april/Array";
+import { Tools } from "../../../globalComps/tools";
+import { Atool } from "../../../t2025/april/Array";
 
 export const Separator = () => {
     return Tools.comp("span", {
@@ -53,7 +53,7 @@ export class GenericDisplayer implements IDisplayer {
     constructor(parent: BreadCrumbInput) {
         this.parent = parent;
         this.comp = Tools.div({
-            class: "flex items-center gap-2 text-center items-center",
+            class: "flex items-center gap-2 text-center items-center flex-wrap",
         });
     }
     set_comp(comp: any) {
