@@ -1,7 +1,8 @@
 import type { GComponent } from "../../../globalComps/GComponent";
+import type { ISComponent } from "../../../globalComps/interface";
 
 export interface IRouteItem {
-    onRouted: (params: any) => GComponent;
+    on_routed: (params: any) => GComponent;
     display: (comp: GComponent) => void;
 }
 
@@ -24,7 +25,20 @@ export interface IRoute {
     get_path_after_matched(): string;
 }
 
-export interface IPage {
-    setup(): void;
-    get_comp(route: string, params: any): GComponent;
+export interface IHeader extends ISComponent {
+    set_title(title: string): void;
+}
+
+export interface ISideNav extends ISComponent {
+    show(): void;
+    hide(): void;
+}
+
+export interface IContainer extends ISComponent {
+    display(comp: GComponent): void;
+}
+
+export interface IWebPage extends ISComponent {
+    get_body(): IContainer;
+    get_header(): IContainer;
 }
