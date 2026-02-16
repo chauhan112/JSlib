@@ -15,6 +15,7 @@ import { SearchCompAsPage } from "../q1/view_crud_list/searchComp";
 import { CrudPage } from "../q1/view_crud_list";
 import { DirectusTableCrud } from "../q1/ExperimentView";
 import { DynamicFormGenerator } from "../q1/dynamicFormGenerator";
+import { ListerPage } from "../q1/lister";
 
 export const DeploymentCenterPage = () => {
     return Tools.comp("div", {
@@ -99,6 +100,7 @@ export const DeploymentCenter = () => {
     navs.push(new CrudPage());
     navs.push(new DirectusTableCrud());
     navs.push(new DynamicFormGenerator());
+    navs.push(new ListerPage());
 
     for (const nav of navs) {
         deploymentCenterPageCtrl.add_app(nav);
