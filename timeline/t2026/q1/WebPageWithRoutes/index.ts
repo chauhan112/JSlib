@@ -6,9 +6,10 @@ import {
     GRouterController,
     type IApp,
 } from "../../DeploymentCenter/interfaces";
-import { SimpleWebPage } from "./webpages";
+import { WebPageWithBreadcrumb, SimpleWebPage } from "./webpages";
 import { FormMainCtrl } from "../dynamicFormGenerator";
 import { Breadcrumb, BreadcrumbMainCtrl } from "../breadcrumb/generic";
+import type { IWebPage } from "./interface";
 
 export class WebPageWithRoutesCtrl {
     headerCtrl: HeaderCtrl = new HeaderCtrl();
@@ -53,7 +54,7 @@ export class HeaderBodyOldPage extends GRouterController {
     }
 }
 
-export class HeaderBodyNewPage extends GRouterController {
+export class SimpleNewPage extends GRouterController {
     info: IApp = {
         name: "Header Body",
         href: "/header-body",
@@ -74,6 +75,20 @@ export class HeaderBodyNewPage extends GRouterController {
             }),
         );
     }
+    get_component(params: any): GComponent {
+        return this.webpage.get_comp();
+    }
+}
+export class HeaderBodyNewPage extends GRouterController {
+    info: IApp = {
+        name: "Header Body",
+        href: "/header-body",
+        subtitle: "webpage with header and body",
+        params: [],
+    };
+    webpage: IWebPage = new WebPageWithBreadcrumb();
+    initialized: boolean = true;
+
     get_component(params: any): GComponent {
         return this.webpage.get_comp();
     }
