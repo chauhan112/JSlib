@@ -1,6 +1,7 @@
 import type { GComponent } from "../../../globalComps/GComponent";
-import { type IComponent, type IPagination } from "./interface";
+import { type IPagination } from "./interface";
 import { Tools } from "../../../globalComps/tools";
+import type { IGComponent as IComponent } from "../../../globalComps/interface";
 
 interface IPageBtn extends IComponent {
     page: number;
