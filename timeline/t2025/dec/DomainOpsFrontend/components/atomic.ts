@@ -83,6 +83,20 @@ export class CardCompCtrl {
         { label: "Delete" },
         { label: "View" },
     ];
+    private on_ops_clicked: (e: any, ls: any) => void = (e: any, ls: any) => {
+        e.stopPropagation();
+        let cm = GlobalStates.getInstance().getState("contextMenu");
+        let options = this.options.map((o: any) => ({
+            label: o.label,
+            info: this.data,
+            onClick: () => this.onOpsMenuClicked(this.data, o.label),
+        }));
+        cm.s.setOptions(options);
+        cm.s.displayMenu(e, ls);
+    };
+    data: any;
+    title_getter: (info: any) => string = (info: any) => info.title;
+
     onOpsMenuClicked(data: any, label: string) {
         console.log(data, label);
     }
@@ -97,19 +111,7 @@ export class CardCompCtrl {
             this.comp.s.ops.getElement().classList.add("hidden");
         }
     }
-    private on_ops_clicked: (e: any, ls: any) => void = (e: any, ls: any) => {
-        e.stopPropagation();
-        let cm = GlobalStates.getInstance().getState("contextMenu");
-        let options = this.options.map((o: any) => ({
-            label: o.label,
-            info: this.data,
-            onClick: () => this.onOpsMenuClicked(this.data, o.label),
-        }));
-        cm.s.setOptions(options);
-        cm.s.displayMenu(e, ls);
-    };
-    data: any;
-    title_getter: (info: any) => string = (info: any) => info.title;
+
     set_comp(comp: any) {
         this.comp = comp;
     }

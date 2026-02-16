@@ -72,6 +72,7 @@ export class LocalStorageJSONModel extends Model {
     key: string;
     constructor(key?: string) {
         super();
+        this.key = key || "";
         this.setLocalStorageKey(key || "LocalStorageModel");
     }
     readFormStorage() {
