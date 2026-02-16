@@ -8,38 +8,7 @@ import { Factory, SimpleForm } from "./generic";
 export class DynamicFormGenerator extends GRouterController {
     initialized: boolean = false;
     comp: GComponent | null = null;
-    form: SimpleForm = Factory.simple_create_form([
-        { key: "name", type: "text", placeholder: "Enter name" },
-        {
-            key: "description",
-            type: "textarea",
-            placeholder: "Enter description",
-        },
-        {
-            key: "is_done",
-            type: "checkbox",
-            label: "is done?",
-            defaultValue: true,
-        },
-        {
-            key: "priority",
-            type: "dropdown",
-            options: [
-                { value: "low", label: "low" },
-                { value: "medium", label: "medium" },
-                { value: "high", label: "high" },
-            ],
-        },
-        {
-            key: "tags",
-            type: "multiselect",
-            options: [
-                { value: "tag1", label: "tag1" },
-                { value: "tag2", label: "tag2" },
-                { value: "tag3", label: "tag3" },
-            ],
-        },
-    ]);
+    form: SimpleForm = FormMainCtrl.testForm();
     info: IApp = {
         name: "form",
         href: "/dynamic-form-generator",
@@ -56,5 +25,42 @@ export class DynamicFormGenerator extends GRouterController {
     }
     setup() {
         this.form!.on_submit = this.on_submit.bind(this);
+    }
+}
+
+export class FormMainCtrl {
+    static testForm() {
+        return Factory.simple_create_form([
+            { key: "name", type: "text", placeholder: "Enter name" },
+            {
+                key: "description",
+                type: "textarea",
+                placeholder: "Enter description",
+            },
+            {
+                key: "is_done",
+                type: "checkbox",
+                label: "is done?",
+                defaultValue: true,
+            },
+            {
+                key: "priority",
+                type: "dropdown",
+                options: [
+                    { value: "low", label: "low" },
+                    { value: "medium", label: "medium" },
+                    { value: "high", label: "high" },
+                ],
+            },
+            {
+                key: "tags",
+                type: "multiselect",
+                options: [
+                    { value: "tag1", label: "tag1" },
+                    { value: "tag2", label: "tag2" },
+                    { value: "tag3", label: "tag3" },
+                ],
+            },
+        ]);
     }
 }
