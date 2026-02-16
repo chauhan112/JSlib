@@ -1,10 +1,10 @@
-import type { GComponent } from "../../../globalComps/GComponent";
-import type { CrudList } from "../../DeploymentCenter/apps/domOps/crud_list";
+import type { GComponent } from "../../../../globalComps/GComponent";
+import type { CrudList } from "../../../DeploymentCenter/apps/domOps/crud_list";
 import type {
     FormField,
     ListItem,
-} from "../../DeploymentCenter/apps/domOps/crud_list/interface";
-import { DirectusModel } from "../directus/model";
+} from "../../../DeploymentCenter/apps/domOps/crud_list/interface";
+import { DirectusModel } from "../../directus/model";
 import { type ITableCrud } from "./interface";
 
 export class TableCrud implements ITableCrud {
