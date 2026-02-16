@@ -1,6 +1,5 @@
 import { GComponent } from "../../../globalComps/GComponent";
-import type { IPage, IRoute, IRouteItem, IRouteTool } from "./interface";
-import { Tools } from "../../../globalComps/tools";
+import type { IRoute, IRouteItem, IRouteTool } from "./interface";
 
 import { MainCtrl as RouteWebPageMainCtrl } from "../../../t2025/dec/DomainOpsFrontend/route/controller";
 
@@ -30,7 +29,7 @@ export class GRoute implements IRoute {
     }
     get_route_component(): GComponent {
         if (this.matched_route) {
-            return this.matched_route.onRouted({});
+            return this.matched_route.on_routed({});
         }
         throw new Error("Route not found");
     }
@@ -42,20 +41,6 @@ export class GRoute implements IRoute {
     }
     route_to(route: string, params: any): void {
         throw new Error("Method not implemented.");
-    }
-}
-
-export class WebPageWithRoutes implements IPage {
-    route = new GRoute();
-    root_comp: GComponent;
-    constructor() {
-        this.root_comp = Tools.comp("div", {
-            class: "flex flex-col gap-4",
-        });
-    }
-    setup() {}
-    get_comp(route: string, params: any): GComponent {
-        return this.root_comp;
     }
 }
 
