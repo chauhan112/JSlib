@@ -43,18 +43,18 @@ export class DirectusTableCrud implements IRouteController, IPage {
         this.crud.model.model.deleteIt = this.inp.deleteIt.bind(this.inp);
         this.crud.model.get_page_size = () => this.inp.page_size;
         this.crud.setup();
-        this.route.add_route({
-            path: "/",
-            onRouted: () => this.crud.comp,
-            display: () => {},
-            root_comp: this.crud.comp,
-        });
-        this.route.add_route({
-            path: "",
-            onRouted: () => this.crud.comp,
-            display: () => {},
-            root_comp: this.crud.comp,
-        });
+        // this.route.add_route({
+        //     path: "/",
+        //     onRouted: () => this.crud.comp,
+        //     display: () => {},
+        //     root_comp: this.crud.comp,
+        // });
+        // this.route.add_route({
+        //     path: "",
+        //     onRouted: () => this.crud.comp,
+        //     display: () => {},
+        //     root_comp: this.crud.comp,
+        // });
         this.initialized = true;
     }
     matches_path(path: string): boolean {

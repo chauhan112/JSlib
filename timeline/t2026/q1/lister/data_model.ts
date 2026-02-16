@@ -164,4 +164,10 @@ export class DirectorTableWithPagination implements IDatamodel<any> {
     deleteIt(id: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
+    get_page(nr: number): Promise<any[]> {
+        throw new Error("Method not implemented.");
+    }
+    get_total_pages(): number {
+        return 1;
+    }
 }
