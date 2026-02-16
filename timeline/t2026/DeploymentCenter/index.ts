@@ -13,9 +13,11 @@ import { SearchComponentAsPage } from "./apps/domOps/searchComp";
 import { AIChats } from "../q1/AIChats";
 import { SearchCompAsPage } from "../q1/view_crud_list/searchComp";
 import { CrudPage } from "../q1/view_crud_list";
-import { DirectusTableCrud } from "../q1/ExperimentView";
+import { DirectusTableCrud } from "../q1/ExperimentView/first_try";
 import { DynamicFormGenerator } from "../q1/dynamicFormGenerator";
 import { ListerPage } from "../q1/lister";
+import { ExpViewPage } from "../q1/ExperimentView";
+import { HeaderBodyNewPage, HeaderBodyOldPage } from "../q1/WebPageWithRoutes";
 
 export const DeploymentCenterPage = () => {
     return Tools.comp("div", {
@@ -101,6 +103,9 @@ export const DeploymentCenter = () => {
     navs.push(new DirectusTableCrud());
     navs.push(new DynamicFormGenerator());
     navs.push(new ListerPage());
+    navs.push(new ExpViewPage());
+    navs.push(new HeaderBodyOldPage());
+    navs.push(new HeaderBodyNewPage());
 
     for (const nav of navs) {
         deploymentCenterPageCtrl.add_app(nav);
