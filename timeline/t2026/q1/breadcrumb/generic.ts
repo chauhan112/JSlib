@@ -125,6 +125,11 @@ export class Breadcrumb implements IBreadcrumbComp {
     }
 
     update() {
+        if (this.values.length === 0) {
+            this.comp.getElement().classList.add("hidden");
+            return;
+        }
+        this.comp.getElement().classList.remove("hidden");
         this.comp.update({
             innerHTML: "",
             children: this.get_children(this.values),
