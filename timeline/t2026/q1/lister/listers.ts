@@ -31,7 +31,7 @@ export class Lister implements ILister {
         const cardCompCtrl = AtomicMainCtrl.cardComp(data, this.title_getter);
         cardCompCtrl.set_options([]);
         cardCompCtrl.comp.getElement().classList.add("cursor-pointer");
-        cardCompCtrl.onCardClicked = this.on_click.bind(this);
+        cardCompCtrl.onCardClicked = (data: any) => this.on_click(data);
         return cardCompCtrl;
     }
 

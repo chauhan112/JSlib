@@ -1,6 +1,6 @@
 import { LocalStorageJSONModel } from "../../../t2025/april/LocalStorage";
 import { DirectusModel } from "../directus/model";
-import type { IDatamodel, IPaginator } from "./interface";
+import type { IDatamodel } from "./interface";
 import { v4 as uuidv4 } from "uuid";
 
 export class InMemoryDataModel implements IDatamodel<any> {
