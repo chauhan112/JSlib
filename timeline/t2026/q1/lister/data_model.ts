@@ -90,7 +90,6 @@ export class TokenFromLocalStorage implements IDirectusInfoGetter {
     directus_url_key_loc: string[] = ["global", "directus-url"];
     directus_token_key_loc: string[] = ["global", "directus-token"];
     constructor(storageKey: string) {
-        console.log(storageKey);
         this.model = new LocalStorageJSONModel(storageKey);
     }
     get_url() {

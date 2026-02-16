@@ -46,5 +46,5 @@ export interface IDatamodel<T> {
 }
 
 export interface INavigator {
-    navigate(route: string): void;
+    navigate(route: string, params?: any): void;
 }

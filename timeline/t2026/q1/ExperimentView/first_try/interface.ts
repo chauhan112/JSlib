@@ -1,9 +1,9 @@
-import type { GComponent } from "../../../globalComps/GComponent";
+import type { GComponent } from "../../../../globalComps/GComponent";
 import type {
     FormField,
     ListItem,
-} from "../../DeploymentCenter/apps/domOps/crud_list/interface";
-import type { DirectusModel } from "../directus/model";
+} from "../../../DeploymentCenter/apps/domOps/crud_list/interface";
+import type { DirectusModel } from "../../directus/model";
 
 export interface ITableCrud {
     contextMenus: string[];
