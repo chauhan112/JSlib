@@ -1,5 +1,10 @@
 import type { GComponent } from "../../../globalComps/GComponent";
-import type { IHandler, IDisplayer, IBreadcrumbItem } from "./interface";
+import type {
+    IHandler,
+    IDisplayer,
+    IBreadcrumbItem,
+    IBreadcrumbComp,
+} from "./interface";
 import { Tools } from "../../../globalComps/tools";
 import { Atool } from "../../../t2025/april/Array";
 
@@ -100,4 +105,69 @@ export class GenericDisplayer implements IDisplayer {
 export class BreadCrumbInput {
     displayer: GenericDisplayer = new GenericDisplayer(this);
     handler: IHandler = new MockHandler();
+}
+
+export class Breadcrumb implements IBreadcrumbComp {
+    values: IBreadcrumbItem[] = [];
+    comp = Tools.div({
+        class: "flex items-center gap-2 text-center items-center flex-wrap",
+    });
+    set_values(items: IBreadcrumbItem[]): void {
+        this.values = items;
+        this.update();
+    }
+    on_click(item: IBreadcrumbItem) {
+        this.values = this.get_till_item(item);
+        this.update();
+    }
+    get_comp(): GComponent {
+        return this.comp;
+    }
+
+    update() {
+        this.comp.update({
+            innerHTML: "",
+            children: this.get_children(this.values),
+        });
+    }
+
+    private get_item_component(item: IBreadcrumbItem): GComponent {
+        let comp = BreadCrumbItem(item);
+        comp.update({}, { click: () => this.on_click(item) });
+        return comp;
+    }
+
+    get_till_item(selectedItem: IBreadcrumbItem) {
+        let tillItems = [];
+        for (let item of this.values) {
+            tillItems.push(item);
+            if (item.value === selectedItem.value) {
+                break;
+            }
+        }
+        return tillItems;
+    }
+    get_children(data: any[]) {
+        return Atool.addInMiddle(
+            data.slice(0, -1).map((item) => this.get_item_component(item)),
+            Separator,
+        ).concat([Separator(), LastComponent(data.at(-1))]);
+    }
+}
+
+export class BreadcrumbMainCtrl {
+    static test_items() {
+        return [
+            { name: "Home", value: "home" },
+            { name: "Users", value: "users" },
+            { name: "John Doe", value: "john-doe" },
+            { name: "Profile", value: "profile" },
+            { name: "Settings", value: "settings" },
+            { name: "Notifications", value: "notifications" },
+            { name: "Security", value: "security" },
+            { name: "Privacy", value: "privacy" },
+            { name: "Terms of Service", value: "terms-of-service" },
+            { name: "Logout", value: "logout" },
+        ];
+    }
 }
