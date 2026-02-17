@@ -1,7 +1,7 @@
 export class DirectusModel {
     base_url: string = "https://db.rajababu.space";
     token: string = "";
-
+    query: string = "";
     set_url_and_token(url: string, token: string): void {
         this.base_url = url;
         this.token = token;
@@ -35,7 +35,9 @@ export class DirectusModel {
         if (fields.length > 0) {
             url += `&fields=${fields.join(",")}`;
         }
-
+        if (this.query) {
+            url += `&${this.query}`;
+        }
         const response = await fetch(url, {
             headers: this.headers,
         });
