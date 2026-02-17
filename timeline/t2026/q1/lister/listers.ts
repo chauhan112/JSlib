@@ -56,9 +56,12 @@ export class ListerWithContext extends Lister {
         const cardCompCtrl = AtomicMainCtrl.cardComp(data, this.title_getter);
         cardCompCtrl.set_options(this.contextMenuOptions);
         cardCompCtrl.comp.getElement().classList.add("cursor-pointer");
-        cardCompCtrl.onCardClicked = this.on_click.bind(this);
+        cardCompCtrl.onCardClicked = (data: any) => this.on_click(data);
+        cardCompCtrl.onOpsMenuClicked = (data: any, label: string) =>
+            this.on_context_clicked(data, label);
         return cardCompCtrl;
     }
+    on_context_clicked(data: any, label: string) {}
 }
 export class SelectableLister implements ILister {
     set_values(data: any[]): void {
