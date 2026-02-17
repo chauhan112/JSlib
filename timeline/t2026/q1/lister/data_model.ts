@@ -143,6 +143,14 @@ export class DirectusTableModel implements IDatamodel<any> {
         if (!this.table.token) throw new Error("No token");
         await this.table.delete(this.tableName, id);
     }
+
+    async read_all_with(keys_vals: { [key: string]: string }) {
+        if (!this.table.token) return [];
+        this.table.query = `filter=${JSON.stringify(keys_vals)}`;
+        const data = await this.table.get_all(this.tableName, this.columns);
+        this.table.query = "";
+        return data.data;
+    }
 }
 
 export class DirectorTableWithPagination implements IDatamodel<any> {
