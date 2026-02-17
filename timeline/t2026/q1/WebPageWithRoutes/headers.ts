@@ -33,6 +33,18 @@ export class SimpleHeader implements IHeader {
     }
 }
 
+export class ClickableHeader extends SimpleHeader {
+    constructor() {
+        super();
+        this.comp.s.title
+            .getElement()
+            .classList.add("cursor-pointer", "select-none");
+        this.comp.s.title.update({}, { click: () => this.on_click() });
+    }
+
+    on_click(): void {}
+}
+
 export class HeaderWithGoBack implements IHeader {
     set_title(title: string): void {
         throw new Error("Method not implemented.");
