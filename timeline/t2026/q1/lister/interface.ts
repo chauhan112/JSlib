@@ -48,3 +48,17 @@ export interface IDatamodel<T> {
 export interface INavigator {
     navigate(route: string, params?: any): void;
 }
+
+export interface IRouter {
+    get_element(path: string, params?: any): GComponent | null;
+}
+
+export interface IRouterPath extends IRouter {
+    add_path(path: string, comp_func: (params: any) => GComponent): void;
+    relative_route(route: string, params?: any): void;
+    abs_route(route: string): void;
+}
+
+export interface IParamParse {
+    get_current_url_params(pattern: string): { [key: string]: string } | null;
+}
