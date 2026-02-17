@@ -34,6 +34,7 @@ export class Textarea implements IField<string> {
         if (this.comp) return this.comp.comp;
         this.comp = AtomicMainCtrl.textarea();
         this.comp.comp.update({ placeholder: this.placeholder });
+        this.comp.comp.getElement().classList.add("h-40");
         return this.comp.comp;
     }
     reset_value() {
@@ -383,7 +384,7 @@ export class SimpleForm implements IDynamicFormGenerator {
         return values;
     }
     set_values(values: { [key: string]: any }): void {
-        for (const key in values) {
+        for (const key in this.fields) {
             this.fields[key].set_value(values[key]);
         }
     }
