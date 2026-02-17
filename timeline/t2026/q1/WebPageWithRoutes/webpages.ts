@@ -2,6 +2,8 @@ import type { GComponent } from "../../../globalComps/GComponent";
 import { Tools } from "../../../globalComps/tools";
 import { Breadcrumb } from "../breadcrumb/generic";
 import type { IBreadcrumbItem } from "../breadcrumb/interface";
+import type { IRouterPath } from "../lister/interface";
+import { SimpleRouter } from "../lister/navigators";
 import { SimpleHeader } from "./headers";
 import type { IContainer, IHeader, IWebPage } from "./interface";
 
@@ -58,7 +60,7 @@ export class WebPageWithBreadcrumb implements IWebPage {
     content_area = Tools.comp("div", { class: "flex-1" });
     breadcrumb: Breadcrumb = new Breadcrumb();
     header: IHeader = new SimpleHeader();
-
+    navigator: IRouterPath = new SimpleRouter();
     constructor() {
         this.comp.s.body.update({
             children: [this.breadcrumb.get_comp(), this.content_area],
