@@ -8,6 +8,12 @@ export const GenericModal = (title: string) => {
         textContent: title,
     });
 
+    const xIcon = Tools.icon(
+        X,
+        { class: "w-8 h-8" },
+        { click: (e: any, ls: any) => close() },
+    );
+
     const codeSec = Tools.div(
         {
             class: "flex items-center justify-between p-4 border-b border-gray-200",
@@ -15,11 +21,7 @@ export const GenericModal = (title: string) => {
                 modalTitle,
                 Tools.comp("button", {
                     class: "text-gray-500 hover:text-gray-800 text-2xl font-bold px-2 py-1 cursor-pointer hover:bg-gray-200",
-                    child: Tools.icon(
-                        X,
-                        { class: "w-8 h-8" },
-                        { click: (e: any, ls: any) => close() }
-                    ),
+                    child: xIcon,
                 }),
             ],
         },
@@ -27,7 +29,7 @@ export const GenericModal = (title: string) => {
             click: (e: any, ls: any) => {
                 e.stopPropagation();
             },
-        }
+        },
     );
     const contentArea = Tools.div(
         {
@@ -37,7 +39,7 @@ export const GenericModal = (title: string) => {
             click: (e: any, ls: any) => {
                 e.stopPropagation();
             },
-        }
+        },
     );
     let wid = Tools.div(
         {
@@ -52,7 +54,8 @@ export const GenericModal = (title: string) => {
         {
             modalTitle,
             contentArea,
-        }
+            xIcon,
+        },
     );
     const close = () => {
         wid.getElement().classList.add("hidden");
@@ -74,7 +77,7 @@ export const GenericModal = (title: string) => {
         {},
         {
             handlers: { close, show, display, toggle, hide: close },
-        }
+        },
     );
     return wid;
 };

@@ -1,4 +1,5 @@
 import type { GComponent } from "../../../globalComps/GComponent";
+import { GenericModal } from "../../../globalComps/GlobalStates/Modal";
 import { StringTool } from "../../../t2025/may/FileSearch/tools";
 import type { INavigator, IRouter, IRouterPath } from "./interface";
 
@@ -156,13 +157,17 @@ export class SimpleRouter implements IRouterPath {
         this.prev_url = this.get_current_url();
         let newRoute = this.get_next_route(route);
         if (params) this.params[newRoute] = params;
-        globalThis.location.hash = newRoute;
+        this.set_route(newRoute);
+    }
+
+    set_route(route: string) {
+        globalThis.location.hash = route;
     }
 
     abs_route(route: string) {
         let nro = route;
         if (!nro.startsWith("/")) nro = "/" + nro;
-        globalThis.location.hash = nro;
+        this.set_route(nro);
     }
 
     get_current_url(): string {
@@ -191,10 +196,77 @@ export class SimpleRouter implements IRouterPath {
 
     step_back(n: number = 1) {
         let cur_url = this.get_current_url();
-        globalThis.location.hash = this.array_tools
-            .split(cur_url, [])
-            .slice(0, -n)
-            .join("/");
+        this.set_route(
+            this.array_tools.split(cur_url, []).slice(0, -n).join("/"),
+        );
+    }
+}
+
+export class Locations {
+    history: string[] = [];
+    current_url = "";
+    modal = GenericModal("");
+    private constructor() {
+        document.body.appendChild(this.modal.getElement());
+    }
+    static instance: Locations | null = null;
+    static get_instance() {
+        Locations.instance ??= new Locations();
+        return Locations.instance;
+    }
+    set_current_url(url: string) {
+        this.current_url = url;
+        let prev = this.history[this.history.length - 1];
+        if (prev !== url) {
+            this.history.push(url);
+        }
+    }
+
+    display(comp: GComponent) {
+        this.modal.s.handlers.close();
+        this.modal.s.handlers.show();
+        this.modal.s.handlers.display(comp);
+    }
+}
+
+export class PopupRouter extends SimpleRouter {
+    name = "popup";
+    constructor(name: string) {
+        super();
+        let loc = Locations.get_instance();
+        loc.modal.update({}, { click: (e: any, ls: any) => this.on_go_back() });
+
+        loc.modal.s.xIcon.update(
+            {},
+            { click: (e: any, ls: any) => this.on_go_back() },
+        );
+        this.name = name;
+    }
+
+    set_route(route: string) {
+        let loc = Locations.get_instance();
+        loc.set_current_url(route);
+        this.on_routed();
+    }
+    get_current_url(): string {
+        return Locations.get_instance().current_url;
+    }
+
+    on_routed() {
+        let params = this.get_current_params();
+        let loc = Locations.get_instance();
+        loc.display(this.get_element(this.get_current_url(), params)!);
+    }
+
+    on_go_back() {
+        let loc = Locations.get_instance();
+        if (loc.history.length <= 1) {
+            loc.modal.s.handlers.close();
+            return;
+        }
+        loc.history.pop();
+        let newRoute = loc.history.pop()!;
+        this.set_route(newRoute);
     }
 }
 
