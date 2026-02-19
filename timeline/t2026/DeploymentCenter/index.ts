@@ -18,6 +18,7 @@ import { DynamicFormGenerator } from "../q1/dynamicFormGenerator";
 import { ListerPage } from "../q1/lister";
 import { ExpViewPage } from "../q1/ExperimentView";
 import { HeaderBodyNewPage, HeaderBodyOldPage } from "../q1/WebPageWithRoutes";
+import { UIShowcasePage } from "../q1/ui-showcase";
 
 export const DeploymentCenterPage = () => {
     return Tools.comp("div", {
@@ -106,6 +107,7 @@ export const DeploymentCenter = () => {
     navs.push(new ExpViewPage());
     navs.push(new HeaderBodyOldPage());
     navs.push(new HeaderBodyNewPage());
+    navs.push(new UIShowcasePage());
 
     for (const nav of navs) {
         deploymentCenterPageCtrl.add_app(nav);
