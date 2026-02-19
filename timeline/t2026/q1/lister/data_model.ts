@@ -2,6 +2,7 @@ import { LocalStorageJSONModel } from "../../../t2025/april/LocalStorage";
 import { DirectusModel } from "../directus/model";
 import type { IDatamodel } from "./interface";
 import { v4 as uuidv4 } from "uuid";
+import { faker } from "@faker-js/faker"; // bun add -d @faker-js/faker
 
 export class InMemoryDataModel implements IDatamodel<any> {
     data: any[] = [];
@@ -176,5 +177,78 @@ export class DirectorTableWithPagination implements IDatamodel<any> {
     }
     get_total_pages(): number {
         return 1;
+    }
+}
+
+export type RandomGeneratorType =
+    | "string"
+    | "number"
+    | "boolean"
+    | "date"
+    | "text"
+    | "email"
+    | "password"
+    | "text";
+
+export type RandomFieldGeneratorType = {
+    key: string;
+    type: RandomGeneratorType;
+};
+
+export class RandomDataSampleGenerator implements IDatamodel<any> {
+    fields: RandomFieldGeneratorType[] = [];
+    total: number = 100;
+    model = new InMemoryDataModel();
+    set_fields(fields: RandomFieldGeneratorType[]): void {
+        this.fields = fields;
+    }
+    generate() {
+        this.model.data = [];
+        for (let i = 0; i < this.total; i++) {
+            let data: any = {};
+            for (let j = 0; j < this.fields.length; j++) {
+                data[this.fields[j].key] = this.get_random_value(
+                    this.fields[j].type,
+                );
+            }
+            this.create(data);
+        }
+    }
+    read_all(): Promise<any[]> {
+        return this.model.read_all();
+    }
+    read(id: string): Promise<any> {
+        return this.model.read(id);
+    }
+    create(data: any): Promise<any> {
+        return this.model.create(data);
+    }
+    update(id: string, data: any): Promise<any> {
+        return this.model.update(id, data);
+    }
+    deleteIt(id: string): Promise<void> {
+        return this.model.deleteIt(id);
+    }
+    get_random_value(type: RandomGeneratorType) {
+        switch (type) {
+            case "string":
+                return faker.lorem.word();
+            case "number":
+                return faker.number.int(100); // Updated from datatype.number
+            case "boolean":
+                return faker.datatype.boolean();
+            case "date":
+                return faker.date.recent();
+            case "text":
+                return faker.lorem.text();
+            case "email":
+                return faker.internet.email();
+            case "password":
+                return faker.internet.password();
+            case "text":
+                return faker.lorem.text();
+            default:
+                return null;
+        }
     }
 }
