@@ -50,7 +50,7 @@ export class GComponent implements IComponent {
     update(
         props?: { [key: string]: any },
         handlers?: { [key: string]: (...args: any[]) => void },
-        state?: { [key: string]: any }
+        state?: { [key: string]: any },
     ) {
         for (let key in props) {
             this.props[key] = props[key];
@@ -73,7 +73,7 @@ export class GComponent implements IComponent {
     }
     private updateState(
         props?: { [key: string]: string },
-        handlers?: { [key: string]: (...args: any[]) => void }
+        handlers?: { [key: string]: (...args: any[]) => void },
     ) {
         for (let key in props) {
             this.updateProp(key, props[key]);
@@ -91,6 +91,12 @@ export class GComponent implements IComponent {
     }
     getProps() {
         return this.props;
+    }
+    set_events(handler: { [key: string]: (...args: any[]) => void }) {
+        this.update({}, handler);
+    }
+    set_props(props: { [key: string]: any }) {
+        this.update(props);
     }
 }
 
@@ -117,4 +123,3 @@ export class Container implements IComponent {
         });
     }
 }
-
