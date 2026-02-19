@@ -6,8 +6,8 @@ import {
     type IApp,
 } from "../../DeploymentCenter/interfaces";
 import { RandomDataSampleGenerator } from "../lister/data_model";
-import { BaseComponent, GroupComponent } from "./group_comp";
-import type { IComponent, ISubComponentable } from "./interface";
+import { GroupComponent } from "./group_comp";
+import type { ISubComponentable } from "./interface";
 import { WebpageComp } from "./pages/generic-webpage";
 
 class HomepageModel {
