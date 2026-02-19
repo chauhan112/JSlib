@@ -41,7 +41,7 @@ export class HeaderBodyOldPage extends GRouterController {
     info: IApp = {
         name: "Header Body Old",
         href: "/header-body-old",
-        subtitle: "webpage with header and breadcrumbs",
+        subtitle: "header and breadcrumbs",
         params: [],
     };
     ctrl: WebPageWithRoutesCtrl = new WebPageWithRoutesCtrl();
