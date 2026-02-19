@@ -1,7 +1,6 @@
 import { GComponent } from "../../../globalComps/GComponent";
 import { Tools } from "../../../globalComps/tools";
-import { NewListDisplayerCtrl } from "../../../t2025/dec/DomainOpsFrontend/components/ListDisplayer";
-import type { ILister, IPaginator, ISearchComponent } from "./interface";
+import type { ILister } from "./interface";
 import {
     MainCtrl as AtomicMainCtrl,
     CardCompCtrl,
@@ -14,7 +13,6 @@ export class Lister implements ILister {
         class: "flex flex-col gap-2 w-full",
     });
     listComps: CardCompCtrl[] = [];
-    ctrl: NewListDisplayerCtrl = new NewListDisplayerCtrl();
     set_values(data: any[]): void {
         this.values = data;
         this.update();
@@ -117,6 +115,15 @@ export class PaginateAndSearchLister implements ILister {
     }
 }
 export class PaginateSearchFilterLister implements ILister {
+    set_values(data: any[]): void {
+        throw new Error("Method not implemented.");
+    }
+    get_comp(): GComponent {
+        throw new Error("Method not implemented.");
+    }
+}
+
+export class Pills implements ILister {
     set_values(data: any[]): void {
         throw new Error("Method not implemented.");
     }
