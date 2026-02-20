@@ -118,18 +118,26 @@ export class ExpViewPage extends GRouterController {
         subtitle: "new-interface-way",
         params: [],
     };
-    exp_view: ExpView = new ExpView();
-    initialized: boolean = true;
+    exp_view: ExpView | null = null;
+    initialized: boolean = false;
 
     get_component(params: any): GComponent {
-        return this.exp_view.get_comp();
+        return this.get_exp_view().get_comp();
     }
 
+    setup() {
+        this.exp_view = new ExpView();
+        this.initialized = true;
+    }
+    get_exp_view(): ExpView {
+        if (!this.initialized) this.setup();
+        return this.exp_view!;
+    }
     matches_path(path: string): boolean {
         let remPath = path.slice(this.info.href.length).trim();
         return (
             path.startsWith(this.info.href) &&
-            this.exp_view.matches_path(remPath)
+            this.get_exp_view()!.matches_path(remPath)
         );
     }
 }

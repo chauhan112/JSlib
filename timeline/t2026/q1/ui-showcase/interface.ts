@@ -30,7 +30,7 @@ export interface IBreadcrumb extends IComponent {
     on_clicked(item: LabelValueItem): void;
 }
 
-export interface ITreeComponent extends IElement {
+export interface ITreeComponent extends ISComponent {
     set_items(folders: LabelValueItem[], files: LabelValueItem[]): void;
     on_folder_clicked(folder: LabelValueItem): void;
     on_file_clicked(file: LabelValueItem): void;
