@@ -48,8 +48,6 @@ export class ExplorerPage implements ISComponent {
         return this.explorer.get_comp();
     }
     setup() {
-        this.model.addEntry(["aba", "nice"], 2);
-        this.model.addEntry(["aba", "cool", "awesome", "hello"], 2);
         this.update();
         this.explorer.on_folder_clicked = this.on_folder_clicked.bind(this);
         this.explorer.comp.s.breadCrumb.update({

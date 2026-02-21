@@ -138,6 +138,7 @@ export class SidebarComp
 
     private footer: HTMLElement;
     header: GComponent;
+    navs: Map<string, HTMLElement> = new Map();
     constructor() {
         this.element = document.createElement("nav");
         this.element.className =
@@ -216,7 +217,7 @@ export class SidebarComp
             btn.classList.add("bg-blue-600", "text-white");
             this.on_nav_item_click(config);
         };
-
+        this.navs.set(config.value, btn);
         this.navItems.set(config.value, btn);
         li.appendChild(btn);
         this.navList.appendChild(li);

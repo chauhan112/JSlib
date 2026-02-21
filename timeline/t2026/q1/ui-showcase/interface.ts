@@ -24,7 +24,8 @@ export interface IContainer {
     display(comp: GComponent): void;
 }
 
-export type LabelValueItem = { label: string; value: string };
+export type LabelValueItem = { label: string; value: any };
+
 export interface IBreadcrumb extends IComponent {
     set_items(items: LabelValueItem[]): void;
     on_clicked(item: LabelValueItem): void;
