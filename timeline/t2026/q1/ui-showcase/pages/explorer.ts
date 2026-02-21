@@ -5,6 +5,7 @@ import { InMemoryExplorerModel } from "../generics";
 import type { ISComponent } from "../../../../globalComps/interface";
 import { Breadcrumb } from "../../breadcrumb/generic";
 import type { IBreadcrumbItem } from "../../breadcrumb/interface";
+import { Tools } from "../../../../globalComps/tools";
 
 export class ExplorerComp implements ITreeComponent {
     comp: any = FileExplorer();
@@ -44,8 +45,14 @@ export class ExplorerPage implements ISComponent {
     explorer = new ExplorerComp();
     model = new InMemoryExplorerModel();
     breadcrumb = new Breadcrumb();
+    display_area = Tools.div({
+        class: "flex-1 flex flex-col gap-2",
+    });
     get_comp(): GComponent {
-        return this.explorer.get_comp();
+        return Tools.comp("div", {
+            class: "flex flex-col gap-4",
+            children: [this.explorer.get_comp(), this.display_area],
+        });
     }
     setup() {
         this.update();
@@ -61,6 +68,7 @@ export class ExplorerPage implements ISComponent {
         this.update();
     }
     private async update() {
+        this.display_area.update({ innerHTML: "" });
         let vals = await this.model.list_dir();
         let folders = vals.folders.map((f: string) => ({ label: f, value: f }));
         let files = vals.files.map((f: string) => ({ label: f, value: f }));
