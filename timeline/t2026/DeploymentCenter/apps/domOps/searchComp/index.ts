@@ -144,7 +144,13 @@ export class SearchComponentCtrl {
     }
     private on_keydown(e: any) {
         const value = this.inp_comp_ctrl.get_value();
-        if (e.key === "Enter" && value.trim() !== "") {
+        if (e.key === "Enter") {
+            this.set_values([value]);
+        }
+    }
+    set_values(values: string[]) {
+        for (let value of values) {
+            if (value.trim() === "") continue;
             let chip = this.get_chip(value.trim());
             this.comp.s.chips.update({ child: chip });
             this.inp_comp_ctrl.clear_value();
@@ -175,7 +181,7 @@ export class SearchComponentCtrl {
         );
         return chip;
     }
-    private async on_search(e: any) {
+    get_values(): any[] {
         let search_words = this.chipsValue.map((v: string) =>
             this.search.handler.parse_chip_value(v),
         );
@@ -183,6 +189,10 @@ export class SearchComponentCtrl {
         if (inp_word !== "") {
             search_words.push(this.search.handler.parse_chip_value(inp_word));
         }
+        return search_words;
+    }
+    private async on_search(e: any) {
+        let search_words = this.get_values();
         let data = await this.search.data.get_data();
         this.search.handler.set_data(data);
         let result = await this.search.handler.on_search(search_words);

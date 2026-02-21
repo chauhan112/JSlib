@@ -87,30 +87,3 @@ export class WebPageWithBreadcrumb implements IWebPage {
         this.breadcrumb.update();
     }
 }
-
-export class WebPageWithSideBar implements IWebPage {
-    get_body(): IContainer {
-        throw new Error("Method not implemented.");
-    }
-    get_header(): IContainer {
-        throw new Error("Method not implemented.");
-    }
-    get_comp(): GComponent {
-        throw new Error("Method not implemented.");
-    }
-    get_side_bar(): IContainer {
-        throw new Error("Method not implemented.");
-    }
-}
-
-export class WebPageWithRoutes implements IWebPage {
-    get_body(): IContainer {
-        throw new Error("Method not implemented.");
-    }
-    get_header(): IContainer {
-        throw new Error("Method not implemented.");
-    }
-    get_comp(): GComponent {
-        throw new Error("Method not implemented.");
-    }
-}
