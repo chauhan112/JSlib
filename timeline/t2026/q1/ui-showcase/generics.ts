@@ -1,8 +1,9 @@
 import type { IconNode } from "lucide";
 import type { GComponent } from "../../../globalComps/GComponent";
-import type { IGroupComponent } from "./interface";
+import type { IGroupComponent, ITreeModel } from "./interface";
 import { CardCompSmall, GLMGroup } from "./group_comp";
 import { Tools } from "../../../globalComps/tools";
+import { DicModel } from "../../../t2025/april/LocalStorage";
 
 export class BigCardGroup implements IGroupComponent {
     comp = GLMGroup("", "");
@@ -84,5 +85,42 @@ export class ListGroup implements IGroupComponent {
     }
     on_click(data: any) {
         console.log("hello", data);
+    }
+}
+
+export class InMemoryExplorerModel implements ITreeModel<string> {
+    private model = new DicModel();
+    private location: string[] = [];
+    async list_dir() {
+        let vals = this.model.readEntry(this.location);
+        let results: any = { files: [], folders: [] };
+        for (let key in vals) {
+            let val = vals[key];
+            if (typeof val == "object") {
+                results.folders.push(key);
+            } else {
+                results.files.push(key);
+            }
+        }
+        return results;
+    }
+    async cd(folder: string) {
+        this.location.push(folder);
+    }
+    async goto_root() {
+        this.location = [];
+    }
+    async goback() {
+        if (this.location.length == 0) return;
+        this.location.pop();
+    }
+    async get_location() {
+        return this.location;
+    }
+    async goto_location(location: string[]) {
+        this.location = location;
+    }
+    async addEntry(location: string[], value: any) {
+        this.model.addEntry(location, value);
     }
 }
