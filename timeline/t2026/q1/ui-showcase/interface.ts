@@ -41,11 +41,11 @@ export interface ILister extends IElement {
     list_item_creator(item: any): IComponent;
 }
 
-export interface ITreeModel {
-    list_dir(): Promise<{ folders: any[]; files: any[] }>;
-    cd(folder: any): Promise<void>;
+export interface ITreeModel<T> {
+    list_dir(): Promise<{ folders: T[]; files: T[] }>;
+    cd(folder: T): Promise<void>;
     goto_root(): Promise<void>;
     goback(): Promise<void>;
-    get_location(): Promise<any[]>;
-    goto_location(location: any[]): Promise<void>;
+    get_location(): Promise<T[]>;
+    goto_location(location: T[]): Promise<void>;
 }
