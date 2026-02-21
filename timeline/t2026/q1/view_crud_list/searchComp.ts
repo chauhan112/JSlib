@@ -1,15 +1,20 @@
 import type { IRoute } from "../WebPageWithRoutes/interface";
 import { GRoute } from "../WebPageWithRoutes/generic";
 import type { GComponent } from "../../../globalComps/GComponent";
-import { SearchComponentCtrl } from "../../DeploymentCenter/apps/domOps/searchComp/index";
+import {
+    Chip,
+    SearchComponentCtrl,
+} from "../../DeploymentCenter/apps/domOps/searchComp/index";
 import {
     type IApp,
     GRouterController,
 } from "../../DeploymentCenter/interfaces";
 import {
-    DropdownCtrl,
+    InputCompCtrl,
     type IOptionItem,
 } from "../../../t2025/dec/DomainOpsFrontend/components/atomic";
+import { Tools } from "../../../globalComps/tools";
+import { Check } from "lucide";
 
 export interface ISearchModel {
     on_search: (words: any[]) => Promise<any[]>;
@@ -56,41 +61,135 @@ export class GSearchModel implements ISearchModel {
     }
 }
 
+export const SearchComponentComp = () => {
+    const inp_comp = Tools.comp("input", {
+        type: "text",
+        class: "flex-grow min-w-0 outline-none text-gray-700 px-3 py-2 text-base md:text-sm",
+        placeholder:
+            "Type filter (e.g. status:active, price:>100) and hit Enter...",
+    });
+
+    const search_button = Tools.comp("button", {
+        class: "px-6 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded shadow-sm transition-colors font-medium w-full sm:w-auto cursor-pointer",
+        textContent: "Search",
+    });
+
+    const chips = Tools.comp("div", {
+        class: "flex flex-wrap gap-2 items-center",
+    });
+    const okBtn = Tools.icon(Check, {
+        // hidden by default display when opening in mobile
+        class: "block sm:hidden w-6 h-6 text-green-500 hover:text-green-700 active:text-green-800 cursor-pointer ",
+    });
+
+    const inp_with_ok_btn = Tools.comp("div", {
+        class: "flex flex-grow items-center border border-gray-300 rounded focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all",
+        children: [inp_comp, okBtn],
+    });
+
+    return Tools.comp(
+        "div",
+        {
+            class: "flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-2 bg-white rounded-lg border border-gray-200 shadow-sm",
+            children: [chips, inp_with_ok_btn, search_button],
+        },
+        {},
+        {
+            inp_comp,
+            search_button,
+            chips,
+            okBtn,
+            inp_with_ok_btn,
+        },
+    );
+};
+
 export class SearchComponent implements ISearchView {
     model: ISearchModel;
     route: IRoute;
     searchComp: SearchComponentCtrl = new SearchComponentCtrl();
+    private chipsValue: string[] = [];
+    private inp_comp_ctrl: InputCompCtrl = new InputCompCtrl();
+    comp = SearchComponentComp();
     constructor() {
         this.model = new GSearchModel(this);
         this.route = new GRoute();
     }
     get_component() {
-        return this.searchComp.comp;
+        return this.comp;
     }
     setup() {
-        this.searchComp.search.handler.on_search = async (words: any[]) =>
-            this.model.on_search(words);
-        this.searchComp.comp.s.addNewBtn.update(
+        this.inp_comp_ctrl.set_comp(this.comp.s.inp_comp);
+
+        this.comp.s.inp_comp.update(
             {},
-            { click: (e: any) => this.model.on_plus_clicked() },
+            { keydown: (e: any) => this.on_keydown(e) },
         );
-        this.searchComp.comp.s.filterBtn.update(
+        this.comp.s.search_button.update(
             {},
-            { click: (e: any) => this.model.on_filter_clicked() },
+            { click: (e: any) => this.on_search(this.get_values()) },
         );
-        let filter = this.searchComp.comp.s.filters as DropdownCtrl;
-        filter.placeholder = "-select-";
-        filter.set_options(this.model.get_filter_options());
-        filter.comp.update(
+    }
+    private on_keydown(e: any) {
+        const value = this.inp_comp_ctrl.get_value();
+        if (e.key === "Enter") {
+            this.set_values([value]);
+        }
+    }
+    set_values(values: string[]) {
+        for (let value of values) {
+            if (value.trim() === "") continue;
+            let chip = this.get_chip(value.trim());
+            this.comp.s.chips.update({ child: chip });
+            this.inp_comp_ctrl.clear_value();
+            this.chipsValue.push(value.trim());
+        }
+    }
+    private get_chip(value: string) {
+        let chip = Chip(value.trim());
+        chip.s.delete.update(
             {},
             {
-                change: (e: any) =>
-                    this.model.on_filter_selected(e.target.value),
+                click: () => {
+                    chip.getElement().remove();
+                    this.chipsValue = this.chipsValue.filter(
+                        (v: string) => v !== value.trim(),
+                    );
+                },
             },
         );
-        this.searchComp.search.active_comp.filter = false;
-        this.searchComp.search.active_comp.create = false;
-        this.searchComp.setup();
+        return chip;
+    }
+
+    parse_chip_value(value: string) {
+        let query: any = {};
+        if (value.includes(":")) {
+            const [key, val] = value.split(":");
+
+            if (val.startsWith(">")) {
+                query[key] = { $gt: Number(val.substring(1)) };
+            } else if (val.startsWith("<")) {
+                query[key] = { $lt: Number(val.substring(1)) };
+            } else {
+                query[key] = val;
+            }
+            return query;
+        }
+        return value;
+    }
+    async on_search(words: any[]) {
+        console.log("searching ", words);
+        return [];
+    }
+    get_values(): any[] {
+        let search_words = this.chipsValue.map((v: string) =>
+            this.parse_chip_value(v),
+        );
+        let inp_word = this.inp_comp_ctrl.get_value().trim();
+        if (inp_word !== "") {
+            search_words.push(this.parse_chip_value(inp_word));
+        }
+        return search_words;
     }
 }
 
