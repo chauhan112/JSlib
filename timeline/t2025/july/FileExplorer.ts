@@ -1,16 +1,23 @@
-
 import { Tools } from "../../globalComps/tools";
 import { Breadcrumb } from "../june/domain-ops/Component";
 import axios from "axios";
 import { Atool } from "../april/Array";
-import { File, Folder, Search, Plus, Settings, LayoutGrid, List as ListIcon } from "lucide";
+import {
+    File,
+    Folder,
+    Search,
+    Plus,
+    Settings,
+    LayoutGrid,
+    List as ListIcon,
+} from "lucide";
 import LocalStorageSetterCtrl from "../dec/localStorageSetter";
 import { LazyInstance } from "../dec/lazyInstance";
 
 export const KEYS_TO_SAVE: { [key: string]: string } = {
     VITE_API_URL: "http://localhost:8000/run/",
     VITE_DEFAULT_LOCATION: ".",
-}
+};
 
 export const SearchBar = () => {
     return Tools.div({
@@ -18,15 +25,15 @@ export const SearchBar = () => {
         children: [
             Tools.icon(Search, {
                 class: "absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors",
-                key: "search"
+                key: "search",
             }),
             Tools.comp("input", {
                 key: "searchInput",
                 type: "text",
                 placeholder: "Search files, folders...",
-                class: "w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all placeholder:text-gray-400"
-            })
-        ]
+                class: "w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all placeholder:text-gray-400",
+            }),
+        ],
     });
 };
 
@@ -36,15 +43,15 @@ export const ViewControls = () => {
         children: [
             Tools.icon(LayoutGrid, {
                 key: "layoutGrid",
-                class: "w-8 h-8 p-1.5 bg-white rounded-md shadow-sm text-gray-700 cursor-pointer"
+                class: "w-8 h-8 p-1.5 bg-white rounded-md shadow-sm text-gray-700 cursor-pointer",
             }),
             Tools.icon(ListIcon, {
                 key: "listIcon",
-                class: "w-8 h-8 p-1.5 text-gray-500 hover:text-gray-700 cursor-pointer transition-colors"
-            })
-        ]
+                class: "w-8 h-8 p-1.5 text-gray-500 hover:text-gray-700 cursor-pointer transition-colors",
+            }),
+        ],
     });
-}
+};
 
 export const Header = () => {
     const searchBar = SearchBar();
@@ -55,55 +62,61 @@ export const Header = () => {
         class: "flex items-center gap-2 px-4 py-2 bg-black hover:bg-gray-800 text-white text-sm font-medium rounded-xl transition-all shadow-sm active:scale-95",
         children: [
             Tools.icon(Plus, { class: "w-4 h-4" }),
-            Tools.comp("span", { textContent: "Upload" })
-        ]
+            Tools.comp("span", { textContent: "Upload" }),
+        ],
     });
 
     const settingsBtn = Tools.comp("button", {
         class: "w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 transition-colors cursor-pointer",
-        children: [Tools.icon(Settings, { class: "w-5 h-5" })]
+        children: [Tools.icon(Settings, { class: "w-5 h-5" })],
     });
 
-    return Tools.comp("header", {
-        class: "w-full mb-6 flex items-center justify-between px-1",
-        children: [
+    return Tools.comp(
+        "header",
+        {
+            class: "w-full mb-6 flex items-center justify-between px-1",
+            children: [
+                Tools.div({
+                    class: "flex items-center gap-3",
+                    children: [
+                        Tools.div({
+                            class: "w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-lg px-8",
+                            textContent: "File",
+                        }),
+                        Tools.comp("h1", {
+                            class: "text-lg font-bold text-gray-800",
+                            textContent: "Explorer",
+                        }),
+                    ],
+                }),
 
-            Tools.div({
-                class: "flex items-center gap-3",
-                children: [
-                    Tools.div({
-                        class: "w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-lg px-8",
-                        textContent: "File"
-                    }),
-                    Tools.comp("h1", {
-                        class: "text-lg font-bold text-gray-800",
-                        textContent: "Explorer",
-                    })
-                ]
-            }),
+                searchBar,
 
+                Tools.div({
+                    class: "flex items-center gap-3",
+                    children: [viewControls, newBtn, settingsBtn],
+                }),
+            ],
+        },
+        {},
+        {
             searchBar,
-
-            Tools.div({
-                class: "flex items-center gap-3",
-                children: [viewControls, newBtn, settingsBtn]
-            })
-        ],
-    }, {}, {
-        searchBar,
-        viewControls,
-        newBtn,
-        settingsBtn,
-    });
+            viewControls,
+            newBtn,
+            settingsBtn,
+        },
+    );
 };
 export const HeaderV2 = () => {
     const settingsToggle = Tools.comp("button", {
-        class:
-            "flex items-center space-x-1 px-3 py-1.5 text-sm font-medium bg-white border border-gray-200 rounded-full shadow-sm hover:bg-gray-50",
+        class: "flex items-center space-x-1 px-3 py-1.5 text-sm font-medium bg-white border border-gray-200 rounded-full shadow-sm hover:bg-gray-50",
         type: "button",
         children: [
             Tools.comp("span", { class: "text-gray-600", textContent: "⚙️" }),
-            Tools.comp("span", { class: "text-gray-700", textContent: "Settings" }),
+            Tools.comp("span", {
+                class: "text-gray-700",
+                textContent: "Settings",
+            }),
         ],
     });
 
@@ -121,7 +134,7 @@ export const HeaderV2 = () => {
             }),
         ],
     });
-}
+};
 
 export const FileExplorer = () => {
     const classes = {
@@ -140,7 +153,7 @@ export const FileExplorer = () => {
     const fileOrFolderIcon = (
         name: string,
         type: "file" | "folder" = "file",
-        id?: any
+        id?: any,
     ) => {
         let icon = Folder;
         if (type === "file") icon = File;
@@ -155,7 +168,7 @@ export const FileExplorer = () => {
                     },
                     {
                         data: { name, id, type },
-                    }
+                    },
                 ),
                 Tools.div({
                     class: "mt-2 text-sm text-gray-700 break-all",
@@ -181,14 +194,18 @@ export const FileExplorer = () => {
             },
             {
                 data: item,
-            }
+            },
         );
         comp.getElement().classList.add("cursor-pointer");
         return comp;
     };
     const curLoc = ["."];
     breadCrumb.s.handlers.setData(
-        curLoc.map((name: string, index: number) => ({ name, href: "#", index }))
+        curLoc.map((name: string, index: number) => ({
+            name,
+            href: "#",
+            index,
+        })),
     );
 
     const fileOrFolderContainer = Tools.div({ class: "flex flex-wrap gap-4" });
@@ -203,10 +220,8 @@ export const FileExplorer = () => {
 
     setContent(
         ["file1", "file2", "file3", "file4", "file5", "file6"],
-        ["folder1", "folder2", "folder3", "folder4", "folder5"]
+        ["folder1", "folder2", "folder3", "folder4", "folder5"],
     );
-
-
 
     return Tools.div(
         {
@@ -220,7 +235,8 @@ export const FileExplorer = () => {
             classes,
             breadCrumb,
             curLoc,
-        }
+            fileOrFolderIcon,
+        },
     );
 };
 
@@ -230,28 +246,31 @@ export const FileExplorerPage = () => {
     const content = Tools.div({
         children: [fileExplorer],
     });
-    return Tools.div({
-        children: [header, content],
-    }, {}, {
-        fileExplorer,
-        header,
-        content,
-    });
-}
+    return Tools.div(
+        {
+            children: [header, content],
+        },
+        {},
+        {
+            fileExplorer,
+            header,
+            content,
+        },
+    );
+};
 
 export const FileExplorerCtrl = () => {
     let s: { [key: string]: any } = { component: null };
 
-
     const load = async () => {
-        let url = import.meta.env.VITE_API_URL as string || "http://localhost:8000/run/";
+        let url =
+            (import.meta.env.VITE_API_URL as string) ||
+            "http://localhost:8000/run/";
         if (s.model.exists(["VITE_API_URL"])) {
             url = s.model.readEntry(["VITE_API_URL"]) as string;
         }
 
-
         const comp = getComponent();
-
 
         axios
             .post(url, {
@@ -300,9 +319,9 @@ export const FileExplorerCtrl = () => {
 
     const setComponent = (component: any) => {
         s.component = component;
-        
     };
-    const getComponent = (): any => { // expecting a FileExplorer component
+    const getComponent = (): any => {
+        // expecting a FileExplorer component
         return s.component;
     };
     const updateLocation = () => {
@@ -312,21 +331,21 @@ export const FileExplorerCtrl = () => {
             loc = s.model.readEntry(["VITE_DEFAULT_LOCATION"]) as string;
         }
         comp.s.curLoc = [loc];
-    }
+    };
     const setup = () => {
         const comp = getComponent();
         comp.s.handlers.onBreadCrumbClick = onBreadCrumbClick;
         updateLocation();
         load();
         comp.s.handlers.onClick = onClick;
-    }
+    };
     return {
         onClick,
         setup,
         setComponent,
         load,
         updateLocation,
-        s
+        s,
     };
 };
 
@@ -343,10 +362,11 @@ export const LocalExpController = () => {
         fileCtrl.s.model = localStorageSetterCtrl.model;
         fileCtrl.setup();
         comp.s.header.s.settingsBtn.update({}, { click: onSettingsClick });
-        localStorageSetterCtrl.setter.s.saveBtn.update({}, { click: onSaveAll });
-
-
-    }
+        localStorageSetterCtrl.setter.s.saveBtn.update(
+            {},
+            { click: onSaveAll },
+        );
+    };
 
     const onSettingsClick = (e: any, ls: any) => {
         let localStorageSetterCtrl = s.localStorageSetterCtrl.get();
@@ -359,12 +379,18 @@ export const LocalExpController = () => {
                     localStorageSetterCtrl.createRow(key, KEYS_TO_SAVE[key]);
                 }
             }
-            comp.s.content.update({ innerHTML: "", children: [localStorageSetterCtrl.setter] });
+            comp.s.content.update({
+                innerHTML: "",
+                children: [localStorageSetterCtrl.setter],
+            });
         } else {
-            comp.s.content.update({ innerHTML: "", children: [comp.s.fileExplorer] });
+            comp.s.content.update({
+                innerHTML: "",
+                children: [comp.s.fileExplorer],
+            });
         }
         toggler++;
-    }
+    };
 
     const onSaveAll = (e: any, ls: any) => {
         let localStorageSetterCtrl = s.localStorageSetterCtrl.get();
@@ -372,11 +398,12 @@ export const LocalExpController = () => {
         fileCtrl.updateLocation();
         fileCtrl.load();
         onSettingsClick(e, ls);
-    }
+    };
 
     return {
         comp,
         fileCtrl,
-        setup, onSettingsClick
+        setup,
+        onSettingsClick,
     };
-}
+};
