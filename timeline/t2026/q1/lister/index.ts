@@ -5,7 +5,7 @@ import {
 } from "../../DeploymentCenter/interfaces";
 import { DirectusTableModel, TokenFromLocalStorage } from "./data_model";
 import type { IDatamodel, ILister } from "./interface";
-import { ListerWithContext, Lister } from "./listers";
+import { Lister } from "./listers";
 
 export class ListerPage extends GRouterController {
     initialized: boolean = false;

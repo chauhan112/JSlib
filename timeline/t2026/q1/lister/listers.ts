@@ -194,14 +194,6 @@ export class TabularLister implements ILister {
         throw new Error("Method not implemented.");
     }
 }
-export class SearchableLister implements ILister {
-    set_values(data: any[]): void {
-        throw new Error("Method not implemented.");
-    }
-    get_comp(): GComponent {
-        throw new Error("Method not implemented.");
-    }
-}
 export class PaginateLister implements ILister {
     // lister: ILister;
     // paginator: IPaginator;
@@ -224,15 +216,6 @@ export class PaginateAndSearchLister implements ILister {
     }
 }
 export class PaginateSearchFilterLister implements ILister {
-    set_values(data: any[]): void {
-        throw new Error("Method not implemented.");
-    }
-    get_comp(): GComponent {
-        throw new Error("Method not implemented.");
-    }
-}
-
-export class Pills implements ILister {
     set_values(data: any[]): void {
         throw new Error("Method not implemented.");
     }

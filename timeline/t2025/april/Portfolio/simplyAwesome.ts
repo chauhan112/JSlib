@@ -94,7 +94,7 @@ export class Typing implements IComponent {
             this.s.comp.textComp.update({
                 textContent: currentContent.substring(
                     0,
-                    this.s.params.charIndex
+                    this.s.params.charIndex,
                 ),
             });
             this.s.params.charIndex++;
@@ -103,7 +103,7 @@ export class Typing implements IComponent {
             this.s.comp.textComp.update({
                 textContent: currentContent.substring(
                     0,
-                    this.s.params.charIndex
+                    this.s.params.charIndex,
                 ),
             });
             this.s.params.charIndex--;
@@ -308,7 +308,7 @@ export class Page implements IComponent {
                     },
                     {
                         data: val,
-                    }
+                    },
                 );
             }),
         });
@@ -412,7 +412,7 @@ export class Page implements IComponent {
                         TimelineComp(this.s.infos.educations, GraduationCap),
                         TimelineComp(
                             this.s.infos.experiences,
-                            BriefcaseBusiness
+                            BriefcaseBusiness,
                         ),
                     ],
                 }),
@@ -469,7 +469,7 @@ export class Page implements IComponent {
                                     type: "email",
                                     name: "email",
                                     required: true,
-                                })
+                                }),
                             ),
                             Tools.comp("input", {
                                 class: "border-b border-dashed border-black/20  p-2 flex-1 focus:outline-none",
@@ -505,7 +505,7 @@ export class Page implements IComponent {
                                 .catch((err: any) => {
                                     console.error(
                                         "Form submission error:",
-                                        err
+                                        err,
                                     );
                                     contactStatus.update({
                                         textContent: `Oops! There was a problem submitting your form: ${err.message}`,
@@ -513,7 +513,7 @@ export class Page implements IComponent {
                                     });
                                 });
                         },
-                    }
+                    },
                 ),
             ],
         });

@@ -201,7 +201,7 @@ export class UIShowcase implements ISComponent {
         this.expComp.explorer.on_file_clicked = (item: LabelValueItem) => {
             this.expComp.model.get_location().then((loc) => {
                 let app = this.model.get_app({ loc, title: item.value });
-                this.expComp.explorer.comp.s.fileOrFolderContainer.update({
+                this.expComp.display_area.update({
                     innerHTML: "",
                     children: [app.get_comp()],
                 });
