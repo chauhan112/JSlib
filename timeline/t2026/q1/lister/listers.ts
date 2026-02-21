@@ -1,4 +1,4 @@
-import { GComponent } from "../../../globalComps/GComponent";
+import { GComponent, type IComponent } from "../../../globalComps/GComponent";
 import { Tools } from "../../../globalComps/tools";
 import type { ILister } from "./interface";
 import {
@@ -72,12 +72,13 @@ export class SelectableLister implements ILister {
     }
 }
 
-const EnumComp = (
+export const EnumComp = (
     nr: number,
     title: string,
     icons: { icon: IconNode; key: string }[],
+    comps: IComponent[] = [],
 ) => {
-    let iconsComps = icons.map((icon) =>
+    let iconsComps: any[] = icons.map((icon) =>
         Tools.icon(
             icon.icon,
             {
@@ -88,6 +89,8 @@ const EnumComp = (
             { data: icon.key },
         ),
     );
+    iconsComps = [...iconsComps, ...comps];
+
     let nrComp = Tools.comp("div", {
         class: "w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold",
         textContent: "" + nr,
@@ -106,6 +109,7 @@ const EnumComp = (
                     children: [nrComp, titleComp],
                 }),
                 Tools.comp("div", {
+                    class: "flex items-center gap-3",
                     children: iconsComps,
                 }),
             ],
@@ -115,16 +119,17 @@ const EnumComp = (
     );
 };
 
-class EnumCtrl implements ISComponent {
+export class EnumCtrl implements ISComponent {
     comp: GComponent;
     data: any;
     constructor(
         nr: number,
         data: any,
         icons: { icon: IconNode; key: string }[],
+        comps: IComponent[] = [],
     ) {
         this.data = data;
-        this.comp = EnumComp(nr, data.title, icons);
+        this.comp = EnumComp(nr, data.title, icons, comps);
         this.comp.update({}, { click: () => this.on_click(data) });
         this.comp.s.iconsComps.forEach((iconComp: GComponent) => {
             iconComp.update(
@@ -148,13 +153,13 @@ class EnumCtrl implements ISComponent {
         console.log("icon", key, data);
     }
 }
-export class EnumeratedLister implements ILister {
-    values: any[] = [];
+export class EnumeratedLister<T> implements ILister {
+    values: T[] = [];
     comp: GComponent = Tools.comp("ul", {
         class: "bg-white shadow-sm rounded-xl overflow-hidden border border-slate-200",
     });
     listComps: any[] = [];
-    set_values(data: any[]): void {
+    set_values(data: T[]): void {
         this.values = data;
         this.update();
     }
@@ -162,7 +167,7 @@ export class EnumeratedLister implements ILister {
         return this.comp;
     }
 
-    cardCompCreator(data: any, idx: number): ISComponent {
+    cardCompCreator(data: T, idx: number): ISComponent {
         const cardCompCtrl = new EnumCtrl(idx + 1, data, [
             { key: "delete", icon: Trash },
         ]);

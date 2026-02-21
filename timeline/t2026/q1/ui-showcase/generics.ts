@@ -1,7 +1,7 @@
 import type { IconNode } from "lucide";
 import type { GComponent } from "../../../globalComps/GComponent";
 import type { IGroupComponent, ITreeModel } from "./interface";
-import { CardCompSmall, GLMGroup } from "./group_comp";
+import { CardCompSmall, GLMGroup } from "./components/group_comp";
 import { Tools } from "../../../globalComps/tools";
 import { DicModel } from "../../../t2025/april/LocalStorage";
 
