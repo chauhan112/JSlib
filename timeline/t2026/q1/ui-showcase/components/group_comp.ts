@@ -1,9 +1,9 @@
 import { Eye, Heart, Star } from "lucide";
-import { Tools } from "../../../globalComps/tools";
-import type { IComponent, IElement, LabelValueItem } from "./interface";
+import { Tools } from "../../../../globalComps/tools";
+import type { IComponent, IElement, LabelValueItem } from "../interface";
 import "./style.css";
-import type { ISComponent } from "../../../globalComps/interface";
-import type { GComponent } from "../../../globalComps/GComponent";
+import type { ISComponent } from "../../../../globalComps/interface";
+import type { GComponent } from "../../../../globalComps/GComponent";
 
 export const GLMGroup = (title: string, subtitle: string) => {
     const iconComp = Tools.comp("div", {
@@ -180,6 +180,7 @@ const CardCompGroup = (label: string) => {
         textContent: label,
     });
 };
+
 export class GroupComponent extends BaseComponent implements ISComponent {
     private titleEl: GComponent;
     private itemsContainer: GComponent;

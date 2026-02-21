@@ -1,4 +1,4 @@
-import { Tools } from "../../../globalComps/tools";
+import { Tools } from "../../../../globalComps/tools";
 import "./style.css";
 
 export const Pill = (label: string) => {
