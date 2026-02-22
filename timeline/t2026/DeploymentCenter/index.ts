@@ -7,7 +7,6 @@ import {
 } from "./apps/defaults";
 import { SettingsPageCtrl, MainCtrl as SettingsPageMainCtrl } from "./settings";
 import { MainCtrl as GitRepoPageMainCtrl } from "./apps/git-cloner";
-import { DomOpsCtrl } from "./apps/domOps";
 import { CrudListAsPage } from "./apps/domOps/crud_list";
 import { SearchComponentAsPage } from "./apps/domOps/searchComp";
 import { AIChats } from "../q1/AIChats";
@@ -19,6 +18,7 @@ import { ListerPage } from "../q1/lister";
 import { ExpViewPage } from "../q1/ExperimentView";
 import { HeaderBodyNewPage, HeaderBodyOldPage } from "../q1/WebPageWithRoutes";
 import { UIShowcasePage } from "../q1/ui-showcase";
+import { DomOpsPage } from "../q1/domOps";
 
 export const DeploymentCenterPage = () => {
     return Tools.comp("div", {
@@ -95,7 +95,6 @@ export const DeploymentCenter = () => {
     let gitRepoSearchRouteCtrl = GitRepoPageMainCtrl.gitRepoPage();
     deploymentCenterPageCtrl.add_app(gitRepoSearchRouteCtrl);
     let navs: IRouteController[] = [];
-    navs.push(new DomOpsCtrl());
     navs.push(new CrudListAsPage());
     navs.push(new SearchComponentAsPage());
     navs.push(new AIChats());
@@ -108,6 +107,7 @@ export const DeploymentCenter = () => {
     navs.push(new HeaderBodyOldPage());
     navs.push(new HeaderBodyNewPage());
     navs.push(new UIShowcasePage());
+    navs.push(new DomOpsPage());
 
     for (const nav of navs) {
         deploymentCenterPageCtrl.add_app(nav);
