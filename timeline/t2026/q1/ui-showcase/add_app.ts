@@ -112,9 +112,8 @@ export const apps = [
         loc: ["input", "search"],
         get_comp: () => {
             let sc = new SearchComponent();
-            // sc.searchComp.inp_comp_ctrl.set_value("hello world");
             sc.setup();
-            return sc.get_component();
+            return sc.get_comp();
         },
     },
     {
