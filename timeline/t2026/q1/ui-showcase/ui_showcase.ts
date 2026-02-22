@@ -140,7 +140,11 @@ export class UIShowcase implements ISComponent {
     model = new UIShowcaseModel();
     setup() {
         for (let app of apps) {
-            this.model.add_app(app.loc, app.title, app.get_comp);
+            this.model.add_app(
+                app.loc,
+                app.title,
+                () => app.get_comp()! as GComponent,
+            );
         }
         let comps = this.home.get_subcomponents();
         this.model.get_favourite().then((data) => {
