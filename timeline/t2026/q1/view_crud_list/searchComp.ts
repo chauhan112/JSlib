@@ -1,10 +1,6 @@
 import type { IRoute } from "../WebPageWithRoutes/interface";
-import { GRoute } from "../WebPageWithRoutes/generic";
 import type { GComponent } from "../../../globalComps/GComponent";
-import {
-    Chip,
-    SearchComponentCtrl,
-} from "../../DeploymentCenter/apps/domOps/searchComp/index";
+import { Chip } from "../../DeploymentCenter/apps/domOps/searchComp/index";
 import {
     type IApp,
     GRouterController,
@@ -15,6 +11,7 @@ import {
 } from "../../../t2025/dec/DomainOpsFrontend/components/atomic";
 import { Tools } from "../../../globalComps/tools";
 import { Check } from "lucide";
+import type { ISComponent } from "../../../globalComps/interface";
 
 export interface ISearchModel {
     on_search: (words: any[]) => Promise<any[]>;
@@ -104,18 +101,12 @@ export const SearchComponentComp = () => {
     );
 };
 
-export class SearchComponent implements ISearchView {
-    model: ISearchModel;
-    route: IRoute;
-    searchComp: SearchComponentCtrl = new SearchComponentCtrl();
+export class SearchComponent implements ISComponent {
     private chipsValue: string[] = [];
-    private inp_comp_ctrl: InputCompCtrl = new InputCompCtrl();
+    inp_comp_ctrl: InputCompCtrl = new InputCompCtrl();
     comp = SearchComponentComp();
-    constructor() {
-        this.model = new GSearchModel(this);
-        this.route = new GRoute();
-    }
-    get_component() {
+
+    get_comp() {
         return this.comp;
     }
     setup() {
@@ -123,19 +114,27 @@ export class SearchComponent implements ISearchView {
 
         this.comp.s.inp_comp.update(
             {},
-            { keydown: (e: any) => this.on_keydown(e) },
+            {
+                keydown: (e: any) => {
+                    e.key === "Enter" &&
+                        this.set_values([this.inp_comp_ctrl.get_value()]);
+                },
+            },
         );
         this.comp.s.search_button.update(
             {},
-            { click: (e: any) => this.on_search(this.get_values()) },
+            { click: () => this.on_search(this.get_values()) },
+        );
+        this.comp.s.okBtn.update(
+            {},
+            {
+                click: () => {
+                    this.set_values([this.inp_comp_ctrl.get_value()]);
+                },
+            },
         );
     }
-    private on_keydown(e: any) {
-        const value = this.inp_comp_ctrl.get_value();
-        if (e.key === "Enter") {
-            this.set_values([value]);
-        }
-    }
+
     set_values(values: string[]) {
         for (let value of values) {
             if (value.trim() === "") continue;
@@ -144,6 +143,11 @@ export class SearchComponent implements ISearchView {
             this.inp_comp_ctrl.clear_value();
             this.chipsValue.push(value.trim());
         }
+    }
+    clear() {
+        this.chipsValue = [];
+        this.comp.s.chips.update({ innerHTML: "", children: [] });
+        this.inp_comp_ctrl.clear_value();
     }
     private get_chip(value: string) {
         let chip = Chip(value.trim());
@@ -179,7 +183,6 @@ export class SearchComponent implements ISearchView {
     }
     async on_search(words: any[]) {
         console.log("searching ", words);
-        return [];
     }
     get_values(): any[] {
         let search_words = this.chipsValue.map((v: string) =>
@@ -203,7 +206,7 @@ export class SearchCompAsPage extends GRouterController {
     };
     get_component(params: any): GComponent {
         console.log("params", params);
-        return this.sc.get_component();
+        return this.sc.get_comp();
     }
     setup() {
         this.sc.setup();
