@@ -32,7 +32,7 @@ export class InputCompCtrl implements IInputCompCtrl {
         this.comp.getElement().value = "";
     }
 }
-export type IOptionItem = { value: string; label: string };
+export type IOptionItem = { value: any; label: string };
 
 export class DropdownCtrl implements IInputCompCtrl {
     comp: any;
