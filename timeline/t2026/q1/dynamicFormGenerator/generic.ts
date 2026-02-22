@@ -393,6 +393,21 @@ export class SimpleForm implements IDynamicFormGenerator {
     }
 }
 
+export class OneLineForm extends SimpleForm {
+    get_field(key: string, field: IField<any>): GComponent {
+        let comp = super.get_field(key, field);
+        comp.getElement().classList.remove("flex-col");
+        comp.getElement().classList.add("items-center", "flex-1");
+        return comp;
+    }
+    get_comp(): GComponent {
+        let comp = super.get_comp();
+        comp.getElement().classList.remove("flex-col");
+        comp.getElement().classList.add("items-center", "w-full", "gap-4");
+        return comp;
+    }
+}
+
 export type IFormSimpleFormElement =
     | {
           type: "text" | "textarea";
@@ -446,7 +461,23 @@ export class Factory {
     }
 
     static simple_create_form(fields: IFormSimpleFormElement[]) {
-        let form = new SimpleForm();
+        return Factory._create_form(
+            fields,
+            () => new SimpleForm(),
+        ) as SimpleForm;
+    }
+
+    static one_line_create_form(fields: IFormSimpleFormElement[]) {
+        return Factory._create_form(
+            fields,
+            () => new OneLineForm(),
+        ) as OneLineForm;
+    }
+    private static _create_form(
+        fields: IFormSimpleFormElement[],
+        form_factory: () => IDynamicFormGenerator,
+    ) {
+        let form = form_factory();
         let form_fields: { [key: string]: any } = {};
         for (const field of fields) {
             if (!field.key) continue;
