@@ -144,7 +144,6 @@ export class DirectusTableModel implements IDatamodel<any> {
         if (!this.table.token) throw new Error("No token");
         await this.table.delete(this.tableName, id);
     }
-
     async read_all_with(keys_vals: { [key: string]: string }) {
         if (!this.table.token) return [];
         this.table.query = `filter=${JSON.stringify(keys_vals)}`;
@@ -188,11 +187,13 @@ export type RandomGeneratorType =
     | "text"
     | "email"
     | "password"
-    | "text";
+    | "text"
+    | "option";
 
 export type RandomFieldGeneratorType = {
     key: string;
     type: RandomGeneratorType;
+    options?: string[];
 };
 
 export class RandomDataSampleGenerator implements IDatamodel<any> {
@@ -208,7 +209,7 @@ export class RandomDataSampleGenerator implements IDatamodel<any> {
             let data: any = {};
             for (let j = 0; j < this.fields.length; j++) {
                 data[this.fields[j].key] = this.get_random_value(
-                    this.fields[j].type,
+                    this.fields[j],
                 );
             }
             this.create(data);
@@ -229,8 +230,8 @@ export class RandomDataSampleGenerator implements IDatamodel<any> {
     deleteIt(id: string): Promise<void> {
         return this.model.deleteIt(id);
     }
-    get_random_value(type: RandomGeneratorType) {
-        switch (type) {
+    get_random_value(field: RandomFieldGeneratorType) {
+        switch (field.type) {
             case "string":
                 return faker.lorem.word();
             case "number":
@@ -247,8 +248,17 @@ export class RandomDataSampleGenerator implements IDatamodel<any> {
                 return faker.internet.password();
             case "text":
                 return faker.lorem.text();
+            case "option":
+                return this.getRandomValue(field.options || []);
             default:
                 return null;
         }
+    }
+    private getRandomValue(array: any[]): any | undefined {
+        if (array.length === 0) {
+            return undefined;
+        }
+        const randomIndex = Math.floor(Math.random() * array.length);
+        return array[randomIndex];
     }
 }
