@@ -1,46 +1,47 @@
 import type { GComponent } from "../../../globalComps/GComponent";
-import type { IPaginator, IPaginatorComp } from "./interface";
+import { Pagination } from "../../../t2025/july/generic-crud/page";
+import type { IPaginator } from "./interface";
 
-export class FrontendPaginator implements IPaginator {
-    private data: any[] = [];
-    get_page(nr: number): any[] {
-        throw new Error("Method not implemented.");
+export class SimplePager implements IPaginator {
+    comp = Pagination();
+    total = 0;
+    pageNr = 1;
+    setup() {
+        this.comp.s.prev.update({}, { click: () => this.prev() });
+        this.comp.s.next.update({}, { click: () => this.next() });
     }
-    get_total_pages(): number {
-        throw new Error("Method not implemented.");
+    prev() {
+        console.log("prev");
+        if (this.pageNr > 1) {
+            this.pageNr--;
+            this.update();
+            this.on_goto(this.pageNr);
+        }
     }
-    set_data(data: any[]): void {
-        this.data = data;
+    next() {
+        if (this.pageNr < this.total) {
+            this.pageNr++;
+            this.update();
+            this.on_goto(this.pageNr);
+        }
     }
-}
-
-export class DirectusPaginator implements IPaginator {
-    get_page(nr: number): any[] {
-        throw new Error("Method not implemented.");
+    update() {
+        this.comp.s.page.update({
+            textContent: `${this.pageNr}/${this.total}`,
+        });
+        if (this.total <= 1) this.comp.getElement().classList.add("hidden");
+        else this.comp.getElement().classList.remove("hidden");
     }
-    get_total_pages(): number {
-        throw new Error("Method not implemented.");
+    set_total(total: number): void {
+        this.total = total;
+        this.update();
     }
-}
-
-export class PaginatorCompSimple implements IPaginatorComp {
-    on_goto(nr: number): void {
-        throw new Error("Method not implemented.");
-    }
+    on_goto(nr: number): void {}
     get_comp(): GComponent {
-        throw new Error("Method not implemented.");
+        return this.comp;
     }
-    next(): void {}
-    prev(): void {}
-}
-
-export class PaginatorCompWithGoto implements IPaginatorComp {
-    on_goto(nr: number): void {
-        throw new Error("Method not implemented.");
+    set_page_nr(nr: number): void {
+        this.pageNr = nr;
+        this.update();
     }
-    get_comp(): GComponent {
-        throw new Error("Method not implemented.");
-    }
-    next(): void {}
-    prev(): void {}
 }

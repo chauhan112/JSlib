@@ -28,13 +28,10 @@ export interface ISearchComponent extends ISComponent {
     on_search(): void;
 }
 
-export interface IPaginator {
-    get_page(nr: number): any[];
-    get_total_pages(): number;
-}
-
-export interface IPaginatorComp extends ISComponent {
+export interface IPaginator extends ISComponent {
+    set_total(total: number): void;
     on_goto(nr: number): void;
+    set_page_nr(nr: number): void;
 }
 
 export interface IDatamodel<T> {
@@ -43,6 +40,15 @@ export interface IDatamodel<T> {
     create(data: Partial<T>): Promise<T>;
     update(id: string | number, data: Partial<T>): Promise<T>;
     deleteIt(id: string): Promise<void>;
+}
+export interface IPaginatorModel {
+    get_total(): Promise<number>;
+    get_page(nr: number): Promise<any[]>;
+    read(id: string): Promise<any>;
+    create(data: any): Promise<any>;
+    update(id: string | number, data: any): Promise<any>;
+    deleteIt(id: string): Promise<void>;
+    set_page_size(size: number): void;
 }
 
 export interface INavigator {
