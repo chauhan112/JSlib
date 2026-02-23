@@ -102,13 +102,14 @@ export const SearchComponentComp = () => {
 };
 
 export class SearchComponent implements ISComponent {
-    private chipsValue: string[] = [];
+    chipsValue: string[] = [];
     inp_comp_ctrl: InputCompCtrl = new InputCompCtrl();
     comp = SearchComponentComp();
 
     get_comp() {
         return this.comp;
     }
+
     setup() {
         this.inp_comp_ctrl.set_comp(this.comp.s.inp_comp);
 
@@ -144,12 +145,13 @@ export class SearchComponent implements ISComponent {
             this.chipsValue.push(value.trim());
         }
     }
+
     clear() {
         this.chipsValue = [];
         this.comp.s.chips.update({ innerHTML: "", children: [] });
         this.inp_comp_ctrl.clear_value();
     }
-    private get_chip(value: string) {
+    get_chip(value: string) {
         let chip = Chip(value.trim());
         chip.s.delete.update(
             {},
@@ -181,6 +183,7 @@ export class SearchComponent implements ISComponent {
         }
         return value;
     }
+
     async on_search(words: any[]) {
         console.log("searching ", words);
     }
