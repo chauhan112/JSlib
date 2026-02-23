@@ -4,6 +4,7 @@ import type { IDatamodel } from "../lister/interface";
 export type FilterItem = {
     label: string;
     value: any;
+    id: string;
 };
 
 export interface IFilterModel extends IDatamodel<FilterItem> {}

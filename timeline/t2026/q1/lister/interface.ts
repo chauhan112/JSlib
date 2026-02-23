@@ -41,7 +41,7 @@ export interface IDatamodel<T> {
     read_all(): Promise<T[]>;
     read(id: string): Promise<T | undefined>;
     create(data: Partial<T>): Promise<T>;
-    update(id: string | number, data: T): Promise<T>;
+    update(id: string | number, data: Partial<T>): Promise<T>;
     deleteIt(id: string): Promise<void>;
 }
 
