@@ -327,6 +327,7 @@ export class SimpleForm implements IDynamicFormGenerator {
         }
         children.push(
             Tools.comp("button", {
+                key: "submit",
                 textContent: this.submit_text || "Submit",
                 class: "cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded w-fit self-end",
             }),
