@@ -25,6 +25,8 @@ import { Spinner } from "../../../t2025/aug/jobAIApply/simpleVersion";
 import { ToggleButton } from "../../../t2025/april/MoreComponents";
 import { Test } from "../../../t2025/april/Select";
 import { Test as ContextMenuTest } from "../../../t2025/april/ListWithCrud";
+import { Factory } from "../dynamicFormGenerator/generic";
+import { ViewerComp } from "../domOps/pages/ViewerComp";
 export const apps = [
     {
         title: "pills",
@@ -209,6 +211,32 @@ export const apps = [
         },
     },
     {
+        title: "oneline form",
+        loc: ["big comp", "input", "form"],
+        get_comp: () => {
+            return Factory.one_line_create_form([
+                {
+                    key: "name",
+                    type: "text",
+                },
+                {
+                    key: "email",
+                    type: "dropdown",
+                    options: [
+                        {
+                            label: "email",
+                            value: "email",
+                        },
+                        {
+                            label: "phone",
+                            value: "phone",
+                        },
+                    ],
+                },
+            ]).get_comp();
+        },
+    },
+    {
         title: "directus model testing",
         loc: ["model", "directus"],
         get_comp: () => {
@@ -314,6 +342,24 @@ export const apps = [
         loc: ["ui", "inputs", "dropdown"],
         get_comp: Test.dropdownMenu, // Test.dropdownMenu.
     },
+    {
+        title: "json viewer",
+        loc: ["ui", "viewers", "json"],
+        get_comp: () => {
+            let cm = new ViewerComp();
+            cm.set_data({ a: 1, b: 2 });
+            return cm.get_comp();
+        },
+    },
+    // {
+    //     title: "code",
+    //     loc: ["ui", "viewers"],
+    //     get_comp: () => {
+    //         let cm = new ViewerComp();
+    //         cm.set_data({ a: 1, b: 2 });
+    //         return cm.get_comp();
+    //     },
+    // },
     // {
     //     title: "context menu",
     //     loc: ["ui", "selections", "rightclick"],
