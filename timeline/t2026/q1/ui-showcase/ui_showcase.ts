@@ -6,19 +6,12 @@ import { GroupComponent } from "./components/group_comp";
 import type { ISubComponentable, LabelValueItem } from "./interface";
 import { WebpageComp } from "../WebPageWithRoutes/webpage_with_nav";
 import { ExplorerPage } from "./pages/explorer";
-import { EnumCtrl, EnumeratedLister } from "../lister/listers";
-import {
-    AlignLeft,
-    ArrowLeft,
-    Filter,
-    Home,
-    Library,
-    Star,
-    TreeDeciduous,
-} from "lucide";
+import { EnumCtrl } from "../lister/listers";
+import { ArrowLeft, Filter, Home, Library, Star, TreeDeciduous } from "lucide";
 import { InMemoryExplorerModel } from "./generics";
 import { apps } from "./add_app";
 import { LocalStorageJSONModel } from "../../../t2025/april/LocalStorage";
+import { ListerSearcher } from "./pages/all_elements";
 
 class HomepageModel {
     private fav: RandomDataSampleGenerator = new RandomDataSampleGenerator();
@@ -136,7 +129,7 @@ export class UIShowcase implements ISComponent {
     home: Homepage = new Homepage();
     webpage = new WebpageComp();
     expComp = new ExplorerPage();
-    lister = new EnumeratedLister<AppItem>();
+    lister = new ListerSearcher();
     model = new UIShowcaseModel();
     setup() {
         for (let app of apps) {
