@@ -1,4 +1,4 @@
-import { Trash } from "lucide";
+import { Pencil, Trash } from "lucide";
 import type { GComponent } from "../../../globalComps/GComponent";
 import type { ISComponent } from "../../../globalComps/interface";
 import { Tools } from "../../../globalComps/tools";
@@ -8,6 +8,7 @@ import type { FilterItem, IFilterModel, IFilterParser } from "./interface";
 import { OneLineForm, SimpleForm, Text } from "../dynamicFormGenerator/generic";
 import type { IField } from "../dynamicFormGenerator/interface";
 import { InMemoryDataModel } from "../lister/data_model";
+import { ViewerComp } from "../domOps/pages/ViewerComp";
 
 export class DefaultParser implements IFilterParser {
     parse_chip_value(value: string): any {
@@ -77,18 +78,23 @@ export class SearchInputComponent implements IField<any[]> {
 }
 
 export class FilterComp implements ISComponent {
-    comp = Tools.comp("div", {
-        class: "flex flex-col gap-2",
-        children: [
-            Tools.div({ textContent: "Form Area", key: "form" }),
-            Tools.div({ textContent: "List Area", key: "list" }),
-        ],
-    });
+    comp: GComponent;
+    viewer = new ViewerComp();
     lister: EnumeratedLister<FilterItem>;
     form: OneLineForm;
     parser: IFilterParser = new DefaultParser();
     model: IFilterModel;
+    private current_item: FilterItem | null = null;
     constructor() {
+        this.comp = Tools.comp("div", {
+            class: "flex flex-col gap-2",
+            children: [
+                Tools.div({ textContent: "Form Area", key: "form" }),
+
+                Tools.div({ textContent: "List Area", key: "list" }),
+                this.viewer.get_comp(),
+            ],
+        });
         let model = new InMemoryDataModel();
         model.data = [];
         this.model = model as unknown as IFilterModel;
@@ -128,6 +134,7 @@ export class FilterComp implements ISComponent {
 
         this.form.on_submit = () => this.on_save();
     }
+
     async on_save() {
         await this.model.create(this.form.get_all_values());
         this.form.reset_fields();
@@ -137,20 +144,49 @@ export class FilterComp implements ISComponent {
     get_comp(): GComponent {
         return this.comp;
     }
+
+    form_reset_and_create() {
+        this.form.reset_fields();
+        this.form.on_submit = () => this.on_save();
+        this.change_btn_txt("add");
+    }
+    private change_btn_txt(txt: string) {
+        this.form.comp?.s.submit?.set_props({ textContent: txt });
+    }
+
     private on_comp_creator(data: any, idx: number) {
         let ctrl = new EnumCtrl(idx + 1, data, [
+            { key: "edit", icon: Pencil },
             { key: "delete", icon: Trash },
         ]);
-        ctrl.on_icons_clicked = (key: string, data: any) => {
-            if (key === "delete") this.on_delete(data.id);
-            else console.log(key, data);
-        };
+        ctrl.on_icons_clicked = (key: string, data: any) =>
+            this.on_context_menus_clicked(data, key);
+        ctrl.on_click = (data: any) => this.viewer.set_data(data);
         ctrl.comp.s.titleComp.set_props({
             textContent: data.label,
         });
         return ctrl;
     }
-
+    private on_context_menus_clicked(data: any, label: string) {
+        switch (label) {
+            case "edit":
+                this.change_btn_txt("update");
+                this.current_item = data;
+                this.form.on_submit = () => this.on_update();
+                this.form.reset_fields();
+                this.form.set_values(data);
+                break;
+            case "delete":
+                if (confirm("Are you sure?")) this.on_delete(data.id);
+                break;
+        }
+    }
+    private on_update() {
+        if (this.current_item === null) return;
+        this.model.update(this.current_item.id, this.form.get_changed_values());
+        this.form_reset_and_create();
+        this.model.read_all().then((data) => this.lister.set_values(data));
+    }
     async on_delete(data_id: string) {
         await this.model.deleteIt(data_id);
         let data = await this.model.read_all();
