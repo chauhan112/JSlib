@@ -6,25 +6,27 @@ import { Breadcrumb } from "../../breadcrumb/generic";
 import { ListerWithContext } from "../../lister/listers";
 import { SearchComponent as SearchCompCtrl } from "../../view_crud_list/searchComp";
 import { SearchComponent } from "../../../DeploymentCenter/apps/domOps/searchComp";
-import type { IOptionItem } from "../../../../t2025/dec/DomainOpsFrontend/components/atomic";
-import type { IDatamodel, ILister } from "../../lister/interface";
-import type { FilterItem } from "../interface";
+import type {
+    DropdownCtrl,
+    IOptionItem,
+} from "../../../../t2025/dec/DomainOpsFrontend/components/atomic";
+import type { IDatamodel } from "../../lister/interface";
+import type {
+    FilterItem,
+    IAdvanceListerModel,
+    IClickable,
+    IComponentTools,
+    ISearcher,
+    IUILister,
+} from "../interface";
 import { Factory } from "../../dynamicFormGenerator/generic";
 import { Header } from "../../../DeploymentCenter/apps/domOps/webPageWithNav/Header/comp";
 import type { IDynamicFormGenerator } from "../../dynamicFormGenerator/interface";
 import type { IViewComponent } from "../../../DeploymentCenter/apps/domOps/crud_list/interface";
-import { ViewComponent } from "../../../../t2025/dec/DomainOpsFrontend/SingleCrud";
 import { FilterComp } from "../../filterComp";
 import type { FilterItem as FilterItemComp } from "../../filterComp/interface";
+import { ViewerComp } from "./ViewerComp";
 
-export interface IComponentTools {
-    hide(comp: GComponent): void;
-    show(comp: GComponent): void;
-}
-
-export interface IClickable extends ISComponent {
-    on_clicked: () => void;
-}
 export class Button implements IClickable {
     comp = Tools.comp(
         "button",
@@ -54,6 +56,7 @@ export type SearchSubComps = {
         selector: {
             get_comp: () => GComponent;
             set_options: (options: IOptionItem[]) => void;
+            ctrl: DropdownCtrl;
         };
         btn_comp: IClickable;
     };
@@ -101,6 +104,7 @@ export class SearchComp
                         this.show(this.comp.s.filters.comp);
                         this.comp.s.filters.set_options(options);
                     },
+                    ctrl: this.comp.s.filters,
                 },
                 btn_comp: this.filterBtn,
             },
@@ -132,34 +136,6 @@ type AdvanceListerSubComps = {
         on_view: (data: any) => void;
     };
 };
-
-export interface IForm extends ISComponent {
-    on_saved: (data: any) => void;
-}
-
-export interface IAdvanceListerModel {
-    get_filter_model(): IDatamodel<FilterItem>;
-    get_create_form(): IDynamicFormGenerator;
-    get_create_form(): IDynamicFormGenerator;
-    get_update_form(): IDynamicFormGenerator;
-    get_data_model(): IDatamodel<any>;
-    get_view_comp(): IViewComponent;
-}
-
-export class ViewerComp implements IViewComponent {
-    comp: GComponent = ViewComponent();
-
-    get_comp(): GComponent {
-        return this.comp;
-    }
-    set_data(data: any) {
-        (this.comp.getElement() as HTMLTextAreaElement).value = JSON.stringify(
-            data,
-            null,
-            2,
-        );
-    }
-}
 
 export class AdvanceListerModel implements IAdvanceListerModel {
     filter_model: IDatamodel<FilterItem>;
@@ -230,9 +206,6 @@ export class PageWithGoBackComp implements ISComponent {
     on_go_back() {}
 }
 
-export interface ISearcher {
-    search(words: any[], data: any[]): Promise<any[]>;
-}
 export class DefaultSearcher implements ISearcher {
     async search(words: any[], data: any[]) {
         if (words.length === 0) {
@@ -269,11 +242,6 @@ export class DefaultSearcher implements ISearcher {
     }
 }
 
-export interface IUILister extends ILister {
-    update_component(data_id: string, data: any): void;
-    remove_item_component(data_id: string): void;
-}
-
 export class UIListerWithContext
     extends ListerWithContext
     implements IUILister
@@ -304,7 +272,6 @@ export class AdvanceLister
     private filterComp = new FilterComp();
     setup() {
         let lister = new UIListerWithContext();
-        this.searchComp.get_subcomponents().filterComp.selector.set_options([]); // hiding filters because of no data
         lister.set_title_func((data: any) => data.name);
         this.model
             .get_data_model()
@@ -335,26 +302,37 @@ export class AdvanceLister
             this.on_context_menus_clicked(data, label);
         };
         this.lister = lister;
+        this.filterCompSetup();
+    }
+
+    private filterCompSetup() {
+        let comps = this.searchComp.get_subcomponents();
         this.filterComp.model = this.model.get_filter_model();
         this.filterComp.init();
         this.filterComp.model.read_all().then((data: FilterItemComp[]) => {
-            console.log(data);
-            this.searchComp.get_subcomponents().filterComp.selector.set_options(
+            comps.filterComp.selector.set_options(
                 data.map((f: FilterItemComp) => ({
                     label: f.label,
-                    value: f.value,
+                    value: f.id,
                 })),
             );
         });
-        this.searchComp.get_subcomponents().filterComp.btn_comp.on_clicked =
-            () => {
-                this.display_new_page(
-                    "Filter Items",
-                    this.filterComp.get_comp(),
-                );
-            };
+        comps.filterComp.btn_comp.on_clicked = () => {
+            this.filterComp.form_reset_and_create();
+            this.display_new_page("Filter Items", this.filterComp.get_comp());
+        };
+        comps.filterComp.selector.ctrl.comp.set_events({
+            change: () => {
+                let fil = comps.filterComp.selector.ctrl.get_value();
+                this.model
+                    .get_filter_model()
+                    .read(fil)
+                    .then((data) => {
+                        console.log(data);
+                    });
+            },
+        });
     }
-
     private display_new_page(
         title: string,
         comp: GComponent,

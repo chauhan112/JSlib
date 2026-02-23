@@ -1,5 +1,8 @@
+import type { GComponent } from "../../../globalComps/GComponent";
 import type { ISComponent } from "../../../globalComps/interface";
-import type { IDatamodel } from "../lister/interface";
+import type { IViewComponent } from "../../DeploymentCenter/apps/domOps/crud_list/interface";
+import type { IDynamicFormGenerator } from "../dynamicFormGenerator/interface";
+import type { IDatamodel, ILister } from "../lister/interface";
 
 export type Domain = {
     name: string;
@@ -24,6 +27,7 @@ export type FilterItem = {
     label: string;
     value: any;
     parent: string;
+    id: string;
 };
 
 export interface IDomOpsModel {
@@ -38,4 +42,30 @@ export interface IDomOpsModel {
 export interface IComponentPage<T> extends ISComponent {
     set_data(data: T[]): void;
     set_parent(parent: string): void;
+}
+export interface IUILister extends ILister {
+    update_component(data_id: string, data: any): void;
+    remove_item_component(data_id: string): void;
+}
+export interface ISearcher {
+    search(words: any[], data: any[]): Promise<any[]>;
+}
+export interface IForm extends ISComponent {
+    on_saved: (data: any) => void;
+}
+export interface IAdvanceListerModel {
+    get_filter_model(): IDatamodel<FilterItem>;
+    get_create_form(): IDynamicFormGenerator;
+    get_create_form(): IDynamicFormGenerator;
+    get_update_form(): IDynamicFormGenerator;
+    get_data_model(): IDatamodel<any>;
+    get_view_comp(): IViewComponent;
+}
+export interface IComponentTools {
+    hide(comp: GComponent): void;
+    show(comp: GComponent): void;
+}
+
+export interface IClickable extends ISComponent {
+    on_clicked: () => void;
 }
