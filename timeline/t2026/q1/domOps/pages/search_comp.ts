@@ -2,211 +2,30 @@ import type { GComponent } from "../../../../globalComps/GComponent";
 import type { ISComponent } from "../../../../globalComps/interface";
 import { Tools } from "../../../../globalComps/tools";
 import type { ISubComponentable } from "../../ui-showcase/interface";
-import { Breadcrumb } from "../../breadcrumb/generic";
-import { ListerWithContext } from "../../lister/listers";
-import { SearchComponent as SearchCompCtrl } from "../../view_crud_list/searchComp";
-import { SearchComponent } from "../../../DeploymentCenter/apps/domOps/searchComp";
-import type {
-    DropdownCtrl,
-    IOptionItem,
-} from "../../../../t2025/dec/DomainOpsFrontend/components/atomic";
+import { ListerWithContext } from "../../lister/listers/simple";
 import type { IDatamodel } from "../../lister/interface";
 import type {
     FilterItem,
     IAdvanceListerModel,
-    IClickable,
-    IComponentTools,
+    IFilterSelector,
     ISearcher,
     IUILister,
 } from "../interface";
 import { Factory } from "../../dynamicFormGenerator/generic";
-import { Header } from "../../../DeploymentCenter/apps/domOps/webPageWithNav/Header/comp";
 import type { IDynamicFormGenerator } from "../../dynamicFormGenerator/interface";
 import type { IViewComponent } from "../../../DeploymentCenter/apps/domOps/crud_list/interface";
-import { FilterComp } from "../../filterComp";
+import { DefaultParser, FilterComp } from "../../filterComp";
 import type { FilterItem as FilterItemComp } from "../../filterComp/interface";
 import { ViewerComp } from "./ViewerComp";
+import {
+    LocalStorageDataModel,
+    RandomDataSampleGenerator,
+} from "../../lister/data_model";
+import { PageWithGoBackComp } from "./PageWithGoBackComp";
+import { SearchComp } from "./SearchComp";
+import { LocalStorageJSONModel } from "../../../../t2025/april/LocalStorage";
 
-export class Button implements IClickable {
-    comp = Tools.comp(
-        "button",
-        {},
-        {
-            click: () => {
-                this.on_clicked();
-            },
-        },
-    );
-    data: any = {};
-    set_comp(comp: GComponent) {
-        this.comp = comp;
-        this.comp.update({}, { click: () => this.on_clicked() });
-    }
-    on_clicked(): void {
-        console.log("clicked");
-    }
-    get_comp(): GComponent {
-        return this.comp;
-    }
-}
-
-export type SearchSubComps = {
-    searchComp: SearchCompCtrl;
-    filterComp: {
-        selector: {
-            get_comp: () => GComponent;
-            set_options: (options: IOptionItem[]) => void;
-            ctrl: DropdownCtrl;
-        };
-        btn_comp: IClickable;
-    };
-    new_btn_comp: IClickable;
-    tools: IComponentTools;
-};
-
-export class SearchComp
-    implements ISComponent, ISubComponentable<SearchSubComps>
-{
-    private comp = SearchComponent();
-    private ctrl = new SearchCompCtrl();
-    private newBtn = new Button();
-    private filterBtn: IClickable;
-    constructor() {
-        this.ctrl.comp = this.comp;
-        this.ctrl.setup();
-        this.newBtn.set_comp(this.comp.s.addNewBtn);
-        this.filterBtn = {
-            get_comp: () => this.comp.s.filterBtn,
-            on_clicked: () => {
-                console.log("filter clicked");
-            },
-        };
-        this.comp.s.filterBtn.update(
-            {},
-            { click: () => this.filterBtn.on_clicked() },
-        );
-    }
-    get_comp(): GComponent {
-        return this.comp;
-    }
-
-    get_subcomponents(): SearchSubComps {
-        return {
-            searchComp: this.ctrl,
-            filterComp: {
-                selector: {
-                    get_comp: () => this.comp.s.filters.comp,
-                    set_options: (options: IOptionItem[]) => {
-                        if (options.length === 0) {
-                            this.hide(this.comp.s.filters.comp);
-                            return;
-                        }
-                        this.show(this.comp.s.filters.comp);
-                        this.comp.s.filters.set_options(options);
-                    },
-                    ctrl: this.comp.s.filters,
-                },
-                btn_comp: this.filterBtn,
-            },
-            new_btn_comp: this.newBtn,
-            tools: {
-                hide: this.hide,
-                show: this.show,
-            },
-        };
-    }
-    private hide(comp: GComponent) {
-        comp.getElement().classList.add("hidden");
-    }
-    private show(comp: GComponent) {
-        comp.getElement().classList.remove("hidden");
-    }
-}
-
-type AdvanceListerSubComps = {
-    search: SearchComp;
-    lister: IUILister;
-    breadcrumb: Breadcrumb;
-    body: GComponent;
-    model: AdvanceListerModel;
-    searchHandler: ISearcher;
-    default_context_handlers: {
-        on_update: (data: any) => void;
-        on_delete: (data: any) => void;
-        on_view: (data: any) => void;
-    };
-};
-
-export class AdvanceListerModel implements IAdvanceListerModel {
-    filter_model: IDatamodel<FilterItem>;
-    data_model: IDatamodel<any>;
-    create_form: IDynamicFormGenerator;
-    update_form: IDynamicFormGenerator;
-    viewer = new ViewerComp();
-    constructor() {
-        this.filter_model = {} as IDatamodel<FilterItem>;
-        this.data_model = {} as IDatamodel<any>;
-        this.create_form = Factory.simple_create_form([
-            { key: "name", type: "text", placeholder: "what you did" },
-        ]);
-        this.update_form = Factory.simple_create_form([
-            { key: "name", type: "text", placeholder: "what you did" },
-        ]);
-    }
-    get_filter_model(): IDatamodel<FilterItem> {
-        return this.filter_model;
-    }
-
-    get_create_form(): IDynamicFormGenerator {
-        return this.create_form;
-    }
-
-    get_update_form(): IDynamicFormGenerator {
-        return this.update_form;
-    }
-
-    get_data_model(): IDatamodel<any> {
-        return this.data_model;
-    }
-
-    get_view_comp(): IViewComponent {
-        return this.viewer;
-    }
-}
-
-export const PageWithGoBack = () => {
-    let header = Header();
-    return Tools.div(
-        {
-            class: "flex flex-col",
-            children: [header, Tools.div({ key: "body" })],
-        },
-        {},
-        { header },
-    );
-};
-
-export class PageWithGoBackComp implements ISComponent {
-    comp = PageWithGoBack();
-    constructor() {
-        this.comp.s.header.s.back_button.update(
-            {},
-            { click: () => this.on_go_back() },
-        );
-    }
-    set_title(title: string) {
-        this.comp.s.header.s.title.update({ textContent: title });
-    }
-    display(comp: GComponent) {
-        this.comp.s.body.update({ innerHTML: "", children: [comp] });
-    }
-    get_comp(): GComponent {
-        return this.comp;
-    }
-    on_go_back() {}
-}
-
-export class DefaultSearcher implements ISearcher {
+export class DefaultSearcher extends DefaultParser implements ISearcher {
     async search(words: any[], data: any[]) {
         if (words.length === 0) {
             return data;
@@ -241,7 +60,73 @@ export class DefaultSearcher implements ISearcher {
         return false;
     }
 }
+export class DefaultAdvanceListerModel implements IAdvanceListerModel {
+    filter_model: IDatamodel<FilterItem>;
+    data_model: IDatamodel<any>;
+    create_form: IDynamicFormGenerator;
+    update_form: IDynamicFormGenerator;
+    viewer = new ViewerComp();
+    searcher = new DefaultSearcher();
+    filter_selector_model = new LocalStorageJSONModel("domOps-filter-selector");
+    constructor() {
+        let act = new RandomDataSampleGenerator();
+        let fil = new LocalStorageDataModel("domOps-filter");
+        act.set_fields([{ key: "name", type: "string" }]);
 
+        act.generate();
+
+        this.filter_model = fil as unknown as IDatamodel<FilterItem>;
+        this.data_model = act as IDatamodel<any>;
+        this.create_form = Factory.simple_create_form([
+            { key: "name", type: "text", placeholder: "what you did" },
+        ]);
+        this.update_form = Factory.simple_create_form([
+            { key: "name", type: "text", placeholder: "what you did" },
+        ]);
+    }
+    get_searcher(): ISearcher {
+        return this.searcher;
+    }
+    get_filter_model(): IDatamodel<FilterItem> {
+        return this.filter_model;
+    }
+
+    get_create_form(): IDynamicFormGenerator {
+        return this.create_form;
+    }
+
+    get_update_form(): IDynamicFormGenerator {
+        return this.update_form;
+    }
+
+    get_data_model(): IDatamodel<any> {
+        return this.data_model;
+    }
+
+    get_view_comp(): IViewComponent {
+        return this.viewer;
+    }
+    get_filter_selector_model(): IFilterSelector {
+        return {
+            set_selected_filter: (filter: FilterItem) => {
+                if (this.filter_selector_model.exists(["selected"])) {
+                    this.filter_selector_model.updateEntry(
+                        ["selected"],
+                        filter,
+                    );
+                } else {
+                    this.filter_selector_model.addEntry(["selected"], filter);
+                }
+            },
+            get_selected_filter: () => {
+                if (!this.filter_selector_model.exists(["selected"])) {
+                    return null;
+                }
+                return this.filter_selector_model.readEntry(["selected"]);
+            },
+        };
+    }
+}
 export class UIListerWithContext
     extends ListerWithContext
     implements IUILister
@@ -256,19 +141,29 @@ export class UIListerWithContext
     }
 }
 
+type AdvanceListerSubComps = {
+    search: SearchComp;
+    lister: IUILister;
+    body: GComponent;
+    model: DefaultAdvanceListerModel;
+    default_context_handlers: {
+        on_update: (data: any) => void;
+        on_delete: (data: any) => void;
+        on_view: (data: any) => void;
+    };
+};
+
 export class AdvanceLister
     implements ISComponent, ISubComponentable<AdvanceListerSubComps>
 {
-    private breadcrumb = new Breadcrumb();
     private searchComp = new SearchComp();
     private lister: IUILister | null = null;
     private listWrapper = Tools.div({
         class: "flex flex-col gap-4 w-full overflow-auto flex-1",
     });
-    private model = new AdvanceListerModel();
+    private model = new DefaultAdvanceListerModel();
     private form_body = new PageWithGoBackComp();
     private body = Tools.div({ class: "flex flex-col gap-4 h-full" });
-    private searchHandler = new DefaultSearcher();
     private filterComp = new FilterComp();
     setup() {
         let lister = new UIListerWithContext();
@@ -279,6 +174,7 @@ export class AdvanceLister
             .then((data) => {
                 this.lister!.set_values(data);
             });
+        this.searchComp.model = this.model.get_searcher();
         this.searchComp.get_subcomponents().searchComp.on_search = async (
             words,
         ) => this.on_search_clicked(words);
@@ -303,12 +199,12 @@ export class AdvanceLister
         };
         this.lister = lister;
         this.filterCompSetup();
+        this.update_filter_selector();
     }
 
-    private filterCompSetup() {
+    private update_filter_selector() {
         let comps = this.searchComp.get_subcomponents();
-        this.filterComp.model = this.model.get_filter_model();
-        this.filterComp.init();
+
         this.filterComp.model.read_all().then((data: FilterItemComp[]) => {
             comps.filterComp.selector.set_options(
                 data.map((f: FilterItemComp) => ({
@@ -316,19 +212,45 @@ export class AdvanceLister
                     value: f.id,
                 })),
             );
+            let selected_filter = this.model.get_filter_selector_model();
+            let fil =
+                selected_filter.get_selected_filter() as FilterItem | null;
+            if (fil) {
+                comps.filterComp.selector.ctrl.set_value(fil.id);
+                this.searchComp.get_subcomponents().searchComp.clear();
+                this.searchComp.set_values(fil.value);
+            }
         });
+    }
+
+    private filterCompSetup() {
+        let comps = this.searchComp.get_subcomponents();
+        this.filterComp.model = this.model.get_filter_model();
         comps.filterComp.btn_comp.on_clicked = () => {
+            this.filterComp.init();
             this.filterComp.form_reset_and_create();
-            this.display_new_page("Filter Items", this.filterComp.get_comp());
+            this.display_new_page(
+                "Filter Items",
+                this.filterComp.get_comp(),
+                () => {
+                    this.get_comp();
+                    if (!this.filterComp.is_changed()) return;
+                    this.update_filter_selector();
+                },
+            );
         };
+        let selected_filter = this.model.get_filter_selector_model();
+
         comps.filterComp.selector.ctrl.comp.set_events({
             change: () => {
-                let fil = comps.filterComp.selector.ctrl.get_value();
+                let fil_id = comps.filterComp.selector.ctrl.get_value();
                 this.model
                     .get_filter_model()
-                    .read(fil)
+                    .read(fil_id)
                     .then((data) => {
-                        console.log(data);
+                        this.searchComp.get_subcomponents().searchComp.clear();
+                        selected_filter.set_selected_filter(data as FilterItem);
+                        this.searchComp.set_values(data?.value);
                     });
             },
         });
@@ -397,9 +319,12 @@ export class AdvanceLister
             .get_data_model()
             .read_all()
             .then((data) => {
-                this.searchHandler.search(words, data).then((resp) => {
-                    this.lister!.set_values(resp);
-                });
+                this.model
+                    .get_searcher()
+                    .search(words, data)
+                    .then((resp) => {
+                        this.lister!.set_values(resp);
+                    });
             });
     }
     get_comp(): GComponent {
@@ -409,11 +334,7 @@ export class AdvanceLister
         });
         this.body.set_props({
             innerHTML: "",
-            children: [
-                this.breadcrumb.get_comp(),
-                this.searchComp.get_comp(),
-                this.listWrapper,
-            ],
+            children: [this.searchComp.get_comp(), this.listWrapper],
         });
         return this.body;
     }
@@ -421,10 +342,8 @@ export class AdvanceLister
         return {
             search: this.searchComp,
             lister: this.lister!,
-            breadcrumb: this.breadcrumb,
             body: this.body,
             model: this.model,
-            searchHandler: this.searchHandler,
             default_context_handlers: {
                 on_update: (data: any) => this.on_edited(data),
                 on_delete: (data: any) => this.on_deleted(data),
