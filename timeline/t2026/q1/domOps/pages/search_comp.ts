@@ -51,7 +51,10 @@ export class DefaultSearcher extends DefaultParser implements ISearcher {
         }
         if (typeof word === "object") {
             for (let key in word) {
-                if (val[key] && JSON.stringify(val[key]).includes(word[key])) {
+                if (
+                    val[key] !== undefined &&
+                    JSON.stringify(val[key]).includes(word[key])
+                ) {
                     return true;
                 }
             }
@@ -165,39 +168,41 @@ export class AdvanceLister
     private form_body = new PageWithGoBackComp();
     private body = Tools.div({ class: "flex flex-col gap-4 h-full" });
     private filterComp = new FilterComp();
-    setup() {
+    constructor() {
         let lister = new UIListerWithContext();
         lister.set_title_func((data: any) => data.name);
+
+        lister.on_context_clicked = (data: any, label: string) => {
+            this.on_context_menus_clicked(data, label);
+        };
+        this.lister = lister;
+    }
+    setup() {
+        let create_form = this.model.get_create_form();
+        this.searchComp.model = this.model.get_searcher();
+        this.searchComp.get_subcomponents().searchComp.on_search = async (
+            words,
+        ) => this.on_search_clicked(words);
+        this.searchComp.get_subcomponents().new_btn_comp.on_clicked = () => {
+            this.display_new_page("Create New Item", create_form.get_comp());
+        };
+        create_form.on_submit = () => {
+            let vals = create_form.get_all_values();
+            this.model
+                .get_data_model()
+                .create(vals)
+                .then(() => {
+                    create_form.reset_fields();
+                    this.get_comp();
+                });
+        };
+
         this.model
             .get_data_model()
             .read_all()
             .then((data) => {
                 this.lister!.set_values(data);
             });
-        this.searchComp.model = this.model.get_searcher();
-        this.searchComp.get_subcomponents().searchComp.on_search = async (
-            words,
-        ) => this.on_search_clicked(words);
-        this.searchComp.get_subcomponents().new_btn_comp.on_clicked = () => {
-            this.display_new_page(
-                "Create New Item",
-                this.model.get_create_form().get_comp(),
-            );
-        };
-        this.model.get_create_form().on_submit = () => {
-            this.model
-                .get_data_model()
-                .create(this.model.get_create_form().get_all_values())
-                .then(() => {
-                    this.model.get_create_form().reset_fields();
-                    this.on_search_clicked([]);
-                    this.get_comp();
-                });
-        };
-        lister.on_context_clicked = (data: any, label: string) => {
-            this.on_context_menus_clicked(data, label);
-        };
-        this.lister = lister;
         this.filterCompSetup();
         this.update_filter_selector();
     }
@@ -225,6 +230,7 @@ export class AdvanceLister
 
     private filterCompSetup() {
         let comps = this.searchComp.get_subcomponents();
+
         this.filterComp.model = this.model.get_filter_model();
         comps.filterComp.btn_comp.on_clicked = () => {
             this.filterComp.init();

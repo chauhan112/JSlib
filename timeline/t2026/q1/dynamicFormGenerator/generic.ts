@@ -411,7 +411,7 @@ export class OneLineForm extends SimpleForm {
 
 export type IFormSimpleFormElement =
     | {
-          type: "text" | "textarea";
+          type: "text" | "textarea" | "number";
           key: string;
           defaultValue?: string;
           placeholder?: string;
@@ -457,7 +457,9 @@ export class Factory {
             case "datetime":
                 return new Datetime();
             case "number":
-                return new Number();
+                let txt = new Text();
+                txt.comp?.comp.set_props({ type: "number" });
+                return txt;
         }
     }
 
