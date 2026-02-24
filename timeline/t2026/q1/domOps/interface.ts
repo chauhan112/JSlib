@@ -2,6 +2,7 @@ import type { GComponent } from "../../../globalComps/GComponent";
 import type { ISComponent } from "../../../globalComps/interface";
 import type { IViewComponent } from "../../DeploymentCenter/apps/domOps/crud_list/interface";
 import type { IDynamicFormGenerator } from "../dynamicFormGenerator/interface";
+import type { IFilterParser } from "../filterComp/interface";
 import type { IDatamodel, ILister } from "../lister/interface";
 
 export type Domain = {
@@ -47,11 +48,16 @@ export interface IUILister extends ILister {
     update_component(data_id: string, data: any): void;
     remove_item_component(data_id: string): void;
 }
-export interface ISearcher {
+export interface ISearcher extends IFilterParser {
     search(words: any[], data: any[]): Promise<any[]>;
 }
 export interface IForm extends ISComponent {
     on_saved: (data: any) => void;
+}
+
+export interface IFilterSelector {
+    set_selected_filter(filter: FilterItem): void;
+    get_selected_filter(): FilterItem | null;
 }
 export interface IAdvanceListerModel {
     get_filter_model(): IDatamodel<FilterItem>;
@@ -60,6 +66,8 @@ export interface IAdvanceListerModel {
     get_update_form(): IDynamicFormGenerator;
     get_data_model(): IDatamodel<any>;
     get_view_comp(): IViewComponent;
+    get_searcher(): ISearcher;
+    get_filter_selector_model(): IFilterSelector;
 }
 export interface IComponentTools {
     hide(comp: GComponent): void;
