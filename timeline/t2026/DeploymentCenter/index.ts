@@ -11,7 +11,6 @@ import { CrudListAsPage } from "./apps/domOps/crud_list";
 import { SearchComponentAsPage } from "./apps/domOps/searchComp";
 import { AIChats } from "../q1/AIChats";
 import { SearchCompAsPage } from "../q1/view_crud_list/searchComp";
-import { DirectusTableCrud } from "../q1/ExperimentView/first_try";
 import { DynamicFormGenerator } from "../q1/dynamicFormGenerator";
 import { ListerPage } from "../q1/lister";
 import { ExpViewPage } from "../q1/ExperimentView";
@@ -99,7 +98,6 @@ export const DeploymentCenter = () => {
     navs.push(new SearchComponentAsPage());
     navs.push(new AIChats());
     navs.push(new SearchCompAsPage());
-    navs.push(new DirectusTableCrud());
     navs.push(new DynamicFormGenerator());
     navs.push(new ListerPage());
     navs.push(new ExpViewPage());
