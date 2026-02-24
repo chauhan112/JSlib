@@ -1,78 +1,8 @@
 import { GComponent, type IComponent } from "../../../globalComps/GComponent";
 import { Tools } from "../../../globalComps/tools";
-import type { ILister, IPaginator, IPaginatorModel } from "./interface";
-import {
-    MainCtrl as AtomicMainCtrl,
-    CardCompCtrl,
-} from "../../../t2025/dec/DomainOpsFrontend/components/atomic";
+import type { ILister } from "./interface";
 import { Trash, type IconNode } from "lucide";
 import type { ISComponent } from "../../../globalComps/interface";
-import { SimplePager } from "./paginators";
-import { RandomDataSampleGenerator } from "./data_model";
-
-export class Lister implements ILister {
-    values: any[] = [];
-    title_getter: (data: any) => string = (data: any) => data?.title || "";
-    comp: GComponent = Tools.comp("ul", {
-        class: "flex flex-col gap-2 w-full",
-    });
-    listComps: CardCompCtrl[] = [];
-    set_values(data: any[]): void {
-        this.values = data;
-        this.update();
-    }
-    get_comp(): GComponent {
-        return this.comp;
-    }
-    set_title_func(func: (data: any) => string) {
-        this.title_getter = func;
-        this.update();
-    }
-
-    cardCompCreator(data: any): CardCompCtrl {
-        const cardCompCtrl = AtomicMainCtrl.cardComp(data, this.title_getter);
-        cardCompCtrl.set_options([]);
-        cardCompCtrl.comp.getElement().classList.add("cursor-pointer");
-        cardCompCtrl.onCardClicked = (data: any) => this.on_click(data);
-        return cardCompCtrl;
-    }
-
-    update() {
-        this.listComps = this.values.map((d: any) => this.cardCompCreator(d));
-        this.comp.update({
-            innerHTML: "",
-            children: this.listComps.map((comp: CardCompCtrl) => comp.comp),
-        });
-    }
-    on_click(data: any) {
-        console.log("hello", data);
-    }
-}
-export class ListerWithContext extends Lister {
-    contextMenuOptions: { label: string }[] = [
-        { label: "Edit" },
-        { label: "Delete" },
-        { label: "View" },
-    ];
-    cardCompCreator(data: any): CardCompCtrl {
-        const cardCompCtrl = AtomicMainCtrl.cardComp(data, this.title_getter);
-        cardCompCtrl.set_options(this.contextMenuOptions);
-        cardCompCtrl.comp.getElement().classList.add("cursor-pointer");
-        cardCompCtrl.onCardClicked = (data: any) => this.on_click(data);
-        cardCompCtrl.onOpsMenuClicked = (data: any, label: string) =>
-            this.on_context_clicked(data, label);
-        return cardCompCtrl;
-    }
-    on_context_clicked(data: any, label: string) {}
-}
-export class SelectableLister implements ILister {
-    set_values(data: any[]): void {
-        throw new Error("Method not implemented.");
-    }
-    get_comp(): GComponent {
-        throw new Error("Method not implemented.");
-    }
-}
 
 export const EnumComp = (
     nr: number,
@@ -197,60 +127,6 @@ export class TabularLister implements ILister {
     }
 }
 
-export class SimplePagerModel
-    extends RandomDataSampleGenerator
-    implements IPaginatorModel
-{
-    page_size: number = 10;
-    constructor() {
-        super();
-        this.set_fields([{ key: "title", type: "string" }]);
-        this.generate();
-    }
-    set_page_size(size: number): void {
-        this.page_size = size;
-    }
-    async get_total() {
-        return this.model.data.length / this.page_size;
-    }
-    async get_page(nr: number) {
-        return this.model.data.slice(
-            (nr - 1) * this.page_size,
-            nr * this.page_size,
-        );
-    }
-}
-export class PaginateLister implements ILister {
-    lister: ILister;
-    paginator: IPaginator;
-    model: IPaginatorModel;
-    constructor() {
-        let pager = new SimplePager();
-        pager.setup();
-        this.lister = new Lister();
-        this.paginator = pager;
-        this.model = new SimplePagerModel();
-        this.paginator.on_goto = (nr: number) => this.on_go_to_page(nr);
-    }
-    set_values(data: any[]): void {
-        this.lister.set_values(data);
-    }
-    get_comp(): GComponent {
-        return Tools.comp("div", {
-            class: "flex flex-col gap-2 w-full justify-center items-start",
-            children: [this.paginator.get_comp(), this.lister.get_comp()],
-        });
-    }
-    async update() {
-        let total = await this.model.get_total();
-        this.paginator.set_total(total);
-        this.on_go_to_page(1);
-    }
-    on_go_to_page(page: number) {
-        this.paginator.set_page_nr(page);
-        this.model.get_page(page).then((data) => this.lister.set_values(data));
-    }
-}
 export class PaginateAndSearchLister implements ILister {
     // lister: ILister;
     // paginator: IPaginator;
@@ -263,6 +139,15 @@ export class PaginateAndSearchLister implements ILister {
     }
 }
 export class PaginateSearchFilterLister implements ILister {
+    set_values(data: any[]): void {
+        throw new Error("Method not implemented.");
+    }
+    get_comp(): GComponent {
+        throw new Error("Method not implemented.");
+    }
+}
+
+export class SelectableLister implements ILister {
     set_values(data: any[]): void {
         throw new Error("Method not implemented.");
     }
