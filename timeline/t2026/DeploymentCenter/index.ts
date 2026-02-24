@@ -11,7 +11,6 @@ import { CrudListAsPage } from "./apps/domOps/crud_list";
 import { SearchComponentAsPage } from "./apps/domOps/searchComp";
 import { AIChats } from "../q1/AIChats";
 import { SearchCompAsPage } from "../q1/view_crud_list/searchComp";
-import { CrudPage } from "../q1/view_crud_list";
 import { DirectusTableCrud } from "../q1/ExperimentView/first_try";
 import { DynamicFormGenerator } from "../q1/dynamicFormGenerator";
 import { ListerPage } from "../q1/lister";
@@ -19,6 +18,7 @@ import { ExpViewPage } from "../q1/ExperimentView";
 import { HeaderBodyNewPage, HeaderBodyOldPage } from "../q1/WebPageWithRoutes";
 import { UIShowcasePage } from "../q1/ui-showcase";
 import { DomOpsPage } from "../q1/domOps";
+import { TaskPage } from "../q2/tasks-manager";
 
 export const DeploymentCenterPage = () => {
     return Tools.comp("div", {
@@ -99,7 +99,6 @@ export const DeploymentCenter = () => {
     navs.push(new SearchComponentAsPage());
     navs.push(new AIChats());
     navs.push(new SearchCompAsPage());
-    navs.push(new CrudPage());
     navs.push(new DirectusTableCrud());
     navs.push(new DynamicFormGenerator());
     navs.push(new ListerPage());
@@ -108,6 +107,7 @@ export const DeploymentCenter = () => {
     navs.push(new HeaderBodyNewPage());
     navs.push(new UIShowcasePage());
     navs.push(new DomOpsPage());
+    navs.push(new TaskPage());
 
     for (const nav of navs) {
         deploymentCenterPageCtrl.add_app(nav);
