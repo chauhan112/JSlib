@@ -55,7 +55,6 @@ export class DomOpsModelRandom implements IDomOpsModel {
         let filter = new RandomDataSampleGenerator();
         this.dom.set_fields([{ key: "name", type: "string" }]);
         this.ops.set_fields([{ key: "name", type: "string" }]);
-        act.set_fields([{ key: "name", type: "string" }]);
         this.structure.set_fields([
             { key: "key", type: "string" },
             { key: "value", type: "string" },
@@ -74,6 +73,7 @@ export class DomOpsModelRandom implements IDomOpsModel {
             { key: "password", type: "password" },
             { key: "is male", type: "boolean" },
         ]);
+        act.set_fields([{ key: "name", type: "string" }]);
         filter.set_fields([
             { key: "key", type: "string" },
             { key: "value", type: "string" },
@@ -81,10 +81,17 @@ export class DomOpsModelRandom implements IDomOpsModel {
         ]);
         this.dom.generate();
         this.ops.generate();
-        act.generate();
         this.structure.generate();
         this.logger_data.generate();
+
+        act.set_fields([{ key: "name", type: "string" }]);
+        filter.set_fields([
+            { key: "key", type: "string" },
+            { key: "value", type: "string" },
+            { key: "parent", type: "string" },
+        ]);
         filter.generate();
+        act.generate();
 
         this.act = act;
         this.filter = filter;
