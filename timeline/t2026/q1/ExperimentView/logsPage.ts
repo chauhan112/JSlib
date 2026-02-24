@@ -6,7 +6,7 @@ import {
     TokenFromLocalStorage,
 } from "../lister/data_model";
 import type { ILister, IRouter } from "../lister/interface";
-import { ListerWithContext } from "../lister/listers";
+import { ListerWithContext } from "../lister/listers/simple";
 import { SimpleRouter } from "../lister/navigators";
 import type { IWebPage } from "../WebPageWithRoutes/interface";
 

@@ -12,7 +12,6 @@ export interface IField<T> {
 
 export interface IDynamicFormGenerator extends IComponent {
     set_fields(fields: { [key: string]: IField<any> }): void;
-    get_comp(): GComponent;
     reset_fields(): void;
     is_changed(): boolean;
     get_changed_values(): { [key: string]: any };

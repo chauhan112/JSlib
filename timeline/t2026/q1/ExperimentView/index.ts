@@ -9,7 +9,7 @@ import {
     TokenFromLocalStorage,
 } from "../lister/data_model";
 import type { IDatamodel, ILister } from "../lister/interface";
-import { Lister } from "../lister/listers";
+import { Lister } from "../lister/listers/simple";
 import { SimpleRouter } from "../lister/navigators";
 import { ClickableHeader } from "../WebPageWithRoutes/headers";
 import type { IWebPage } from "../WebPageWithRoutes/interface";
