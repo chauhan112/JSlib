@@ -11,7 +11,7 @@ import { ArrowLeft, Filter, Home, Library, Star, TreeDeciduous } from "lucide";
 import { InMemoryExplorerModel } from "./generics";
 import { apps } from "./add_app";
 import { LocalStorageJSONModel } from "../../../t2025/april/LocalStorage";
-import { ListerSearcher } from "./pages/all_elements";
+import { ListerSearcher } from "../lister/listers/search_lister";
 
 class HomepageModel {
     private fav: RandomDataSampleGenerator = new RandomDataSampleGenerator();

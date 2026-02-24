@@ -1,21 +1,15 @@
 import type { GComponent } from "../../../globalComps/GComponent";
 import type {
-    IView,
     IListDisplayer,
     IListItem,
     IListModel,
     IPagination,
 } from "./interface";
-import { type ISearchView, SearchComponent } from "./searchComp";
-import { GenericCrudModel } from "../../DeploymentCenter/apps/domOps/crud_list/generic_interface";
 import { Pagination } from "../../../t2025/july/generic-crud/page";
 import { CardCompCtrl } from "../../../t2025/dec/DomainOpsFrontend/components/atomic";
 import { CardComp } from "../../../t2025/dec/DomainOpsFrontend/components/atomicComp";
 import { Tools } from "../../../globalComps/tools";
-import type { ListItem } from "../../DeploymentCenter/apps/domOps/crud_list/interface";
 import { PaginationCtrl } from "../../../t2025/dec/DomainOpsFrontend/components/ListDisplayer";
-import type { IRoute } from "../WebPageWithRoutes/interface";
-import { GRoute } from "../WebPageWithRoutes/generic";
 
 export class GPagination implements IPagination {
     comp = Pagination();
@@ -129,58 +123,5 @@ export class GListDisplayer implements IListDisplayer {
             innerHTML: "",
             children: this.list.map((item: IListItem) => item.get_comp()),
         });
-    }
-}
-
-export class GView implements IView {
-    route: IRoute = new GRoute();
-    searchComp: ISearchView = new SearchComponent();
-    lister: IListDisplayer = new GListDisplayer();
-    model: GenericCrudModel = new GenericCrudModel();
-    comp: any;
-    temp_data: any[] = [];
-
-    get_comp(): GComponent {
-        return this.comp;
-    }
-
-    setup() {
-        let sc = this.searchComp as SearchComponent;
-        sc.setup();
-        sc.searchComp.search.active_comp.create = true;
-        sc.searchComp.setup();
-        this.lister.setup();
-        this.comp = Tools.div({
-            class: "flex flex-col w-full items-start gap-4",
-            children: [this.searchComp.get_component(), this.lister.get_comp()],
-        });
-        this.fetch_data().then(() => this.update_page());
-        this.lister.pagination.update_for_page = (page: number) =>
-            this.update_page();
-    }
-
-    private async fetch_data() {
-        this.model.read_all().then((data) => {
-            this.temp_data = data;
-            this.lister.pagination.set_total(data.length);
-            this.lister.pagination.update_ui();
-        });
-    }
-
-    private get_current_page_data() {
-        return this.temp_data.slice(
-            (this.lister.pagination.current_page - 1) *
-                this.lister.pagination.page_size,
-            this.lister.pagination.current_page *
-                this.lister.pagination.page_size,
-        );
-    }
-
-    async update_page() {
-        let data = this.get_current_page_data();
-        this.lister.list = data.map((d: ListItem) =>
-            this.lister.component_creator(d.title, d),
-        );
-        this.lister.update_list();
     }
 }

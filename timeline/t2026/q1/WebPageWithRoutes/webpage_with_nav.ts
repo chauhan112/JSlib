@@ -2,13 +2,12 @@ import { Cuboid, Menu, X, type IconNode } from "lucide";
 import { Tools } from "../../../globalComps/tools";
 import type { GComponent } from "../../../globalComps/GComponent";
 import type { IContainer } from "./interface";
-import type { LabelValueItem } from "../ui-showcase/interface";
+import type {
+    ISubComponentable,
+    LabelValueItem,
+} from "../ui-showcase/interface";
 export interface IElement {
     get_element(): HTMLElement;
-}
-
-export interface ISubComponentable<T> {
-    get_subcomponents(): T;
 }
 
 export type WebpageComponentType = {
