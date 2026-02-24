@@ -94,11 +94,13 @@ export class TokenFromLocalStorage implements IDirectusInfoGetter {
         this.model = new LocalStorageJSONModel(storageKey);
     }
     get_url() {
+        if (!this.model.exists(this.directus_url_key_loc)) return "";
         const url = this.model.readEntry(this.directus_url_key_loc);
         if (url.endsWith("/")) return url.slice(0, -1);
         return url;
     }
     get_token() {
+        if (!this.model.exists(this.directus_token_key_loc)) return "";
         return this.model.readEntry(this.directus_token_key_loc);
     }
 }
