@@ -5,11 +5,12 @@ import {
 } from "../../DeploymentCenter/interfaces";
 import { DirectusTableModel, TokenFromLocalStorage } from "./data_model";
 import type { IDatamodel, ILister } from "./interface";
-import { Lister } from "./listers";
+import { PaginateLister } from "./listers/paginated_lister";
+import { Lister } from "./listers/simple";
 
 export class ListerPage extends GRouterController {
     initialized: boolean = false;
-    lister: ILister = new Lister();
+    lister: ILister | null = null;
     model: IDatamodel<any> | null = null;
     info: IApp = {
         name: "lister",
@@ -18,15 +19,18 @@ export class ListerPage extends GRouterController {
         params: [],
     };
     setup() {
-        this.model = new DirectusTableModel(
-            "raja_tasks",
-            new TokenFromLocalStorage("DeploymentCenterSettings"),
-        );
-        (this.model as DirectusTableModel).columns = ["id", "title"];
+        // this.model = new DirectusTableModel(
+        //     "raja_tasks",
+        //     new TokenFromLocalStorage("DeploymentCenterSettings"),
+        // );
+        // (this.model as DirectusTableModel).columns = ["id", "title"];
+        let paginator = new PaginateLister();
+        paginator.update();
+        this.lister = paginator;
         this.initialized = true;
     }
     get_component(params: any): GComponent {
-        this.model!.read_all().then((data) => this.lister.set_values(data));
-        return this.lister.get_comp();
+        console.log("params", params);
+        return this.lister!.get_comp();
     }
 }
