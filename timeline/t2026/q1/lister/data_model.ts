@@ -42,11 +42,11 @@ export class InMemoryDataModel implements IDatamodel<any> {
 export class LocalStorageDataModel implements IDatamodel<any> {
     data: any[] = [];
     localStorageKey: string;
-    private read_from_storage() {
+    read_from_storage() {
         const data = localStorage.getItem(this.localStorageKey);
         return data ? JSON.parse(data) : null;
     }
-    private write_to_storage() {
+    write_to_storage() {
         localStorage.setItem(this.localStorageKey, JSON.stringify(this.data));
     }
     constructor(localStorageKey: string) {
