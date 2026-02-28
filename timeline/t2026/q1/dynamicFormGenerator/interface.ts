@@ -18,4 +18,5 @@ export interface IDynamicFormGenerator extends IComponent {
     get_all_values(): { [key: string]: any };
     set_values(values: { [key: string]: any }): void;
     on_submit(): void;
+    set_default_values(values: { [key: string]: any }): void;
 }

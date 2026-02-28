@@ -392,6 +392,11 @@ export class SimpleForm implements IDynamicFormGenerator {
     on_submit(): void {
         console.log(this.get_changed_values());
     }
+    set_default_values(values: { [key: string]: any }): void {
+        for (const key in this.fields) {
+            this.fields[key].set_default_value(values[key]);
+        }
+    }
 }
 
 export class OneLineForm extends SimpleForm {
