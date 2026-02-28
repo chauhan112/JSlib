@@ -101,7 +101,7 @@ export class MultiSelect implements IField<string[]> {
     ctrl: MultiSelectCompCtrl | null = null;
     placeholder: string = "";
     default_value: string[] = [];
-    prev_value: string[] = [];
+    prev_value: any = "";
     options: IDropdownOption[] = [];
     values: string[] = [];
     get_value() {
@@ -109,7 +109,7 @@ export class MultiSelect implements IField<string[]> {
         return this.ctrl!.get_value().map((v) => v.value);
     }
     set_value(value: string[]): void {
-        this.prev_value = value;
+        this.prev_value = JSON.stringify(value.sort());
         this.get_comp();
         this.ctrl!.set_value(value.map((v) => ({ value: v })));
     }
@@ -118,7 +118,8 @@ export class MultiSelect implements IField<string[]> {
         this.set_value(value);
     }
     is_changed(): boolean {
-        return this.get_value() !== this.prev_value;
+        let curVals = JSON.stringify(this.get_value().sort());
+        return curVals !== this.prev_value;
     }
     get_comp(): GComponent {
         if (this.ctrl) return this.ctrl.comp;
