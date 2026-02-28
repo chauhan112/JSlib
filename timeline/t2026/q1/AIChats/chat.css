@@ -1,0 +1,59 @@
+ /* Basic styling for markdown content inside bubbles */
+ .md-content p {
+     margin-bottom: 0.5rem;
+ }
+
+ .md-content p:last-child {
+     margin-bottom: 0;
+ }
+
+ .md-content pre {
+     background: rgba(0, 0, 0, 0.15);
+     padding: 0.5rem;
+     border-radius: 0.25rem;
+     overflow-x: auto;
+     margin: 0.5rem 0;
+ }
+
+ .md-content code {
+     font-family: monospace;
+     background: rgba(0, 0, 0, 0.15);
+     padding: 0.1rem 0.2rem;
+     border-radius: 0.2rem;
+     font-size: 0.875em;
+ }
+
+ .md-content ul {
+     list-style-type: disc;
+     margin-left: 1.5rem;
+     margin-bottom: 0.5rem;
+ }
+
+ .md-content ol {
+     list-style-type: decimal;
+     margin-left: 1.5rem;
+     margin-bottom: 0.5rem;
+ }
+
+ .md-content strong {
+     font-weight: bold;
+ }
+
+ /* Custom scrollbar for chat containers */
+ .chat-scroll::-webkit-scrollbar {
+     width: 6px;
+ }
+
+ .chat-scroll::-webkit-scrollbar-thumb {
+     background: #cbd5e1;
+     border-radius: 3px;
+ }
+
+ /* Smooth transition for the details tag */
+ details>summary {
+     list-style: none;
+ }
+
+ details>summary::-webkit-details-marker {
+     display: none;
+ }
