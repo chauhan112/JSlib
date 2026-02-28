@@ -113,12 +113,61 @@ export class DomOpsModelRandom implements IDomOpsModel {
 }
 
 export class DevModel extends DomOpsModelRandom {
+    loc: any[] = [];
     constructor() {
         super();
         this.filter = new LocalStorageDataModel("domOps-filter");
         this.act = new LocalStorageDataModel("domOps-act");
         this.dom = new LocalStorageDataModel("domOps-dom");
         this.ops = new LocalStorageDataModel("domOps-ops");
+        this.act.read_all = () => this.read_all_act();
+        this.dom.read_all = () => this.read_all_dom();
+        this.ops.read_all = () => this.read_all_ops();
+        this.act.create = (data: any) => this.create_act(data);
+        this.dom.create = (data: any) => this.create_dom(data);
+        this.ops.create = (data: any) => this.create_ops(data);
+    }
+    private async read_all(model: LocalStorageDataModel) {
+        return model.data.filter((item) => {
+            if (this.loc.length === 0) {
+                if (!item.parent) return true;
+            } else {
+                let last = this.loc[this.loc.length - 1];
+                if (item.parent === last.id) {
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    private async create(model: LocalStorageDataModel, data: any) {
+        let id = uuidv4();
+        let parent = {};
+        if (this.loc.length > 0) {
+            parent = { parent: this.loc[this.loc.length - 1].id };
+        }
+        model.data.push({ ...data, id, ...parent });
+        model.write_to_storage();
+    }
+
+    create_act(data: any) {
+        return this.create(this.act as LocalStorageDataModel, data);
+    }
+    create_dom(data: any) {
+        return this.create(this.dom as LocalStorageDataModel, data);
+    }
+    create_ops(data: any) {
+        return this.create(this.ops as LocalStorageDataModel, data);
+    }
+    read_all_act() {
+        return this.read_all(this.act as LocalStorageDataModel);
+    }
+    read_all_dom() {
+        return this.read_all(this.dom as LocalStorageDataModel);
+    }
+    read_all_ops() {
+        return this.read_all(this.ops as LocalStorageDataModel);
     }
 }
 
