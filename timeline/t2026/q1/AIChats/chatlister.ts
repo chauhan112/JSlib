@@ -259,7 +259,7 @@ export class TwoPeopleChatComponent implements IChatComp {
 export class ChatBubbleComponent {
     container: HTMLDivElement;
     btn: HTMLButtonElement;
-    window: HTMLDivElement;
+    chat_window: HTMLDivElement;
     header: HTMLDivElement;
     messagesContainer: HTMLDivElement;
     inputArea: HTMLFormElement;
@@ -280,8 +280,8 @@ export class ChatBubbleComponent {
             { click: () => this.toggle() },
         ).getElement() as HTMLButtonElement;
 
-        this.window = document.createElement("div");
-        this.window.className =
+        this.chat_window = document.createElement("div");
+        this.chat_window.className =
             "hidden flex-col w-80 h-[28rem] bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-200 origin-bottom-right transition-all";
 
         this.header = document.createElement("div");
@@ -310,11 +310,11 @@ export class ChatBubbleComponent {
         }).getElement() as HTMLFormElement;
         this.inputArea.onsubmit = (e) => this.sendMessage(e);
 
-        this.window.appendChild(this.header);
-        this.window.appendChild(this.messagesContainer);
-        this.window.appendChild(this.inputArea);
+        this.chat_window.appendChild(this.header);
+        this.chat_window.appendChild(this.messagesContainer);
+        this.chat_window.appendChild(this.inputArea);
 
-        this.container.appendChild(this.window);
+        this.container.appendChild(this.chat_window);
         this.container.appendChild(this.btn);
 
         this.isOpen = false;
@@ -329,16 +329,16 @@ export class ChatBubbleComponent {
     toggle() {
         this.isOpen = !this.isOpen;
         if (this.isOpen) {
-            this.window.classList.remove("hidden");
-            this.window.classList.add("flex");
+            this.chat_window.classList.remove("hidden");
+            this.chat_window.classList.add("flex");
             this.btn.innerHTML = Tools.icon(X, {
                 class: "w-5 h-5",
             }).getElement().outerHTML;
             this.messagesContainer.scrollTop =
                 this.messagesContainer.scrollHeight;
         } else {
-            this.window.classList.add("hidden");
-            this.window.classList.remove("flex");
+            this.chat_window.classList.add("hidden");
+            this.chat_window.classList.remove("flex");
             this.btn.innerHTML = Tools.icon(MessageSquare, {
                 class: "w-5 h-5",
             }).getElement().outerHTML;
@@ -356,30 +356,29 @@ export class ChatBubbleComponent {
     set_model(model: any) {
         this.model = model;
         this.model!.read_all().then((msgs) => {
-            if (msgs.length === 0) {
-                this.model!.create({
-                    user: { name: "Support", type: "Person", icon: Headset },
-                    content: "Hello! How can we help you today?",
-                });
-            }
             this.set_messages(msgs);
         });
     }
+    async send_a_mes(msg: MessageItem) {
+        const isMe = msg.user.name === this.currentUser.name;
+        const alignClass = isMe
+            ? "self-end bg-blue-600 text-white rounded-br-sm"
+            : "self-start bg-white border border-gray-200 text-gray-800 rounded-bl-sm";
 
+        const div = document.createElement("div");
+        div.className = `px-3 py-2 rounded-2xl max-w-[85%] text-sm md-content shadow-sm ${alignClass}`;
+        div.innerHTML = await marked.parse(msg.content);
+        this.messagesContainer.appendChild(div);
+
+        this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+    }
     set_messages(msgs: MessageItem[]) {
         this.messagesContainer.innerHTML = "";
-        msgs.forEach(async (msg) => {
-            const isMe = msg.user.name === this.currentUser.name;
-            const alignClass = isMe
-                ? "self-end bg-blue-600 text-white rounded-br-sm"
-                : "self-start bg-white border border-gray-200 text-gray-800 rounded-bl-sm";
+        let res = [];
 
-            const div = document.createElement("div");
-            div.className = `px-3 py-2 rounded-2xl max-w-[85%] text-sm md-content shadow-sm ${alignClass}`;
-            div.innerHTML = await marked.parse(msg.content);
-            this.messagesContainer.appendChild(div);
-        });
-        this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+        for (let msg of msgs) {
+            res.push(this.send_a_mes(msg));
+        }
     }
 
     private sendMessage(e: Event) {
@@ -389,12 +388,12 @@ export class ChatBubbleComponent {
         const text = input.value.trim();
 
         if (!text || !this.model) return;
-        this.on_send(text);
-        input.value = "";
+        this.on_send(text).then(() => {
+            input.value = "";
+        });
     }
-    on_send(msg: string) {
-        this.model!.create({ user: this.currentUser, content: msg }).then(() =>
-            this.model!.read_all().then((msgs) => this.set_messages(msgs)),
-        );
+    async on_send(msg: string) {
+        await this.model!.create({ user: this.currentUser, content: msg });
+        await this.send_a_mes({ user: this.currentUser, content: msg });
     }
 }

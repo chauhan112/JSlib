@@ -33,3 +33,20 @@ export class GLMCaller {
         return data.choices[0].message.content;
     }
 }
+
+export class DevCaller {
+    private api_key: string;
+    private model: string;
+    constructor(model = "glm-4.7") {
+        this.api_key = "";
+        this.model = model;
+    }
+    set_api_key(api_key: string) {
+        this.api_key = api_key;
+    }
+    async get_response(prev_messages: string) {
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 sec
+
+        return "Hello! How can we help you today?";
+    }
+}

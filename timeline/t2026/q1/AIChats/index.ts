@@ -11,7 +11,7 @@ import { PageWithGoBackComp } from "../domOps/pages/PageWithGoBackComp";
 import { TwoPeopleChatComponent, ChatBubbleComponent } from "./chatlister";
 import { Bot, Headset } from "lucide";
 import type { MessageItem, User } from "./interface";
-import { GLMCaller } from "./api_caller";
+import { GLMCaller, DevCaller } from "./api_caller";
 
 export class AIChatModel extends GenericCrudModel {
     model = new DirectusModel();
@@ -90,7 +90,7 @@ export class AIChats implements IRouteController {
     chat = new TwoPeopleChatComponent();
     parser = new CursorChatParser();
     bubble = new ChatBubbleComponent();
-    glm = new GLMCaller();
+    glm = new DevCaller();
     setup() {
         this.crud.model.model = this.model;
         this.crud.model.searchCtrl.search.active_comp.create = false;
@@ -98,6 +98,11 @@ export class AIChats implements IRouteController {
         this.crud.model.contextMenuOptions.get_options = () => [];
         this.page.on_go_back = () => {
             this.comp.set_props({ innerHTML: "", children: [this.crud.comp] });
+        };
+        this.bubble.currentUser = {
+            name: "User",
+            type: "Person",
+            icon: Headset,
         };
         this.crud.setup();
     }
@@ -117,12 +122,29 @@ export class AIChats implements IRouteController {
             this.crud.listDisplayerCtrl.on_card_clicked =
                 this.on_clicked.bind(this);
             this.glm.set_api_key(api_key);
-            this.bubble.on_send = (msg: string) => {
-                this.glm.get_response(msg).then((res) => console.log(res));
+            this.bubble.on_send = async (msg: string) => {
+                const input: HTMLInputElement =
+                    this.bubble.inputArea.querySelector("input")!;
+                let msgItem: MessageItem = {
+                    user: { name: "User", type: "Person", icon: Headset },
+                    content: msg,
+                };
+                await this.bubble.model?.create(msgItem);
+                input.value = "";
+
+                await this.bubble.send_a_mes(msgItem);
+
+                let res = await this.glm.get_response(msg);
+                let chatMsg: MessageItem = {
+                    user: { name: "Agent", type: "Bot", icon: Bot },
+                    content: res,
+                };
+                this.bubble.model?.create(chatMsg);
+                await this.bubble.send_a_mes(chatMsg);
             };
             this.comp.set_props({ innerHTML: "", children: [this.crud.comp] });
             document.body.appendChild(this.bubble.get_comp());
-            this.bubble.set_title("Raja");
+            this.bubble.set_title("User");
             this.crud.fetch_data_and_update();
         }
 
