@@ -102,24 +102,23 @@ export class ActivityPage implements ISComponent {
         ]);
         comps.model.data_model = this.model!;
         comps.model.filter_model = this.filterModel!;
-        (comps.lister as UIListerWithContext).contextMenuOptions = [
-            { label: "Logs" },
+        let lister = comps.lister as UIListerWithContext;
+        lister.contextMenuOptions = [
             { label: "Structure" },
             { label: "Edit" },
             { label: "View" },
             { label: "Delete" },
         ];
         this.activity.setup();
+
         comps = this.activity.get_subcomponents();
         comps.search.get_subcomponents().new_btn_comp.on_clicked = () =>
             this.on_new_btn_click();
-        (comps.lister as UIListerWithContext).on_context_clicked = (
-            data: any,
-            label: string,
-        ) => {
+        lister.on_context_clicked = (data: any, label: string) => {
             this.on_context_click(data, label);
         };
     }
+
     private on_context_click(data: any, label: string) {
         switch (label) {
             case "Edit":
@@ -140,11 +139,22 @@ export class ActivityPage implements ISComponent {
         let comps = this.activity.get_subcomponents();
         let form = comps.model.get_update_form();
         form.reset_fields();
+        let lister = this.activity.lister as UIListerWithContext;
         this.update_form_values(form as SimpleForm).then(() => {
             this.activity.display_new_page("Edit Item", form.get_comp());
             console.log(data);
             form.set_values(data);
-            form.on_submit = () => this.on_update_submit(data);
+            form.on_submit = async () => {
+                let changed_vals = this.activity
+                    .get_subcomponents()
+                    .model!.get_update_form()
+                    .get_changed_values();
+                if (Object.keys(changed_vals).length !== 0) {
+                    await this.model!.update(data.id, changed_vals);
+                    lister!.update_component(data.id, changed_vals);
+                }
+                this.activity.get_comp();
+            };
         });
     }
     private on_new_btn_click() {
@@ -156,24 +166,6 @@ export class ActivityPage implements ISComponent {
                 form.get_comp(),
             );
         });
-    }
-
-    private on_update_submit(data: any) {
-        let lister = this.activity.lister as UIListerWithContext;
-        let form = this.activity.get_subcomponents().model.update_form;
-        form.on_submit = async () => {
-            let changed_vals = this.activity
-                .get_subcomponents()
-                .model!.get_update_form()
-                .get_changed_values();
-            if (Object.keys(changed_vals).length === 0) {
-                console.log("empty");
-            } else {
-                await this.model!.update(data.id, changed_vals);
-                lister!.update_component(data.id, changed_vals);
-            }
-            this.activity.get_comp();
-        };
     }
 
     private async update_form_values(form: SimpleForm) {
@@ -203,9 +195,7 @@ export class ActivityPage implements ISComponent {
             this.activity.get_subcomponents().model.create_form as SimpleForm,
         );
     }
-    on_edited(data: any) {
-        console.log(data);
-    }
+
     on_deleted(data: any) {
         this.model?.deleteIt(data.id).then(() => {
             this.activity.get_comp();
@@ -213,5 +203,10 @@ export class ActivityPage implements ISComponent {
     }
     get_comp(): GComponent {
         return this.activity.get_comp();
+    }
+    update_ui() {
+        this.model
+            ?.read_all()
+            .then((data) => this.activity.lister!.set_values(data));
     }
 }
