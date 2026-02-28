@@ -3,7 +3,7 @@ import type { ISComponent } from "../../../../globalComps/interface";
 import { Tools } from "../../../../globalComps/tools";
 import type { ISubComponentable } from "../../ui-showcase/interface";
 import { ListerWithContext } from "../../lister/listers/simple";
-import type { IDatamodel } from "../../lister/interface";
+import type { IDatamodel, ILister } from "../../lister/interface";
 import type {
     FilterItem,
     IAdvanceListerModel,
@@ -134,6 +134,13 @@ export class UIListerWithContext
     extends ListerWithContext
     implements IUILister
 {
+    add_item_component(data: any): void {
+        let newComp = this.cardCompCreator(data);
+        this.listComps.push(newComp);
+        this.comp.update({
+            child: newComp.comp,
+        });
+    }
     update_component(data_id: string, data: any): void {
         let ctrl = this.listComps.find((c) => c.data.id === data_id);
         ctrl?.set_data({ ...ctrl.data, ...data });
@@ -146,7 +153,7 @@ export class UIListerWithContext
 
 type AdvanceListerSubComps = {
     search: SearchComp;
-    lister: IUILister;
+    lister: ILister;
     body: GComponent;
     model: DefaultAdvanceListerModel;
     default_context_handlers: {
@@ -160,7 +167,7 @@ export class AdvanceLister
     implements ISComponent, ISubComponentable<AdvanceListerSubComps>
 {
     private searchComp = new SearchComp();
-    private lister: IUILister | null = null;
+    lister: ILister | null = null;
     private listWrapper = Tools.div({
         class: "flex flex-col gap-4 w-full overflow-auto flex-1",
     });
@@ -192,6 +199,9 @@ export class AdvanceLister
                 .get_data_model()
                 .create(vals)
                 .then(() => {
+                    (this.lister as UIListerWithContext).add_item_component(
+                        vals,
+                    );
                     create_form.reset_fields();
                     this.get_comp();
                 });
@@ -261,7 +271,7 @@ export class AdvanceLister
             },
         });
     }
-    private display_new_page(
+    display_new_page(
         title: string,
         comp: GComponent,
         on_go_back: (() => void) | null = null,
@@ -291,16 +301,17 @@ export class AdvanceLister
                 console.log("Unknown label");
                 break;
         }
-        console.log(data, label);
     }
 
     private async on_deleted(data: any) {
+        let lister = this.lister as UIListerWithContext;
         if (confirm("Are you sure?")) {
             await this.model.get_data_model().deleteIt(data.id);
-            this.lister!.remove_item_component(data.id);
+            lister!.remove_item_component(data.id);
         }
     }
     private on_edited(data: any) {
+        let lister = this.lister as UIListerWithContext;
         let form = this.model.get_update_form();
         this.display_new_page("Edit Item", form.get_comp());
         form.set_values(data);
@@ -309,7 +320,7 @@ export class AdvanceLister
                 .get_update_form()
                 .get_changed_values();
             await this.model.get_data_model().update(data.id, changed_vals);
-            this.lister!.update_component(data.id, changed_vals);
+            lister!.update_component(data.id, changed_vals);
             this.get_comp();
         };
     }

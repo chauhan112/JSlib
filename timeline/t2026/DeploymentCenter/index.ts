@@ -18,6 +18,7 @@ import { HeaderBodyNewPage, HeaderBodyOldPage } from "../q1/WebPageWithRoutes";
 import { UIShowcasePage } from "../q1/ui-showcase";
 import { DomOpsPage } from "../q1/domOps";
 import { TaskPage } from "../q2/tasks-manager";
+import { RandomContentGenerator } from "../q2/random_table_generator.ts";
 
 export const DeploymentCenterPage = () => {
     return Tools.comp("div", {
@@ -106,6 +107,7 @@ export const DeploymentCenter = () => {
     navs.push(new UIShowcasePage());
     navs.push(new DomOpsPage());
     navs.push(new TaskPage());
+    navs.push(new RandomContentGenerator());
 
     for (const nav of navs) {
         deploymentCenterPageCtrl.add_app(nav);

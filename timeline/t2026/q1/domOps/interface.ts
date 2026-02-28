@@ -47,6 +47,7 @@ export interface IComponentPage<T> extends ISComponent {
 export interface IUILister extends ILister {
     update_component(data_id: string, data: any): void;
     remove_item_component(data_id: string): void;
+    add_item_component(data: any): void;
 }
 export interface ISearcher extends IFilterParser {
     search(words: any[], data: any[]): Promise<any[]>;

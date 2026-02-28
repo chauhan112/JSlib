@@ -164,6 +164,13 @@ export class TasksView implements ISComponent {
         let comps = this.tasks.lister?.get_subcomponents();
         this.page.on_go_back = () => this.on_go_back();
 
+        (
+            this.logs.lister?.get_subcomponents().lister as UIListerWithContext
+        ).on_click = (data) => {
+            this.logs.lister
+                ?.get_subcomponents()
+                .default_context_handlers.on_update(data);
+        };
         (comps?.lister as UIListerWithContext).on_click = (data) => {
             logsModel.set_task_id(data.id);
             this.page.display(this.logs.get_comp());

@@ -248,8 +248,6 @@ export class RandomDataSampleGenerator implements IDatamodel<any> {
                 return faker.internet.email();
             case "password":
                 return faker.internet.password();
-            case "text":
-                return faker.lorem.text();
             case "option":
                 return this.getRandomValue(field.options || []);
             default:

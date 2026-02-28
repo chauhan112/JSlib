@@ -3,10 +3,8 @@ import {
     GRouterController,
     type IApp,
 } from "../../DeploymentCenter/interfaces";
-import { DirectusTableModel, TokenFromLocalStorage } from "./data_model";
 import type { IDatamodel, ILister } from "./interface";
 import { PaginateLister } from "./listers/paginated_lister";
-import { Lister } from "./listers/simple";
 
 export class ListerPage extends GRouterController {
     initialized: boolean = false;

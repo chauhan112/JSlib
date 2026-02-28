@@ -6,9 +6,12 @@ import {
     type WebpageComponentType,
 } from "../../WebPageWithRoutes/webpage_with_nav";
 import { DevModel } from "../data_model";
-import type { Domain, IComponentPage } from "../interface";
-import { AdvanceLister } from "./search_comp";
+import type { Domain, IComponentPage, Operation } from "../interface";
 import { Activity, Diamond, Play, Search } from "lucide";
+import { ActivityPage } from "./activityPage";
+import { AdvanceLister } from "./search_comp";
+import type { IDatamodel } from "../../lister/interface";
+import { Factory } from "../../dynamicFormGenerator/generic";
 
 export class GenericPage<T> implements IComponentPage<T> {
     comp = Tools.div({ textContent: "Generic Page" });
@@ -24,27 +27,45 @@ export class GenericPage<T> implements IComponentPage<T> {
     }
 }
 
-export class DomainPage extends GenericPage<Domain> {
-    set_data(data: Domain[]): void {}
+export class DomainOpsPage extends GenericPage<Domain> implements ISComponent {
+    lister = new AdvanceLister();
+    model: IDatamodel<Domain> | null = null;
+
+    set_up() {
+        this.lister.get_subcomponents().model.create_form =
+            Factory.simple_create_form([{ key: "name", type: "text" }]);
+        this.lister.get_subcomponents().model.update_form =
+            Factory.simple_create_form([{ key: "name", type: "text" }]);
+        this.lister.get_subcomponents().model.data_model = this.model!;
+        this.lister.setup();
+    }
+
     get_comp(): GComponent {
-        return this.comp;
+        return this.lister.get_comp();
     }
 }
 
 export class MainPage implements ISComponent {
     webpage = new WebpageComp();
-    activity = new AdvanceLister();
+    activity = new ActivityPage();
     model = new DevModel();
+    domains = new DomainOpsPage();
+    operations = new DomainOpsPage();
     setup() {
         let comps2 = this.webpage.get_subcomponents();
         this.sidebar_setup(comps2);
         this.page_setup(comps2);
-        this.activity.get_subcomponents().model.data_model =
-            this.model.get_activity_model();
-        this.activity.get_subcomponents().model.filter_model =
-            this.model.get_filter_model();
-        this.activity.setup();
+        this.activity.model = this.model.get_activity_model();
+        this.activity.filterModel = this.model.get_filter_model();
+        this.activity.set_up();
         (comps2.sidebar.navs.get("activity") as HTMLElement).click();
+        this.domains.model = this.model.get_domain_model();
+        this.domains.set_up();
+        this.operations.model = this.model.get_operation_model();
+        this.operations.set_up();
+        this.activity.get_domains = async () => this.domains.model!.read_all();
+        this.activity.get_operations = async () =>
+            this.operations.model!.read_all();
     }
     private sidebar_setup(comps2: WebpageComponentType) {
         comps2.header_tools.set_header_clicked(() => {
@@ -85,12 +106,12 @@ export class MainPage implements ISComponent {
                 case "activity":
                     body.display(this.activity.get_comp());
                     break;
-                // case "explorer":
-                //     body.display(this.expComp.get_comp());
-                //     break;
-                // case "all":
-                //     body.display(this.lister.get_comp());
-                //     break;
+                case "domains":
+                    body.display(this.domains.get_comp());
+                    break;
+                case "operations":
+                    body.display(this.operations.get_comp());
+                    break;
                 // case "filters":
                 //     body.display(this.home.get_comp());
                 //     break;
@@ -101,17 +122,5 @@ export class MainPage implements ISComponent {
                     break;
             }
         };
-    }
-
-    private async on_search_click(words: any[]) {
-        console.log("search clicked", words);
-        let lsubcomp = this.activity.get_subcomponents();
-        this.model
-            .get_activity_model()
-            .read_all()
-            .then((data) => {
-                lsubcomp.lister.set_values(data);
-            });
-        return [];
     }
 }

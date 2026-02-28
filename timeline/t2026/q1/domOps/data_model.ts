@@ -44,8 +44,8 @@ export class InMemoryDataMode<T> implements IDatamodel<T> {
 }
 
 export class DomOpsModelRandom implements IDomOpsModel {
-    dom: RandomDataSampleGenerator = new RandomDataSampleGenerator();
-    ops: RandomDataSampleGenerator = new RandomDataSampleGenerator();
+    dom: IDatamodel<any> = new InMemoryDataMode<Domain>();
+    ops: IDatamodel<any> = new InMemoryDataMode<Operation>();
     act: IDatamodel<any>;
     structure: RandomDataSampleGenerator = new RandomDataSampleGenerator();
     logger_data: RandomDataSampleGenerator = new RandomDataSampleGenerator();
@@ -53,8 +53,6 @@ export class DomOpsModelRandom implements IDomOpsModel {
     constructor() {
         let act = new RandomDataSampleGenerator();
         let filter = new RandomDataSampleGenerator();
-        this.dom.set_fields([{ key: "name", type: "string" }]);
-        this.ops.set_fields([{ key: "name", type: "string" }]);
         this.structure.set_fields([
             { key: "key", type: "string" },
             { key: "value", type: "string" },
@@ -79,8 +77,6 @@ export class DomOpsModelRandom implements IDomOpsModel {
             { key: "value", type: "string" },
             { key: "parent", type: "string" },
         ]);
-        this.dom.generate();
-        this.ops.generate();
         this.structure.generate();
         this.logger_data.generate();
 
@@ -121,6 +117,8 @@ export class DevModel extends DomOpsModelRandom {
         super();
         this.filter = new LocalStorageDataModel("domOps-filter");
         this.act = new LocalStorageDataModel("domOps-act");
+        this.dom = new LocalStorageDataModel("domOps-dom");
+        this.ops = new LocalStorageDataModel("domOps-ops");
     }
 }
 
