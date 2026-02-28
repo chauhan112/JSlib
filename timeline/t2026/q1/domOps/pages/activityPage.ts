@@ -1,7 +1,6 @@
 import type { GComponent } from "../../../../globalComps/GComponent";
 import type { ISComponent } from "../../../../globalComps/interface";
 import { Tools } from "../../../../globalComps/tools";
-import type { MultiSelectCompCtrl } from "../../../../t2025/dec/DomainOpsFrontend/components/atomic";
 import { AppCard } from "../../../DeploymentCenter/Components";
 import { MainCtrl } from "../../../DeploymentCenter/settings";
 import {
@@ -82,38 +81,72 @@ export class ActivityPage implements ISComponent {
     get_domains: () => Promise<Domain[]> = () => Promise.resolve([]);
     get_operations: () => Promise<Operation[]> = () => Promise.resolve([]);
     set_up() {
-        this.activity.get_subcomponents().model.create_form =
-            Factory.simple_create_form([
-                { key: "name", type: "text", placeholder: "what you did" },
-                { key: "operation", type: "dropdown", options: [] },
-                {
-                    key: "domains",
-                    type: "multiselect",
-                    options: [],
-                },
-            ]);
-        this.activity.get_subcomponents().model.update_form =
-            Factory.simple_create_form([
-                { key: "name", type: "text", placeholder: "what you did" },
-                { key: "operation", type: "dropdown", options: [] },
-                {
-                    key: "domains",
-                    type: "multiselect",
-                    options: [],
-                },
-            ]);
-        this.activity.get_subcomponents().model.data_model = this.model!;
-        this.activity.get_subcomponents().model.filter_model =
-            this.filterModel!;
-
+        let comps = this.activity.get_subcomponents();
+        comps.model.create_form = Factory.simple_create_form([
+            { key: "name", type: "text", placeholder: "what you did" },
+            { key: "operation", type: "dropdown", options: [] },
+            {
+                key: "domains",
+                type: "multiselect",
+                options: [],
+            },
+        ]);
+        comps.model.update_form = Factory.simple_create_form([
+            { key: "name", type: "text", placeholder: "what you did" },
+            { key: "operation", type: "dropdown", options: [] },
+            {
+                key: "domains",
+                type: "multiselect",
+                options: [],
+            },
+        ]);
+        comps.model.data_model = this.model!;
+        comps.model.filter_model = this.filterModel!;
+        (comps.lister as UIListerWithContext).contextMenuOptions = [
+            { label: "Logs" },
+            { label: "Structure" },
+            { label: "Edit" },
+            { label: "View" },
+            { label: "Delete" },
+        ];
         this.activity.setup();
-
-        this.activity
-            .get_subcomponents()
-            .search.get_subcomponents().new_btn_comp.on_clicked = () =>
+        comps = this.activity.get_subcomponents();
+        comps.search.get_subcomponents().new_btn_comp.on_clicked = () =>
             this.on_new_btn_click();
+        (comps.lister as UIListerWithContext).on_context_clicked = (
+            data: any,
+            label: string,
+        ) => {
+            this.on_context_click(data, label);
+        };
     }
-
+    private on_context_click(data: any, label: string) {
+        switch (label) {
+            case "Edit":
+                this.on_edit_clicked(data);
+                break;
+            case "Logs":
+                // comps.default_context_handlers.on_update(data);
+                break;
+            case "Structure":
+                console.log(data);
+                break;
+            default:
+                this.activity.on_context_menus_clicked(data, label);
+                break;
+        }
+    }
+    private on_edit_clicked(data: any) {
+        let comps = this.activity.get_subcomponents();
+        let form = comps.model.get_update_form();
+        form.reset_fields();
+        this.update_form_values(form as SimpleForm).then(() => {
+            this.activity.display_new_page("Edit Item", form.get_comp());
+            console.log(data);
+            form.set_values(data);
+            form.on_submit = () => this.on_update_submit(data);
+        });
+    }
     private on_new_btn_click() {
         let form = this.activity.get_subcomponents().model
             .create_form as SimpleForm;
@@ -125,29 +158,49 @@ export class ActivityPage implements ISComponent {
         });
     }
 
-    private async update() {
-        let form = this.activity.get_subcomponents().model
-            .create_form as SimpleForm;
+    private on_update_submit(data: any) {
+        let lister = this.activity.lister as UIListerWithContext;
+        let form = this.activity.get_subcomponents().model.update_form;
+        form.on_submit = async () => {
+            let changed_vals = this.activity
+                .get_subcomponents()
+                .model!.get_update_form()
+                .get_changed_values();
+            if (Object.keys(changed_vals).length === 0) {
+                console.log("empty");
+            } else {
+                await this.model!.update(data.id, changed_vals);
+                lister!.update_component(data.id, changed_vals);
+            }
+            this.activity.get_comp();
+        };
+    }
+
+    private async update_form_values(form: SimpleForm) {
         let all_doms = this.get_domains();
         let all_ops = this.get_operations();
-        Promise.all([all_doms, all_ops]).then(
-            ([doms, ops]: [Domain[], Operation[]]) => {
-                let domsComp = form.fields.domains as MultiSelect;
-                let options = doms.map((dom: Domain) => ({
-                    value: dom.id,
-                    label: dom.name,
-                }));
 
-                let opsCtrl = form.fields.operation as Dropdown;
+        let [doms, ops] = await Promise.all([all_doms, all_ops]);
+        let domsComp = form.fields.domains as MultiSelect;
+        let options = doms.map((dom: Domain) => ({
+            value: dom.id,
+            label: dom.name,
+        }));
 
-                domsComp.set_options(options);
-                opsCtrl.set_options(
-                    ops.map((op) => ({
-                        value: op.id,
-                        label: op.name,
-                    })),
-                );
-            },
+        let opsCtrl = form.fields.operation as Dropdown;
+
+        domsComp.set_options(options);
+        opsCtrl.set_options(
+            ops.map((op) => ({
+                value: op.id,
+                label: op.name,
+            })),
+        );
+    }
+
+    private async update() {
+        this.update_form_values(
+            this.activity.get_subcomponents().model.create_form as SimpleForm,
         );
     }
     on_edited(data: any) {

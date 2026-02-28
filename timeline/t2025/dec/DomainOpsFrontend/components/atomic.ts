@@ -152,6 +152,7 @@ export class MultiSelectCompCtrl implements IInputCompCtrl {
             opMap[o.value] = o;
         });
         this.selected_values = vals.map((v) => opMap[v.value]);
+        this.update_ui();
     }
     get_value() {
         return this.options.filter((o) =>

@@ -286,7 +286,7 @@ export class AdvanceLister
         });
     }
 
-    private on_context_menus_clicked(data: any, label: string) {
+    on_context_menus_clicked(data: any, label: string) {
         switch (label) {
             case "Edit":
                 this.on_edited(data);
@@ -319,8 +319,11 @@ export class AdvanceLister
             let changed_vals = this.model
                 .get_update_form()
                 .get_changed_values();
-            await this.model.get_data_model().update(data.id, changed_vals);
-            lister!.update_component(data.id, changed_vals);
+            if (Object.keys(changed_vals).length === 0) {
+            } else {
+                await this.model.get_data_model().update(data.id, changed_vals);
+                lister!.update_component(data.id, changed_vals);
+            }
             this.get_comp();
         };
     }
