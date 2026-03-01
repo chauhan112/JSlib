@@ -10,7 +10,12 @@ import {
     SimpleForm,
 } from "../../dynamicFormGenerator/generic";
 import type { IDatamodel } from "../../lister/interface";
-import type { Activity, Domain, Operation } from "../interface";
+import type {
+    Activity,
+    Domain,
+    IFilterSelector,
+    Operation,
+} from "../interface";
 import { AdvanceLister, UIListerWithContext } from "./search_comp";
 
 export const OpCard = (name: string, subtitle?: string) => {
@@ -77,6 +82,7 @@ export class OpsLister implements ISComponent {
 export class ActivityPage implements ISComponent {
     activity = new AdvanceLister();
     filterModel: IDatamodel<any> | null = null;
+    selectorModel: IFilterSelector | null = null;
     model: IDatamodel<Activity> | null = null;
     get_domains: () => Promise<Domain[]> = () => Promise.resolve([]);
     get_operations: () => Promise<Operation[]> = () => Promise.resolve([]);
@@ -102,6 +108,7 @@ export class ActivityPage implements ISComponent {
         ]);
         comps.model.data_model = this.model!;
         comps.model.filter_model = this.filterModel!;
+        comps.model.get_filter_selector_model = () => this.selectorModel!;
         let lister = comps.lister as UIListerWithContext;
         lister.contextMenuOptions = [
             { label: "Structure" },
@@ -208,5 +215,9 @@ export class ActivityPage implements ISComponent {
         this.model
             ?.read_all()
             .then((data) => this.activity.lister!.set_values(data));
+        console.log("updating ui");
+        // this.activity.get_subcomponents().search.set_values([]);
+        this.activity.get_subcomponents().search.clear_values();
+        this.activity.update_filter_selector();
     }
 }
