@@ -27,9 +27,18 @@ export type StructureItem = {
 export type FilterItem = {
     label: string;
     value: any;
-    parent: string;
     id: string;
 };
+export interface IListerFilter {
+    get_selector(): IFilterSelector;
+    get_model(): IDatamodel<FilterItem>;
+}
+
+export interface IDomsOpsFilter {
+    get_activity(): IListerFilter;
+    get_domain(): IListerFilter;
+    get_operation(): IListerFilter;
+}
 
 export interface IDomOpsModel {
     get_domain_model(): IDatamodel<Domain>;
@@ -37,7 +46,7 @@ export interface IDomOpsModel {
     get_activity_model(): IDatamodel<Activity>;
     get_structure_model(): IDatamodel<StructureItem>;
     get_logger_data_model(): IDatamodel<any>;
-    get_filter_model(): IDatamodel<FilterItem>;
+    get_filter_model(): IDomsOpsFilter;
 }
 
 export interface IComponentPage<T> extends ISComponent {

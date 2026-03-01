@@ -5,13 +5,14 @@ import type {
     Domain,
     FilterItem,
     IDomOpsModel,
+    IDomsOpsFilter,
+    IFilterSelector,
+    IListerFilter,
     Operation,
     StructureItem,
 } from "./interface";
-import {
-    LocalStorageDataModel,
-    RandomDataSampleGenerator,
-} from "../lister/data_model";
+import { LocalStorageDataModel } from "../lister/data_model";
+import { LocalStorageJSONModel } from "../../../t2025/april/LocalStorage";
 
 export class InMemoryDataMode<T> implements IDatamodel<T> {
     data: T[] = [];
@@ -43,54 +44,176 @@ export class InMemoryDataMode<T> implements IDatamodel<T> {
     }
 }
 
-export class DomOpsModelRandom implements IDomOpsModel {
-    dom: IDatamodel<any> = new InMemoryDataMode<Domain>();
-    ops: IDatamodel<any> = new InMemoryDataMode<Operation>();
+export class DevModelItem extends LocalStorageDataModel {
+    parent: string = "";
+    set_parent(parent: string) {
+        this.parent = parent;
+    }
+    async read_all() {
+        if (!this.parent) {
+            return this.data.filter(
+                (item: any) => item.parent === "" || !item.parent,
+            );
+        }
+        return this.data.filter((item: any) => item.parent === this.parent);
+    }
+    async create(data: any) {
+        let id = uuidv4();
+        this.data.push({ ...data, id, parent: this.parent });
+        this.write_to_storage();
+    }
+}
+
+export class LocalStorageAtLoc implements IDatamodel<any> {
+    model: LocalStorageJSONModel;
+    loc: string[] = [];
+    key: string = "";
+    constructor(model: LocalStorageJSONModel) {
+        this.model = model;
+    }
+    set_loc(loc: string[]) {
+        this.loc = loc;
+    }
+    async read_all() {
+        if (this.model.exists(this.loc)) {
+            let vals = this.model.readEntry(this.loc);
+            return vals.filter((item: any) => item.parent === this.key);
+        }
+        return [];
+    }
+    async read(id: string) {
+        if (this.model.exists(this.loc)) {
+            let vals = this.model.readEntry(this.loc);
+            return vals.find(
+                (item: any) => item.id === id && item.parent === this.key,
+            );
+        }
+        return undefined;
+    }
+    async create(data: { label: string; value: string }) {
+        let id = uuidv4();
+        let vals = await this.read_all();
+        vals.push({ ...data, id, parent: this.key });
+        this.update_and_override(vals);
+        return { ...data, id };
+    }
+    async update(id: string | number, data: any) {
+        let vals = await this.read_all();
+        let item = vals.find((item: any) => item.id === id);
+        if (!item) {
+            throw new Error(`Item with id ${id} not found`);
+        }
+        let updatedItem = { ...item, ...data };
+        vals = vals.map((item: any) => (item.id === id ? updatedItem : item));
+        this.update_and_override(vals);
+        return updatedItem;
+    }
+    async deleteIt(id: string): Promise<void> {
+        let vals = await this.read_all();
+        vals = vals.filter((item: any) => item.id !== id);
+        this.update_and_override(vals);
+    }
+    update_and_override(vals: any[]) {
+        if (this.model.exists(this.loc)) {
+            this.model.updateEntry(this.loc, vals);
+        } else {
+            this.model.addEntry(this.loc, vals);
+        }
+    }
+}
+
+export class LocalStorageSelector implements IFilterSelector {
+    model: LocalStorageJSONModel | null = null;
+    locs = ["selectors"];
+    key = "";
+    set_key(key: string) {
+        this.key = key;
+    }
+    set_selected_filter(filter: FilterItem) {
+        this.model?.addEntry([...this.locs, this.key], filter);
+    }
+    get_selected_filter() {
+        if (this.model?.exists([...this.locs, this.key])) {
+            return this.model?.readEntry([...this.locs, this.key]);
+        }
+        return null;
+    }
+}
+
+export class LocalStorageFilterForADomOpAct implements IListerFilter {
+    model: LocalStorageAtLoc;
+    selector: LocalStorageSelector;
+    item_id: string = "";
+    id_suffix: string = "";
+
+    constructor(model: LocalStorageJSONModel, suffix: string = "") {
+        this.model = new LocalStorageAtLoc(model);
+        this.model.loc = ["filters"];
+        this.id_suffix = suffix;
+        this.selector = new LocalStorageSelector();
+        this.selector.model = model;
+        this.set_item_id("");
+    }
+
+    set_item_id(id: string) {
+        this.item_id = id + this.id_suffix;
+        this.selector.set_key(this.item_id);
+        this.model.key = this.item_id;
+    }
+
+    get_selector(): IFilterSelector {
+        return this.selector;
+    }
+
+    get_model(): IDatamodel<FilterItem> {
+        return this.model;
+    }
+}
+
+export class SimpleLocalStorageDomOpsFilter implements IDomsOpsFilter {
+    model: LocalStorageJSONModel;
+    activity: LocalStorageFilterForADomOpAct;
+    domain: LocalStorageFilterForADomOpAct;
+    operation: LocalStorageFilterForADomOpAct;
+    constructor(key: string) {
+        this.model = new LocalStorageJSONModel(key);
+        this.activity = new LocalStorageFilterForADomOpAct(this.model);
+        this.domain = new LocalStorageFilterForADomOpAct(this.model, "-dom");
+        this.operation = new LocalStorageFilterForADomOpAct(this.model, "-ops");
+    }
+    get_activity(): IListerFilter {
+        return this.activity;
+    }
+    get_domain(): IListerFilter {
+        return this.domain;
+    }
+    get_operation(): IListerFilter {
+        return this.operation;
+    }
+    set_key(key: string) {
+        this.activity.set_item_id(key);
+        this.domain.set_item_id(key);
+        this.operation.set_item_id(key);
+    }
+}
+
+export class DevModel implements IDomOpsModel {
+    dom: IDatamodel<any>;
+    ops: IDatamodel<any>;
     act: IDatamodel<any>;
-    structure: RandomDataSampleGenerator = new RandomDataSampleGenerator();
-    logger_data: RandomDataSampleGenerator = new RandomDataSampleGenerator();
-    filter: IDatamodel<any>;
+    structure: IDatamodel<any>;
+    logger_data: IDatamodel<any>;
+    filter: SimpleLocalStorageDomOpsFilter;
     constructor() {
-        let act = new RandomDataSampleGenerator();
-        let filter = new RandomDataSampleGenerator();
-        this.structure.set_fields([
-            { key: "key", type: "string" },
-            { key: "value", type: "string" },
-            { key: "order", type: "number" },
-            {
-                key: "type",
-                type: "option",
-                options: ["string", "number", "date", "boolean", "text"],
-            },
-        ]);
-        this.logger_data.set_fields([
-            { key: "first name", type: "string" },
-            { key: "last name", type: "string" },
-            { key: "age", type: "number" },
-            { key: "email", type: "email" },
-            { key: "password", type: "password" },
-            { key: "is male", type: "boolean" },
-        ]);
-        act.set_fields([{ key: "name", type: "string" }]);
-        filter.set_fields([
-            { key: "key", type: "string" },
-            { key: "value", type: "string" },
-            { key: "parent", type: "string" },
-        ]);
-        this.structure.generate();
-        this.logger_data.generate();
-
-        act.set_fields([{ key: "name", type: "string" }]);
-        filter.set_fields([
-            { key: "key", type: "string" },
-            { key: "value", type: "string" },
-            { key: "parent", type: "string" },
-        ]);
-        filter.generate();
-        act.generate();
-
-        this.act = act;
-        this.filter = filter;
+        this.filter = new SimpleLocalStorageDomOpsFilter("domOps-filter");
+        this.act = new DevModelItem("domOps-act");
+        this.dom = new DevModelItem("domOps-dom");
+        this.ops = new DevModelItem("domOps-ops");
+        this.structure = new DevModelItem("domOps-structure");
+        this.logger_data = new DevModelItem("domOps-logger-data");
+    }
+    get_filter_model(): IDomsOpsFilter {
+        return this.filter;
     }
     get_domain_model(): IDatamodel<Domain> {
         return this.dom as IDatamodel<Domain>;
@@ -107,108 +230,17 @@ export class DomOpsModelRandom implements IDomOpsModel {
     get_logger_data_model(): IDatamodel<any> {
         return this.logger_data as IDatamodel<any>;
     }
-    get_filter_model(): IDatamodel<FilterItem> {
-        return this.filter as IDatamodel<FilterItem>;
-    }
-}
 
-export class DevModel extends DomOpsModelRandom {
-    loc: any[] = [];
-    constructor() {
-        super();
-        this.filter = new LocalStorageDataModel("domOps-filter");
-        this.act = new LocalStorageDataModel("domOps-act");
-        this.dom = new LocalStorageDataModel("domOps-dom");
-        this.ops = new LocalStorageDataModel("domOps-ops");
-        this.act.read_all = () => this.read_all_act();
-        this.dom.read_all = () => this.read_all_dom();
-        this.ops.read_all = () => this.read_all_ops();
-        this.act.create = (data: any) => this.create_act(data);
-        this.dom.create = (data: any) => this.create_dom(data);
-        this.ops.create = (data: any) => this.create_ops(data);
-    }
-    private async read_all(model: LocalStorageDataModel) {
-        return model.data.filter((item) => {
-            if (this.loc.length === 0) {
-                if (!item.parent) return true;
-            } else {
-                let last = this.loc[this.loc.length - 1];
-                if (item.parent === last.id) {
-                    return true;
-                }
-            }
-            return false;
-        });
-    }
-
-    private async create(model: LocalStorageDataModel, data: any) {
-        let id = uuidv4();
-        let parent = {};
-        if (this.loc.length > 0) {
-            parent = { parent: this.loc[this.loc.length - 1].id };
+    set_parent(parent: string) {
+        for (const model of [
+            this.dom,
+            this.ops,
+            this.act,
+            this.structure,
+            this.logger_data,
+        ]) {
+            (model as DevModelItem).set_parent(parent);
         }
-        model.data.push({ ...data, id, ...parent });
-        model.write_to_storage();
-    }
-
-    create_act(data: any) {
-        return this.create(this.act as LocalStorageDataModel, data);
-    }
-    create_dom(data: any) {
-        return this.create(this.dom as LocalStorageDataModel, data);
-    }
-    create_ops(data: any) {
-        return this.create(this.ops as LocalStorageDataModel, data);
-    }
-    read_all_act() {
-        return this.read_all(this.act as LocalStorageDataModel);
-    }
-    read_all_dom() {
-        return this.read_all(this.dom as LocalStorageDataModel);
-    }
-    read_all_ops() {
-        return this.read_all(this.ops as LocalStorageDataModel);
-    }
-}
-
-export class DomOpsModelInMemory implements IDomOpsModel {
-    get_domain_model(): IDatamodel<Domain> {
-        return new InMemoryDataMode<Domain>();
-    }
-    get_operation_model(): IDatamodel<Operation> {
-        return new InMemoryDataMode<Operation>();
-    }
-    get_activity_model(): IDatamodel<Activity> {
-        return new InMemoryDataMode<Activity>();
-    }
-    get_structure_model(): IDatamodel<StructureItem> {
-        return new InMemoryDataMode<StructureItem>();
-    }
-    get_logger_data_model(): IDatamodel<any> {
-        return new InMemoryDataMode<any>();
-    }
-    get_filter_model(): IDatamodel<FilterItem> {
-        throw new Error("Method not implemented.");
-    }
-}
-
-export class DomOpsModelDirectus implements IDomOpsModel {
-    get_domain_model(): IDatamodel<Domain> {
-        throw new Error("Method not implemented.");
-    }
-    get_operation_model(): IDatamodel<Operation> {
-        throw new Error("Method not implemented.");
-    }
-    get_activity_model(): IDatamodel<Activity> {
-        throw new Error("Method not implemented.");
-    }
-    get_structure_model(): IDatamodel<StructureItem> {
-        throw new Error("Method not implemented.");
-    }
-    get_logger_data_model(): IDatamodel<any> {
-        throw new Error("Method not implemented.");
-    }
-    get_filter_model(): IDatamodel<FilterItem> {
-        throw new Error("Method not implemented.");
+        this.filter.set_key(parent);
     }
 }
