@@ -187,6 +187,7 @@ export class AdvanceLister
     setup() {
         let create_form = this.model.get_create_form();
         this.searchComp.model = this.model.get_searcher();
+        this.searchComp.select_count = 1;
         this.searchComp.get_subcomponents().searchComp.on_search = async (
             words,
         ) => this.on_search_clicked(words);
@@ -217,16 +218,18 @@ export class AdvanceLister
         this.update_filter_selector();
     }
 
-    private update_filter_selector() {
+    update_filter_selector() {
         let comps = this.searchComp.get_subcomponents();
 
         this.filterComp.model.read_all().then((data: FilterItemComp[]) => {
-            comps.filterComp.selector.set_options(
-                data.map((f: FilterItemComp) => ({
+            comps.filterComp.selector.set_options([
+                { value: "", label: "-select-" },
+                ...data.map((f: FilterItemComp) => ({
                     label: f.label,
                     value: f.id,
                 })),
-            );
+            ]);
+
             let selected_filter = this.model.get_filter_selector_model();
             let fil =
                 selected_filter.get_selected_filter() as FilterItem | null;
@@ -255,22 +258,29 @@ export class AdvanceLister
                 },
             );
         };
-        let selected_filter = this.model.get_filter_selector_model();
 
         comps.filterComp.selector.ctrl.comp.set_events({
             change: () => {
                 let fil_id = comps.filterComp.selector.ctrl.get_value();
-                this.model
-                    .get_filter_model()
-                    .read(fil_id)
-                    .then((data) => {
-                        this.searchComp.get_subcomponents().searchComp.clear();
-                        selected_filter.set_selected_filter(data as FilterItem);
-                        this.searchComp.set_values(data?.value);
-                    });
+                this.on_filter_selected(fil_id);
             },
         });
     }
+    private async on_filter_selected(filter_id: string) {
+        let selected_filter = this.model.get_filter_selector_model();
+        this.searchComp.get_subcomponents().searchComp.clear();
+        if (filter_id) {
+            let val = await this.model.get_filter_model().read(filter_id);
+            selected_filter.set_selected_filter(val as FilterItem);
+            this.searchComp.set_values(val?.value);
+        } else {
+            selected_filter.set_selected_filter({
+                label: "",
+                value: [],
+            } as FilterItem);
+        }
+    }
+
     display_new_page(
         title: string,
         comp: GComponent,

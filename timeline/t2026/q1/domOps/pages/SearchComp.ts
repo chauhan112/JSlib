@@ -57,6 +57,7 @@ export class SearchComp
     private newBtn = new Button();
     private filterBtn: IClickable;
     model: IFilterParser = new DefaultParser();
+    select_count: number = 1;
     constructor() {
         this.ctrl.comp = this.comp;
         this.ctrl.setup();
@@ -67,6 +68,7 @@ export class SearchComp
                 console.log("filter clicked");
             },
         };
+        this.comp.s.filters.has_placeholder = false;
         this.comp.s.filterBtn.update(
             {},
             { click: () => this.filterBtn.on_clicked() },
@@ -85,7 +87,7 @@ export class SearchComp
                 selector: {
                     get_comp: () => this.comp.s.filters.comp,
                     set_options: (options: IOptionItem[]) => {
-                        if (options.length === 0) {
+                        if (options.length <= this.select_count) {
                             this.hide(this.comp.s.filters.comp);
                             return;
                         }
@@ -113,5 +115,8 @@ export class SearchComp
         this.ctrl.set_values(
             values.map((v) => this.model.unparse_chip_value(v)),
         );
+    }
+    clear_values() {
+        this.ctrl.clear();
     }
 }
